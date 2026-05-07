@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Julia Tang — Brand & Style Guide</title>
+  <meta name="description" content="Personal brand system: color, typography, gradients, components." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons (free, MIT) -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <style>
+    /* ==========================================================
+       DESIGN TOKENS
+       ========================================================== */
+    :root {
+      /* Type */
+      --font-display: "Instrument Serif", "Times New Roman", serif;
+      --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+      --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+      /* Brand — fixed across modes */
+      --brand-primary:   #C5DCEA;   /* Powder blue */
+      --brand-primary-2: #A9C7DC;   /* Powder blue / pressed */
+      --brand-secondary: #F4D9CC;   /* Warm peach / blush */
+      --brand-secondary-2:#E9C2B0;
+      --brand-accent:    #ECD8DD;   /* Lavender mist (gradient mid) */
+
+      /* OKLAB interpolation avoids sRGB's muddy grey midpoint between cool & warm hues */
+      --brand-gradient: linear-gradient(in oklab 135deg, #C5DCEA 0%, #ECD8DD 50%, #F4D9CC 100%);
+      --brand-gradient-soft: linear-gradient(in oklab 135deg, #DDEAF2 0%, #F4E6E9 50%, #F8E4D9 100%);
+      --brand-aurora: radial-gradient(60% 80% at 20% 30%, #C5DCEA 0%, transparent 60%),
+                      radial-gradient(60% 70% at 80% 20%, #ECD8DD 0%, transparent 60%),
+                      radial-gradient(70% 80% at 60% 90%, #F4D9CC 0%, transparent 60%),
+                      #FDFDFC;
+
+      /* Tonal wash defaults — overridden per theme below for dark-mode visibility */
+      --brand-underline:  #C5DCEA;                    /* prose link underline */
+
+      /* Radii */
+      --r-xs: 4px;
+      --r-sm: 8px;
+      --r-md: 12px;
+      --r-lg: 20px;
+      --r-xl: 32px;
+      --r-full: 9999px;
+
+      /* Spacing scale (4pt) */
+      --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+      --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px; --s-16: 64px;
+      --s-20: 80px; --s-24: 96px; --s-32: 128px;
+
+      /* Motion */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Light mode (default) */
+    [data-theme="light"] {
+      --bg-canvas:        #FDFDFC;
+      --bg-surface:       #FFFFFF;
+      --bg-sunken:        #EFF5FA;   /* powder-blue tonal wash */
+      --bg-sunken-warm:   #F4F0EA;   /* warm alt — for peach-leaning surfaces */
+      --bg-elevated:      #FFFFFF;
+
+      --brand-wash:       rgba(197, 220, 234, 0.40);  /* card lift shadow */
+      --brand-wash-soft:  rgba(197, 220, 234, 0.20);  /* tag tints */
+      --brand-selection:  #C5DCEA;                    /* light powder, dark text reads */
+      --selection-text:   #15171C;
+
+      --text-primary:     #15171C;
+      --text-secondary:   #5A5D66;
+      --text-tertiary:    #8B8E96;
+      --text-disabled:    #BCBFC6;
+      --text-inverse:     #FDFDFC;
+      --text-on-brand:    #15171C;
+
+      --border-subtle:    #EAE6DF;
+      --border-default:   #D8D3CB;
+      --border-strong:    #15171C;
+
+      --icon-primary:     #15171C;
+      --icon-secondary:   #5A5D66;
+      --icon-tertiary:    #8B8E96;
+
+      --shadow-sm: 0 1px 2px rgba(20,22,28,.04), 0 1px 1px rgba(20,22,28,.03);
+      --shadow-md: 0 4px 12px rgba(20,22,28,.06), 0 2px 4px rgba(20,22,28,.04);
+      --shadow-lg: 0 24px 48px -12px rgba(20,22,28,.12), 0 8px 16px rgba(20,22,28,.06);
+    }
+
+    /* Dark mode */
+    [data-theme="dark"] {
+      --bg-canvas:        #0C0D11;
+      --bg-surface:       #15171C;
+      --bg-sunken:        #20262F;   /* powder-tinted dark — clearly visible against surface */
+      --bg-sunken-warm:   #1F1C18;
+      --bg-elevated:      #1E2027;
+
+      --brand-wash:       rgba(197, 220, 234, 0.65);  /* dark needs higher alpha to read */
+      --brand-wash-soft:  rgba(197, 220, 234, 0.50);
+      --brand-selection:  #446680;                    /* dusk blue — light text reads on it */
+      --selection-text:   #F5F2EC;
+
+      --text-primary:     #F5F2EC;
+      --text-secondary:   #A4A8B2;
+      --text-tertiary:    #6E727A;
+      --text-disabled:    #494D55;
+      --text-inverse:     #15171C;
+      --text-on-brand:    #15171C;
+
+      --border-subtle:    #22252D;
+      --border-default:   #33373F;
+      --border-strong:    #F5F2EC;
+
+      --icon-primary:     #F5F2EC;
+      --icon-secondary:   #A4A8B2;
+      --icon-tertiary:    #6E727A;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.3);
+      --shadow-lg: 0 24px 48px -12px rgba(0,0,0,.6), 0 8px 16px rgba(0,0,0,.4);
+    }
+
+    /* ==========================================================
+       BASE
+       ========================================================== */
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-primary);
+      background: var(--bg-canvas);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color .35s var(--ease), color .35s var(--ease);
+    }
+
+    /* Tonal wash — powder blue shows up as atmosphere, not as a CTA */
+    /* Per-theme selection bg + text so contrast holds in both modes */
+    ::selection      { background: var(--brand-selection); color: var(--selection-text); }
+    ::-moz-selection { background: var(--brand-selection); color: var(--selection-text); }
+
+    /* Prose links — soft powder blue underline that resolves to ink on hover */
+    .prose a, .prose-link {
+      color: var(--text-primary);
+      text-decoration: underline;
+      text-decoration-color: var(--brand-underline);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
+      transition: text-decoration-color .25s var(--ease), color .25s var(--ease);
+    }
+    .prose a:hover, .prose-link:hover { text-decoration-color: var(--text-primary); }
+
+    /* Type styles — exposed as utility classes for the guide AND as the canonical scale */
+    .t-display-xl,
+    .t-display-lg,
+    .t-display-md {
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.02;
+      margin: 0;
+    }
+    .t-display-xl { font-size: clamp(64px, 10vw, 144px); letter-spacing: -0.025em; line-height: 0.96; }
+    .t-display-lg { font-size: clamp(48px, 7vw, 96px); letter-spacing: -0.02em; line-height: 1.0; }
+    .t-display-md { font-size: clamp(36px, 5vw, 64px); letter-spacing: -0.015em; line-height: 1.05; }
+
+    .t-h1, .t-h2, .t-h3, .t-h4, .t-h5 {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      margin: 0;
+      color: var(--text-primary);
+    }
+    .t-h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1.1; letter-spacing: -0.02em; }
+    .t-h2 { font-size: clamp(26px, 3vw, 36px); line-height: 1.15; letter-spacing: -0.018em; }
+    .t-h3 { font-size: 24px; line-height: 1.25; }
+    .t-h4 { font-size: 20px; line-height: 1.3; }
+    .t-h5 { font-size: 16px; line-height: 1.4; font-weight: 600; }
+
+    .t-body-lg { font-size: 18px; line-height: 1.55; font-weight: 400; }
+    .t-body    { font-size: 16px; line-height: 1.55; font-weight: 400; }
+    .t-body-sm { font-size: 14px; line-height: 1.5; font-weight: 400; }
+    .t-caption { font-size: 13px; line-height: 1.45; font-weight: 400; color: var(--text-secondary); }
+    .t-overline {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-tertiary);
+    }
+    .t-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .t-mono { font-family: var(--font-mono); font-size: 13px; }
+    .t-italic-display { font-style: italic; font-family: var(--font-display); }
+
+    /* ==========================================================
+       LAYOUT
+       ========================================================== */
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: var(--s-12) var(--s-8);
+    }
+    @media (max-width: 720px) {
+      .page { padding: var(--s-8) var(--s-5); }
+    }
+
+    section { padding: var(--s-20) 0; border-top: 1px solid var(--border-subtle); }
+    section:first-of-type { border-top: 0; padding-top: 0; }
+
+    .section-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: var(--s-6); margin-bottom: var(--s-12); flex-wrap: wrap;
+    }
+    .section-header .lead { max-width: 520px; color: var(--text-secondary); margin: 0; }
+
+    .grid { display: grid; gap: var(--s-5); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .grid-6 { grid-template-columns: repeat(6, minmax(0,1fr)); }
+    @media (max-width: 900px) {
+      .grid-3, .grid-4, .grid-6 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 540px) {
+      .grid-2, .grid-3, .grid-4, .grid-6 { grid-template-columns: 1fr; }
+    }
+
+    /* ==========================================================
+       NAV BAR
+       ========================================================== */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in oklab, var(--bg-canvas) 86%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .topbar-inner {
+      max-width: 1240px; margin: 0 auto;
+      padding: var(--s-4) var(--s-8);
+      display: flex; align-items: center; justify-content: space-between; gap: var(--s-6);
+    }
+    .wordmark {
+      font-family: var(--font-display);
+      font-size: 22px; line-height: 1; letter-spacing: -0.02em;
+      color: var(--text-primary); text-decoration: none;
+    }
+    .topbar-nav { display: flex; gap: var(--s-6); align-items: center; }
+    .topbar-nav a {
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 14px; transition: color .2s var(--ease);
+    }
+    .topbar-nav a:hover { color: var(--text-primary); }
+
+    .theme-toggle {
+      appearance: none; cursor: pointer;
+      background: var(--bg-surface); color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--r-full);
+      padding: 8px 14px;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+      transition: all .2s var(--ease);
+    }
+    .theme-toggle:hover { border-color: var(--border-strong); }
+    .theme-toggle i { font-size: 16px; }
+
+    @media (max-width: 720px) {
+      .topbar-nav a:not(.theme-toggle) { display: none; }
+    }
+
+    /* ==========================================================
+       HERO
+       ========================================================== */
+    .hero {
+      position: relative;
+      padding: var(--s-24) 0 var(--s-20);
+    }
+    /* Full-bleed atmospheric gradient with feathered edges — no hard cutoff */
+    .hero-bg {
+      position: absolute;
+      top: -10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      height: 130%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(60% 70% at 18% 28%, rgba(197,220,234,0.65) 0%, transparent 62%),
+        radial-gradient(55% 65% at 82% 18%, rgba(220,210,232,0.55) 0%, transparent 64%),
+        radial-gradient(70% 75% at 62% 88%, rgba(244,217,204,0.62) 0%, transparent 66%);
+      filter: blur(50px) saturate(1.05);
+      opacity: 0.95;
+      animation: aurora-drift 28s ease-in-out infinite;
+    }
+    [data-theme="dark"] .hero-bg { opacity: 0.5; }
+
+    @keyframes aurora-drift {
+      0%, 100% { transform: translate(-50%, 0) scale(1); }
+      33%      { transform: translate(-51%, 1%) scale(1.04); }
+      66%      { transform: translate(-49%, -1%) scale(0.98); }
+    }
+    @keyframes gradient-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 100% 50%; }
+    }
+    .gradient-card.shimmer {
+      background-size: 200% 200% !important;
+      animation: gradient-shimmer 14s ease-in-out infinite;
+    }
+    @keyframes aurora-card-drift {
+      0%   { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+    .gradient-card.aurora-drift {
+      background-size: 180% 180% !important;
+      animation: aurora-card-drift 22s ease-in-out infinite alternate;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-bg, .gradient-card.shimmer, .gradient-card.aurora-drift { animation: none; }
+    }
+    .hero-inner { position: relative; z-index: 1; }
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(56px, 9vw, 128px);
+      line-height: 0.95;
+      letter-spacing: -0.025em;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin: 0 0 var(--s-6);
+      max-width: 14ch;
+    }
+    .hero h1 em { font-style: italic; }
+    .hero .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      border-radius: var(--r-full);
+      font-size: 12px; font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: var(--s-6);
+    }
+    .hero .kicker .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--brand-gradient);
+    }
+    .hero .lead {
+      font-size: clamp(18px, 1.6vw, 22px);
+      max-width: 560px; color: var(--text-secondary);
+      margin: 0 0 var(--s-10);
+      line-height: 1.5;
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-8);
+      color: var(--text-tertiary); font-size: 13px;
+      font-family: var(--font-mono);
+    }
+    .hero-meta span strong { color: var(--text-primary); font-weight: 500; }
+
+    /* ==========================================================
+       COLOR
+       ========================================================== */
+    .swatch {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      transition: transform .25s var(--ease), border-color .2s var(--ease);
+    }
+    .swatch:hover { transform: translateY(-2px); border-color: var(--border-default); }
+    .swatch-fill {
+      height: 120px;
+      position: relative;
+    }
+    .swatch-meta {
+      padding: var(--s-4);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .swatch-meta .name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+    .swatch-meta .hex { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+    .swatch-meta .role { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+    .badge-aa, .badge-aaa, .badge-large {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: var(--r-xs);
+      font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-right: 4px; margin-top: 6px;
+    }
+    .badge-aaa { background: #DCEFE0; color: #1E5A2A; }
+    .badge-aa  { background: #E5F0FA; color: #1F4868; }
+    .badge-large { background: #FAEFD8; color: #6A4A0E; }
+    [data-theme="dark"] .badge-aaa { background: rgba(110,200,130,.15); color: #9DD8AB; }
+    [data-theme="dark"] .badge-aa  { background: rgba(120,170,220,.15); color: #A8C8E8; }
+    [data-theme="dark"] .badge-large { background: rgba(220,180,90,.15); color: #E0BC73; }
+
+    /* gradient & aurora showcase */
+    .gradient-card {
+      border-radius: var(--r-lg);
+      padding: var(--s-12) var(--s-8);
+      min-height: 260px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      border: 1px solid var(--border-subtle);
+    }
+    .gradient-card .label {
+      font-family: var(--font-mono); font-size: 12px;
+      color: rgba(20,22,28,0.7); letter-spacing: 0.04em;
+    }
+    .gradient-card h4 {
+      font-family: var(--font-display);
+      font-size: 36px; font-weight: 400; font-style: italic;
+      color: #15171C;
+      margin: 0;
+    }
+
+    /* ==========================================================
+       TYPOGRAPHY SPECIMENS
+       ========================================================== */
+    .type-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: var(--s-6);
+      padding: var(--s-6) 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
+    }
+    .type-row:last-child { border-bottom: 0; }
+    .type-row .meta {
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .type-row .meta strong { color: var(--text-primary); display: block; font-family: var(--font-sans); font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+    @media (max-width: 720px) {
+      .type-row { grid-template-columns: 1fr; gap: var(--s-2); }
+    }
+
+    /* Font card */
+    .font-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-md);
+      padding: var(--s-6);
+    }
+    .font-card .preview {
+      font-size: 56px; line-height: 1; margin: var(--s-2) 0 var(--s-5);
+      color: var(--text-primary);
+    }
+    .font-card.serif .preview { font-family: var(--font-display); font-style: italic; }
+    .font-card.sans  .preview { font-family: var(--font-sans); font-weight: 500; letter-spacing: -0.02em; }
+    .font-card.mono  .preview { font-family: var(--font-mono); font-size: 36px; }
+    .font-card .meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary); }
+    .font-card .meta strong { color: var(--text-primary); font-family: var(--font-sans); font-weight: 500; font-size: 14px; display: block; margin-bottom: 2px; }
+    .font-card a { color: var(--text-primary); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+    /* ==========================================================
+       BUTTONS
+       ========================================================== */
+    .btn {
+      appearance: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 14px; font-weight: 500;
+      padding: 12px 22px;
+      border-radius: var(--r-full);
+      border: 1px solid transparent;
+      transition: transform .15s var(--ease), background .25s var(--ease), color .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
+      letter-spacing: -0.005em;
+      text-decoration: none;   /* anchors used as buttons should never underline */
+    }
+    .btn:focus-visible {
+      outline: 2px solid var(--brand-primary);
+      outline-offset: 3px;
+    }
+    .btn i { font-size: 16px; }
+
+    /* Primary — solid ink, flips to powder blue on hover (full fill swap) */
+    .btn-primary {
+      background: var(--text-primary);
+      color: var(--text-inverse);
+      border-color: var(--text-primary);
+    }
+    .btn-primary:hover {
+      background: var(--brand-primary);    /* fill flip: ink → powder blue */
+      color: var(--text-primary);          /* text flip: white → ink */
+      border-color: var(--brand-primary);
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 0 4px var(--brand-wash-soft),
+        0 16px 36px var(--brand-wash);
+    }
+    .btn-primary:active { transform: translateY(0); box-shadow: 0 0 0 3px var(--brand-wash-soft); }
+
+    /* Secondary — outlined, fills with soft wash on hover */
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border-color: var(--border-default);
+    }
+    .btn-secondary:hover {
+      background: var(--brand-wash-soft);
+      border-color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    /* Tertiary — ghost, picks up a soft wash on hover */
+    .btn-tertiary {
+      background: transparent;
+      color: var(--text-primary);
+      padding: 12px 14px;
+    }
+    .btn-tertiary:hover {
+      background: var(--brand-wash-soft);
+    }
+
+    /* Icon micro-motion on hover — arrows slide in their direction */
+    .btn i { transition: transform .25s var(--ease); }
+    .btn:hover .ph-arrow-up-right,
+    .btn:hover .ph-arrow-right          { transform: translateX(3px); }
+    .btn:hover .ph-arrow-left           { transform: translateX(-3px); }
+    .btn:hover .ph-sparkle              { transform: rotate(15deg); }
+
+    .btn-sm { padding: 8px 14px; font-size: 13px; }
+    .btn-lg { padding: 16px 28px; font-size: 15px; }
+
+    .btn[disabled] {
+      opacity: .4; cursor: not-allowed; transform: none !important; box-shadow: none !important;
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+
+    /* ==========================================================
+       COMPONENT EXAMPLES
+       ========================================================== */
+    .demo-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-md);
+      padding: var(--s-6);
+      display: flex; flex-direction: column; gap: var(--s-4);
+    }
+    .demo-card .label { font-size: 12px; color: var(--text-tertiary); font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: var(--s-3);
+    }
+    .icon-tile {
+      aspect-ratio: 1;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-md);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px;
+      transition: all .2s var(--ease);
+    }
+    .icon-tile:hover {
+      border-color: var(--border-default);
+      transform: translateY(-1px);
+    }
+    .icon-tile i { font-size: 24px; color: var(--icon-primary); }
+    .icon-tile span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+
+    /* Footer */
+    footer.foot {
+      margin-top: var(--s-20);
+      padding: var(--s-12) 0 var(--s-8);
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-tertiary);
+      font-size: 13px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-4);
+    }
+    footer.foot a { color: var(--text-secondary); text-decoration: none; }
+    footer.foot a:hover { color: var(--text-primary); }
+
+    /* utility */
+    .stack-2 > * + * { margin-top: var(--s-2); }
+    .stack-3 > * + * { margin-top: var(--s-3); }
+    .stack-4 > * + * { margin-top: var(--s-4); }
+    .stack-6 > * + * { margin-top: var(--s-6); }
+    .stack-8 > * + * { margin-top: var(--s-8); }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--r-full);
+      background: var(--bg-sunken);
+      color: var(--text-secondary);
+      font-size: 12px; font-family: var(--font-mono);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#" class="wordmark">Julia Tang</a>
+      <nav class="topbar-nav">
+        <a href="#color">Color</a>
+        <a href="#type">Type</a>
+        <a href="#components">Components</a>
+        <a href="#icons">Icons</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="ph ph-moon" id="themeIcon"></i>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <span class="kicker"><span class="dot"></span> Brand &amp; Style System · v0.2</span>
+        <h1>A quiet system for a <em>dreamy</em> portfolio.</h1>
+        <p class="lead">A minimal, accessibility-first design language for Julia Tang — staff product designer. Built around powder blue, warm peach, and an iridescent gradient. This guide is the source of truth for the portfolio rebuild and resume restyle.</p>
+        <div class="btn-row">
+          <a class="btn btn-primary btn-lg" href="#color">
+            <i class="ph ph-sparkle"></i> Explore the system
+          </a>
+          <a class="btn btn-secondary btn-lg" href="#type">
+            View typography
+          </a>
+        </div>
+        <div class="hero-meta" style="margin-top: var(--s-12);">
+          <span><strong>Designer</strong> · Julia Tang</span>
+          <span><strong>Role</strong> · Staff Product Designer, Snap</span>
+          <span><strong>Version</strong> · 0.2</span>
+          <span><strong>Updated</strong> · May 2026</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOUNDATION / PRINCIPLES -->
+    <section id="principles">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">01 · Foundation</p>
+          <h2 class="t-h1" style="margin-top:8px;">Design principles</h2>
+        </div>
+        <p class="lead t-body-lg">Four ideas that decide every visual choice. If a decision violates one, the decision is wrong.</p>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="demo-card">
+          <i class="ph ph-cloud" style="font-size:24px;color:var(--icon-primary)"></i>
+          <h3 class="t-h4">Quiet, not silent</h3>
+          <p class="t-body-sm" style="color:var(--text-secondary);margin:0">Restraint is the default. Color and motion arrive only when they earn their place.</p>
+        </div>
+        <div class="demo-card">
+          <i class="ph ph-prism" style="font-size:24px;color:var(--icon-primary)"></i>
+          <h3 class="t-h4">Iridescent, not loud</h3>
+          <p class="t-body-sm" style="color:var(--text-secondary);margin:0">Color shifts like light through glass. One brand gradient does the heavy lifting.</p>
+        </div>
+        <div class="demo-card">
+          <i class="ph ph-quotes" style="font-size:24px;color:var(--icon-primary)"></i>
+          <h3 class="t-h4">Editorial, not decorative</h3>
+          <p class="t-body-sm" style="color:var(--text-secondary);margin:0">Typography carries personality. A serif italic does the singing; a technical sans does the talking.</p>
+        </div>
+        <div class="demo-card">
+          <i class="ph ph-eye" style="font-size:24px;color:var(--icon-primary)"></i>
+          <h3 class="t-h4">Accessible by default</h3>
+          <p class="t-body-sm" style="color:var(--text-secondary);margin:0">Every text/background pair clears WCAG AA. Most clear AAA. Brand color is decoration, never the message.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLOR -->
+    <section id="color">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">02 · Color</p>
+          <h2 class="t-h1" style="margin-top:8px;">Color system</h2>
+        </div>
+        <p class="lead t-body-lg">Two brand colors, one gradient, full neutral ramps for light and dark. Brand colors are accents — never primary text.</p>
+      </div>
+
+      <!-- BRAND -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-5);">Brand</h3>
+      <div class="grid grid-3" style="margin-bottom: var(--s-12);">
+        <div class="swatch">
+          <div class="swatch-fill" style="background: var(--brand-primary);"></div>
+          <div class="swatch-meta">
+            <div class="name">Powder Blue · Primary</div>
+            <div class="hex">#C5DCEA</div>
+            <div class="role">Hero accents, surface tints, focus rings, gradient anchor.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background: var(--brand-secondary);"></div>
+          <div class="swatch-meta">
+            <div class="name">Warm Peach · Secondary</div>
+            <div class="hex">#F4D9CC</div>
+            <div class="role">Warm counterweight to powder blue. Use for highlights, tags, soft surfaces.</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background: var(--brand-accent);"></div>
+          <div class="swatch-meta">
+            <div class="name">Soft Rose · Bridge</div>
+            <div class="hex">#ECD8DD</div>
+            <div class="role">Rose-pearl bridge between blue and peach. Not a standalone color — only inside the gradient.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRADIENTS -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-2);">Brand gradient</h3>
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-5); max-width: 64ch;">Two gradient compositions, each with a static and an animated variant. Soft pearl bridges blue → peach without a muddy purple mid-tone. Animations honor <code class="t-mono">prefers-reduced-motion</code>.</p>
+      <div class="grid grid-2" style="margin-bottom: var(--s-12);">
+        <div class="gradient-card" style="background: var(--brand-gradient);">
+          <span class="label">linear-gradient · 135° · static</span>
+          <h4>Iridescent</h4>
+          <span class="label">#C5DCEA → #ECD8DD → #F4D9CC</span>
+        </div>
+        <div class="gradient-card shimmer" style="background: var(--brand-gradient);">
+          <span class="label">linear-gradient · 135° · animated</span>
+          <h4>Iridescent · shimmer</h4>
+          <span class="label">14s position loop · subtle</span>
+        </div>
+        <div class="gradient-card" style="background: var(--brand-aurora);">
+          <span class="label">radial composition · static</span>
+          <h4>Aurora</h4>
+          <span class="label">3 radial stops · soft blur</span>
+        </div>
+        <div class="gradient-card aurora-drift" style="background: var(--brand-aurora);">
+          <span class="label">radial composition · animated</span>
+          <h4>Aurora · drift</h4>
+          <span class="label">22s position drift · used in hero (28s)</span>
+        </div>
+      </div>
+
+      <!-- LIGHT MODE NEUTRALS -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-2);">Neutrals · <span style="color:var(--text-tertiary);font-weight:400;">Light mode</span></h3>
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-5);">Warm off-white canvas keeps the page from feeling clinical. All contrast values measured against canvas <code class="t-mono">#FDFDFC</code>.</p>
+
+      <div class="grid grid-4" style="margin-bottom: var(--s-8);">
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FDFDFC; border-bottom:1px solid var(--border-subtle);"></div>
+          <div class="swatch-meta"><div class="name">Canvas</div><div class="hex">#FDFDFC</div><div class="role">Page background</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FFFFFF; border-bottom:1px solid var(--border-subtle);"></div>
+          <div class="swatch-meta"><div class="name">Surface</div><div class="hex">#FFFFFF</div><div class="role">Cards, modals, raised surfaces</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#F2EFEA;"></div>
+          <div class="swatch-meta"><div class="name">Sunken</div><div class="hex">#F2EFEA</div><div class="role">Hover states, code blocks</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#15171C;"></div>
+          <div class="swatch-meta"><div class="name">Ink</div><div class="hex">#15171C</div><div class="role">Primary buttons, dividers, ink</div></div>
+        </div>
+      </div>
+
+      <h4 class="t-h4" style="margin: var(--s-8) 0 var(--s-4);">Text & icon · Light</h4>
+      <div class="grid grid-4" style="margin-bottom: var(--s-12);">
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FDFDFC; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#15171C; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Primary</div>
+            <div class="hex">#15171C</div>
+            <span class="badge-aaa">AAA · 17.5:1</span>
+            <div class="role">Headlines, body, primary icons</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FDFDFC; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#5A5D66; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Secondary</div>
+            <div class="hex">#5A5D66</div>
+            <span class="badge-aa">AA · 6.7:1</span>
+            <div class="role">Supporting copy, captions, metadata</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FDFDFC; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#8B8E96; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Tertiary</div>
+            <div class="hex">#8B8E96</div>
+            <span class="badge-large">AA Large · 3.4:1</span>
+            <div class="role">Timestamps, helper text, tertiary icons</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#FDFDFC; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#BCBFC6; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Disabled</div>
+            <div class="hex">#BCBFC6</div>
+            <div class="role">Disabled states only · not for content</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DARK MODE NEUTRALS -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-2);">Neutrals · <span style="color:var(--text-tertiary);font-weight:400;">Dark mode</span></h3>
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-5);">Deep cool ink, never pure black. Contrast measured against canvas <code class="t-mono">#0C0D11</code>.</p>
+
+      <div class="grid grid-4" style="margin-bottom: var(--s-8);">
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#0C0D11; border-bottom:1px solid var(--border-subtle);"></div>
+          <div class="swatch-meta"><div class="name">Canvas</div><div class="hex">#0C0D11</div><div class="role">Page background</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#15171C;"></div>
+          <div class="swatch-meta"><div class="name">Surface</div><div class="hex">#15171C</div><div class="role">Cards, modals</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#1E2027;"></div>
+          <div class="swatch-meta"><div class="name">Elevated</div><div class="hex">#1E2027</div><div class="role">Popovers, raised surfaces</div></div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#F5F2EC;"></div>
+          <div class="swatch-meta"><div class="name">Bone</div><div class="hex">#F5F2EC</div><div class="role">Inverse buttons & ink in dark mode</div></div>
+        </div>
+      </div>
+
+      <h4 class="t-h4" style="margin: var(--s-8) 0 var(--s-4);">Text & icon · Dark</h4>
+      <div class="grid grid-4">
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#0C0D11; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#F5F2EC; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Primary</div>
+            <div class="hex">#F5F2EC</div>
+            <span class="badge-aaa">AAA · 17.4:1</span>
+            <div class="role">Headlines, body, primary icons</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#0C0D11; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#A4A8B2; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Secondary</div>
+            <div class="hex">#A4A8B2</div>
+            <span class="badge-aaa">AAA · 8.9:1</span>
+            <div class="role">Supporting copy, captions</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#0C0D11; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#6E727A; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Tertiary</div>
+            <div class="hex">#6E727A</div>
+            <span class="badge-aa">AA · 4.6:1</span>
+            <div class="role">Timestamps, helper text</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-fill" style="background:#0C0D11; display:flex; align-items:center; justify-content:center;">
+            <span style="color:#494D55; font-size:32px; font-family:var(--font-display); font-style:italic;">Aa</span>
+          </div>
+          <div class="swatch-meta">
+            <div class="name">Disabled</div>
+            <div class="hex">#494D55</div>
+            <div class="role">Disabled states only</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TONAL WASH — powder blue used as atmosphere -->
+      <h3 class="t-h3" style="margin: var(--s-16) 0 var(--s-2);">Brand in use · <span style="color:var(--text-tertiary); font-weight:400;">tonal wash</span></h3>
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-6); max-width: 64ch;">Powder blue is the atmosphere, not the click. It shows up everywhere as a quiet wash — selection, link underlines, soft shadows, sunken surfaces, tag tints — so the brand is felt before it's seen. Ink does the CTA work; the soft tone holds the mood.</p>
+
+      <div class="grid grid-3">
+        <div class="demo-card">
+          <span class="t-eyebrow">Selection</span>
+          <p class="t-body" style="margin:0;"><span style="background: var(--brand-selection); padding: 2px 0;">Try selecting this sentence — the highlight tints powder blue.</span></p>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">::selection · #C5DCEA</p>
+        </div>
+        <div class="demo-card">
+          <span class="t-eyebrow">Prose link</span>
+          <p class="t-body prose" style="margin:0;">Read about <a href="#">the Sparks redesign</a> or <a href="#">Festival Mode</a>.</p>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">underline · brand · 2px</p>
+        </div>
+        <div class="demo-card" style="box-shadow: 0 16px 40px var(--brand-wash);">
+          <span class="t-eyebrow">Soft shadow</span>
+          <p class="t-body" style="margin:0;">Featured cards lift on a powder-blue cushion instead of a grey one.</p>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">shadow · brand-wash 40%</p>
+        </div>
+        <div class="demo-card" style="background: var(--bg-sunken);">
+          <span class="t-eyebrow">Sunken surface</span>
+          <p class="t-body" style="margin:0;">Tertiary hover states, code blocks, sunken regions tint cool instead of warm grey.</p>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">--bg-sunken · #EFF5FA</p>
+        </div>
+        <div class="demo-card">
+          <span class="t-eyebrow">Tag · soft tint</span>
+          <div class="btn-row" style="gap: 6px;">
+            <span class="pill" style="background: var(--brand-wash-soft); color: var(--text-primary);">Identity</span>
+            <span class="pill" style="background: var(--brand-wash-soft); color: var(--text-primary);">0 → 1</span>
+            <span class="pill" style="background: var(--brand-wash-soft); color: var(--text-primary);">Strategy</span>
+          </div>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">brand-wash-soft · 18%</p>
+        </div>
+        <div class="demo-card" style="border: 2px solid var(--brand-primary-2); padding: calc(var(--s-6) - 1px);">
+          <span class="t-eyebrow">Tinted border</span>
+          <p class="t-body" style="margin:0;">Featured cards take a 2px powder-blue border to mark themselves softly.</p>
+          <p class="t-mono" style="color:var(--text-tertiary); margin:0;">2px · #A9C7DC</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TYPOGRAPHY -->
+    <section id="type">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">03 · Typography</p>
+          <h2 class="t-h1" style="margin-top:8px;">Typography</h2>
+        </div>
+        <p class="lead t-body-lg">A serif for character, a sans for clarity, a mono for the small print. All free, all open source — no licensing tax on the portfolio.</p>
+      </div>
+
+      <!-- Font families -->
+      <div class="grid grid-3" style="margin-bottom: var(--s-12);">
+        <div class="font-card serif">
+          <p class="t-overline">Display</p>
+          <div class="preview">Aa</div>
+          <p class="meta">
+            <strong>Instrument Serif</strong>
+            Free · Google Fonts · OFL<br/>
+            High-contrast modern serif. Italic carries the brand voice.<br/>
+            <a href="https://fonts.google.com/specimen/Instrument+Serif" target="_blank" rel="noopener">fonts.google.com</a>
+          </p>
+        </div>
+        <div class="font-card sans">
+          <p class="t-overline">UI &amp; Body</p>
+          <div class="preview">Aa</div>
+          <p class="meta">
+            <strong>Geist</strong>
+            Free · OFL · by Vercel<br/>
+            Technical, neutral, calm. Replaces Proxima Nova as the workhorse.<br/>
+            <a href="https://vercel.com/font" target="_blank" rel="noopener">vercel.com/font</a>
+          </p>
+        </div>
+        <div class="font-card mono">
+          <p class="t-overline">Mono</p>
+          <div class="preview">Aa</div>
+          <p class="meta">
+            <strong>Geist Mono</strong>
+            Free · OFL · by Vercel<br/>
+            Captions, metadata, tabular numbers, code.<br/>
+            <a href="https://vercel.com/font" target="_blank" rel="noopener">vercel.com/font</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Type scale -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-5);">Type scale</h3>
+      <div class="demo-card" style="padding: var(--s-2) var(--s-6);">
+        <div class="type-row">
+          <div class="meta">
+            <strong>Display XL</strong>
+            Instrument Serif · 144/.96<br/>
+            Hero h1, name marks
+          </div>
+          <p class="t-display-xl">Make it <em>quiet</em>.</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Display LG</strong>
+            Instrument Serif · 96/1.0<br/>
+            Section openers
+          </div>
+          <p class="t-display-lg">Designed in the <em>margins</em>.</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Display MD</strong>
+            Instrument Serif · 64/1.05<br/>
+            Case study titles
+          </div>
+          <p class="t-display-md">Festival Mode &mdash; <em>0 to 1 in 60 days.</em></p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>H1</strong>
+            Geist 500 · 48/1.1<br/>
+            Page titles, dense headings
+          </div>
+          <h1 class="t-h1">Selected work, 2018 — present</h1>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>H2</strong>
+            Geist 500 · 36/1.15<br/>
+            Major section headings
+          </div>
+          <h2 class="t-h2">Process &amp; principles</h2>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>H3</strong>
+            Geist 500 · 24/1.25<br/>
+            Subsections
+          </div>
+          <h3 class="t-h3">Designing for community</h3>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>H4</strong>
+            Geist 500 · 20/1.3<br/>
+            Card titles
+          </div>
+          <h4 class="t-h4">Tappy Cloud · backend-driven profiles</h4>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Body LG</strong>
+            Geist 400 · 18/1.55<br/>
+            Lead paragraphs
+          </div>
+          <p class="t-body-lg" style="margin:0">Currently working on new 0–1 experiences that help LGBTQIA+ and BIPOC users find community and connect.</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Body</strong>
+            Geist 400 · 16/1.55<br/>
+            Default copy
+          </div>
+          <p class="t-body" style="margin:0">Owned design for Tappy Cloud, a backend-driven solution enabling dynamically configurable Tinder profiles and driving a 20% increase in Likes Sent.</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Body SM</strong>
+            Geist 400 · 14/1.5<br/>
+            Captions, dense UI
+          </div>
+          <p class="t-body-sm" style="margin:0; color:var(--text-secondary)">Sole designer on a complex suite of 0–1 SaaS web products, partnered with developers to build the design system.</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Caption</strong>
+            Geist 400 · 13/1.45<br/>
+            Image credits, footnotes
+          </div>
+          <p class="t-caption" style="margin:0">Tinder · Senior Product Designer · 2023 — present</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Overline</strong>
+            Geist 500 · 11/1.45 · 0.14em<br/>
+            Eyebrow labels
+          </div>
+          <p class="t-overline" style="margin:0">Selected case study · 2024</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Mono</strong>
+            Geist Mono · 13<br/>
+            Metadata, tabular numbers
+          </div>
+          <p class="t-mono" style="margin:0; color:var(--text-secondary)">02 / 08 · 5min read · 2024-09-12</p>
+        </div>
+        <div class="type-row">
+          <div class="meta">
+            <strong>Eyebrow</strong>
+            Geist Mono 500 · 12 · 0.18em<br/>
+            Case-study meta, client/year tags
+          </div>
+          <p class="t-eyebrow" style="margin:0">SNAP · 2024 · PRODUCT DESIGN</p>
+        </div>
+      </div>
+
+      <!-- Italic-as-accent heading pattern -->
+      <h3 class="t-h3" style="margin: var(--s-12) 0 var(--s-3);">Italic as accent · heading construction</h3>
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-6); max-width: 64ch;">Use Instrument Serif italic for one phrase inside a sans heading — never a whole sentence. The italic carries the voice; the sans does the work.</p>
+      <div class="grid grid-2">
+        <div class="demo-card">
+          <span class="t-eyebrow">Hero · Display LG</span>
+          <p style="font-family: var(--font-sans); font-size: clamp(36px, 5vw, 64px); line-height:1.05; letter-spacing:-0.02em; font-weight: 500; margin: 0; color: var(--text-primary);">
+            Designed in the <em style="font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: 0;">margins</em>.
+          </p>
+        </div>
+        <div class="demo-card">
+          <span class="t-eyebrow">Section · H1</span>
+          <p style="font-family: var(--font-sans); font-size: clamp(28px, 3.5vw, 44px); line-height:1.1; letter-spacing:-0.018em; font-weight: 500; margin: 0; color: var(--text-primary);">
+            A <em style="font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: 0;">quiet</em> system for a portfolio that breathes.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPONENTS -->
+    <section id="components">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">04 · Components</p>
+          <h2 class="t-h1" style="margin-top:8px;">Buttons &amp; surfaces</h2>
+        </div>
+        <p class="lead t-body-lg">Three levels of emphasis. The brand gradient stays in atmosphere — CTAs use ink that flips to powder blue on hover.</p>
+      </div>
+
+      <!-- Button hierarchy -->
+      <p class="t-body-sm" style="color:var(--text-secondary); margin: 0 0 var(--s-6); max-width: 60ch;">Three levels of emphasis — no gradient buttons. The brand gradient lives in atmosphere (hero, featured surfaces); CTAs use ink. Primary buttons hover with a soft powder-blue shadow lift instead.</p>
+      <div class="grid grid-3" style="margin-bottom: var(--s-12);">
+        <div class="demo-card">
+          <span class="t-eyebrow">Primary · solid ink</span>
+          <p class="t-body-sm" style="color:var(--text-secondary); margin:0;">Main action on a screen. There should be one. Hovers on a powder-blue cushion.</p>
+          <div class="btn-row">
+            <button class="btn btn-primary">View case study <i class="ph ph-arrow-up-right"></i></button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary btn-sm">Small</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+          </div>
+        </div>
+        <div class="demo-card">
+          <span class="t-eyebrow">Secondary · outlined</span>
+          <p class="t-body-sm" style="color:var(--text-secondary); margin:0;">Companion to primary. Multiple allowed per screen.</p>
+          <div class="btn-row">
+            <button class="btn btn-secondary">Download resume</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-sm">Small</button>
+            <button class="btn btn-secondary" disabled>Disabled</button>
+          </div>
+        </div>
+        <div class="demo-card">
+          <span class="t-eyebrow">Tertiary · ghost</span>
+          <p class="t-body-sm" style="color:var(--text-secondary); margin:0;">Low-emphasis: nav, dismiss, "view all", inline.</p>
+          <div class="btn-row">
+            <button class="btn btn-tertiary"><i class="ph ph-arrow-left"></i> Back to work</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-tertiary btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cards / tags -->
+      <h3 class="t-h3" style="margin-bottom: var(--s-5);">Surfaces &amp; tags</h3>
+      <div class="grid grid-3">
+        <article class="demo-card">
+          <span class="t-eyebrow">TINDER · 2022 · 0 → 1</span>
+          <h4 class="t-h3" style="font-family:var(--font-display); font-style:italic; font-weight:400; letter-spacing:-0.01em;">Festival Mode</h4>
+          <p class="t-body-sm" style="color:var(--text-secondary); margin:0;">0 to 1 in 60 days. Foundation for event-based experiences across Tinder.</p>
+          <div class="btn-row" style="margin-top: var(--s-2);">
+            <button class="btn btn-tertiary btn-sm" style="margin-left:-14px;">Read case <i class="ph ph-arrow-up-right"></i></button>
+          </div>
+        </article>
+        <article class="demo-card" style="background: var(--brand-gradient-soft); border-color: transparent; box-shadow: 0 12px 32px var(--brand-wash);">
+          <span class="t-eyebrow" style="color:#3A3D45;">TINDER · 2022 · GLOBAL LAUNCH</span>
+          <h4 class="t-h3" style="font-family:var(--font-display); font-style:italic; font-weight:400; letter-spacing:-0.01em; color:#15171C;">Sparks Redesign</h4>
+          <p class="t-body-sm" style="color:#3A3D45; margin:0;">Hackathon-winning project shipped globally. Dark mode, prompts, quizzes, animations.</p>
+        </article>
+        <article class="demo-card">
+          <span class="t-eyebrow">SNAP · 2024 — PRESENT</span>
+          <h4 class="t-h3" style="font-family:var(--font-display); font-style:italic; font-weight:400; letter-spacing:-0.01em;">Hi, I'm Julia.</h4>
+          <p class="t-body-sm" style="color:var(--text-secondary); margin:0;">Staff product designer working on social, identity, and 0-to-1 experiences.</p>
+          <div class="btn-row" style="margin-top: var(--s-2);">
+            <button class="btn btn-tertiary btn-sm" style="margin-left:-14px;">Read more <i class="ph ph-arrow-right"></i></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ICONS -->
+    <section id="icons">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">05 · Iconography</p>
+          <h2 class="t-h1" style="margin-top:8px;">Icons</h2>
+        </div>
+        <p class="lead t-body-lg">
+          <strong>Phosphor Icons</strong> — free, MIT-licensed, 9000+ glyphs across six weights.
+          Default to <code class="t-mono">regular</code> for UI; use <code class="t-mono">thin</code> or <code class="t-mono">light</code> for editorial / hero contexts to lean into the dreamy aesthetic.
+          <a href="https://phosphoricons.com" target="_blank" rel="noopener" style="color:var(--text-primary)">phosphoricons.com</a>
+        </p>
+      </div>
+
+      <h3 class="t-h4" style="margin: var(--s-2) 0 var(--s-4);">Regular weight · UI default</h3>
+      <div class="icon-grid" style="margin-bottom: var(--s-10);">
+        <div class="icon-tile"><i class="ph ph-arrow-up-right"></i><span>arrow-up-right</span></div>
+        <div class="icon-tile"><i class="ph ph-arrow-right"></i><span>arrow-right</span></div>
+        <div class="icon-tile"><i class="ph ph-sparkle"></i><span>sparkle</span></div>
+        <div class="icon-tile"><i class="ph ph-cloud"></i><span>cloud</span></div>
+        <div class="icon-tile"><i class="ph ph-sun"></i><span>sun</span></div>
+        <div class="icon-tile"><i class="ph ph-moon"></i><span>moon</span></div>
+        <div class="icon-tile"><i class="ph ph-prism"></i><span>prism</span></div>
+        <div class="icon-tile"><i class="ph ph-quotes"></i><span>quotes</span></div>
+        <div class="icon-tile"><i class="ph ph-eye"></i><span>eye</span></div>
+        <div class="icon-tile"><i class="ph ph-paper-plane-tilt"></i><span>paper-plane</span></div>
+        <div class="icon-tile"><i class="ph ph-link-simple"></i><span>link</span></div>
+        <div class="icon-tile"><i class="ph ph-tag"></i><span>tag</span></div>
+        <div class="icon-tile"><i class="ph ph-folder-simple"></i><span>folder</span></div>
+        <div class="icon-tile"><i class="ph ph-camera"></i><span>camera</span></div>
+        <div class="icon-tile"><i class="ph ph-magnifying-glass"></i><span>search</span></div>
+        <div class="icon-tile"><i class="ph ph-x"></i><span>close</span></div>
+      </div>
+
+      <h3 class="t-h4" style="margin: var(--s-2) 0 var(--s-4);">Thin weight · editorial &amp; hero</h3>
+      <div class="icon-grid">
+        <div class="icon-tile"><i class="ph-thin ph-arrow-up-right"></i><span>arrow-up-right</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-sparkle"></i><span>sparkle</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-cloud"></i><span>cloud</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-sun"></i><span>sun</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-moon"></i><span>moon</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-prism"></i><span>prism</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-quotes"></i><span>quotes</span></div>
+        <div class="icon-tile"><i class="ph-thin ph-eye"></i><span>eye</span></div>
+      </div>
+    </section>
+
+    <!-- USAGE -->
+    <section id="usage">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">06 · Usage</p>
+          <h2 class="t-h1" style="margin-top:8px;">Quick reference</h2>
+        </div>
+        <p class="lead t-body-lg">Drop these tokens into the portfolio rebuild and the resume restyle — the names are stable.</p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="demo-card">
+          <span class="label">CSS variables · color</span>
+          <pre class="t-mono" style="margin:0; padding: var(--s-4); background: var(--bg-sunken); border-radius: var(--r-sm); overflow-x:auto; line-height:1.6;">--brand-primary:    #C5DCEA
+--brand-secondary:  #F4D9CC
+--brand-accent:     #ECD8DD
+--brand-gradient:   linear-gradient(135°, …)
+
+--bg-canvas / surface / sunken
+--text-primary / secondary / tertiary
+--border-subtle / default / strong
+--icon-primary / secondary / tertiary</pre>
+        </div>
+        <div class="demo-card">
+          <span class="label">CSS variables · type</span>
+          <pre class="t-mono" style="margin:0; padding: var(--s-4); background: var(--bg-sunken); border-radius: var(--r-sm); overflow-x:auto; line-height:1.6;">--font-display:  "Instrument Serif", serif
+--font-sans:     "Geist", system-ui
+--font-mono:     "Geist Mono", ui-monospace
+
+.t-display-xl / lg / md
+.t-h1 / h2 / h3 / h4 / h5
+.t-body-lg / body / body-sm
+.t-caption / overline / mono</pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <div>
+        <div style="font-family: var(--font-display); font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">Julia Tang</div>
+        <div>Brand &amp; Style System · v0.2 · May 2026</div>
+      </div>
+      <div style="display:flex; gap: var(--s-5);">
+        <a href="#color">Color</a>
+        <a href="#type">Type</a>
+        <a href="#components">Components</a>
+        <a href="#icons">Icons</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Theme toggle — persists to localStorage, respects prefers-color-scheme
+    (function() {
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+
+      const saved = localStorage.getItem('jt-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initial = saved || (prefersDark ? 'dark' : 'light');
+      apply(initial);
+
+      btn.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        apply(next);
+        localStorage.setItem('jt-theme', next);
+      });
+
+      function apply(mode) {
+        root.dataset.theme = mode;
+        if (mode === 'dark') {
+          icon.className = 'ph ph-sun';
+          label.textContent = 'Light';
+        } else {
+          icon.className = 'ph ph-moon';
+          label.textContent = 'Dark';
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

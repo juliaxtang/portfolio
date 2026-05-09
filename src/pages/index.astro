@@ -1,96 +1,47 @@
 ---
+/**
+ * Homepage — one-pager.
+ *
+ * Each case study is inlined as a `<Showcase>` block (Rina Kang /
+ * Aaron James-style mini case studies) instead of linking out to a deep
+ * case-study page from a tile grid. Each block has an interactive hero
+ * (auto-cycling phone stack or looping GIF) and a CTA to the full case
+ * study for anyone who wants the long version.
+ */
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ProjectCell from "../components/ProjectCell.astro";
 import FadeIn from "../components/FadeIn.astro";
-import HeroOrb from "../components/HeroOrb.astro";
+import PearlField from "../components/PearlField.astro";
 import CompanyPills from "../components/CompanyPills.astro";
+import Showcase from "../components/showcase/Showcase.astro";
+import PhoneStack from "../components/showcase/PhoneStack.astro";
+import CompareSlider from "../components/showcase/CompareSlider.astro";
 
-// Order shown on the home grid. Snap projects first (current), then Tinder, then TV Time.
-// "delight" rendered letter-by-letter so each can wave on hover.
-// Build the HTML string in frontmatter so there's no whitespace between
-// the inline-block letters (that would create visible gaps).
+// "delight" rendered letter-by-letter so each can wave on hover. "Julia"
+// gets the same treatment for the greeting hover.
 const delightHtml = ["d", "e", "l", "i", "g", "h", "t"]
   .map((c, i) => `<span class="wave-letter" style="--i:${i}">${c}</span>`)
   .join("");
-
-// "Julia" letter-by-letter — bobs in a wave on greeting hover.
 const juliaHtml = ["J", "u", "l", "i", "a"]
   .map((c, i) => `<span class="julia-letter" style="--i:${i}">${c}</span>`)
   .join("");
 
-const tiles = [
-  {
-    title: "Snapchat Games",
-    subtitle:
-      "Growing Games in Snapchat from the ground up to over 30M DAU.",
-    tags: ["Snapchat", "0-1", "Growth"],
-    // No destination — renders as a placeholder ("Coming soon").
-  },
-  {
-    title: "Topic Chats",
-    subtitle:
-      "Building and launching a 0-1 feature that helps Snapchatters find communities and chat over shared interests, driving US DAU via events and fandom.",
-    tags: ["Snapchat", "0-1", "Communities"],
-  },
-  {
-    title: "App Redesign",
-    subtitle:
-      "A globally launched UI refresh with richer profile content and delightful new interactions.",
-    tags: ["Tinder", "Brand", "UI"],
-    externalUrl: "https://techcrunch.com/", // TODO replace with real article URL
-    badge: "Read the article",
-  },
-  {
-    title: "Tappy Cloud",
-    subtitle: "Introducing backend-driven, dynamically configurable profiles.",
-    tags: ["Tinder", "Profiles", "Design Systems"],
-    slug: "tappy-cloud",
-    cover: "/projects/tappy-cloud/title-slide.png",
-    alt: "Tappy Cloud",
-  },
-  {
-    title: "Festival Mode",
-    subtitle:
-      "A new experience on Tinder Explore that allows festivalgoers to meet others going to the same festival.",
-    tags: ["Tinder", "Strategy", "Branding"],
-    slug: "festival-mode",
-    cover: "/projects/festival-mode/cover.png",
-    alt: "Festival Mode brand artwork",
-  },
-  {
-    title: "Custom Lists",
-    subtitle:
-      "Improving the existing Lists feature to make it easier and more fun for users to curate lists of TV shows and movies.",
-    tags: ["TV Time", "UX/UI", "Research"],
-    slug: "custom-lists",
-    cover: "/projects/custom-lists/tv-time-hero.jpg",
-    alt: "TV Time brand lockup",
-  },
-  {
-    title: "Onboarding Redesign",
-    subtitle:
-      "Redesigning onboarding to better educate users and communicate product value.",
-    tags: ["TV Time", "Design Sprint"],
-    slug: "tv-time-onboarding",
-    cover: "/projects/tv-time-onboarding/hero-1.webp",
-    alt: "TV Time brand lockup",
-  },
-];
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <BaseLayout title="Julia Tang | Design">
-  <section class="hero">
-    <div class="page hero-grid">
-      <div class="hero-text">
+  <section class="v2-hero">
+    <PearlField />
+    <div class="page v2-hero__grid">
+      <div class="v2-hero__text">
         <FadeIn>
-          <p class="hero-greeting">
-            <span class="hero-greeting__text">Hi, I'm <span class="julia-name" set:html={juliaHtml} />.</span>
-            <span class="hero-greeting__wave" aria-hidden="true">👋</span>
+          <p class="v2-hero__greeting">
+            <span class="v2-hero__greeting-text">Hi, I'm <span class="julia-name" set:html={juliaHtml} />.</span>
+            <span class="v2-hero__wave" aria-hidden="true">👋</span>
           </p>
         </FadeIn>
 
         <FadeIn delay={140}>
-          <p class="hero-lede">
+          <p class="v2-hero__lede">
             A Staff Product Designer with 10+ years building and shipping
             products that
             <span class="fx fx--delight">
@@ -107,15 +58,15 @@ const tiles = [
         </FadeIn>
 
         <FadeIn delay={240}>
-          <p class="hero-lede">
+          <p class="v2-hero__lede">
             I solve ambiguous problems and ship
             <span class="fx fx--launch">
-              <span class="hero-lede__pop">0-to-1</span>
+              <span class="v2-hero__pop">0-to-1</span>
               <span class="fx-icon fx-icon--up" aria-hidden="true">🚀</span>
             </span>
             features that scale to
             <span class="fx fx--reach">
-              <span class="hero-lede__pop">millions</span>
+              <span class="v2-hero__pop">millions</span>
               <span class="fx-icon fx-icon--brfloat" aria-hidden="true">🌍</span>
             </span>.
           </p>
@@ -125,59 +76,182 @@ const tiles = [
           <CompanyPills />
         </FadeIn>
       </div>
-
-      <FadeIn delay={300} class="hero-orb-slot">
-        <HeroOrb size={320} />
-      </FadeIn>
     </div>
   </section>
 
-  <section class="work">
-    <div class="page">
-      <ul class="cell-grid">
-        {
-          tiles.map((tile, i) => (
-            <li>
-              <FadeIn delay={i * 80}>
-                <ProjectCell {...tile} />
-              </FadeIn>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  <script is:inline>
+    // Re-trigger the Julia bob animation on every greeting hover-in.
+    // Using a class toggle (instead of relying on `:hover`) so the
+    // animation restarts cleanly even on fast hover-out/in cycles.
+    (() => {
+      const greeting = document.querySelector(".v2-hero__greeting");
+      if (!greeting) return;
+      let resetTimer;
+      greeting.addEventListener("mouseenter", () => {
+        greeting.classList.remove("is-waving");
+        // Force a reflow so the class re-application starts a fresh animation.
+        void greeting.offsetWidth;
+        greeting.classList.add("is-waving");
+        clearTimeout(resetTimer);
+        // 800ms keyframe + max delay (75ms × 4 letters) ≈ 1.1s total.
+        resetTimer = setTimeout(() => greeting.classList.remove("is-waving"), 1200);
+      });
+    })();
+  </script>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/tinder.png"
+      companyName="Tinder"
+      year={2023}
+      role="Product Design Lead"
+      title="Tappy Cloud"
+      tagline="Turned Tinder's static profile system into a backend-driven, dynamically configurable one. The centralized tool that came out of it, TaCo, has since powered 50+ profile experiments."
+      stats={[
+        { value: "↑ 20%", label: "More likes sent across all experiments" },
+        { value: "$50–110M", label: "In revenue lift, attributed" },
+        { value: "50+", label: "Tappy experiments launched on TaCo" },
+      ]}
+      ctaHref={`${base}/product-design/tappy-cloud`}
+      accent="#FD297C"
+      reverse
+      id="tappy-cloud"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/tappy-cloud/phone-just-joined.png", alt: "Just Joined content tag profile", label: "Content tags" },
+          { src: "/projects/tappy-cloud/phone-distance.png",    alt: "Distance optimization on a profile", label: "Distance experiment" },
+          { src: "/projects/tappy-cloud/phone-fixation.png",    alt: "Eye-tracking fixation map on a profile", label: "Where attention lands" },
+          { src: "/projects/tappy-cloud/phone-joe.png",         alt: "Distance-first profile layout for men", label: "What Joe sees" },
+        ]}
+        aspect="1 / 2"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/tinder.png"
+      companyName="Tinder"
+      year={2022}
+      role="Product Design Lead"
+      title="Festival Mode"
+      tagline="A seasonal experience on Tinder Explore that lets festivalgoers meet others going to the same festival. Two months from kickoff to launch, with engagement that doubled the main Tinder swipe deck."
+      stats={[
+        { value: "2×", label: "More likes sent and convos started vs. main app" },
+        { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
+        { value: "2 months", label: "From kickoff to launch" },
+      ]}
+      ctaHref={`${base}/product-design/festival-mode`}
+      accent="#FA7255"
+      id="festival-mode"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/festival-mode/phone-explore-entry.png", alt: "Festival Mode entry on Explore",       label: "Explore entry" },
+          { src: "/projects/festival-mode/phone-opting-in.png",     alt: "Multi-festival opt-in",                label: "Opt in to festivals" },
+          { src: "/projects/festival-mode/phone-cardstack.png",     alt: "EDC Las Vegas branded cardstack",      label: "Festival cardstack" },
+          { src: "/projects/festival-mode/phone-toggling.png",      alt: "Toggle festival lineup",               label: "Toggle festivals" },
+        ]}
+        aspect="1 / 2"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/tv time.png"
+      companyName="TV Time"
+      year={2020}
+      role="UX Designer"
+      title="Custom Lists"
+      tagline="Redesigned TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable. Lifted list creation by double digits across new and existing users."
+      stats={[
+        { value: "↑ 14%", label: "More new users created a list" },
+        { value: "↑ 15%", label: "More lists created by new users" },
+        { value: "↑ 10%", label: "More lists created by existing users" },
+      ]}
+      ctaHref={`${base}/product-design/custom-lists`}
+      accent="#F4D9CC"
+      reverse
+      id="custom-lists"
+    >
+      <div class="v2-gif-wrap">
+        <div class="v2-gif-wrap__device">
+          <img
+            src={`${base}/projects/custom-lists/creating-list.gif`}
+            alt="Animated walkthrough of creating a new Custom List with personalization options"
+            loading="lazy"
+          />
+        </div>
+        <div class="v2-gif-wrap__device v2-gif-wrap__device--secondary">
+          <img
+            src={`${base}/projects/custom-lists/editing-flow.gif`}
+            alt="Animated walkthrough of editing a Custom List's contents"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/tv time.png"
+      companyName="TV Time"
+      year={2020}
+      role="UX Designer"
+      title="Onboarding Redesign"
+      tagline="A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop."
+      stats={[
+        { value: "100%", label: "Understood key functions by end of session" },
+        { value: "100%", label: "Understood key benefits by end of session" },
+        { value: "5 days", label: "Sprint kickoff to tested prototype" },
+      ]}
+      ctaHref={`${base}/product-design/tv-time-onboarding`}
+      accent="#DCD2E8"
+      id="tv-time-onboarding"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/tv-time-onboarding/flow-tracker.webp",    alt: "Onboarding flow for the Tracker user type",     label: "Tracker flow" },
+          { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Onboarding flow for the Discoverer user type", label: "Discoverer flow" },
+          { src: "/projects/tv-time-onboarding/flow-watcher.webp",    alt: "Onboarding flow for the Watcher user type",    label: "Watcher flow" },
+        ]}
+        aspect="690 / 610"
+        fit="contain"
+        cardWidth="clamp(280px, 60%, 460px)"
+        frame={false}
+      />
+    </Showcase>
+  </FadeIn>
 </BaseLayout>
 
 <style>
-  .hero {
+  .v2-hero {
     position: relative;
     overflow: hidden;
     padding-top: var(--s-8);
-    padding-bottom: var(--s-12);
+    padding-bottom: var(--s-16);
+    /* Give the pearl cloud room to breathe even on tall viewports. */
+    min-height: 520px;
   }
 
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    gap: var(--s-10);
-    align-items: center;
-  }
-  @media (max-width: 900px) {
-    .hero-grid {
-      grid-template-columns: 1fr;
-      gap: var(--s-6);
-    }
+  .v2-hero__grid {
+    position: relative;
+    z-index: 1;
+    display: block;
   }
 
-  .hero-text {
+  .v2-hero__text {
     display: grid;
-    /* Bigger gap between greeting and body to differentiate them. */
     gap: var(--s-6);
+    /* Keep text in the left/center half so the pearl cloud has room to
+       breathe on the right without crowding the copy. */
+    max-width: 620px;
   }
 
-  /* === Greeting — large italic display, anchors the visual hierarchy. === */
-  .hero-greeting {
+  .v2-hero__greeting {
     margin: 0;
     font-family: var(--font-display);
     font-style: italic;
@@ -190,34 +264,38 @@ const tiles = [
     align-items: baseline;
     gap: var(--s-4);
   }
-  .hero-greeting__text { display: inline-block; }
-  .hero-greeting__wave {
+  .v2-hero__greeting-text { display: inline-block; }
+  .v2-hero__wave {
     display: inline-block;
     font-style: normal;
     font-size: 0.7em;
     transform-origin: 70% 70%;
-    animation: hero-wave 2.4s var(--ease-out) 700ms 1 normal both;
+    cursor: default;
   }
-  .hero-greeting:hover .hero-greeting__wave {
-    animation: hero-wave 1.6s var(--ease-out) 0s 1 normal both;
+  /* Wave when hovering the emoji itself, or anywhere on the greeting line. */
+  .v2-hero__wave:hover,
+  .v2-hero__greeting:hover .v2-hero__wave {
+    animation: hero-wave 1.4s var(--ease-out) 0s 1 normal both;
   }
   @keyframes hero-wave {
     0%   { transform: rotate(0); }
     10%  { transform: rotate(16deg); }
     20%  { transform: rotate(-10deg); }
     30%  { transform: rotate(16deg); }
-    40%  { transform: rotate(-4deg); }
     50%  { transform: rotate(12deg); }
     60%, 100% { transform: rotate(0); }
   }
 
-  /* "Julia" letters bob in a wave on greeting hover. */
+  /* Each letter of "Julia" bobs in a wave on greeting hover. The
+     `.is-waving` class is toggled in JS so the animation restarts cleanly
+     every time the user re-enters the greeting (CSS `:hover` alone can
+     skip the restart on rapid hover-out/in cycles). */
   .julia-name { display: inline-block; }
   :global(.julia-letter) {
     display: inline-block;
     will-change: transform;
   }
-  .hero-greeting:hover :global(.julia-letter) {
+  .v2-hero__greeting.is-waving :global(.julia-letter) {
     animation: julia-bob 800ms var(--ease-out);
     animation-delay: calc(var(--i, 0) * 75ms);
   }
@@ -225,9 +303,11 @@ const tiles = [
     0%, 100% { transform: translateY(0) rotate(0); }
     40%      { transform: translateY(-6px) rotate(4deg); }
   }
+  @media (prefers-reduced-motion: reduce) {
+    .v2-hero__greeting.is-waving :global(.julia-letter) { animation: none; }
+  }
 
-  /* === Body — smaller, calmer. Two short paragraphs. === */
-  .hero-lede {
+  .v2-hero__lede {
     font-size: clamp(17px, 1.6vw, 20px);
     line-height: 1.55;
     color: var(--text-primary);
@@ -236,16 +316,20 @@ const tiles = [
     font-weight: 400;
   }
 
-  /* === Hover effects framework ===
-     `.fx` is a generic positioned wrapper around any decorated word.
-     `.fx-icon` is the emoji that pops out on hover.
-     Position modifiers control where the icon sits at rest and where it
-     animates to. */
-  .fx {
-    position: relative;
+  .v2-hero__pop {
     display: inline-block;
-    cursor: default;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 100%;
+    padding: 0 4px;
+    border-radius: var(--r-xs);
   }
+
+  /* Re-using the .fx framework from index.astro. Duplicated locally so the
+     file is self-contained until those bits are extracted into a component. */
+  .fx { position: relative; display: inline-block; cursor: default; }
   .fx-icon {
     position: absolute;
     font-style: normal;
@@ -253,148 +337,123 @@ const tiles = [
     line-height: 1;
     pointer-events: none;
     opacity: 0;
-    will-change: transform, opacity;
-    transition:
-      opacity 240ms var(--ease-out),
-      transform 540ms var(--ease-out);
+    transition: opacity 240ms var(--ease-out), transform 540ms var(--ease-out);
   }
-
-  /* Top-left sparkle (rest hidden up-and-left, animates down-and-out). */
   .fx-icon--tl {
-    top: -0.1em;
-    left: -0.7em;
+    top: -0.1em; left: -0.7em;
     transform: translate(0.4em, 0.3em) scale(0.6) rotate(-25deg);
   }
-  .fx:hover .fx-icon--tl {
-    opacity: 1;
-    transform: translate(-0.1em, -0.5em) scale(1.05) rotate(-12deg);
-  }
-
-  /* Top-right sparkle (mirror of TL). */
+  .fx:hover .fx-icon--tl { opacity: 1; transform: translate(-0.1em, -0.5em) scale(1.05) rotate(-12deg); }
   .fx-icon--tr {
-    top: -0.1em;
-    right: -0.7em;
+    top: -0.1em; right: -0.7em;
     transform: translate(-0.4em, 0.3em) scale(0.6) rotate(25deg);
   }
-  .fx:hover .fx-icon--tr {
-    opacity: 1;
-    transform: translate(0.1em, -0.5em) scale(1.05) rotate(12deg);
-  }
-
-  /* Bottom-right floating-up icon (used for chart, globe). */
+  .fx:hover .fx-icon--tr { opacity: 1; transform: translate(0.1em, -0.5em) scale(1.05) rotate(12deg); }
   .fx-icon--brfloat {
-    bottom: -0.1em;
-    right: -1.05em;
+    bottom: -0.1em; right: -1.05em;
     transform: translateY(0.4em) scale(0.7) rotate(8deg);
   }
-  .fx:hover .fx-icon--brfloat {
-    opacity: 1;
-    transform: translateY(-0.55em) scale(1.05) rotate(-4deg);
-  }
-
-  /* Up-launch (used for rocket). */
+  .fx:hover .fx-icon--brfloat { opacity: 1; transform: translateY(-0.55em) scale(1.05) rotate(-4deg); }
   .fx-icon--up {
-    top: -0.05em;
-    right: -1em;
+    top: -0.05em; right: -1em;
     transform: translateY(0.5em) rotate(40deg) scale(0.6);
   }
-  .fx:hover .fx-icon--up {
-    opacity: 1;
-    transform: translateY(-0.65em) rotate(-25deg) scale(1.05);
-  }
+  .fx:hover .fx-icon--up { opacity: 1; transform: translateY(-0.65em) rotate(-25deg) scale(1.05); }
 
-  /* === Shared rest state for all decorated words === */
-  /* Powder-blue 2px underline so every interactive word reads as interactive. */
-  .fx--delight,
-  .fx--biz,
-  .fx--launch,
-  .fx--reach {
+  /* Words with a thin powder underline at rest that grows into a wash on
+     hover. fx--launch and fx--reach are excluded — their inner v2-hero__pop
+     pill already provides the persistent highlight, so adding an outer
+     underline doubles it up. */
+  .fx--delight, .fx--biz {
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;
     background-position: 0 100%;
     background-size: 100% 2px;
     padding-bottom: 1px;
     border-radius: var(--r-xs);
-    transition:
-      background-size 280ms var(--ease-out),
-      background-image 280ms var(--ease-out);
+    transition: background-size 280ms var(--ease-out), background-image 280ms var(--ease-out);
   }
-
-  /* "delight" — powder wash behind on hover (background grows up from underline). */
   .fx--delight:hover {
     background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
     background-size: 100% 100%;
   }
-
-  /* Per-letter wave for "delight" letters. */
-  .wave-text {
-    display: inline-block;
-  }
-  :global(.wave-letter) {
-    display: inline-block;
-    will-change: transform;
-  }
-  .fx--delight:hover :global(.wave-letter) {
-    animation: letter-bob 800ms var(--ease-out);
-    animation-delay: calc(var(--i, 0) * 65ms);
-  }
-  @keyframes letter-bob {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    40%      { transform: translateY(-7px) rotate(-5deg); }
-  }
-
-  /* "move the business" — peach highlight grows on hover (replaces the underline). */
   .fx--biz:hover {
     background-image: linear-gradient(var(--brand-secondary), var(--brand-secondary));
     background-size: 100% 0.55em;
   }
 
-  /* "0-to-1" and "millions" — inner span scales on hover; outer wash grows. */
-  .hero-lede__pop {
-    display: inline-block;
-    color: var(--text-primary);
+  /* Pill words ("0-to-1", "millions") get a subtle scale-and-lift on
+     hover, since the wash is already on at rest. */
+  .v2-hero__pop {
     transition: transform 220ms var(--ease-out);
   }
-  .fx--launch:hover,
-  .fx--reach:hover {
-    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
-    background-size: 100% 100%;
-  }
-  .fx--launch:hover .hero-lede__pop,
-  .fx--reach:hover .hero-lede__pop {
+  .fx--launch:hover .v2-hero__pop,
+  .fx--reach:hover .v2-hero__pop {
     transform: translateY(-1px) scale(1.04);
   }
 
+  /* Globe on "millions" — arcs up and to the right on hover, settling
+     near where the rocket on "0-to-1" sits. Clockwise tilt (vs the
+     rocket's counter-clockwise) so the motion reads distinct. */
+  .fx--reach .fx-icon--brfloat {
+    bottom: -0.05em;
+    right: -1.35em;
+    transform: translate(-0.2em, 0.45em) scale(0.65) rotate(-20deg);
+  }
+  .fx--reach:hover .fx-icon--brfloat {
+    transform: translate(0.45em, -0.85em) scale(1.05) rotate(15deg);
+  }
+  :global(.wave-text) { display: inline-block; }
+  :global(.wave-letter) { display: inline-block; }
+
+  /* === GIF/video wrap for Custom Lists ===
+     `isolation: isolate` creates a stacking context so the secondary card's
+     lower z-index doesn't escape into the next section. The wrap also has
+     overflow:hidden so a hover transform can't push a phone outside its
+     section bounds. */
+  .v2-gif-wrap {
+    position: relative;
+    aspect-ratio: 1.6 / 1;
+    perspective: 1400px;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .v2-gif-wrap__device {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 56%;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #0c0d11;
+    padding: 6px;
+    box-shadow: 0 30px 60px -25px rgba(20,22,28,0.18), 0 12px 24px -12px rgba(20,22,28,0.10);
+    transform: translate(-50%, -2%) rotate(-3deg);
+    transition: transform 600ms var(--ease-out), box-shadow 600ms var(--ease-out);
+    z-index: 2;
+  }
+  .v2-gif-wrap__device--secondary {
+    z-index: 1;
+    transform: translate(-22%, 6%) rotate(6deg) scale(0.92);
+    filter: brightness(0.95);
+  }
+  .v2-gif-wrap:hover .v2-gif-wrap__device {
+    transform: translate(-58%, -4%) rotate(-5deg);
+  }
+  .v2-gif-wrap:hover .v2-gif-wrap__device--secondary {
+    transform: translate(-14%, 8%) rotate(8deg) scale(0.94);
+  }
+  .v2-gif-wrap__device img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 22px;
+    display: block;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .hero-greeting__wave { animation: none; }
-    .hero-greeting:hover :global(.julia-letter) { animation: none; }
-    .fx-icon { transition: opacity 200ms var(--ease-out); transform: none !important; }
-    .fx:hover .fx-icon { opacity: 1; }
-    .fx--launch:hover .hero-lede__pop,
-    .fx--reach:hover .hero-lede__pop { transform: none; }
-    .fx--delight:hover :global(.wave-letter) { animation: none; }
-  }
-
-  /* Hero orb placement */
-  :global(.hero-orb-slot) {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  @media (max-width: 900px) {
-    :global(.hero-orb-slot) { justify-content: center; }
-  }
-
-  .work {
-    padding-top: var(--s-8);
-    padding-bottom: var(--s-24);
-  }
-  .cell-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--s-5);
+    .v2-gif-wrap__device { transition: none; }
+    .v2-hero__wave { animation: none; }
   }
 </style>

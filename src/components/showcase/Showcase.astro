@@ -19,7 +19,12 @@ interface StatProps {
   label: string;
 }
 interface Props {
-  eyebrow?: string;
+  /** Path to a company logo PNG/SVG. Rendered as a height-locked img next
+   *  to the company name so the brand is the strongest signal in the row. */
+  companyLogo?: string;
+  companyName?: string;
+  year?: string | number;
+  role?: string;
   title: string;
   tagline?: string;
   stats?: StatProps[];
@@ -31,7 +36,10 @@ interface Props {
   id?: string;
 }
 const {
-  eyebrow,
+  companyLogo,
+  companyName,
+  year,
+  role,
   title,
   tagline,
   stats = [],
@@ -43,12 +51,32 @@ const {
 } = Astro.props;
 
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolvedLogo = companyLogo && (companyLogo.startsWith("http") || companyLogo.startsWith(base)
+  ? companyLogo
+  : `${base}${companyLogo.startsWith("/") ? "" : "/"}${companyLogo}`);
+const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
 ---
 
 <section class={"showcase" + (reverse ? " showcase--reverse" : "")} style={accentStyle} id={id}>
   <div class="showcase__inner">
     <div class="showcase__text">
-      {eyebrow && <p class="t-eyebrow showcase__eyebrow">{eyebrow}</p>}
+      {(resolvedLogo || companyName) && (
+        <div class="showcase__brand">
+          {resolvedLogo && (
+            <img
+              class={"showcase__logo " + (companyName ? "showcase__logo--has-name" : "")}
+              src={resolvedLogo}
+              alt={companyName ? "" : (companyName || "")}
+              loading="lazy"
+            />
+          )}
+          {companyName && <span class="showcase__company">{companyName}</span>}
+        </div>
+      )}
+      {meta.length > 0 && (
+        <p class="t-eyebrow showcase__meta">{meta.join(" · ")}</p>
+      )}
       <h2 class="showcase__title">{title}</h2>
       {tagline && <p class="showcase__tagline">{tagline}</p>}
       {stats.length > 0 && (
@@ -118,7 +146,29 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     .showcase__inner > .showcase__hero { order: 1; }
   }
 
-  .showcase__eyebrow { margin: 0 0 var(--s-3); color: var(--text-tertiary); }
+  .showcase__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    margin: 0 0 var(--s-3);
+  }
+  .showcase__logo {
+    height: clamp(28px, 3vw, 38px);
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .showcase__company {
+    font-family: var(--font-sans);
+    font-size: clamp(15px, 1.4vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+  .showcase__meta {
+    margin: 0 0 var(--s-4);
+    color: var(--text-tertiary);
+  }
 
   .showcase__title {
     font-family: var(--font-display);

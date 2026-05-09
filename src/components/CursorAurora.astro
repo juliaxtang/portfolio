@@ -17,12 +17,17 @@
 
     let tx = 0.5, ty = 0.3, x = 0.5, y = 0.3;
     function move(e) {
-      tx = e.clientX / window.innerWidth;
-      ty = e.clientY / window.innerHeight;
+      const w = window.innerWidth || 1;
+      const h = window.innerHeight || 1;
+      tx = e.clientX / w;
+      ty = e.clientY / h;
     }
     window.addEventListener("mousemove", move, { passive: true });
 
     function loop() {
+      // Recover if state ever gets poisoned (e.g. NaN from a 0-sized viewport).
+      if (!isFinite(x) || !isFinite(y)) { x = 0.5; y = 0.3; }
+      if (!isFinite(tx) || !isFinite(ty)) { tx = x; ty = y; }
       x += (tx - x) * 0.06;
       y += (ty - y) * 0.06;
       blob.style.setProperty("--mx", (x * 100).toFixed(2) + "%");
@@ -39,10 +44,14 @@
     inset: 0;
     z-index: -1;
     pointer-events: none;
+    /* Peach is the dominant blob at the cursor so the powder-blue underlines
+       beneath interactive words read clearly (no blue-on-blue collision).
+       Lavender holds the brand mix in the near-offset; powder-blue is pushed
+       far into the periphery so it doesn't compete with the warm core. */
     background:
-      radial-gradient(40% 50% at var(--mx, 50%) var(--my, 30%), rgba(197,220,234,0.55) 0%, transparent 65%),
-      radial-gradient(35% 50% at calc(var(--mx, 50%) + 18%) calc(var(--my, 30%) + 8%), rgba(220,210,232,0.45) 0%, transparent 65%),
-      radial-gradient(45% 60% at calc(var(--mx, 50%) - 22%) calc(var(--my, 30%) + 22%), rgba(244,217,204,0.45) 0%, transparent 65%);
+      radial-gradient(48% 58% at var(--mx, 50%) var(--my, 30%), rgba(244,217,204,0.42) 0%, transparent 65%),
+      radial-gradient(36% 48% at calc(var(--mx, 50%) + 16%) calc(var(--my, 30%) + 6%), rgba(220,210,232,0.32) 0%, transparent 65%),
+      radial-gradient(40% 56% at calc(var(--mx, 50%) - 28%) calc(var(--my, 30%) + 24%), rgba(197,220,234,0.22) 0%, transparent 70%);
     filter: blur(24px);
   }
 </style>

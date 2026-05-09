@@ -1,0 +1,141 @@
+---
+/**
+ * Compare — labelled side-by-side comparison.
+ *
+ * Examples in the decks:
+ *   - "What Joe sees" vs "What Emily sees" (Tappy gender preference test)
+ *   - "Single Select, Separate Cardstacks" vs "Multi-Select, One Mixed Cardstack" (Festival Mode)
+ *
+ * Pass two children for left/right. Each child can be a `<Figure>`, prose,
+ * or anything else — the Compare adds the labels, dividers, and optional
+ * winner/result tags above each side.
+ */
+interface Props {
+  leftLabel: string;
+  rightLabel: string;
+  leftMeta?: string;
+  rightMeta?: string;
+  leftWinner?: boolean;
+  rightWinner?: boolean;
+}
+const { leftLabel, rightLabel, leftMeta, rightMeta, leftWinner, rightWinner } = Astro.props;
+const slots = Astro.slots;
+const left = slots.left ? await slots.render("left") : null;
+const right = slots.right ? await slots.render("right") : null;
+---
+
+<div class="cs-compare">
+  <div class={"cs-compare__col" + (leftWinner ? " is-winner" : "")}>
+    <div class="cs-compare__head">
+      <p class="cs-compare__label">{leftLabel}</p>
+      {leftWinner && <span class="cs-compare__winner">Winner</span>}
+      {leftMeta && <p class="cs-compare__meta">{leftMeta}</p>}
+    </div>
+    <div class="cs-compare__body">
+      {left ? <Fragment set:html={left} /> : <slot name="left" />}
+    </div>
+  </div>
+  <div class={"cs-compare__col" + (rightWinner ? " is-winner" : "")}>
+    <div class="cs-compare__head">
+      <p class="cs-compare__label">{rightLabel}</p>
+      {rightWinner && <span class="cs-compare__winner">Winner</span>}
+      {rightMeta && <p class="cs-compare__meta">{rightMeta}</p>}
+    </div>
+    <div class="cs-compare__body">
+      {right ? <Fragment set:html={right} /> : <slot name="right" />}
+    </div>
+  </div>
+</div>
+
+<style>
+  .cs-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-6);
+    margin: var(--s-8) auto;
+    max-width: var(--content-max);
+  }
+  @media (max-width: 720px) {
+    .cs-compare { grid-template-columns: 1fr; }
+  }
+
+  .cs-compare__col {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    transition: border-color var(--dur-normal) var(--ease);
+  }
+  .cs-compare__col.is-winner {
+    border-color: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 70%, transparent);
+    background: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 8%, var(--bg-surface));
+  }
+
+  .cs-compare__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .cs-compare__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .cs-compare__winner {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    padding: 2px var(--s-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 50%, transparent);
+    border-radius: var(--r-full);
+  }
+  .cs-compare__winner::before {
+    content: "★";
+    font-family: var(--font-sans);
+    font-size: 11px;
+  }
+
+  .cs-compare__meta {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.45;
+  }
+
+  .cs-compare__body :global(.cs-figure) { margin: 0 auto; }
+  .cs-compare__body :global(.cs-figure--narrow) { max-width: 100%; }
+  .cs-compare__body :global(p) {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-2);
+  }
+  .cs-compare__body :global(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+  }
+  .cs-compare__body :global(li) {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+</style>

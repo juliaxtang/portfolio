@@ -1,0 +1,142 @@
+---
+/**
+ * Section — the basic vertical block used inside a case-study body.
+ *
+ * Defaults to a centered narrow column for prose. Pass `wide` to fill the
+ * standard content max width (good for grids of media). Each section has a
+ * consistent vertical rhythm so case studies of different lengths feel like
+ * the same family.
+ */
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  wide?: boolean;
+  id?: string;
+  /** High-level case-study stage shown in the nav rail (Overview, Define,
+   *  Research, Plan, Design, Test, Refine, Impact, etc.). Multiple sections
+   *  can share a stage; the nav collapses them to one entry per stage and
+   *  scrollspy lights up the stage that contains the current section. */
+  stage?: string;
+  /** Set to true to hide this section from the in-page nav. */
+  hideFromNav?: boolean;
+  class?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  wide = false,
+  id,
+  stage,
+  hideFromNav = false,
+  class: className = "",
+} = Astro.props;
+
+// Auto-generate a stable id from the title if one isn't provided.
+const slugify = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const finalId = id ?? (title ? slugify(title) : undefined);
+
+// Use the explicit stage if provided, otherwise fall back to the eyebrow,
+// otherwise the title. This keeps existing case studies working but lets new
+// ones drive the nav by stage.
+const navLabel = stage ?? eyebrow ?? title;
+
+const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", className]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<section
+  class={cls}
+  id={finalId}
+  data-cs-section={hideFromNav || !title ? undefined : ""}
+  data-cs-nav-label={navLabel}
+  data-cs-stage={stage ?? eyebrow ?? ""}
+>
+  {(eyebrow || title) && (
+    <header class="cs-section__head">
+      {eyebrow && <p class="t-eyebrow cs-section__eyebrow">{eyebrow}</p>}
+      {title && <h2 class="cs-section__title t-h2">{title}</h2>}
+    </header>
+  )}
+  <div class="cs-section__body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .cs-section {
+    margin: 0 auto;
+    padding-block: var(--s-12);
+  }
+  .cs-section--narrow { max-width: var(--content-narrow); }
+  .cs-section--wide   { max-width: var(--content-max); }
+
+  @media (max-width: 720px) {
+    .cs-section { padding-block: var(--s-10); }
+  }
+
+  .cs-section__head {
+    display: grid;
+    gap: var(--s-3);
+    margin-bottom: var(--s-8);
+  }
+  .cs-section__eyebrow { margin: 0; }
+  .cs-section__title   { margin: 0; }
+
+  /* Default body typography — works for prose-heavy sections. Wider sections
+     usually contain media and don't need this, but it's harmless when they do. */
+  .cs-section__body :global(p) {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-5);
+  }
+  .cs-section__body :global(p:last-child) { margin-bottom: 0; }
+
+  .cs-section__body :global(h3) {
+    font-family: var(--font-sans);
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: var(--s-10) 0 var(--s-4);
+  }
+  .cs-section__body :global(h3:first-child) { margin-top: 0; }
+
+  .cs-section__body :global(h4) {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+    margin: var(--s-6) 0 var(--s-3);
+  }
+
+  .cs-section__body :global(ul),
+  .cs-section__body :global(ol) {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-5);
+    padding-left: var(--s-5);
+  }
+  .cs-section__body :global(li) { margin-bottom: var(--s-2); }
+
+  .cs-section__body :global(a) {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--brand-underline);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color .25s var(--ease);
+  }
+  .cs-section__body :global(a:hover) { text-decoration-color: var(--text-primary); }
+
+  .cs-section__body :global(strong) {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+</style>

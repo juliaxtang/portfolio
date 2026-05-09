@@ -1,0 +1,115 @@
+---
+/**
+ * CompanyPills — small row of "previously at" badges using local logos.
+ *
+ * Drop logo files into `public/logos/` with these exact names:
+ *   - snapchat.png    (or .svg)
+ *   - tinder.png      (or .svg)
+ *   - tvtime.png      (or .svg)
+ *   - adobe.png       (or .svg)
+ *
+ * Update the `logo` field below if you save them with different extensions.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const companies = [
+  { co: "snap",   name: "Snapchat", logo: "snapchat.png" },
+  { co: "tinder", name: "Tinder",   logo: "tinder.png"   },
+  { co: "tvtime", name: "TV Time",  logo: "tv time.png" },
+  { co: "adobe",  name: "Adobe",    logo: "adobe.png"    },
+];
+---
+
+<ul class="co-pills" aria-label="Previously at">
+  {
+    companies.map((c) => (
+      <li>
+        <span class="co-pill" tabindex="0" data-co={c.co}>
+          <span class="co-logo" aria-hidden="true">
+            <img src={`${base}/logos/${encodeURI(c.logo)}`} alt="" loading="lazy" />
+          </span>
+          <span class="co-name">{c.name}</span>
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .co-pills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+
+  .co-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-4);
+    border-radius: var(--r-full);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    color: var(--text-primary);
+    line-height: 1;
+    cursor: default;
+    user-select: none;
+    transition:
+      background-color 240ms var(--ease-out),
+      border-color 240ms var(--ease-out),
+      transform 240ms var(--ease-out),
+      box-shadow 240ms var(--ease-out);
+  }
+  .co-pill:hover,
+  .co-pill:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    outline: none;
+  }
+
+  .co-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    /* width is auto so each logo keeps its natural aspect ratio. */
+  }
+  .co-logo img {
+    height: 100%;
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  /* Per-company tinted hover state. */
+  .co-pill[data-co="snap"]:hover,
+  .co-pill[data-co="snap"]:focus-visible {
+    background: rgba(255, 252, 0, 0.18);
+    border-color: #F0E15B;
+  }
+  .co-pill[data-co="tinder"]:hover,
+  .co-pill[data-co="tinder"]:focus-visible {
+    background: rgba(254, 60, 114, 0.10);
+    border-color: #FE3C72;
+  }
+  .co-pill[data-co="tvtime"]:hover,
+  .co-pill[data-co="tvtime"]:focus-visible {
+    background: rgba(20, 28, 60, 0.06);
+    border-color: #1F2A44;
+  }
+  .co-pill[data-co="adobe"]:hover,
+  .co-pill[data-co="adobe"]:focus-visible {
+    background: rgba(255, 0, 0, 0.07);
+    border-color: #ED2224;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .co-pill { transition: none; }
+  }
+</style>

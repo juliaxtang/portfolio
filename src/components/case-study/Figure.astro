@@ -1,0 +1,146 @@
+---
+/**
+ * Figure — single image with optional caption.
+ *
+ * `width`:
+ *   - "narrow" (default) — fits the prose column (~760px)
+ *   - "wide"             — fills the content max (~1240px)
+ *   - "bleed"            — full viewport width, edge to edge
+ *
+ * `device`:
+ *   - "phone"  — locks aspect to a phone screen (9/19.5), centers the image
+ *   - "tablet" — locks to 4/3
+ *   - "auto"   — natural aspect, capped by max-height (default)
+ *
+ * `frame` adds a soft surface card around the image (padding + radius +
+ * subtle border) so screenshots and mockups feel intentional rather than
+ * floating.
+ *
+ * Images always letterbox with `object-fit: contain` so screenshots are
+ * never cropped. The figure's max-height keeps tall portrait mockups from
+ * dominating the page.
+ */
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  width?: "narrow" | "wide" | "bleed";
+  device?: "phone" | "tablet" | "auto";
+  frame?: boolean;
+  aspect?: string;
+  maxHeight?: string;
+  background?: "soft" | "surface" | "none";
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  width = "narrow",
+  device = "auto",
+  frame = false,
+  aspect,
+  maxHeight,
+  background = "soft",
+  class: className = "",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolved = src.startsWith("http") || src.startsWith(base)
+  ? src
+  : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+
+const aspectMap: Record<string, string | undefined> = {
+  phone: "9 / 19.5",
+  tablet: "4 / 3",
+  auto: undefined,
+};
+const finalAspect = aspect ?? aspectMap[device];
+
+const cls = [
+  "cs-figure",
+  `cs-figure--${width}`,
+  frame ? "cs-figure--framed" : "",
+  device !== "auto" ? `cs-figure--device-${device}` : "",
+  `cs-figure--bg-${background}`,
+  className,
+].filter(Boolean).join(" ");
+
+// Inline style only when necessary so cascade order stays predictable.
+const styleParts: string[] = [];
+if (finalAspect) styleParts.push(`aspect-ratio:${finalAspect}`);
+if (maxHeight) styleParts.push(`max-height:${maxHeight}`);
+const mediaStyle = styleParts.join(";");
+---
+
+<figure class={cls}>
+  <div class="cs-figure__media" style={mediaStyle}>
+    <img src={resolved} alt={alt} loading="lazy" />
+  </div>
+  {caption && <figcaption class="cs-figure__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .cs-figure {
+    margin: var(--s-8) auto;
+  }
+  .cs-figure--narrow { max-width: var(--content-narrow); }
+  .cs-figure--wide   { max-width: var(--content-max); }
+  .cs-figure--bleed  {
+    max-width: none;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* Phone-shaped figures shouldn't span the full prose column — they look
+     ridiculous wider than ~360px even on desktop. */
+  .cs-figure--device-phone.cs-figure--narrow .cs-figure__media { max-width: 320px; margin-inline: auto; }
+  .cs-figure--device-phone.cs-figure--wide   .cs-figure__media { max-width: 360px; margin-inline: auto; }
+
+  .cs-figure__media {
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    /* Cap height so tall portrait images never dominate the viewport. */
+    max-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Background variants — covers letterboxing space when an image's natural
+     aspect doesn't match the figure box. */
+  .cs-figure--bg-soft    .cs-figure__media { background: var(--brand-wash-soft); }
+  .cs-figure--bg-surface .cs-figure__media { background: var(--bg-surface); }
+  .cs-figure--bg-none    .cs-figure__media { background: transparent; }
+
+  .cs-figure--bleed .cs-figure__media { border-radius: 0; }
+
+  .cs-figure--framed .cs-figure__media {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: var(--s-6);
+    box-shadow: var(--shadow-sm);
+  }
+  @media (max-width: 720px) {
+    .cs-figure--framed .cs-figure__media { padding: var(--s-4); }
+  }
+
+  .cs-figure__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .cs-figure__caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: var(--s-3);
+    padding-inline: var(--s-4);
+  }
+</style>

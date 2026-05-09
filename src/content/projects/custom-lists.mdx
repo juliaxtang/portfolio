@@ -1,0 +1,281 @@
+---
+title: "Custom Lists"
+summary: "Redesigning TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable, lifting list creation by double digits across new and existing users."
+order: 50
+tags: ["TV Time", "UX/UI", "Research", "Wireframing"]
+year: 2020
+role: "UX Designer"
+company: "TV Time"
+hero:
+  src: "/projects/custom-lists/tv-time-hero.jpg"
+  alt: "TV Time brand lockup with shows and movies imagery"
+cover: "/projects/custom-lists/tv-time-hero.jpg"
+coverAlt: "TV Time"
+accent: "#FFD53A"
+---
+
+import Section from "../../components/case-study/Section.astro";
+import Figure from "../../components/case-study/Figure.astro";
+import TwoUp from "../../components/case-study/TwoUp.astro";
+import Stats from "../../components/case-study/Stats.astro";
+import Stat from "../../components/case-study/Stat.astro";
+
+<Section stage="Overview" eyebrow="Overview" title="Tracking, discovering, and curating">
+TV Time is a tracking app for movies and TV, available on iOS, Android, and web,
+with over 16 million users globally. People use TV Time to track shows and
+movies they love, discover what to watch next, and get notified when new
+content is available.
+
+Custom Lists is the feature that lets users curate their own collections of
+shows and movies. The team needed a redesign that would make Custom Lists
+easier to use, more personal, and shareable, with two clear goals: increase
+user engagement with more lists created and shared, and drive organic growth
+through list sharing.
+
+### Role
+One of two UX designers on this project, end-to-end from research and
+ideation through user testing and engineering handoff. We worked
+cross-functionally with Product and Development.
+</Section>
+
+<Section stage="Define" eyebrow="Framing the problem" title="What users were struggling with">
+The UX team had previously run internal user testing on the existing version
+of Custom Lists. We revisited the findings and surfaced two main pain points:
+a confusing information architecture, and a clunky flow for adding shows to a list.
+</Section>
+
+<TwoUp ratio="1:1" gap="lg">
+  <Figure
+    src="/projects/custom-lists/lists-screen-1.webp"
+    alt="The existing main Custom Lists screen on TV Time"
+    caption="Main Custom Lists screen"
+    width="narrow"
+    device="phone"
+  />
+  <Figure
+    src="/projects/custom-lists/lists-screen-2.webp"
+    alt="A user-pain-point annotation overlay on the Custom Lists screen"
+    caption="Pain points called out from prior testing"
+    width="narrow"
+    device="phone"
+  />
+</TwoUp>
+
+<Section stage="Define" eyebrow="Pain points" title="Confusing information architecture">
+Users couldn't find the controls they expected.
+
+- **75%** of participants expected to be able to create a new Custom List from the main Custom Lists screen.
+- **All** participants found the location of certain functions (renaming a list, editing the contents of a list) was not where they expected it to be.
+
+### Difficulty adding shows to a list
+Editing a list felt clunky and offered no clear feedback.
+
+- **50%** of participants wanted to add shows they weren't already following.
+- **75%** were confused by the lack of feedback when adding a show.
+- **All** participants found it difficult to navigate the list of shows to add, with no sorting or filtering options.
+
+This testing predated the introduction of Movies, so the redesign also had to account for both shows and movies.
+</Section>
+
+<Section stage="Research" eyebrow="Discovery" title="Learning what users want">
+We also wanted to understand how to make Custom Lists into a feature more
+people would actually want to use. To answer that, we ran internal interviews
+with test participants.
+
+The strongest themes:
+
+- Users were drawn to the **social** aspect of Custom Lists.
+- Users wanted **more personalization** options for their lists.
+
+Specific features participants asked for: the ability to create a private
+list, the option to add a description to a list, and the ability to copy
+other people's lists.
+</Section>
+
+<Section stage="Ideate" eyebrow="Ideation" title="Mapping the existing flow, sketching a new one">
+Since confusing IA was the headline pain point, we mapped the existing user
+flow first to visualize problem areas and identify opportunities. Then we
+held whiteboarding sessions to sketch new flows.
+</Section>
+
+<Figure
+  src="/projects/custom-lists/flow-existing.webp"
+  alt="Diagram of the existing Custom Lists user flow"
+  caption="Existing user flow"
+  width="wide"
+  background="none"
+  maxHeight="640px"
+/>
+
+<Figure
+  src="/projects/custom-lists/flow-new.webp"
+  alt="Diagram of the proposed new Custom Lists user flow"
+  caption="My new user flow"
+  width="wide"
+  background="none"
+  maxHeight="640px"
+/>
+
+<Section stage="Design" eyebrow="Wireframing" title="Mid-fidelity screens">
+With the new flow in hand, I wireframed the two key paths: viewing list
+details, and adding or removing content from a list.
+</Section>
+
+<TwoUp ratio="1:1" gap="lg">
+  <Figure
+    src="/projects/custom-lists/wireframe-details.webp"
+    alt="Mid-fidelity wireframes for the list details screen"
+    caption="List details"
+    width="narrow"
+    device="phone"
+  />
+  <Figure
+    src="/projects/custom-lists/wireframe-add-remove.webp"
+    alt="Mid-fidelity wireframes for adding and removing content"
+    caption="Add/remove content"
+    width="narrow"
+    device="phone"
+  />
+</TwoUp>
+
+<Section stage="Test" eyebrow="Testing and iterating" title="Round 1: validating the new flow">
+I built an InVision prototype from the wireframes and ran a first round of
+user testing. We were primarily checking that the updated information
+architecture and user flows felt intuitive.
+
+### What worked
+- **75%** of participants liked the new personalization options (descriptions, public/private toggle, sorting and filtering).
+- **All** participants easily found and used the functions that previously sat in unexpected locations: creating a list, renaming a list, editing list contents.
+
+### What needed work
+- **75%** of participants were confused by what some list reordering options meant ("shortest/longest duration").
+- **75%** wanted to be able to reorder lists in ascending or descending order.
+</Section>
+
+<Section stage="Design" eyebrow="Hi-fidelity" title="Translating to high-fidelity flows">
+Once the new flow was validated, I translated the mid-fidelity screens into
+detailed, high-fidelity designs, iterating based on the round-one feedback.
+The hi-fi screens were arranged into the same two flows.
+</Section>
+
+<Figure
+  src="/projects/custom-lists/hifi-details.webp"
+  alt="High-fidelity flow for the list details screen"
+  caption="List details — hi-fi flow"
+  width="wide"
+  background="none"
+  maxHeight="700px"
+/>
+
+<Figure
+  src="/projects/custom-lists/hifi-add-remove.webp"
+  alt="High-fidelity flow for adding and removing content"
+  caption="Add/remove content — hi-fi flow"
+  width="wide"
+  background="none"
+  maxHeight="700px"
+/>
+
+<Section stage="Test" eyebrow="Round 2" title="Validating the high-fidelity prototype">
+I built a hi-fi InVision prototype for a second round of remote user testing.
+We had originally planned to run it in person, but the pandemic hit and we
+pivoted to remote, with participants interacting via a desktop browser
+rather than our test phones. We kept that detail in mind when interpreting
+results.
+
+### IA stayed intuitive
+**All** participants were still able to easily find and successfully use
+Custom List functions, describing the experience as "easy to use,"
+"intuitive," and "straightforward."
+
+### Updated functionality landed well
+- **All** participants reordered lists with minimal confusion, and appreciated the ascending/descending toggle.
+- **75%** liked the new ability to filter list content, which we added to make longer lists easier to parse.
+
+### A larger discoverability issue surfaced
+All participants mentioned that Custom Lists were hard to find and felt
+hidden in the app. Since this was tied to overall app structure and
+navigation, we treated it as out of scope for this project but flagged it
+for any future restructuring.
+
+To address it tactically, we designed an in-app announcement to introduce
+users to the new Custom Lists, with a CTA to navigate them straight in.
+</Section>
+
+<Figure
+  src="/projects/custom-lists/announcement.webp"
+  alt="In-app announcement introducing the new Custom Lists"
+  caption="New Custom Lists announcement"
+  width="narrow"
+  device="phone"
+/>
+
+<Section stage="Design" eyebrow="Final designs" title="Introducing: new Custom Lists">
+After one last round of design clean-up, we shipped a Custom Lists that
+addressed both user pain points and user wants, while moving the business
+goals forward.
+
+### What's new
+- More intuitive information architecture
+- More control and clarity when editing list contents (add content you're not following, feedback when adding/removing, sorting and filtering)
+- Social functionality: sharing lists, copying others' lists
+- Personalization: private lists, list descriptions
+</Section>
+
+<Figure
+  src="/projects/custom-lists/final-designs.webp"
+  alt="The final hi-fi designs for the new Custom Lists feature"
+  caption="The final designs"
+  width="wide"
+  background="none"
+  maxHeight="720px"
+/>
+
+<TwoUp ratio="1:1" gap="lg">
+  <Figure
+    src="/projects/custom-lists/editing-flow.gif"
+    alt="Animated walkthrough of the improved flow for editing list contents"
+    caption="Editing list contents"
+    width="narrow"
+    device="phone"
+  />
+  <Figure
+    src="/projects/custom-lists/creating-list.gif"
+    alt="Animated walkthrough of creating a new list with the new personalization options"
+    caption="Creating a new list with personalization"
+    width="narrow"
+    device="phone"
+  />
+</TwoUp>
+
+<Section stage="Impact" eyebrow="Outcomes" title="Did this work?" wide>
+After launch, we ran an A/B test on the new version. The metrics moved
+in the right direction across the board: more new users created Custom
+Lists, more lists were created overall, and existing users engaged with
+the feature more too.
+</Section>
+
+<Stats cols={3} wide>
+  <Stat
+    value="↑ 14%"
+    label="Increase in the number of new users who created a Custom List."
+    caption="New-user adoption"
+  />
+  <Stat
+    value="↑ 15%"
+    label="Increase in the number of Custom Lists created by new users."
+    caption="New-user creation"
+  />
+  <Stat
+    value="↑ 10%"
+    label="Increase in the number of Custom Lists created by existing users."
+    caption="Existing-user creation"
+  />
+</Stats>
+
+<Section stage="Impact" title="Reflection">
+Overall, I'm really proud of this work. The redesign hit the user-research
+findings on the head while also growing the metrics the business cared
+about. The discoverability gap we identified later went on to inform a
+broader IA conversation about how core features surface in the TV Time app.
+</Section>

@@ -1,0 +1,48 @@
+---
+/**
+ * CursorAurora — soft brand-color gradient blobs that follow the cursor.
+ * Sits behind everything (z-index: -1). Runs once globally via BaseLayout.
+ */
+---
+
+<div class="cursor-aurora" id="cursor-aurora" aria-hidden="true"></div>
+
+<script is:inline>
+  (function () {
+    const blob = document.getElementById("cursor-aurora");
+    if (!blob) return;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
+    let tx = 0.5, ty = 0.3, x = 0.5, y = 0.3;
+    function move(e) {
+      tx = e.clientX / window.innerWidth;
+      ty = e.clientY / window.innerHeight;
+    }
+    window.addEventListener("mousemove", move, { passive: true });
+
+    function loop() {
+      x += (tx - x) * 0.06;
+      y += (ty - y) * 0.06;
+      blob.style.setProperty("--mx", (x * 100).toFixed(2) + "%");
+      blob.style.setProperty("--my", (y * 100).toFixed(2) + "%");
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
+</script>
+
+<style>
+  .cursor-aurora {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 50% at var(--mx, 50%) var(--my, 30%), rgba(197,220,234,0.55) 0%, transparent 65%),
+      radial-gradient(35% 50% at calc(var(--mx, 50%) + 18%) calc(var(--my, 30%) + 8%), rgba(220,210,232,0.45) 0%, transparent 65%),
+      radial-gradient(45% 60% at calc(var(--mx, 50%) - 22%) calc(var(--my, 30%) + 22%), rgba(244,217,204,0.45) 0%, transparent 65%);
+    filter: blur(24px);
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+/**
+ * TwoUp — two-column layout for side-by-side media or before/after pairs.
+ *
+ * Stacks on mobile. Use named slots <slot name="left" /> / <slot name="right" />,
+ * or pass two children as default slot.
+ */
+interface Props {
+  ratio?: "1:1" | "1:2" | "2:1";
+  align?: "start" | "center" | "stretch";
+  gap?: "sm" | "md" | "lg";
+  wide?: boolean;
+}
+
+const { ratio = "1:1", align = "stretch", gap = "md", wide = false } = Astro.props;
+const ratioMap: Record<string, string> = {
+  "1:1": "1fr 1fr",
+  "1:2": "1fr 2fr",
+  "2:1": "2fr 1fr",
+};
+const gapMap: Record<string, string> = {
+  sm: "var(--s-4)",
+  md: "var(--s-6)",
+  lg: "var(--s-10)",
+};
+const cls = ["cs-twoup", wide ? "cs-twoup--wide" : ""].filter(Boolean).join(" ");
+const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${align};`;
+---
+
+<div class={cls} style={styleVars}>
+  <slot />
+</div>
+
+<style>
+  .cs-twoup {
+    display: grid;
+    grid-template-columns: var(--cs-twoup-cols);
+    gap: var(--cs-twoup-gap);
+    align-items: var(--cs-twoup-align);
+    margin: var(--s-8) auto;
+    max-width: var(--content-narrow);
+  }
+  .cs-twoup--wide { max-width: var(--content-max); }
+
+  @media (max-width: 720px) {
+    .cs-twoup { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Julia Tang — Logo explorations</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <style>
+    /* Tokens — pulled from style-guide.html, kept minimal here */
+    :root {
+      --font-display: "Instrument Serif", "Times New Roman", serif;
+      --font-sans: "Geist", -apple-system, system-ui, sans-serif;
+      --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+
+      --brand-primary:    #C5DCEA;
+      --brand-primary-2:  #A9C7DC;
+      --brand-secondary:  #F4D9CC;
+      --brand-rose:       #ECD8DD;
+
+      --brand-gradient: linear-gradient(in oklab 135deg, #C5DCEA 0%, #ECD8DD 50%, #F4D9CC 100%);
+      --brand-aurora: radial-gradient(60% 70% at 18% 28%, rgba(197,220,234,0.65) 0%, transparent 62%),
+                      radial-gradient(55% 65% at 82% 18%, rgba(236,216,221,0.55) 0%, transparent 64%),
+                      radial-gradient(70% 75% at 62% 88%, rgba(244,217,204,0.62) 0%, transparent 66%);
+      --brand-wash:       rgba(197, 220, 234, 0.40);
+      --brand-wash-soft:  rgba(197, 220, 234, 0.20);
+
+      --r-md: 12px;
+      --r-lg: 20px;
+      --r-full: 9999px;
+
+      --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+      --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px;
+      --s-16: 64px; --s-20: 80px; --s-24: 96px;
+
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-canvas:      #FDFDFC;
+      --bg-surface:     #FFFFFF;
+      --bg-sunken:      #EFF5FA;
+      --text-primary:   #15171C;
+      --text-secondary: #5A5D66;
+      --text-tertiary:  #8B8E96;
+      --text-inverse:   #FDFDFC;
+      --border-subtle:  #EAE6DF;
+      --border-default: #D8D3CB;
+      --brand-selection: #C5DCEA;
+      --selection-text: #15171C;
+    }
+
+    [data-theme="dark"] {
+      --bg-canvas:      #0C0D11;
+      --bg-surface:     #15171C;
+      --bg-sunken:      #20262F;
+      --text-primary:   #F5F2EC;
+      --text-secondary: #A4A8B2;
+      --text-tertiary:  #6E727A;
+      --text-inverse:   #15171C;
+      --border-subtle:  #22252D;
+      --border-default: #33373F;
+      --brand-selection: #446680;
+      --selection-text: #F5F2EC;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-primary);
+      background: var(--bg-canvas);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .35s var(--ease), color .35s var(--ease);
+    }
+    ::selection      { background: var(--brand-selection); color: var(--selection-text); }
+    ::-moz-selection { background: var(--brand-selection); color: var(--selection-text); }
+
+    .page { max-width: 1240px; margin: 0 auto; padding: var(--s-12) var(--s-8); }
+    @media (max-width: 720px) { .page { padding: var(--s-8) var(--s-5); } }
+
+    section { padding: var(--s-20) 0; border-top: 1px solid var(--border-subtle); }
+    section:first-of-type { border-top: 0; padding-top: 0; }
+
+    .t-overline { font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-tertiary); margin: 0; }
+    .t-eyebrow  { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-tertiary); margin: 0; }
+    .t-h1 { font-size: clamp(32px, 4vw, 48px); line-height: 1.1; letter-spacing: -0.02em; font-weight: 500; margin: 0; }
+    .t-h2 { font-size: clamp(26px, 3vw, 36px); line-height: 1.15; letter-spacing: -0.018em; font-weight: 500; margin: 0; }
+    .t-h3 { font-size: 24px; line-height: 1.25; font-weight: 500; margin: 0; }
+    .t-body-lg { font-size: 18px; line-height: 1.55; }
+    .t-body { font-size: 16px; line-height: 1.55; }
+    .t-body-sm { font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
+    .t-mono { font-family: var(--font-mono); font-size: 13px; }
+
+    /* Top bar */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in oklab, var(--bg-canvas) 86%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .topbar-inner { max-width: 1240px; margin: 0 auto; padding: var(--s-4) var(--s-8); display: flex; align-items: center; justify-content: space-between; gap: var(--s-6); }
+    .wordmark { font-family: var(--font-display); font-size: 22px; line-height: 1; letter-spacing: -0.02em; color: var(--text-primary); text-decoration: none; }
+    .topbar-nav { display: flex; gap: var(--s-6); align-items: center; }
+    .topbar-nav a { color: var(--text-secondary); text-decoration: none; font-size: 14px; transition: color .2s var(--ease); }
+    .topbar-nav a:hover { color: var(--text-primary); }
+
+    .theme-toggle {
+      appearance: none; cursor: pointer;
+      background: var(--bg-surface); color: var(--text-primary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--r-full);
+      padding: 8px 14px;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+      transition: all .2s var(--ease);
+    }
+    .theme-toggle:hover { border-color: var(--text-primary); }
+    .theme-toggle i { font-size: 16px; }
+
+    /* Hero */
+    .hero { padding: var(--s-24) 0 var(--s-16); position: relative; }
+    .hero-bg {
+      position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
+      width: 100vw; height: 130%; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(60% 70% at 18% 28%, rgba(197,220,234,0.55) 0%, transparent 62%),
+        radial-gradient(55% 65% at 82% 18%, rgba(236,216,221,0.45) 0%, transparent 64%),
+        radial-gradient(70% 75% at 62% 88%, rgba(244,217,204,0.55) 0%, transparent 66%);
+      filter: blur(50px);
+      opacity: 0.85;
+      animation: aurora-drift 28s ease-in-out infinite;
+    }
+    [data-theme="dark"] .hero-bg { opacity: 0.45; }
+    @keyframes aurora-drift {
+      0%, 100% { transform: translate(-50%, 0) scale(1); }
+      50%      { transform: translate(-49%, 1%) scale(1.04); }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero-bg { animation: none; } }
+    .hero-inner { position: relative; z-index: 1; }
+    .hero h1 { font-family: var(--font-display); font-size: clamp(56px, 9vw, 112px); line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; color: var(--text-primary); margin: 0 0 var(--s-5); max-width: 14ch; }
+    .hero h1 em { font-style: italic; }
+    .hero .lead { font-size: clamp(18px, 1.6vw, 22px); max-width: 580px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid var(--border-default);
+      background: var(--bg-surface);
+      border-radius: var(--r-full);
+      font-size: 12px; font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: var(--s-5);
+    }
+    .kicker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--brand-gradient); }
+
+    /* Section header */
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--s-6); margin-bottom: var(--s-12); flex-wrap: wrap; }
+    .section-header .lead { max-width: 520px; color: var(--text-secondary); margin: 0; font-size: 18px; line-height: 1.55; }
+
+    /* Grid */
+    .grid { display: grid; gap: var(--s-6); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    @media (max-width: 900px) { .grid-3 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 540px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+    /* Logo concept card */
+    .concept {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform .25s var(--ease), border-color .2s var(--ease), box-shadow .25s var(--ease);
+    }
+    .concept:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-default);
+      box-shadow: 0 16px 40px var(--brand-wash);
+    }
+    .concept-stage {
+      aspect-ratio: 16/10;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg-canvas);
+      position: relative;
+      overflow: hidden;
+    }
+    .concept-stage.gradient { background: var(--brand-gradient); }
+    .concept-stage.dark     { background: #0C0D11; }
+    .concept-stage.aurora   { background: var(--brand-aurora), var(--bg-canvas); }
+    .concept-meta {
+      padding: var(--s-5) var(--s-6) var(--s-6);
+      border-top: 1px solid var(--border-subtle);
+      display: flex; flex-direction: column; gap: var(--s-3);
+    }
+    .concept-meta .num {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .concept-meta h3 {
+      font-family: var(--font-sans); font-weight: 500; font-size: 22px;
+      letter-spacing: -0.015em; color: var(--text-primary); margin: 0;
+    }
+    .concept-meta h3 em { font-family: var(--font-display); font-style: italic; font-weight: 400; }
+    .concept-meta p { margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+    .concept-meta .uses { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px;
+      border-radius: var(--r-full);
+      background: var(--brand-wash-soft);
+      color: var(--text-primary);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+
+    /* Variation strip — small previews on diff backgrounds */
+    .variations {
+      display: flex;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-sunken);
+    }
+    .variations > div {
+      flex: 1;
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid var(--border-subtle);
+      position: relative;
+    }
+    .variations > div:last-child { border-right: 0; }
+    .variations > div::after {
+      content: attr(data-label);
+      position: absolute; top: 6px; left: 8px;
+      font-family: var(--font-mono); font-size: 9px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .variations .v-light    { background: #FDFDFC; }
+    .variations .v-dark     { background: #0C0D11; }
+    .variations .v-brand    { background: var(--brand-primary); }
+    .variations .v-gradient { background: var(--brand-gradient); }
+
+    /* Logo SVG defaults — currentColor pattern lets them adapt to background */
+    .logo { display: block; line-height: 0; }
+    .logo svg { display: block; height: auto; max-width: 100%; }
+
+    /* Sparkle keyframes */
+    @keyframes sparkle-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .footnote {
+      margin-top: var(--s-8);
+      padding: var(--s-6);
+      background: var(--bg-sunken);
+      border-radius: var(--r-md);
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .footnote strong { color: var(--text-primary); }
+
+    .recommend-card {
+      background: var(--brand-aurora), var(--bg-canvas);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      padding: var(--s-10);
+      box-shadow: 0 16px 40px var(--brand-wash);
+    }
+
+    .footer {
+      margin-top: var(--s-20);
+      padding: var(--s-8) 0;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-tertiary);
+      font-size: 13px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-4);
+    }
+    .footer a { color: var(--text-secondary); text-decoration: none; }
+    .footer a:hover { color: var(--text-primary); }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="./style-guide.html" class="wordmark">Julia Tang</a>
+      <nav class="topbar-nav">
+        <a href="./style-guide.html">Style guide</a>
+        <a href="#concepts">Concepts</a>
+        <a href="#recommendation">Recommendation</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i class="ph ph-moon" id="themeIcon"></i>
+          <span id="themeLabel">Dark</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <span class="kicker"><span class="dot"></span> Logo explorations · v0.1</span>
+        <h1>A mark to wear, in <em>three</em> sizes.</h1>
+        <p class="lead">Three directions for a personal logo — italic wordmark, italic JT monogram, and the JT monogram inside an iridescent orb. All built off the same design system.</p>
+      </div>
+    </section>
+
+    <!-- INDUSTRY SURVEY -->
+    <section id="survey">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">01 · Best practice</p>
+          <h2 class="t-h1" style="margin-top:8px;">What other designers do</h2>
+        </div>
+        <p class="lead">A quick scan of the seven FAANG portfolios you sent. The pattern is mostly wordmark, sometimes mark, rarely avatar.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="concept" style="display:block; padding: var(--s-6);">
+          <p class="t-eyebrow" style="margin-bottom: 12px;">Wordmark only</p>
+          <p class="t-body" style="margin: 0 0 8px;"><strong style="font-weight:500;">Most senior designers ship just this.</strong></p>
+          <p class="t-body-sm" style="margin:0;">Matt Ahrens, Johny Vino, Abdussalam, Aaron James (within his animated frame), Pratibha. Lowest risk, ages well, doesn't try too hard.</p>
+        </div>
+        <div class="concept" style="display:block; padding: var(--s-6);">
+          <p class="t-eyebrow" style="margin-bottom: 12px;">Wordmark + symbol</p>
+          <p class="t-body" style="margin: 0 0 8px;"><strong style="font-weight:500;">Adds a tiny mark for tight spaces.</strong></p>
+          <p class="t-body-sm" style="margin:0;">Dana Parker (✱ asterisk), Duaa (small leaf glyph). The symbol does the work where the wordmark won't fit — favicon, social avatar, sign-off.</p>
+        </div>
+        <div class="concept" style="display:block; padding: var(--s-6);">
+          <p class="t-eyebrow" style="margin-bottom: 12px;">Personal avatar</p>
+          <p class="t-body" style="margin: 0 0 8px;"><strong style="font-weight:500;">Warm, but a real commission.</strong></p>
+          <p class="t-body-sm" style="margin:0;">Shuang's watercolor portrait (~200px hero logo). Beautiful and personal but typically illustrated by someone else — worth treating as future polish.</p>
+        </div>
+      </div>
+
+      <div class="footnote">
+        <strong>The throughlines:</strong> simple, scales to 16×16, works on light and dark, almost always vector. The personal logo is rarely the moment a portfolio wins or loses — clarity and the work below it are. Don't overdesign.
+      </div>
+    </section>
+
+    <!-- CONCEPTS -->
+    <section id="concepts">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">02 · Concepts</p>
+          <h2 class="t-h1" style="margin-top:8px;">Six directions</h2>
+        </div>
+        <p class="lead">Each shown big, then on light · dark · brand-color · gradient backgrounds so you can see how it survives. All SVG. All editable.</p>
+      </div>
+
+      <div class="grid grid-2">
+
+        <!-- 01 — WORDMARK -->
+        <article class="concept">
+          <div class="concept-stage">
+            <div class="logo">
+              <svg viewBox="-20 -10 620 180" width="500" aria-label="Julia Tang wordmark">
+                <text x="0" y="130"
+                  font-family="Instrument Serif, Times New Roman, serif"
+                  font-size="130" font-style="italic" font-weight="400"
+                  fill="currentColor" letter-spacing="-3">Julia Tang</text>
+              </svg>
+            </div>
+          </div>
+          <div class="variations">
+            <div class="v-light" data-label="LIGHT" style="color:#15171C;"><svg viewBox="-20 -10 620 180" width="140"><text x="0" y="130" font-family="Instrument Serif, serif" font-size="130" font-style="italic" fill="currentColor" letter-spacing="-3">Julia Tang</text></svg></div>
+            <div class="v-dark" data-label="DARK" style="color:#F5F2EC;"><svg viewBox="-20 -10 620 180" width="140"><text x="0" y="130" font-family="Instrument Serif, serif" font-size="130" font-style="italic" fill="currentColor" letter-spacing="-3">Julia Tang</text></svg></div>
+            <div class="v-brand" data-label="BRAND" style="color:#15171C;"><svg viewBox="-20 -10 620 180" width="140"><text x="0" y="130" font-family="Instrument Serif, serif" font-size="130" font-style="italic" fill="currentColor" letter-spacing="-3">Julia Tang</text></svg></div>
+            <div class="v-gradient" data-label="GRADIENT" style="color:#15171C;"><svg viewBox="-20 -10 620 180" width="140"><text x="0" y="130" font-family="Instrument Serif, serif" font-size="130" font-style="italic" fill="currentColor" letter-spacing="-3">Julia Tang</text></svg></div>
+          </div>
+          <div class="concept-meta">
+            <span class="num">01 · Wordmark</span>
+            <h3>Italic <em>wordmark</em></h3>
+            <p>Instrument Serif italic, your full name. The most senior, lowest-risk option — what Matt, Johny, Abdussalam, and most FAANG ICs ship. Descender on "g" stays — it's a wordmark, there's room for it.</p>
+            <div class="uses">
+              <span class="pill">Header</span>
+              <span class="pill">Footer signature</span>
+              <span class="pill">Social bio</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 02 — JT MONOGRAM (italic, descender intact) -->
+        <article class="concept">
+          <div class="concept-stage">
+            <div class="logo">
+              <svg viewBox="-20 -10 320 290" width="260" aria-label="JT italic monogram">
+                <text x="140" y="210" text-anchor="middle"
+                  font-family="Instrument Serif, serif"
+                  font-size="240" font-style="italic" font-weight="400"
+                  fill="currentColor" letter-spacing="-16">JT</text>
+              </svg>
+            </div>
+          </div>
+          <div class="variations">
+            <div class="v-light" data-label="LIGHT" style="color:#15171C;"><svg viewBox="-20 -10 320 290" width="84"><text x="140" y="210" text-anchor="middle" font-family="Instrument Serif, serif" font-size="240" font-style="italic" fill="currentColor" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-dark" data-label="DARK" style="color:#F5F2EC;"><svg viewBox="-20 -10 320 290" width="84"><text x="140" y="210" text-anchor="middle" font-family="Instrument Serif, serif" font-size="240" font-style="italic" fill="currentColor" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-brand" data-label="BRAND" style="color:#15171C;"><svg viewBox="-20 -10 320 290" width="84"><text x="140" y="210" text-anchor="middle" font-family="Instrument Serif, serif" font-size="240" font-style="italic" fill="currentColor" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-gradient" data-label="GRADIENT" style="color:#15171C;"><svg viewBox="-20 -10 320 290" width="84"><text x="140" y="210" text-anchor="middle" font-family="Instrument Serif, serif" font-size="240" font-style="italic" fill="currentColor" letter-spacing="-16">JT</text></svg></div>
+          </div>
+          <div class="concept-meta">
+            <span class="num">02 · Monogram</span>
+            <h3>JT · italic <em>monogram</em></h3>
+            <p>Italic Instrument Serif JT, tight-kerned, descender intact. The italic slant lets the letters nestle naturally — italic typography is designed for cursive flow. Use at medium-to-large sizes; let the orb (Concept 04) handle small contexts.</p>
+            <div class="uses">
+              <span class="pill">Letterhead</span>
+              <span class="pill">Resume header</span>
+              <span class="pill">Sign-off</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- 03 — JT IN ORB (~50% of diameter, italic descender visible inside the sphere) -->
+        <article class="concept">
+          <div class="concept-stage aurora">
+            <div class="logo">
+              <svg viewBox="0 0 240 240" width="220" aria-label="JT inside iridescent orb">
+                <defs>
+                  <linearGradient id="orb-grad-05" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C5DCEA"/>
+                    <stop offset="50%" stop-color="#ECD8DD"/>
+                    <stop offset="100%" stop-color="#F4D9CC"/>
+                  </linearGradient>
+                  <radialGradient id="orb-shine-05" cx="35%" cy="30%" r="55%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.7)"/>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                  </radialGradient>
+                </defs>
+                <circle cx="120" cy="120" r="110" fill="url(#orb-grad-05)"/>
+                <circle cx="120" cy="120" r="110" fill="url(#orb-shine-05)"/>
+                <text x="120" y="148" text-anchor="middle"
+                  font-family="Instrument Serif, serif"
+                  font-size="110" font-style="italic" font-weight="400"
+                  fill="#15171C" letter-spacing="-16">JT</text>
+              </svg>
+            </div>
+          </div>
+          <div class="variations">
+            <div class="v-light" data-label="LIGHT"><svg viewBox="0 0 240 240" width="84"><defs><linearGradient id="og-l" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="50%" stop-color="#ECD8DD"/><stop offset="100%" stop-color="#F4D9CC"/></linearGradient></defs><circle cx="120" cy="120" r="110" fill="url(#og-l)"/><text x="120" y="148" text-anchor="middle" font-family="Instrument Serif, serif" font-size="110" font-style="italic" fill="#15171C" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-dark" data-label="DARK"><svg viewBox="0 0 240 240" width="84"><defs><linearGradient id="og-d" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C5DCEA"/><stop offset="50%" stop-color="#ECD8DD"/><stop offset="100%" stop-color="#F4D9CC"/></linearGradient></defs><circle cx="120" cy="120" r="110" fill="url(#og-d)"/><text x="120" y="148" text-anchor="middle" font-family="Instrument Serif, serif" font-size="110" font-style="italic" fill="#15171C" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-brand" data-label="BRAND"><svg viewBox="0 0 240 240" width="84"><circle cx="120" cy="120" r="110" fill="#FDFDFC"/><text x="120" y="148" text-anchor="middle" font-family="Instrument Serif, serif" font-size="110" font-style="italic" fill="#15171C" letter-spacing="-16">JT</text></svg></div>
+            <div class="v-gradient" data-label="GRADIENT"><svg viewBox="0 0 240 240" width="84"><circle cx="120" cy="120" r="110" fill="#FDFDFC"/><text x="120" y="148" text-anchor="middle" font-family="Instrument Serif, serif" font-size="110" font-style="italic" fill="#15171C" letter-spacing="-16">JT</text></svg></div>
+          </div>
+          <div class="concept-meta">
+            <span class="num">03 · Iridescent orb</span>
+            <h3>JT · iridescent <em>orb</em></h3>
+            <p>Italic JT inside a soft iridescent sphere, echoing the glass-orb-on-dunes inspiration. JT sized to ~50% of the orb so the descender has breathing room inside the circular frame. The most "branded" option — works as favicon and as a resume header badge.</p>
+            <div class="uses">
+              <span class="pill">Favicon</span>
+              <span class="pill">Resume header</span>
+              <span class="pill">Profile</span>
+              <span class="pill">App icon</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- RECOMMENDATION -->
+    <section id="recommendation">
+      <div class="section-header">
+        <div>
+          <p class="t-overline">03 · Recommendation</p>
+          <h2 class="t-h1" style="margin-top:8px;">Pick a system, not a mark</h2>
+        </div>
+        <p class="lead">A logo isn't one shape — it's a small family of marks for different surfaces. My picks below.</p>
+      </div>
+
+      <div class="recommend-card">
+        <p class="t-eyebrow" style="margin-bottom: var(--s-3);">Recommended system</p>
+        <h3 class="t-h2" style="font-family: var(--font-display); font-style: italic; font-weight: 400; letter-spacing: -0.02em; margin-bottom: var(--s-5);">Wordmark + orb, monogram in between</h3>
+        <p class="t-body-lg" style="color:var(--text-secondary); max-width: 64ch; margin: 0 0 var(--s-6);">Use <strong style="color: var(--text-primary); font-weight: 500;">Concept 01 (italic wordmark)</strong> wherever there's horizontal room — header, footer, resume body, social bio. Use <strong style="color: var(--text-primary); font-weight: 500;">Concept 03 (iridescent orb)</strong> as the square mark — favicon, app icon, avatar, resume header badge. <strong style="color: var(--text-primary); font-weight: 500;">Concept 02 (standalone monogram)</strong> sits in between — letterhead, sign-offs, anywhere the orb feels too branded but the wordmark is too long.</p>
+        <p class="t-body-sm" style="margin: 0 0 var(--s-6);"><strong style="color: var(--text-primary); font-weight: 500;">On the J descending:</strong> let it. Italic Instrument Serif's J is designed with the descender — fighting it produces the T-serif-protrusion problem we hit. Italic typography is built for cursive flow; let the letters be themselves. The orb's circular frame contains the descender naturally, which is why it's the right choice for square contexts.</p>
+        <p class="t-body-sm" style="margin: 0;"><strong style="color: var(--text-primary); font-weight: 500;">Avatar (Shuang-style):</strong> future polish. Worth commissioning a watercolor or line-illustration portrait once the rest of the portfolio is settled — it adds warmth no logo system can. Save it for v0.2.</p>
+      </div>
+
+      <div class="footnote" style="margin-top: var(--s-8);">
+        <strong>Production notes once you pick:</strong>
+        Convert the chosen mark to outlined paths (not live text) so the SVG doesn't depend on Instrument Serif loading.
+        Export at 16, 32, 180 (apple-touch), 512 (PWA), and SVG.
+        Generate a `favicon.ico`, `favicon.svg`, `apple-touch-icon.png`, `og-image.png` (1200×630 with the lockup centered on the iridescent gradient).
+        I can do all of this once you pick — say the word.
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>
+        <div style="font-family: var(--font-display); font-size: 18px; color: var(--text-primary); margin-bottom: 4px;">Julia Tang</div>
+        <div>Logo explorations · v0.1 · May 2026</div>
+      </div>
+      <div style="display:flex; gap: var(--s-5);">
+        <a href="./style-guide.html">Style guide</a>
+        <a href="#concepts">Concepts</a>
+        <a href="#recommendation">Recommendation</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function() {
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+
+      const saved = localStorage.getItem('jt-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      apply(saved || (prefersDark ? 'dark' : 'light'));
+
+      btn.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        apply(next);
+        localStorage.setItem('jt-theme', next);
+      });
+
+      function apply(mode) {
+        root.dataset.theme = mode;
+        icon.className = mode === 'dark' ? 'ph ph-sun' : 'ph ph-moon';
+        label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+      }
+    })();
+  </script>
+</body>
+</html>

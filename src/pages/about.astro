@@ -1,0 +1,439 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FadeIn from "../components/FadeIn.astro";
+
+// Hi, in five languages. Auto-rotates with a width-animated container so
+// the comma after the ticker glides instead of jumping.
+const greetings = [
+  { lang: "English",  hi: "Hi" },
+  { lang: "Mandarin", hi: "你好" },
+  { lang: "French",   hi: "Bonjour" },
+  { lang: "Spanish",  hi: "Hola" },
+  { lang: "Japanese", hi: "こんにちは" },
+];
+---
+
+<BaseLayout title="About">
+  <div class="about-canvas" id="about-canvas">
+    <article class="page-narrow about">
+      <FadeIn>
+        <p class="t-eyebrow about-eyebrow">About</p>
+      </FadeIn>
+
+      <FadeIn delay={120}>
+        <h1 class="about-title">
+          <span class="hi-ticker" aria-live="polite">
+            <span class="hi-ghost" aria-hidden="true">&nbsp;</span>
+            {greetings.map((g, i) => (
+              <span class={`hi-word ${i === 0 ? "is-active" : ""}`} data-lang={g.lang}>{g.hi}</span>
+            ))}
+          </span><span class="title-rest">, I'm Julia.</span>
+        </h1>
+      </FadeIn>
+
+      <FadeIn delay={220}>
+        <div class="prose about-prose">
+          <p>
+            I started in <span class="fx fx--film"
+              ><span class="fx-icon fx-icon--tl" aria-hidden="true">🎬</span
+              >film</span> at USC, where I learned that pacing, framing, and
+            motion are how a story actually lands. After college, I spent a
+            few years designing creative marketing campaigns for film and TV
+            studios, including a <span class="fx fx--clio"
+              ><span class="fx-icon fx-icon--tr" aria-hidden="true">🏆</span
+              >Clio-winning</span> one for <a
+              class="prose-out"
+              href="https://www.thetangentagency.com/projects/lego-movie-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            ><em>The Lego Movie 2</em></a>. Then I shadowed the product team
+            at TV Time, got hooked, and switched lanes for good. The product
+            design work I shipped there later went on to win a <a
+              class="prose-out"
+              href="https://winners.webbyawards.com/2021/apps-software/general-apps/entertainment-sports/167683/tv-time"
+              target="_blank"
+              rel="noopener noreferrer"
+            >Webby Award</a>.
+          </p>
+
+          <p>
+            A decade later, I still think about product the way I used to
+            think about a cut: every piece in service of the whole. I'm a
+            vision and systems designer at heart, drawn less to any single
+            feature than to how everything fits together. The best product
+            design is <span class="fx-vanish"
+              ><span class="fx-vanish__text">invisible</span></span>.
+            You don't fight the interface, you just do the thing. But
+            invisible isn't plain. Good design can still be beautiful,
+            surprising, and delightful to use; it just never makes you work
+            for it.
+          </p>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={320}>
+        <section class="hobbies" aria-label="Outside of work">
+          <p class="t-eyebrow">Outside of work</p>
+          <ul class="pill-row">
+            <li>
+              <span class="pill" tabindex="0">
+                <span class="pill-emoji" aria-hidden="true">🤿</span>
+                <span class="pill-label">Scuba diving</span>
+                <span class="pill-meta"><span class="pill-dot" aria-hidden="true">•</span>summer</span>
+              </span>
+            </li>
+            <li>
+              <span class="pill" tabindex="0">
+                <span class="pill-emoji" aria-hidden="true">🏂</span>
+                <span class="pill-label">Snowboarding</span>
+                <span class="pill-meta"><span class="pill-dot" aria-hidden="true">•</span>winter</span>
+              </span>
+            </li>
+            <li>
+              <span class="pill" tabindex="0">
+                <span class="pill-emoji" aria-hidden="true">🌐</span>
+                <span class="pill-label">Language learning</span>
+                <span class="pill-meta"><span class="pill-dot" aria-hidden="true">•</span>(5 and counting!)</span>
+              </span>
+            </li>
+          </ul>
+        </section>
+      </FadeIn>
+    </article>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  // Polyglot ticker — width-animated container + cross-fade so the comma
+  // after the ticker glides smoothly instead of snapping.
+  (async function () {
+    const ticker = document.querySelector(".hi-ticker");
+    if (!ticker) return;
+    const words = Array.from(ticker.querySelectorAll(".hi-word"));
+    if (words.length < 2) return;
+
+    // Wait for fonts so measurements are accurate.
+    if (document.fonts && document.fonts.ready) {
+      try { await document.fonts.ready; } catch (e) {}
+    }
+
+    // Measure each word's natural width by cloning into the ticker
+    // (same font/size context) at full opacity but visibility:hidden.
+    function measure() {
+      return words.map((w) => {
+        const clone = w.cloneNode(true);
+        clone.removeAttribute("class");
+        clone.style.cssText =
+          "position:absolute;visibility:hidden;opacity:1;transform:none;" +
+          "white-space:nowrap;left:0;top:0;";
+        ticker.appendChild(clone);
+        const width = Math.ceil(clone.getBoundingClientRect().width);
+        clone.remove();
+        return width;
+      });
+    }
+
+    let widths = measure();
+    let i = 0;
+    ticker.style.setProperty("--w", widths[i] + "px");
+
+    const HOLD = 2400;
+    const FADE = 700;
+
+    setInterval(() => {
+      const current = words[i];
+      i = (i + 1) % words.length;
+      const next = words[i];
+
+      current.classList.remove("is-active");
+      current.classList.add("is-leaving");
+      next.classList.add("is-active");
+      ticker.style.setProperty("--w", widths[i] + "px");
+
+      setTimeout(() => {
+        current.classList.remove("is-leaving");
+      }, FADE);
+    }, HOLD);
+
+    // Re-measure on viewport resize since the title font-size scales.
+    let resizeT;
+    window.addEventListener("resize", () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => {
+        widths = measure();
+        ticker.style.setProperty("--w", widths[i] + "px");
+      }, 120);
+    });
+  })();
+</script>
+
+<style>
+  .about-canvas {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .about { padding-top: var(--s-16); position: relative; }
+  .about-eyebrow { margin-bottom: var(--s-3); color: var(--text-tertiary); }
+
+  .about-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--s-10);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  @media (max-width: 720px) {
+    .about-title { white-space: normal; }
+  }
+
+  /* === Smooth ticker ===
+     Container has an explicit width set via JS (CSS variable). Width animates
+     so the trailing comma glides as the word changes. Words layered on top
+     of each other; cross-fade with subtle Y translation. */
+  .hi-ticker {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+    width: var(--w, auto);
+    height: 1em;
+    line-height: 1;
+    transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: visible;
+  }
+  /* Invisible 0-width spacer that establishes height even though all words
+     are absolutely positioned. */
+  .hi-ghost {
+    display: inline-block;
+    width: 0;
+    visibility: hidden;
+  }
+  .hi-word {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(-0.32em);
+    transition:
+      opacity 480ms var(--ease-out),
+      transform 700ms var(--ease-out);
+    will-change: opacity, transform;
+  }
+  .hi-word.is-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition-duration: 700ms;
+  }
+  .hi-word.is-leaving {
+    opacity: 0;
+    transform: translateY(0.32em);
+    transition-duration: 380ms;
+  }
+  .title-rest { color: var(--text-primary); }
+
+  /* === Prose === */
+  .about-prose p {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    max-width: 60ch;
+    margin: 0 0 var(--s-5);
+  }
+  .about-prose strong {
+    font-weight: 600;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
+  }
+
+  /* === Hover-effect framework (mirrors home page) === */
+  .fx {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+  }
+  .fx-icon {
+    position: absolute;
+    font-style: normal;
+    font-size: 0.7em;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0;
+    will-change: transform, opacity;
+    transition:
+      opacity 240ms var(--ease-out),
+      transform 540ms var(--ease-out);
+  }
+  .fx-icon--tl {
+    top: -0.1em;
+    left: -0.7em;
+    transform: translate(0.4em, 0.3em) scale(0.6) rotate(-25deg);
+  }
+  .fx:hover .fx-icon--tl {
+    opacity: 1;
+    transform: translate(-0.1em, -0.5em) scale(1.05) rotate(-12deg);
+  }
+  .fx-icon--tr {
+    top: -0.1em;
+    right: -0.7em;
+    transform: translate(-0.4em, 0.3em) scale(0.6) rotate(25deg);
+  }
+  .fx:hover .fx-icon--tr {
+    opacity: 1;
+    transform: translate(0.1em, -0.5em) scale(1.05) rotate(12deg);
+  }
+
+  /* Shared underline-to-wash for fx words in prose. */
+  .fx--film,
+  .fx--clio {
+    font-weight: 600;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
+    transition:
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out);
+  }
+  .fx--film:hover,
+  .fx--clio:hover {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+  }
+
+  /* "invisible" — bold + underline match the other interactive words; inner
+     text fades on hover so the underline stays as a ghost trace. */
+  .fx-vanish {
+    display: inline-block;
+    cursor: default;
+    font-weight: 600;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
+  }
+  .fx-vanish__text {
+    display: inline-block;
+    transition:
+      opacity 380ms var(--ease-out),
+      filter 380ms var(--ease-out);
+  }
+  .fx-vanish:hover .fx-vanish__text {
+    opacity: 0;
+    filter: blur(4px);
+  }
+
+  /* Outbound prose links (Lego Movie 2, Webby) — soft brand underline that resolves to ink. */
+  .prose-out {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-decoration-color: var(--brand-underline);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color 250ms var(--ease);
+  }
+  .prose-out:hover {
+    text-decoration-color: var(--text-primary);
+  }
+
+  /* === Hobby pills === */
+  .hobbies { margin-top: var(--s-16); }
+  .hobbies .t-eyebrow { margin: 0 0 var(--s-5); }
+
+  .pill-row {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--s-3);
+  }
+  @media (max-width: 720px) {
+    .pill-row { flex-wrap: wrap; }
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-5);
+    border-radius: var(--r-full);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1;
+    cursor: default;
+    user-select: none;
+    flex-shrink: 0;
+    transition:
+      background-color 280ms var(--ease-out),
+      border-color 280ms var(--ease-out),
+      transform 280ms var(--ease-out),
+      box-shadow 280ms var(--ease-out);
+  }
+  .pill:hover,
+  .pill:focus-visible {
+    background: var(--brand-wash-soft);
+    border-color: var(--brand-primary-2);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    outline: none;
+  }
+
+  .pill-emoji {
+    display: inline-block;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .pill-label { font-weight: 500; white-space: nowrap; }
+
+  .pill-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    transition:
+      max-width 380ms var(--ease-out),
+      opacity 240ms var(--ease-out);
+  }
+  .pill:hover .pill-meta,
+  .pill:focus-visible .pill-meta {
+    max-width: 220px;
+    opacity: 1;
+  }
+  .pill-dot {
+    color: var(--text-tertiary);
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pill { transition: none; }
+    .hi-ticker { transition: none; }
+    .hi-word { transition: opacity 240ms ease; transform: none !important; }
+    .fx-icon { transition: opacity 200ms var(--ease-out); transform: none !important; }
+    .fx:hover .fx-icon { opacity: 1; }
+    .fx-vanish__text { transition: opacity 200ms ease; }
+    .fx-vanish:hover .fx-vanish__text { filter: none; }
+  }
+</style>

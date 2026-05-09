@@ -1,0 +1,43 @@
+---
+/**
+ * Quote — pulled-out user research quote or testimonial.
+ */
+interface Props {
+  attribution?: string;
+}
+const { attribution } = Astro.props;
+---
+
+<figure class="cs-quote">
+  <blockquote class="cs-quote__body">
+    <slot />
+  </blockquote>
+  {attribution && <figcaption class="cs-quote__attr">— {attribution}</figcaption>}
+</figure>
+
+<style>
+  .cs-quote {
+    margin: var(--s-10) auto;
+    max-width: var(--content-narrow);
+    padding-left: var(--s-6);
+    border-left: 3px solid var(--brand-primary);
+  }
+  .cs-quote__body {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 2.6vw, 28px);
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .cs-quote__attr {
+    margin-top: var(--s-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+</style>

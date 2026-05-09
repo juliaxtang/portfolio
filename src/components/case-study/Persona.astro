@@ -1,0 +1,95 @@
+---
+/**
+ * Persona — a small card with a person's name/age + role + a body slot for
+ * behaviors / frustrations / goal blocks. Designed to read like a deck slide
+ * (the persona "Jen, 25" in Festival Mode) but render as native HTML.
+ *
+ * Pair with `<PersonaTrait>` children for the labelled sub-blocks:
+ *   <Persona name="Jen" age={25} role="Marketing Associate" location="Lives in LA">
+ *     <PersonaTrait label="Behaviors">…</PersonaTrait>
+ *     <PersonaTrait label="Frustrations">…</PersonaTrait>
+ *     <PersonaTrait label="Goal">…</PersonaTrait>
+ *   </Persona>
+ */
+interface Props {
+  name: string;
+  age?: number | string;
+  role?: string;
+  location?: string;
+  status?: string;
+  education?: string;
+}
+const { name, age, role, location, status, education } = Astro.props;
+const meta = [status, role, education, location].filter(Boolean) as string[];
+---
+
+<aside class="cs-persona">
+  <header class="cs-persona__head">
+    <p class="t-eyebrow cs-persona__eyebrow">Persona</p>
+    <h3 class="cs-persona__name">
+      {name}{age !== undefined && <span class="cs-persona__age">, {age}</span>}
+    </h3>
+    {meta.length > 0 && (
+      <ul class="cs-persona__meta">
+        {meta.map((m) => <li>{m}</li>)}
+      </ul>
+    )}
+  </header>
+  <div class="cs-persona__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .cs-persona {
+    display: grid;
+    grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+    gap: var(--s-8);
+    margin: var(--s-8) auto;
+    max-width: var(--content-max);
+    padding: var(--s-8);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+  }
+  @media (max-width: 720px) {
+    .cs-persona { grid-template-columns: 1fr; gap: var(--s-5); padding: var(--s-5); }
+  }
+
+  .cs-persona__head { padding-right: var(--s-5); border-right: 1px solid var(--border-subtle); }
+  @media (max-width: 720px) {
+    .cs-persona__head { padding-right: 0; padding-bottom: var(--s-4); border-right: none; border-bottom: 1px solid var(--border-subtle); }
+  }
+  .cs-persona__eyebrow { margin: 0 0 var(--s-3); color: var(--text-tertiary); }
+
+  .cs-persona__name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-3);
+  }
+  .cs-persona__age { font-style: normal; color: var(--text-secondary); font-weight: 400; }
+
+  .cs-persona__meta {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+  }
+  .cs-persona__meta li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .cs-persona__body {
+    display: grid;
+    gap: var(--s-5);
+  }
+</style>

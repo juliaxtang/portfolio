@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Julia Tang · Brand mark · Iridescent orb with JT monogram
+  Editable in Figma. Requires Instrument Serif font (free, fonts.google.com).
+  Layer hierarchy: orb (gradient + shine) and monogram (JT text).
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 240 240"
+     width="240" height="240">
+
+  <defs>
+    <linearGradient id="orb-iridescent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#C5DCEA"/>
+      <stop offset="50%"  stop-color="#ECD8DD"/>
+      <stop offset="100%" stop-color="#F4D9CC"/>
+    </linearGradient>
+    <radialGradient id="orb-shine" cx="35%" cy="30%" r="55%">
+      <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g id="orb">
+    <circle id="orb-fill"  cx="120" cy="120" r="110" fill="url(#orb-iridescent)"/>
+    <circle id="orb-shine" cx="120" cy="120" r="110" fill="url(#orb-shine)"/>
+  </g>
+
+  <g id="monogram">
+    <text x="120" y="148"
+          text-anchor="middle"
+          font-family="Instrument Serif"
+          font-size="110"
+          font-style="italic"
+          font-weight="400"
+          letter-spacing="-16"
+          fill="#15171C">JT</text>
+  </g>
+</svg>

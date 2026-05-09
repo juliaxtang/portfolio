@@ -1,0 +1,111 @@
+---
+/**
+ * Callout — a single tile in a `<Callouts>` grid.
+ *
+ * Renders an optional eyebrow (e.g. "Design Principle 1"), a title in the
+ * sans display weight, and freeform body content via the default slot.
+ *
+ * `tone` shifts the surface treatment:
+ *   - "soft" (default) — pastel wash on light surface
+ *   - "outline"        — surface card with a subtle border
+ *   - "accent"         — uses --cs-accent (set on the page hero)
+ */
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  number?: string | number;
+  tone?: "soft" | "outline" | "accent";
+}
+const { eyebrow, title, number, tone = "soft" } = Astro.props;
+const cls = ["cs-callout", `cs-callout--${tone}`].join(" ");
+---
+
+<div class={cls}>
+  {(number !== undefined || eyebrow) && (
+    <div class="cs-callout__head">
+      {number !== undefined && <span class="cs-callout__num">{number}</span>}
+      {eyebrow && <p class="cs-callout__eyebrow t-eyebrow">{eyebrow}</p>}
+    </div>
+  )}
+  {title && <h3 class="cs-callout__title">{title}</h3>}
+  <div class="cs-callout__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .cs-callout {
+    --cs-callout-bg: var(--brand-wash-soft);
+    --cs-callout-border: var(--border-subtle);
+    display: grid;
+    gap: var(--s-3);
+    padding: var(--s-6);
+    border-radius: var(--r-lg);
+    background: var(--cs-callout-bg);
+    border: 1px solid var(--cs-callout-border);
+  }
+
+  .cs-callout--outline {
+    --cs-callout-bg: var(--bg-surface);
+    --cs-callout-border: var(--border-default);
+  }
+
+  .cs-callout--accent {
+    --cs-callout-bg: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 22%, transparent);
+    --cs-callout-border: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 60%, transparent);
+  }
+
+  .cs-callout__head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .cs-callout__num {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-full);
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .cs-callout__eyebrow { margin: 0; color: var(--text-tertiary); }
+
+  .cs-callout__title {
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .cs-callout__body {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+  .cs-callout__body :global(p) {
+    margin: 0 0 var(--s-3);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .cs-callout__body :global(p:last-child) { margin: 0; }
+  .cs-callout__body :global(ul) {
+    margin: 0;
+    padding-left: var(--s-5);
+    font-size: 15px;
+  }
+  .cs-callout__body :global(li) { margin-bottom: var(--s-1); }
+  .cs-callout__body :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+</style>

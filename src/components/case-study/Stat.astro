@@ -1,0 +1,59 @@
+---
+/**
+ * Stat — a single oversized metric with a label underneath.
+ *
+ * Wrap multiple <Stat> in a <Stats> grid (or inside <TwoUp>) for a row of
+ * impact numbers — used at the top of case studies for outcomes (DAU,
+ * retention, conversation rate, etc).
+ */
+interface Props {
+  value: string;
+  label: string;
+  caption?: string;
+}
+
+const { value, label, caption } = Astro.props;
+---
+
+<div class="cs-stat">
+  <p class="cs-stat__value">{value}</p>
+  <p class="cs-stat__label">{label}</p>
+  {caption && <p class="cs-stat__caption">{caption}</p>}
+</div>
+
+<style>
+  .cs-stat {
+    display: grid;
+    gap: var(--s-2);
+    padding: var(--s-6);
+    border-radius: var(--r-lg);
+    background: var(--brand-wash-soft);
+    border: 1px solid var(--border-subtle);
+  }
+  .cs-stat__value {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.0;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .cs-stat__label {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .cs-stat__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0;
+  }
+</style>

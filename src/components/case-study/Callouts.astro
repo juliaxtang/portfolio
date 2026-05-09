@@ -1,0 +1,41 @@
+---
+/**
+ * Callouts — grid of small cards, each a discrete idea (problem, principle,
+ * goal, etc). Pair with `<Callout>` children. Adaptive 1/2/3 columns.
+ *
+ * Used for things like:
+ *   - The three problems with Tappy (Static, No UI standardization, No centralized control)
+ *   - Tappy's four design principles
+ *   - Project goals (business / user / product)
+ */
+interface Props {
+  cols?: 2 | 3 | 4;
+  wide?: boolean;
+}
+const { cols = 3, wide = false } = Astro.props;
+const cls = ["cs-callouts", `cs-callouts--${cols}`, wide ? "cs-callouts--wide" : ""]
+  .filter(Boolean).join(" ");
+---
+
+<div class={cls}>
+  <slot />
+</div>
+
+<style>
+  .cs-callouts {
+    display: grid;
+    gap: var(--s-4);
+    margin: var(--s-8) auto;
+    max-width: var(--content-narrow);
+  }
+  .cs-callouts--wide { max-width: var(--content-max); }
+  .cs-callouts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cs-callouts--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cs-callouts--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 900px) {
+    .cs-callouts--3, .cs-callouts--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 540px) {
+    .cs-callouts { grid-template-columns: 1fr; }
+  }
+</style>

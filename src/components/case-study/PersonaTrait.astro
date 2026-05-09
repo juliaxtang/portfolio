@@ -1,0 +1,51 @@
+---
+/**
+ * PersonaTrait — one labelled trait block inside a `<Persona>` card.
+ * Use for "Behaviors", "Frustrations", "Goal", etc.
+ */
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<div class="cs-persona-trait">
+  <p class="t-eyebrow cs-persona-trait__label">{label}</p>
+  <div class="cs-persona-trait__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .cs-persona-trait { display: grid; gap: var(--s-2); }
+  .cs-persona-trait__label { margin: 0; color: var(--text-tertiary); }
+  .cs-persona-trait__body :global(p) {
+    margin: 0 0 var(--s-2);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-primary);
+  }
+  .cs-persona-trait__body :global(p:last-child) { margin: 0; }
+  .cs-persona-trait__body :global(ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+  .cs-persona-trait__body :global(li) {
+    position: relative;
+    padding-left: var(--s-4);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+  .cs-persona-trait__body :global(li::before) {
+    content: "";
+    position: absolute;
+    left: 0; top: 0.6em;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cs-accent, var(--brand-primary));
+  }
+</style>

@@ -1,0 +1,20 @@
+---
+/**
+ * SourceNote — small attribution line for citing data, surveys, or quotes.
+ * Use sparingly under stat blocks or research callouts.
+ */
+---
+<p class="cs-source"><slot /></p>
+
+<style>
+  .cs-source {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    margin: var(--s-3) auto 0;
+    max-width: var(--content-narrow);
+    text-align: center;
+  }
+</style>

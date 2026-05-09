@@ -1,0 +1,36 @@
+---
+/**
+ * Stats — grid container for a row of <Stat> tiles. 1/2/3 columns adaptive.
+ */
+interface Props {
+  cols?: 2 | 3 | 4;
+  wide?: boolean;
+}
+const { cols = 3, wide = false } = Astro.props;
+const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : ""]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<div class={cls}>
+  <slot />
+</div>
+
+<style>
+  .cs-stats {
+    display: grid;
+    gap: var(--s-4);
+    margin: var(--s-8) auto;
+    max-width: var(--content-narrow);
+  }
+  .cs-stats--wide { max-width: var(--content-max); }
+  .cs-stats--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cs-stats--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cs-stats--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 720px) {
+    .cs-stats--3, .cs-stats--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .cs-stats { grid-template-columns: 1fr; }
+  }
+</style>

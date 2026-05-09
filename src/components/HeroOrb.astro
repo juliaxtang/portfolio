@@ -1,0 +1,239 @@
+---
+/**
+ * HeroOrb — single iridescent bubble.
+ *
+ * AT REST: round bubble. No idle deformation.
+ * ON HOVER: surface bulges toward the cursor (vertex shader displacement).
+ * ON SCROLL: ripples while scrolling, settles back to round when scrolling stops.
+ *
+ * Colors are balanced (not pink-dominated) and a strong ambient fill lifts
+ * the unlit side so shadows read as soft white instead of muddy dark.
+ *
+ * Honors prefers-reduced-motion. Pauses when offscreen.
+ */
+interface Props {
+  size?: number;
+}
+const { size = 320 } = Astro.props;
+---
+
+<div class="orb-wrap" style={`--orb-size:${size}px`}>
+  <canvas id="hero-orb" aria-hidden="true"></canvas>
+  <div class="orb-glow" aria-hidden="true"></div>
+</div>
+
+<script is:inline type="module">
+  import * as THREE from "https://esm.sh/three@0.169.0";
+  import { RoomEnvironment } from "https://esm.sh/three@0.169.0/examples/jsm/environments/RoomEnvironment.js";
+
+  const wrap = document.querySelector(".orb-wrap");
+  const canvas = document.getElementById("hero-orb");
+  if (canvas && wrap) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.20;
+
+    const scene = new THREE.Scene();
+
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    const FOV = 38;
+    const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 100);
+    camera.position.set(0, 0, 6.0);
+
+    const geo = new THREE.IcosahedronGeometry(1.1, 32);
+
+    // Iridescent pearl with a near-neutral base. Color comes from the lights
+    // and the iridescence layer, not from a tinted base.
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: 0xfaf4ff,                       // very light, slight lavender
+      metalness: 0.20,
+      roughness: 0.04,
+      iridescence: 1.0,
+      iridescenceIOR: 1.50,
+      iridescenceThicknessRange: [340, 720],
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.04,
+      envMapIntensity: 0.55,
+    });
+
+    let uniforms = null;
+    mat.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = { value: 0 };
+      shader.uniforms.uMouse = { value: new THREE.Vector2(0, 0) };
+      shader.uniforms.uMouseStrength = { value: 0 };
+      shader.uniforms.uScrollVel = { value: 0 };
+      uniforms = shader.uniforms;
+
+      shader.vertexShader = shader.vertexShader.replace(
+        "#include <common>",
+        `#include <common>
+        uniform float uTime;
+        uniform vec2  uMouse;
+        uniform float uMouseStrength;
+        uniform float uScrollVel;
+        `
+      );
+
+      shader.vertexShader = shader.vertexShader.replace(
+        "#include <begin_vertex>",
+        `#include <begin_vertex>
+        // Cursor pull — wide, viscous bulge toward the cursor.
+        vec3 mouseTarget = vec3(uMouse * 1.5, 0.6);
+        float mDist = length(position - mouseTarget);
+        float mFalloff = exp(-mDist * 1.0) * uMouseStrength;
+        transformed += normal * mFalloff * 0.55;
+
+        // Scroll-velocity ripple — only deforms while scrolling.
+        transformed += normal * sin(position.y * 5.0 + uTime * 5.5)
+                              * uScrollVel * 0.07;
+        `
+      );
+    };
+
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+
+    // Lights — balanced cool-and-warm, no single color dominates.
+    const lightA = new THREE.PointLight(0xffadcc, 1.8, 20); // soft pink (was 3.2)
+    lightA.position.set(-3, 2, 4);
+    const lightB = new THREE.PointLight(0xa8d0ff, 2.2, 20); // sky blue
+    lightB.position.set(3, -2, 4);
+    const lightC = new THREE.PointLight(0xc8a8ff, 2.0, 20); // lavender
+    lightC.position.set(0, 4, -4);
+
+    // White ambient + soft hemisphere lift the shadowed side so it reads
+    // as soft white instead of muddy dark.
+    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    const hemi = new THREE.HemisphereLight(0xfff6fa, 0xeef3ff, 0.40);
+    scene.add(lightA, lightB, lightC, ambient, hemi);
+
+    // Cursor + scroll state.
+    let targetMx = 0, targetMy = 0;
+    let mx = 0, my = 0;
+    let targetMs = 0, ms = 0;
+
+    function onMove(e) {
+      const r = wrap.getBoundingClientRect();
+      targetMx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      targetMy = -((e.clientY - r.top) / r.height - 0.5) * 2;
+      targetMs = 1.0;
+    }
+    function onTouch(e) { if (e.touches && e.touches[0]) onMove(e.touches[0]); }
+    function onLeave() {
+      targetMs = 0;
+      targetMx = 0;
+      targetMy = 0;
+    }
+    wrap.addEventListener("mousemove", onMove);
+    wrap.addEventListener("mouseleave", onLeave);
+    wrap.addEventListener("touchmove", onTouch, { passive: true });
+    wrap.addEventListener("touchend", onLeave);
+
+    let scrollVel = 0;
+    let lastScrollY = window.scrollY || 0;
+    window.addEventListener(
+      "scroll",
+      () => {
+        const dy = Math.abs(window.scrollY - lastScrollY);
+        scrollVel = Math.min(scrollVel + dy * 0.05, 1.0);
+        lastScrollY = window.scrollY;
+      },
+      { passive: true }
+    );
+
+    function resize() {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w === 0 || h === 0) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    let visible = true;
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(
+        (entries) => { visible = entries[0].isIntersecting; },
+        { threshold: 0 }
+      ).observe(canvas);
+    }
+
+    const clock = new THREE.Clock();
+    function loop() {
+      requestAnimationFrame(loop);
+      if (!visible) return;
+      const t = clock.getElapsedTime();
+
+      if (uniforms) {
+        if (reduceMotion) {
+          uniforms.uTime.value = 0;
+          uniforms.uMouse.value.set(0, 0);
+          uniforms.uMouseStrength.value = 0;
+          uniforms.uScrollVel.value = 0;
+        } else {
+          ms += (targetMs - ms) * 0.14;
+          mx += (targetMx - mx) * 0.07;
+          my += (targetMy - my) * 0.07;
+          scrollVel *= 0.90;
+          if (scrollVel < 0.01) scrollVel = 0;
+          uniforms.uTime.value = t;
+          uniforms.uMouse.value.set(mx, my);
+          uniforms.uMouseStrength.value = ms;
+          uniforms.uScrollVel.value = scrollVel;
+        }
+      }
+
+      if (!reduceMotion) {
+        mesh.rotation.y = t * 0.10;
+        mesh.rotation.x = Math.sin(t * 0.18) * 0.05;
+      }
+
+      renderer.render(scene, camera);
+    }
+    loop();
+  }
+</script>
+
+<style>
+  .orb-wrap {
+    position: relative;
+    width: var(--orb-size);
+    height: var(--orb-size);
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+    cursor: grab;
+  }
+  .orb-wrap:active { cursor: grabbing; }
+  #hero-orb {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+  .orb-glow {
+    position: absolute;
+    inset: -22%;
+    background: var(--brand-aurora);
+    filter: blur(48px);
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 50%;
+  }
+  @media (max-width: 720px) {
+    .orb-wrap { width: min(72vw, 320px); }
+  }
+</style>

@@ -1,0 +1,157 @@
+---
+/**
+ * MoreWork — "Check out some of my other work!" section at the bottom of
+ * each case study. Pulls sibling case studies from the projects collection,
+ * orders them by `order`, and shows up to N (default 2) excluding the current.
+ */
+import { getCollection } from "astro:content";
+
+interface Props {
+  currentSlug: string;
+  limit?: number;
+}
+const { currentSlug, limit = 2 } = Astro.props;
+
+const all = await getCollection("projects", ({ data }) => !data.draft);
+const siblings = all
+  .filter((p) => p.id !== currentSlug && p.slug !== currentSlug)
+  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
+  .slice(0, limit);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+{siblings.length > 0 && (
+  <section class="cs-more">
+    <div class="cs-more__inner">
+      <h2 class="cs-more__title">Check out some of my other work</h2>
+      <ul class="cs-more__grid">
+        {siblings.map((p) => {
+          const slug = (p as any).slug ?? p.id;
+          const cover = p.data.cover ?? p.data.hero?.src;
+          const coverResolved = cover && (cover.startsWith("http") || cover.startsWith(base)
+            ? cover
+            : `${base}${cover.startsWith("/") ? "" : "/"}${cover}`);
+          return (
+            <li>
+              <a class="cs-more__cell" href={`${base}/product-design/${slug}`}>
+                <div class="cs-more__media">
+                  {coverResolved ? <img src={coverResolved} alt={p.data.coverAlt ?? p.data.hero?.alt ?? ""} loading="lazy" /> : <div class="cs-more__placeholder" />}
+                </div>
+                <div class="cs-more__body">
+                  <h3 class="cs-more__h">{p.data.title}<span class="cs-more__arrow" aria-hidden="true">→</span></h3>
+                  <p class="cs-more__sub">{p.data.summary}</p>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .cs-more {
+    padding-block: var(--s-20);
+    background: var(--bg-sunken-warm);
+    border-top: 1px solid var(--border-subtle);
+  }
+  .cs-more__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 var(--s-8);
+  }
+  @media (max-width: 720px) {
+    .cs-more__inner { padding: 0 var(--s-5); }
+  }
+
+  .cs-more__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-8);
+  }
+
+  .cs-more__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-5);
+  }
+  @media (max-width: 720px) {
+    .cs-more__grid { grid-template-columns: 1fr; }
+  }
+
+  .cs-more__cell {
+    display: grid;
+    gap: var(--s-4);
+    padding: var(--s-4);
+    border-radius: var(--r-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: transform var(--dur-normal) var(--ease-out),
+                box-shadow var(--dur-normal) var(--ease-out),
+                border-color var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__cell:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--brand-primary-2);
+  }
+
+  .cs-more__media {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--brand-aurora);
+  }
+  .cs-more__media img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .cs-more__cell:hover .cs-more__media img { transform: scale(1.03); }
+
+  .cs-more__placeholder {
+    width: 100%; height: 100%;
+    background: var(--brand-gradient-soft);
+  }
+
+  .cs-more__body { padding: var(--s-2) var(--s-3) var(--s-3); display: grid; gap: var(--s-2); }
+
+  .cs-more__h {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    line-height: 1.2;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+  }
+  .cs-more__arrow {
+    font-size: 18px;
+    color: var(--text-tertiary);
+    transition: transform var(--dur-normal) var(--ease-out),
+                color var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__cell:hover .cs-more__arrow {
+    transform: translateX(4px);
+    color: var(--text-primary);
+  }
+  .cs-more__sub {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+</style>

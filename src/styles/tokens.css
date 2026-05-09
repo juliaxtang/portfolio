@@ -1,0 +1,130 @@
+/* ==========================================================
+   DESIGN TOKENS
+   Single source of truth. Mirrors style-guide.html.
+   Light mode by default. Dark mode is wired but not exposed yet.
+   ========================================================== */
+:root {
+  /* Type families */
+  --font-display: "Instrument Serif", "Times New Roman", serif;
+  --font-sans:    "Geist", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  --font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* Brand — fixed across modes */
+  --brand-primary:    #C5DCEA;   /* powder blue */
+  --brand-primary-2:  #A9C7DC;   /* powder blue / pressed */
+  --brand-secondary:  #F4D9CC;   /* warm peach / blush */
+  --brand-secondary-2:#E9C2B0;
+  --brand-accent:     #DCD2E8;   /* lavender mist */
+
+  --brand-gradient:      linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%);
+  --brand-gradient-soft: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%);
+  --brand-aurora:        radial-gradient(60% 80% at 20% 30%, #C5DCEA 0%, transparent 60%),
+                         radial-gradient(60% 70% at 80% 20%, #DCD2E8 0%, transparent 60%),
+                         radial-gradient(70% 80% at 60% 90%, #F4D9CC 0%, transparent 60%),
+                         #FDFCFA;
+
+  --brand-underline:  #C5DCEA;
+  --brand-selection:  #C5DCEA;
+
+  /* Radii */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 20px;
+  --r-xl: 32px;
+  --r-full: 9999px;
+
+  /* Spacing scale (4pt) */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+  --s-32: 128px;
+
+  /* Motion */
+  --ease:     cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast:   150ms;
+  --dur-normal: 300ms;
+  --dur-slow:   600ms;
+  --dur-slower: 800ms;
+
+  /* Layout */
+  --content-max:    1240px;
+  --content-narrow: 760px;
+
+  /* Breakpoints (used in CSS only via @media — kept here as documentation) */
+  --bp-md: 720px;
+  --bp-lg: 900px;
+}
+
+/* Light mode (default) */
+:root,
+[data-theme="light"] {
+  --bg-canvas:      #FDFCFA;
+  --bg-surface:     #FFFFFF;
+  --bg-sunken:      #EFF5FA;
+  --bg-sunken-warm: #F4F0EA;
+  --bg-elevated:    #FFFFFF;
+
+  --brand-wash:      rgba(197, 220, 234, 0.40);
+  --brand-wash-soft: rgba(197, 220, 234, 0.20);
+
+  --text-primary:   #15171C;
+  --text-secondary: #5A5D66;
+  --text-tertiary:  #8B8E96;
+  --text-disabled:  #BCBFC6;
+  --text-inverse:   #FDFCFA;
+  --text-on-brand:  #15171C;
+
+  --border-subtle:  #EAE6DF;
+  --border-default: #D8D3CB;
+  --border-strong:  #15171C;
+
+  --icon-primary:   #15171C;
+  --icon-secondary: #5A5D66;
+  --icon-tertiary:  #8B8E96;
+
+  --shadow-sm: 0 1px 2px rgba(20,22,28,.04), 0 1px 1px rgba(20,22,28,.03);
+  --shadow-md: 0 4px 12px rgba(20,22,28,.06), 0 2px 4px rgba(20,22,28,.04);
+  --shadow-lg: 0 24px 48px -12px rgba(20,22,28,.12), 0 8px 16px rgba(20,22,28,.06);
+}
+
+/* Dark mode (wired but not yet exposed via toggle) */
+[data-theme="dark"] {
+  --bg-canvas:      #0C0D11;
+  --bg-surface:     #15171C;
+  --bg-sunken:      #1A1F28;
+  --bg-sunken-warm: #1F1C18;
+  --bg-elevated:    #1E2027;
+
+  --brand-wash:      rgba(197, 220, 234, 0.55);
+  --brand-wash-soft: rgba(197, 220, 234, 0.32);
+
+  --text-primary:   #F5F2EC;
+  --text-secondary: #A4A8B2;
+  --text-tertiary:  #6E727A;
+  --text-disabled:  #494D55;
+  --text-inverse:   #15171C;
+  --text-on-brand:  #15171C;
+
+  --border-subtle:  #22252D;
+  --border-default: #33373F;
+  --border-strong:  #F5F2EC;
+
+  --icon-primary:   #F5F2EC;
+  --icon-secondary: #A4A8B2;
+  --icon-tertiary:  #6E727A;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.3);
+  --shadow-lg: 0 24px 48px -12px rgba(0,0,0,.6), 0 8px 16px rgba(0,0,0,.4);
+}

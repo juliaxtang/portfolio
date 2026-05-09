@@ -1,0 +1,203 @@
+---
+/**
+ * CompareSlider — drag-to-compare before/after slider for two images.
+ *
+ * Used in v2 to show pairs like "What Joe sees" vs "What Emily sees" or
+ * "2019 Festival Mode" vs "2022 Festival Mode" as a single interactive
+ * artifact instead of two side-by-side images.
+ *
+ * Falls back to a static 50/50 split if JS is disabled.
+ */
+interface Props {
+  before: string;
+  beforeAlt: string;
+  beforeLabel?: string;
+  after: string;
+  afterAlt: string;
+  afterLabel?: string;
+  /** Aspect ratio for the framing box. */
+  aspect?: string;
+  /** When true, frames each image in a phone shape (9:19.5). */
+  device?: "phone" | "auto";
+}
+const {
+  before,
+  beforeAlt,
+  beforeLabel = "Before",
+  after,
+  afterAlt,
+  afterLabel = "After",
+  aspect,
+  device = "auto",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const finalAspect = aspect ?? (device === "phone" ? "9 / 19.5" : "4 / 3");
+---
+
+<figure class={"cmp-slider " + (device === "phone" ? "cmp-slider--phone" : "")} style={`aspect-ratio:${finalAspect}`} data-cmp>
+  <div class="cmp-slider__wrap">
+    <div class="cmp-slider__after" data-after>
+      <img src={resolve(after)} alt={afterAlt} loading="lazy" draggable="false" />
+      <span class="cmp-slider__label cmp-slider__label--after">{afterLabel}</span>
+    </div>
+    <div class="cmp-slider__before" data-before>
+      <img src={resolve(before)} alt={beforeAlt} loading="lazy" draggable="false" />
+      <span class="cmp-slider__label cmp-slider__label--before">{beforeLabel}</span>
+    </div>
+    <div class="cmp-slider__handle" data-handle role="slider" tabindex="0" aria-label="Drag to compare" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <span class="cmp-slider__handle-grip" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M5 3l-3 5 3 5V3zm6 0v10l3-5-3-5z"/></svg>
+      </span>
+    </div>
+  </div>
+</figure>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      document.querySelectorAll("[data-cmp]").forEach((root) => {
+        const beforeEl = root.querySelector("[data-before]");
+        const handle = root.querySelector("[data-handle]");
+        if (!beforeEl || !handle) return;
+        let pct = 50;
+        const set = (p) => {
+          pct = Math.max(0, Math.min(100, p));
+          beforeEl.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+          handle.style.left = pct + "%";
+          handle.setAttribute("aria-valuenow", String(Math.round(pct)));
+        };
+        set(50);
+
+        let dragging = false;
+        const onMove = (e) => {
+          if (!dragging) return;
+          const r = root.getBoundingClientRect();
+          const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+          set((x / r.width) * 100);
+          if (e.cancelable) e.preventDefault();
+        };
+        const startDrag = (e) => {
+          dragging = true;
+          onMove(e);
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", stopDrag, { once: true });
+        };
+        const stopDrag = () => {
+          dragging = false;
+          window.removeEventListener("pointermove", onMove);
+        };
+        root.addEventListener("pointerdown", startDrag);
+
+        handle.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") set(pct - 4);
+          else if (e.key === "ArrowRight") set(pct + 4);
+        });
+      });
+    }
+  })();
+</script>
+
+<style>
+  .cmp-slider {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    user-select: none;
+    background: var(--bg-sunken);
+    box-shadow: var(--shadow-md);
+  }
+  .cmp-slider--phone {
+    max-width: 320px;
+    border-radius: 32px;
+  }
+
+  .cmp-slider__wrap {
+    position: absolute;
+    inset: 0;
+    cursor: ew-resize;
+  }
+
+  .cmp-slider__before,
+  .cmp-slider__after {
+    position: absolute;
+    inset: 0;
+  }
+  .cmp-slider__before {
+    /* Initial 50/50 split via clip-path; updated by JS. */
+    clip-path: inset(0 50% 0 0);
+    z-index: 2;
+    will-change: clip-path;
+  }
+  .cmp-slider__before img,
+  .cmp-slider__after img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  .cmp-slider__label {
+    position: absolute;
+    top: var(--s-3);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+    background: rgba(253, 252, 250, 0.92);
+    padding: 4px 10px;
+    border-radius: var(--r-full);
+    pointer-events: none;
+  }
+  .cmp-slider__label--before { left: var(--s-3); }
+  .cmp-slider__label--after  { right: var(--s-3); }
+
+  .cmp-slider__handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: rgba(253, 252, 250, 0.9);
+    box-shadow: 0 0 0 1px rgba(20, 22, 28, 0.12);
+    z-index: 3;
+    transform: translateX(-1px);
+    cursor: ew-resize;
+  }
+  .cmp-slider__handle:focus-visible { outline: 2px solid var(--brand-primary-2); outline-offset: 2px; }
+
+  .cmp-slider__handle-grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    background: var(--bg-surface);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cmp-slider__before { transition: none; }
+  }
+</style>

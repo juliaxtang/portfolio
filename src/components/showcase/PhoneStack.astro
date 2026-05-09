@@ -1,0 +1,248 @@
+---
+/**
+ * PhoneStack — animated stack of phone mockups for case-study showcases.
+ *
+ * Phones fan out slightly on hover, and auto-cycle to bring each one to the
+ * front every few seconds. Use for showing variety: 3-5 phones works best.
+ *
+ * Each phone gets a label that fades in when it's the active card.
+ *
+ * Usage:
+ *   <PhoneStack
+ *     items={[
+ *       { src: "/projects/festival-mode/phone-explore-entry.png", alt: "Explore", label: "Explore entry" },
+ *       { src: "/projects/festival-mode/phone-opting-in.png",     alt: "Opt-in",  label: "Multi-festival opt-in" },
+ *       { src: "/projects/festival-mode/phone-cardstack.png",     alt: "Stack",   label: "Festival cardstack" },
+ *     ]}
+ *   />
+ */
+interface Item {
+  src: string;
+  alt: string;
+  label?: string;
+}
+interface Props {
+  items: Item[];
+  intervalMs?: number;
+  /** "soft" gradient floor behind the stack, or "none" for transparent. */
+  floor?: "soft" | "none";
+  /** When true, each phone has a phone-shaped frame around the image. */
+  frame?: boolean;
+  /** CSS aspect-ratio for each card. Defaults to a phone (9 / 19.5). Set
+   *  to something landscape-y like "1.13 / 1" for flow-diagram images. */
+  aspect?: string;
+  /** object-fit for the image. "cover" (default) crops to fill the card;
+   *  "contain" letterboxes so the entire image is visible. */
+  fit?: "cover" | "contain";
+  /** Card width as a clamp() expression. Defaults to a phone-sized clamp;
+   *  override for wider cards like flow diagrams. */
+  cardWidth?: string;
+}
+const {
+  items,
+  intervalMs = 3500,
+  floor = "soft",
+  frame = true,
+  aspect = "9 / 19.5",
+  fit = "cover",
+  cardWidth = "clamp(180px, 26%, 260px)",
+} = Astro.props;
+const cardStyle = `--ps-aspect:${aspect};--ps-fit:${fit};--ps-card-w:${cardWidth};`;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+const id = "ps-" + Math.random().toString(36).slice(2, 9);
+---
+
+<div class={"phone-stack" + (floor === "soft" ? " phone-stack--floor" : "")} data-interval={intervalMs} id={id} style={cardStyle}>
+  <div class="phone-stack__deck" data-deck>
+    {items.map((it, i) => (
+      <div
+        class={"phone-stack__card" + (frame ? " phone-stack__card--framed" : "")}
+        data-i={i}
+        style={`--i:${i}`}
+      >
+        <img src={resolve(it.src)} alt={it.alt} loading="lazy" draggable="false" />
+      </div>
+    ))}
+  </div>
+  {items.some((i) => i.label) && (
+    <div class="phone-stack__labels" data-labels>
+      {items.map((it, i) => (
+        <p class={"phone-stack__label" + (i === 0 ? " is-active" : "")} data-i={i}>{it.label || ""}</p>
+      ))}
+    </div>
+  )}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      document.querySelectorAll(".phone-stack").forEach((stack) => {
+        const cards = Array.from(stack.querySelectorAll("[data-i]"));
+        const labels = Array.from(stack.querySelectorAll("[data-labels] [data-i]"));
+        const interval = parseInt(stack.dataset.interval || "3500", 10);
+        if (cards.length < 2) return;
+
+        let active = 0;
+        const apply = () => {
+          cards.forEach((c) => {
+            const i = parseInt(c.dataset.i, 10);
+            const offset = (i - active + cards.length) % cards.length;
+            c.style.setProperty("--offset", String(offset));
+            c.classList.toggle("is-active", offset === 0);
+          });
+          labels.forEach((l) => {
+            l.classList.toggle("is-active", parseInt(l.dataset.i, 10) === active);
+          });
+        };
+        apply();
+
+        let t = setInterval(() => {
+          active = (active + 1) % cards.length;
+          apply();
+        }, interval);
+
+        // Pause on hover; click to advance manually.
+        stack.addEventListener("pointerenter", () => clearInterval(t));
+        stack.addEventListener("pointerleave", () => {
+          t = setInterval(() => {
+            active = (active + 1) % cards.length;
+            apply();
+          }, interval);
+        });
+        stack.addEventListener("click", () => {
+          active = (active + 1) % cards.length;
+          apply();
+        });
+      });
+    }
+  })();
+</script>
+
+<style>
+  .phone-stack {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    aspect-ratio: 1.6 / 1;
+    perspective: 1400px;
+    cursor: pointer;
+  }
+  .phone-stack--floor::before {
+    content: "";
+    position: absolute;
+    inset: auto 8% 4% 8%;
+    height: 28%;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%, color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 38%, transparent), transparent 70%);
+    filter: blur(20px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .phone-stack__deck {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    transform-style: preserve-3d;
+  }
+
+  .phone-stack__card {
+    --offset: 0;
+    --total: 5;
+    position: absolute;
+    width: var(--ps-card-w, clamp(180px, 26%, 260px));
+    aspect-ratio: var(--ps-aspect, 9 / 19.5);
+    border-radius: 28px;
+    overflow: hidden;
+    transition:
+      transform 800ms var(--ease-out),
+      opacity 600ms var(--ease-out),
+      filter 600ms var(--ease-out);
+    /* Cards behind the active one fan out to the sides and recede. */
+    transform:
+      translateX(calc(var(--offset) * 18%))
+      translateY(calc(var(--offset) * 8px))
+      translateZ(calc(var(--offset) * -80px))
+      rotate(calc(var(--offset) * 6deg))
+      scale(calc(1 - var(--offset) * 0.06));
+    z-index: calc(100 - var(--offset) * 10);
+    opacity: clamp(0, calc(1 - var(--offset) * 0.18), 1);
+    filter: brightness(calc(1 - var(--offset) * 0.07));
+    box-shadow:
+      0 30px 60px -25px rgba(20, 22, 28, 0.18),
+      0 12px 24px -12px rgba(20, 22, 28, 0.10);
+    will-change: transform, opacity, filter;
+  }
+
+  .phone-stack__card--framed {
+    background: #0c0d11;
+    padding: 6px;
+  }
+
+  .phone-stack__card.is-active {
+    box-shadow:
+      0 50px 100px -30px rgba(20, 22, 28, 0.30),
+      0 20px 40px -16px rgba(20, 22, 28, 0.18);
+  }
+
+  .phone-stack__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: var(--ps-fit, cover);
+    border-radius: 22px;
+    display: block;
+    background: #0c0d11;
+  }
+
+  .phone-stack:hover .phone-stack__card { transition-duration: 400ms; }
+  /* Slight magnification of the active card on hover. */
+  .phone-stack:hover .phone-stack__card.is-active {
+    transform: translateY(-6px) scale(1.02);
+  }
+
+  .phone-stack__labels {
+    position: absolute;
+    bottom: -36px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
+  }
+  .phone-stack__label {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity 300ms var(--ease-out),
+      transform 300ms var(--ease-out);
+  }
+  .phone-stack__label.is-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-stack__card { transition: none; }
+    .phone-stack__label { transition: none; }
+  }
+</style>

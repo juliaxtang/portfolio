@@ -1,0 +1,394 @@
+---
+/**
+ * Homepage v2 — one-pager experiment.
+ *
+ * Each case study is inlined as a `<Showcase>` block on the home page itself
+ * (Rina Kang / Aaron James-style mini case studies) instead of linking out
+ * to a deep case-study page. Each block has an interactive/animated hero
+ * (auto-cycling phone stack, before/after slider, or looping GIF).
+ *
+ * Lives at /v2 so it can be compared with the canonical / homepage.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FadeIn from "../components/FadeIn.astro";
+import HeroOrb from "../components/HeroOrb.astro";
+import CompanyPills from "../components/CompanyPills.astro";
+import Showcase from "../components/showcase/Showcase.astro";
+import PhoneStack from "../components/showcase/PhoneStack.astro";
+import CompareSlider from "../components/showcase/CompareSlider.astro";
+
+// Hero greeting matches index.astro so the entry experience stays consistent.
+const delightHtml = ["d", "e", "l", "i", "g", "h", "t"]
+  .map((c, i) => `<span class="wave-letter" style="--i:${i}">${c}</span>`)
+  .join("");
+const juliaHtml = ["J", "u", "l", "i", "a"]
+  .map((c, i) => `<span class="julia-letter" style="--i:${i}">${c}</span>`)
+  .join("");
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<BaseLayout title="Julia Tang | Design (v2)" description="One-pager portfolio of Julia Tang's product design work.">
+  <section class="v2-hero">
+    <div class="page v2-hero__grid">
+      <div class="v2-hero__text">
+        <FadeIn>
+          <p class="v2-hero__greeting">
+            <span class="v2-hero__greeting-text">Hi, I'm <span class="julia-name" set:html={juliaHtml} />.</span>
+            <span class="v2-hero__wave" aria-hidden="true">👋</span>
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={140}>
+          <p class="v2-hero__lede">
+            A Staff Product Designer with 10+ years building and shipping
+            products that
+            <span class="fx fx--delight">
+              <span class="fx-icon fx-icon--tl" aria-hidden="true">✨</span>
+              <span class="wave-text" set:html={delightHtml} />
+              <span class="fx-icon fx-icon--tr" aria-hidden="true">✨</span>
+            </span>
+            users and
+            <span class="fx fx--biz">
+              move the business
+              <span class="fx-icon fx-icon--brfloat" aria-hidden="true">📈</span>
+            </span>.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={240}>
+          <p class="v2-hero__lede">
+            I solve ambiguous problems and ship
+            <span class="fx fx--launch">
+              <span class="v2-hero__pop">0-to-1</span>
+              <span class="fx-icon fx-icon--up" aria-hidden="true">🚀</span>
+            </span>
+            features that scale to
+            <span class="v2-hero__pop">millions</span>.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={340}>
+          <CompanyPills />
+        </FadeIn>
+      </div>
+
+      <FadeIn delay={300} class="v2-hero__orb-slot">
+        <HeroOrb size={320} />
+      </FadeIn>
+    </div>
+  </section>
+
+  <section class="v2-work">
+    <p class="t-eyebrow v2-work__eyebrow">Selected work</p>
+  </section>
+
+  <FadeIn>
+    <Showcase
+      eyebrow="Tinder · 2023 · Product Design Lead"
+      title="Tappy Cloud"
+      tagline="Turned Tinder's static profile system into a backend-driven, dynamically configurable one. The centralized tool that came out of it, TaCo, has since powered 50+ profile experiments."
+      stats={[
+        { value: "↑ 20%", label: "More likes sent across all experiments" },
+        { value: "$50–110M", label: "In revenue lift, attributed" },
+        { value: "50+", label: "Tappy experiments launched on TaCo" },
+      ]}
+      ctaHref={`${base}/product-design/tappy-cloud`}
+      accent="#FD297C"
+      reverse
+      id="tappy-cloud"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/tappy-cloud/phone-just-joined.png", alt: "Just Joined content tag profile", label: "Content tags" },
+          { src: "/projects/tappy-cloud/phone-distance.png",    alt: "Distance optimization on a profile", label: "Distance experiment" },
+          { src: "/projects/tappy-cloud/phone-fixation.png",    alt: "Eye-tracking fixation map on a profile", label: "Where attention lands" },
+          { src: "/projects/tappy-cloud/phone-joe.png",         alt: "Distance-first profile layout for men", label: "What Joe sees" },
+        ]}
+        aspect="1 / 2"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      eyebrow="Tinder · 2022 · Product Design Lead"
+      title="Festival Mode"
+      tagline="A seasonal experience on Tinder Explore that lets festivalgoers meet others going to the same festival. Two months from kickoff to launch, with engagement that doubled the main Tinder swipe deck."
+      stats={[
+        { value: "2×", label: "More likes sent and convos started vs. main app" },
+        { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
+        { value: "2 months", label: "From kickoff to launch" },
+      ]}
+      ctaHref={`${base}/product-design/festival-mode`}
+      accent="#FA7255"
+      id="festival-mode"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/festival-mode/phone-explore-entry.png", alt: "Festival Mode entry on Explore",       label: "Explore entry" },
+          { src: "/projects/festival-mode/phone-opting-in.png",     alt: "Multi-festival opt-in",                label: "Opt in to festivals" },
+          { src: "/projects/festival-mode/phone-cardstack.png",     alt: "EDC Las Vegas branded cardstack",      label: "Festival cardstack" },
+          { src: "/projects/festival-mode/phone-toggling.png",      alt: "Toggle festival lineup",               label: "Toggle festivals" },
+        ]}
+        aspect="1 / 2"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      eyebrow="TV Time · 2020 · UX Designer"
+      title="Custom Lists"
+      tagline="Redesigned TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable. Lifted list creation by double digits across new and existing users."
+      stats={[
+        { value: "↑ 14%", label: "More new users created a list" },
+        { value: "↑ 15%", label: "More lists created by new users" },
+        { value: "↑ 10%", label: "More lists created by existing users" },
+      ]}
+      ctaHref={`${base}/product-design/custom-lists`}
+      accent="#F4D9CC"
+      reverse
+      id="custom-lists"
+    >
+      <div class="v2-gif-wrap">
+        <div class="v2-gif-wrap__device">
+          <img
+            src={`${base}/projects/custom-lists/creating-list.gif`}
+            alt="Animated walkthrough of creating a new Custom List with personalization options"
+            loading="lazy"
+          />
+        </div>
+        <div class="v2-gif-wrap__device v2-gif-wrap__device--secondary">
+          <img
+            src={`${base}/projects/custom-lists/editing-flow.gif`}
+            alt="Animated walkthrough of editing a Custom List's contents"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      eyebrow="TV Time · 2020 · UX Designer"
+      title="Onboarding Redesign"
+      tagline="A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop."
+      stats={[
+        { value: "100%", label: "Understood key functions by end of session" },
+        { value: "100%", label: "Understood key benefits by end of session" },
+        { value: "5 days", label: "Sprint kickoff to tested prototype" },
+      ]}
+      ctaHref={`${base}/product-design/tv-time-onboarding`}
+      accent="#DCD2E8"
+      id="tv-time-onboarding"
+    >
+      <PhoneStack
+        items={[
+          { src: "/projects/tv-time-onboarding/flow-tracker.webp",    alt: "Onboarding flow for the Tracker user type",     label: "Tracker flow" },
+          { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Onboarding flow for the Discoverer user type", label: "Discoverer flow" },
+          { src: "/projects/tv-time-onboarding/flow-watcher.webp",    alt: "Onboarding flow for the Watcher user type",    label: "Watcher flow" },
+        ]}
+        aspect="690 / 610"
+        fit="contain"
+        cardWidth="clamp(280px, 60%, 460px)"
+        frame={false}
+      />
+    </Showcase>
+  </FadeIn>
+</BaseLayout>
+
+<style>
+  .v2-hero {
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--s-8);
+    padding-bottom: var(--s-12);
+  }
+
+  .v2-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: var(--s-10);
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    .v2-hero__grid { grid-template-columns: 1fr; gap: var(--s-6); }
+  }
+
+  .v2-hero__text { display: grid; gap: var(--s-6); }
+
+  .v2-hero__greeting {
+    margin: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: 1.0;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--s-4);
+  }
+  .v2-hero__greeting-text { display: inline-block; }
+  .v2-hero__wave {
+    display: inline-block;
+    font-style: normal;
+    font-size: 0.7em;
+    transform-origin: 70% 70%;
+    animation: hero-wave 2.4s var(--ease-out) 700ms 1 normal both;
+  }
+  @keyframes hero-wave {
+    0%   { transform: rotate(0); }
+    10%  { transform: rotate(16deg); }
+    20%  { transform: rotate(-10deg); }
+    30%  { transform: rotate(16deg); }
+    50%  { transform: rotate(12deg); }
+    60%, 100% { transform: rotate(0); }
+  }
+
+  .julia-name { display: inline-block; }
+  :global(.julia-letter) { display: inline-block; }
+
+  .v2-hero__lede {
+    font-size: clamp(17px, 1.6vw, 20px);
+    line-height: 1.55;
+    color: var(--text-primary);
+    max-width: 560px;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .v2-hero__pop {
+    display: inline-block;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 100%;
+    padding: 0 4px;
+    border-radius: var(--r-xs);
+  }
+
+  /* Re-using the .fx framework from index.astro. Duplicated locally so the
+     file is self-contained until those bits are extracted into a component. */
+  .fx { position: relative; display: inline-block; cursor: default; }
+  .fx-icon {
+    position: absolute;
+    font-style: normal;
+    font-size: 0.7em;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 240ms var(--ease-out), transform 540ms var(--ease-out);
+  }
+  .fx-icon--tl {
+    top: -0.1em; left: -0.7em;
+    transform: translate(0.4em, 0.3em) scale(0.6) rotate(-25deg);
+  }
+  .fx:hover .fx-icon--tl { opacity: 1; transform: translate(-0.1em, -0.5em) scale(1.05) rotate(-12deg); }
+  .fx-icon--tr {
+    top: -0.1em; right: -0.7em;
+    transform: translate(-0.4em, 0.3em) scale(0.6) rotate(25deg);
+  }
+  .fx:hover .fx-icon--tr { opacity: 1; transform: translate(0.1em, -0.5em) scale(1.05) rotate(12deg); }
+  .fx-icon--brfloat {
+    bottom: -0.1em; right: -1.05em;
+    transform: translateY(0.4em) scale(0.7) rotate(8deg);
+  }
+  .fx:hover .fx-icon--brfloat { opacity: 1; transform: translateY(-0.55em) scale(1.05) rotate(-4deg); }
+  .fx-icon--up {
+    top: -0.05em; right: -1em;
+    transform: translateY(0.5em) rotate(40deg) scale(0.6);
+  }
+  .fx:hover .fx-icon--up { opacity: 1; transform: translateY(-0.65em) rotate(-25deg) scale(1.05); }
+
+  .fx--delight, .fx--biz, .fx--launch {
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
+    transition: background-size 280ms var(--ease-out), background-image 280ms var(--ease-out);
+  }
+  .fx--delight:hover {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+  }
+  .fx--biz:hover {
+    background-image: linear-gradient(var(--brand-secondary), var(--brand-secondary));
+    background-size: 100% 0.55em;
+  }
+  .fx--launch:hover {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+  }
+  :global(.wave-text) { display: inline-block; }
+  :global(.wave-letter) { display: inline-block; }
+
+  :global(.v2-hero__orb-slot) {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  @media (max-width: 900px) {
+    :global(.v2-hero__orb-slot) { justify-content: center; }
+  }
+
+  .v2-work {
+    max-width: var(--content-max);
+    margin: var(--s-12) auto 0;
+    padding: 0 var(--s-8);
+  }
+  .v2-work__eyebrow {
+    margin: 0;
+    color: var(--text-tertiary);
+  }
+
+  /* === GIF/video wrap for Custom Lists === */
+  .v2-gif-wrap {
+    position: relative;
+    aspect-ratio: 1.6 / 1;
+    perspective: 1400px;
+  }
+  .v2-gif-wrap__device {
+    position: absolute;
+    inset: 0;
+    width: 56%;
+    margin-inline: auto;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #0c0d11;
+    padding: 6px;
+    box-shadow: 0 30px 60px -25px rgba(20,22,28,0.18), 0 12px 24px -12px rgba(20,22,28,0.10);
+    transform: translateY(-2%) rotate(-3deg);
+    transition: transform 600ms var(--ease-out), box-shadow 600ms var(--ease-out);
+  }
+  .v2-gif-wrap__device--secondary {
+    transform: translate(28%, 6%) rotate(6deg) scale(0.92);
+    z-index: -1;
+    filter: brightness(0.95);
+  }
+  .v2-gif-wrap:hover .v2-gif-wrap__device {
+    transform: translate(-8%, -4%) rotate(-5deg);
+  }
+  .v2-gif-wrap:hover .v2-gif-wrap__device--secondary {
+    transform: translate(36%, 8%) rotate(8deg) scale(0.94);
+  }
+  .v2-gif-wrap__device img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 22px;
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .v2-gif-wrap__device { transition: none; }
+    .v2-hero__wave { animation: none; }
+  }
+</style>

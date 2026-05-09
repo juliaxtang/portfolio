@@ -1,0 +1,199 @@
+---
+/**
+ * Showcase — one project block on the v2 home page.
+ *
+ * Layout (desktop):
+ *   ┌──────────────────┬──────────────────┐
+ *   │ eyebrow / title  │  hero (slot)     │
+ *   │ tagline          │                  │
+ *   │ stats            │                  │
+ *   │ CTA              │                  │
+ *   └──────────────────┴──────────────────┘
+ *
+ * On mobile, the hero stacks above the text.
+ *
+ * Stats are passed as a small array; pass an interactive hero via the slot.
+ */
+interface StatProps {
+  value: string;
+  label: string;
+}
+interface Props {
+  eyebrow?: string;
+  title: string;
+  tagline?: string;
+  stats?: StatProps[];
+  ctaHref?: string;
+  ctaLabel?: string;
+  accent?: string;
+  reverse?: boolean;
+  /** Optional anchor id so a sticky nav can deep-link to this section. */
+  id?: string;
+}
+const {
+  eyebrow,
+  title,
+  tagline,
+  stats = [],
+  ctaHref,
+  ctaLabel = "Read the full case study",
+  accent,
+  reverse = false,
+  id,
+} = Astro.props;
+
+const accentStyle = accent ? `--cs-accent:${accent};` : "";
+---
+
+<section class={"showcase" + (reverse ? " showcase--reverse" : "")} style={accentStyle} id={id}>
+  <div class="showcase__inner">
+    <div class="showcase__text">
+      {eyebrow && <p class="t-eyebrow showcase__eyebrow">{eyebrow}</p>}
+      <h2 class="showcase__title">{title}</h2>
+      {tagline && <p class="showcase__tagline">{tagline}</p>}
+      {stats.length > 0 && (
+        <ul class="showcase__stats">
+          {stats.map((s) => (
+            <li>
+              <p class="showcase__stat-value">{s.value}</p>
+              <p class="showcase__stat-label">{s.label}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+      {ctaHref && (
+        <p class="showcase__cta">
+          <a href={ctaHref}>
+            {ctaLabel} <span class="showcase__cta-arrow" aria-hidden="true">→</span>
+          </a>
+        </p>
+      )}
+    </div>
+    <div class="showcase__hero">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .showcase {
+    --cs-accent: var(--brand-primary);
+    padding-block: var(--s-24);
+    position: relative;
+    isolation: isolate;
+  }
+  .showcase::before {
+    content: "";
+    position: absolute;
+    inset: auto -10% -10% -10%;
+    height: 60%;
+    background: radial-gradient(60% 80% at 50% 50%, color-mix(in srgb, var(--cs-accent) 22%, transparent), transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  @media (max-width: 720px) {
+    .showcase { padding-block: var(--s-16); }
+  }
+
+  .showcase__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: 0 var(--s-8);
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--s-12);
+    align-items: center;
+  }
+  .showcase--reverse .showcase__inner {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+  .showcase--reverse .showcase__text { order: 2; }
+  .showcase--reverse .showcase__hero { order: 1; }
+
+  @media (max-width: 900px) {
+    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-10); padding: 0 var(--s-5); }
+    .showcase--reverse .showcase__text { order: 2; }
+    .showcase--reverse .showcase__hero { order: 1; }
+    .showcase__inner > .showcase__text { order: 2; }
+    .showcase__inner > .showcase__hero { order: 1; }
+  }
+
+  .showcase__eyebrow { margin: 0 0 var(--s-3); color: var(--text-tertiary); }
+
+  .showcase__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 1.0;
+    letter-spacing: -0.018em;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-5);
+  }
+
+  .showcase__tagline {
+    font-size: clamp(17px, 1.5vw, 20px);
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0 0 var(--s-8);
+    max-width: 50ch;
+  }
+
+  .showcase__stats {
+    list-style: none;
+    margin: 0 0 var(--s-8);
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--s-5);
+  }
+  .showcase__stats li {
+    display: grid;
+    gap: var(--s-1);
+    padding-top: var(--s-3);
+    border-top: 1px solid var(--border-subtle);
+  }
+  .showcase__stat-value {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(28px, 3vw, 40px);
+    line-height: 1.0;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .showcase__stat-label {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .showcase__cta {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .showcase__cta a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--text-primary);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid var(--cs-accent);
+    transition: gap var(--dur-normal) var(--ease-out), border-color var(--dur-normal) var(--ease-out);
+  }
+  .showcase__cta a:hover {
+    gap: var(--s-3);
+    border-bottom-color: var(--text-primary);
+  }
+  .showcase__cta-arrow { transition: transform var(--dur-normal) var(--ease-out); }
+  .showcase__cta a:hover .showcase__cta-arrow { transform: translateX(2px); }
+
+  .showcase__hero {
+    position: relative;
+    min-height: 360px;
+  }
+</style>

@@ -1,0 +1,214 @@
+---
+/**
+ * ProfileColumns — two parallax columns of profile cards.
+ *
+ * Used on the Tappy Cloud showcase to mimic Tinder's profile feed: two tall
+ * columns of profile mockups that scroll faster than the page as the user
+ * scrolls past the section, so it feels like more profiles are streaming
+ * into view. Top and bottom of each column fade into the page so the edges
+ * don't read as hard cutoffs.
+ *
+ * Pass two tall PNG/JPG strips. Aspect ratio of each strip should be tall
+ * (~1:6+ ideally) so there's enough content to parallax through.
+ */
+interface Props {
+  left: string;
+  right: string;
+  /** Fraction of the right column's available scroll range that gets
+   *  traversed as the section travels through the viewport. Both columns
+   *  move the same pixel distance, so 1.0 means the right column hits the
+   *  bottom of its strip exactly when the section exits — and the left
+   *  column tracks the same speed. Lower for slower, more readable scroll. */
+  speed?: number;
+  /** Starting offset (0–1) for the right column so the two columns aren't
+   *  perfectly aligned at rest. Larger value = right column starts further
+   *  down its strip. */
+  rightOffset?: number;
+  /** Fallback aspect ratio of the visible window — used for the initial
+   *  paint before JS measures the sibling text column. Once measured,
+   *  the height is locked to the text column height. */
+  aspect?: string;
+  /** Max width of the whole component. The visual asset shrinks
+   *  proportionally inside this cap, so more profiles fit per column. */
+  maxWidth?: string;
+  altLeft?: string;
+  altRight?: string;
+}
+const {
+  left,
+  right,
+  speed = 1.0,
+  rightOffset = 0.32,
+  aspect = "0.78 / 1",
+  maxWidth = "360px",
+  altLeft = "",
+  altRight = "",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const id = "pc-" + Math.random().toString(36).slice(2, 9);
+---
+
+<div
+  class="profile-cols"
+  id={id}
+  data-speed={speed}
+  data-right-offset={rightOffset}
+  style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};`}
+>
+  <div class="profile-cols__col">
+    <img src={resolve(left)} alt={altLeft} loading="lazy" draggable="false" data-img />
+  </div>
+  <div class="profile-cols__col">
+    <img src={resolve(right)} alt={altRight} loading="lazy" draggable="false" data-img />
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelectorAll(".profile-cols").forEach((root) => {
+        const speed = parseFloat(root.dataset.speed || "1.0");
+        const rightOffset = parseFloat(root.dataset.rightOffset || "0.32");
+        const cols = Array.from(root.querySelectorAll(".profile-cols__col"));
+        const imgs = cols.map((c) => c.querySelector("[data-img]"));
+
+        // Lock height to the sibling text column so the asset sits flush
+        // with the case-study info on the desktop two-column layout.
+        const showcase = root.closest(".showcase");
+        const text = showcase ? showcase.querySelector(".showcase__text") : null;
+        const matchHeight = () => {
+          // Only match in two-column mode — when stacked vertically, the
+          // text sits below the hero so heights aren't meant to align.
+          const twoCol = window.matchMedia("(min-width: 901px)").matches;
+          if (twoCol && text && text.clientHeight > 0) {
+            root.style.height = text.clientHeight + "px";
+            root.dataset.matched = "true";
+          } else {
+            root.style.height = "";
+            root.dataset.matched = "false";
+          }
+        };
+        matchHeight();
+        if (text) {
+          const ro = new ResizeObserver(matchHeight);
+          ro.observe(text);
+        }
+        window.addEventListener("resize", matchHeight);
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(matchHeight);
+        }
+
+        if (reduced) return;
+
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          // 0 when the section's top reaches the bottom of the viewport
+          // (just entering), 1 when the section's bottom reaches the top
+          // (just leaving).
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+
+          // Both columns travel the same pixel distance so they feel
+          // synchronized. The right column starts pre-scrolled by
+          // `rightOffset`, so the bottleneck for "doesn't run out of strip"
+          // is the right column. We cap travel at its available range, and
+          // both columns translate by that same amount.
+          cols.forEach((col, i) => {
+            const img = imgs[i];
+            if (!img) return;
+            const colH = col.clientHeight;
+            const imgH = img.clientHeight;
+            const extra = Math.max(imgH - colH, 0);
+            const startOffset = i === 1 ? -rightOffset * extra : 0;
+            const travel = (1 - rightOffset) * extra * speed;
+            const y = startOffset - progress * travel;
+            img.style.transform = `translate3d(0, ${y}px, 0)`;
+          });
+        };
+
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        // Recompute on image load too — clientHeight is 0 until then.
+        imgs.forEach((img) => {
+          if (img && !img.complete) {
+            img.addEventListener("load", update, { once: true });
+          }
+        });
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .profile-cols {
+    position: relative;
+    width: 100%;
+    max-width: var(--pc-max-w, 360px);
+    margin: 0 auto;
+    /* Fallback height for initial paint; JS overrides to match the text
+       column height once measured. */
+    aspect-ratio: var(--pc-aspect, 0.78 / 1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(10px, 2%, 18px);
+    isolation: isolate;
+  }
+  .profile-cols[data-matched="true"] {
+    aspect-ratio: auto;
+  }
+
+  .profile-cols__col {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    /* Soft top/bottom fade so the strip dissolves into the page. */
+    --mask: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 14%,
+      #000 86%,
+      transparent 100%
+    );
+    -webkit-mask-image: var(--mask);
+            mask-image: var(--mask);
+  }
+
+  .profile-cols__col img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    /* Only the leading transform is JS-driven; this keeps a smooth feel
+       while images load before the first scroll handler fires. */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .profile-cols__col img { transform: none !important; }
+  }
+</style>

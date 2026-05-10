@@ -14,6 +14,7 @@ import PearlField from "../components/PearlField.astro";
 import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneStack from "../components/showcase/PhoneStack.astro";
+import ProfileColumns from "../components/showcase/ProfileColumns.astro";
 import ComingSoonHero from "../components/showcase/ComingSoonHero.astro";
 import CompareSlider from "../components/showcase/CompareSlider.astro";
 
@@ -149,14 +150,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       reverse
       id="tappy-cloud"
     >
-      <PhoneStack
-        items={[
-          { src: "/projects/tappy-cloud/phone-just-joined.png", alt: "Just Joined content tag profile", label: "Content tags" },
-          { src: "/projects/tappy-cloud/phone-distance.png",    alt: "Distance optimization on a profile", label: "Distance experiment" },
-          { src: "/projects/tappy-cloud/phone-fixation.png",    alt: "Eye-tracking fixation map on a profile", label: "Where attention lands" },
-          { src: "/projects/tappy-cloud/phone-joe.png",         alt: "Distance-first profile layout for men", label: "What Joe sees" },
-        ]}
-        aspect="1 / 2"
+      <ProfileColumns
+        left="/projects/tappy-cloud/profiles-left.png"
+        right="/projects/tappy-cloud/profiles-right.png"
+        altLeft="Tinder profiles styled by Tappy Cloud"
+        altRight="More Tinder profiles styled by Tappy Cloud"
       />
     </Showcase>
   </FadeIn>

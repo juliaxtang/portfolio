@@ -1,0 +1,127 @@
+---
+/**
+ * ComingSoonHero — placeholder hero for showcase blocks whose case study
+ * is not yet published. Inherits the parent showcase's --cs-accent so the
+ * block still feels rooted in the project's brand.
+ *
+ * Visual: a soft accent-tinted card with the company logo centered, a
+ * subtle "in progress" hint, and the same proportions as PhoneStack so
+ * the homepage rhythm stays consistent.
+ */
+interface Props {
+  logo?: string;
+  logoAlt?: string;
+  /** Short hint shown under the logo. Defaults to "Case study in progress". */
+  hint?: string;
+}
+const { logo, logoAlt = "", hint = "Case study in progress" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolvedLogo = logo && (logo.startsWith("http") || logo.startsWith(base)
+  ? logo
+  : `${base}${logo.startsWith("/") ? "" : "/"}${logo}`);
+---
+
+<div class="cs-hero">
+  <div class="cs-hero__card">
+    {resolvedLogo && (
+      <img class="cs-hero__logo" src={resolvedLogo} alt={logoAlt} loading="lazy" />
+    )}
+    <p class="cs-hero__hint">
+      <span class="cs-hero__dot" aria-hidden="true"></span>
+      {hint}
+    </p>
+  </div>
+  <div class="cs-hero__shadow" aria-hidden="true"></div>
+</div>
+
+<style>
+  .cs-hero {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.6 / 1;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+  }
+
+  .cs-hero__card {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    gap: var(--s-5);
+    width: clamp(220px, 60%, 360px);
+    aspect-ratio: 4 / 3;
+    border-radius: var(--r-lg, 24px);
+    padding: var(--s-8);
+    background:
+      radial-gradient(120% 90% at 50% 0%,
+        color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 18%, transparent),
+        transparent 70%),
+      var(--surface, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 22%, var(--border-subtle));
+    box-shadow:
+      0 30px 60px -25px rgba(20, 22, 28, 0.18),
+      0 12px 24px -12px rgba(20, 22, 28, 0.10);
+    transition: transform 600ms var(--ease-out), box-shadow 600ms var(--ease-out);
+  }
+
+  .showcase__hero--linked:hover .cs-hero__card,
+  .cs-hero:hover .cs-hero__card {
+    transform: translateY(-4px);
+    box-shadow:
+      0 40px 80px -28px rgba(20, 22, 28, 0.22),
+      0 16px 32px -14px rgba(20, 22, 28, 0.14);
+  }
+
+  .cs-hero__logo {
+    height: clamp(48px, 6vw, 72px);
+    width: auto;
+    max-width: 70%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .cs-hero__hint {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  .cs-hero__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cs-accent, var(--brand-primary));
+    animation: cs-hero-pulse 1.8s var(--ease-out) infinite;
+  }
+  @keyframes cs-hero-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+  }
+
+  .cs-hero__shadow {
+    position: absolute;
+    inset: auto 10% 6% 10%;
+    height: 28%;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 50%,
+        color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 30%, transparent),
+        transparent 70%);
+    filter: blur(20px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cs-hero__card { transition: none; }
+    .cs-hero__dot { animation: none; }
+  }
+</style>

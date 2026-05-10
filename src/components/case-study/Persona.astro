@@ -64,16 +64,15 @@ const meta = [status, role, education, location].filter(Boolean) as string[];
   .cs-persona__eyebrow { margin: 0 0 var(--s-3); color: var(--text-tertiary); }
 
   .cs-persona__name {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(28px, 3vw, 36px);
-    line-height: 1.05;
-    letter-spacing: -0.012em;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(26px, 2.8vw, 32px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     color: var(--text-primary);
     margin: 0 0 var(--s-3);
   }
-  .cs-persona__age { font-style: normal; color: var(--text-secondary); font-weight: 400; }
+  .cs-persona__age { color: var(--text-secondary); font-weight: 400; }
 
   .cs-persona__meta {
     list-style: none;

@@ -31,12 +31,12 @@ const { value, label, caption } = Astro.props;
     border: 1px solid var(--border-subtle);
   }
   .cs-stat__value {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
+    font-family: var(--font-sans);
+    font-weight: 500;
     font-size: clamp(40px, 5vw, 64px);
     line-height: 1.0;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
     color: var(--text-primary);
     margin: 0;
   }

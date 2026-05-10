@@ -199,28 +199,26 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
   }
 
   .showcase__title {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(30px, 3.6vw, 46px);
-    line-height: 1.0;
-    letter-spacing: -0.018em;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: clamp(26px, 3vw, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.022em;
     color: var(--text-primary);
     margin: 0 0 var(--s-2);
   }
   .showcase__title-link {
     color: inherit;
     text-decoration: none;
-    background-image: linear-gradient(var(--cs-accent), var(--cs-accent));
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    background-size: 0% 2px;
-    transition: background-size 320ms var(--ease-out);
-    padding-bottom: 2px;
+    display: inline-block;
+    transform-origin: left center;
+    transition: transform var(--dur-normal) var(--ease-out),
+                color var(--dur-normal) var(--ease-out);
   }
   .showcase__title-link:hover,
   .showcase__title-link:focus-visible {
-    background-size: 100% 2px;
+    transform: scale(1.04);
+    color: var(--cs-accent);
   }
 
   .showcase__tagline {
@@ -241,15 +239,14 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
   .showcase__stats li {
     display: grid;
     gap: var(--s-1);
-    padding-top: var(--s-2);
-    border-top: 1px solid var(--border-subtle);
   }
   .showcase__stat-value {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(20px, 2vw, 28px);
-    line-height: 1.0;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.1;
+    letter-spacing: -0.018em;
+    font-variant-numeric: tabular-nums;
     color: var(--text-primary);
     margin: 0;
   }

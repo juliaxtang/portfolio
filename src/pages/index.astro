@@ -14,6 +14,7 @@ import PearlField from "../components/PearlField.astro";
 import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneStack from "../components/showcase/PhoneStack.astro";
+import ComingSoonHero from "../components/showcase/ComingSoonHero.astro";
 import CompareSlider from "../components/showcase/CompareSlider.astro";
 
 // "delight" rendered letter-by-letter so each can wave on hover. "Julia"
@@ -98,6 +99,37 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       });
     })();
   </script>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/snapchat.png"
+      companyName="Snapchat"
+      role="Staff Product Designer"
+      title="Snapchat Games"
+      tagline="Designing the next chapter of gaming on Snapchat: how friends discover, play, and share games inside the app."
+      accent="#FFFC00"
+      reverse
+      id="snapchat-games"
+      comingSoon
+    >
+      <ComingSoonHero logo="/logos/snapchat.png" logoAlt="Snapchat" />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
+      companyLogo="/logos/tinder.png"
+      companyName="Tinder"
+      role="Product Design Lead"
+      title="App Redesign"
+      tagline="A globally launched UI refresh with richer profile content and delightful new interactions, rolled out to every Tinder user worldwide."
+      accent="#FD297C"
+      id="app-redesign"
+      comingSoon
+    >
+      <ComingSoonHero logo="/logos/tinder.png" logoAlt="Tinder" />
+    </Showcase>
+  </FadeIn>
 
   <FadeIn>
     <Showcase

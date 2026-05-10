@@ -43,6 +43,10 @@ const desc =
 
     <link rel="icon" href={`${import.meta.env.BASE_URL}/favicon.svg`} type="image/svg+xml" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Phosphor Icons (free, MIT) — single source of truth for glyphs.
+         Mirrors style-guide.html so prod and the spec stay in lock-step. -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1" is:inline></script>
   </head>
   <body>
     <CursorAurora />

@@ -104,7 +104,7 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
       ) : ctaHref && (
         <p class="showcase__cta">
           <a href={ctaHref}>
-            {ctaLabel} <span class="showcase__cta-arrow" aria-hidden="true">→</span>
+            {ctaLabel} <i class="ph ph-arrow-up-right showcase__cta-arrow" aria-hidden="true"></i>
           </a>
         </p>
       )}
@@ -124,7 +124,7 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
 <style>
   .showcase {
     --cs-accent: var(--brand-primary);
-    padding-block: var(--s-24);
+    padding-block: var(--s-20);
     position: relative;
     isolation: isolate;
   }
@@ -139,26 +139,35 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     pointer-events: none;
   }
   @media (max-width: 720px) {
-    .showcase { padding-block: var(--s-16); }
+    .showcase { padding-block: var(--s-12); }
   }
 
+  /* Both columns are equal-width so the two halves carry the same
+     amount of negative space; the text and image inside each column
+     are then constrained and centered so the whole composition reads
+     as one centered band rather than a left-flush text + centered
+     image (which made the page feel off-balance). */
   .showcase__inner {
-    max-width: var(--content-max);
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 0 var(--s-8);
+    padding: 0 var(--s-6);
     display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-    gap: var(--s-12);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s-6);
     align-items: center;
-  }
-  .showcase--reverse .showcase__inner {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
   }
   .showcase--reverse .showcase__text { order: 2; }
   .showcase--reverse .showcase__hero { order: 1; }
 
+  .showcase__text {
+    max-width: 440px;
+    margin-inline: auto;
+    width: 100%;
+  }
+
   @media (max-width: 900px) {
-    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-10); padding: 0 var(--s-5); }
+    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-8); padding: 0 var(--s-5); }
+    .showcase__text { max-width: 520px; }
     .showcase--reverse .showcase__text { order: 2; }
     .showcase--reverse .showcase__hero { order: 1; }
     .showcase__inner > .showcase__text { order: 2; }
@@ -168,11 +177,11 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
   .showcase__brand {
     display: flex;
     align-items: center;
-    gap: var(--s-3);
-    margin: 0 0 var(--s-3);
+    gap: var(--s-2);
+    margin: 0 0 var(--s-2);
   }
   .showcase__logo {
-    height: clamp(28px, 3vw, 38px);
+    height: clamp(12px, 1vw, 14px);
     width: auto;
     display: block;
     object-fit: contain;
@@ -185,7 +194,7 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     color: var(--text-primary);
   }
   .showcase__meta {
-    margin: 0 0 var(--s-4);
+    margin: 0 0 var(--s-3);
     color: var(--text-tertiary);
   }
 
@@ -193,11 +202,11 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: clamp(40px, 5vw, 72px);
+    font-size: clamp(30px, 3.6vw, 46px);
     line-height: 1.0;
     letter-spacing: -0.018em;
     color: var(--text-primary);
-    margin: 0 0 var(--s-5);
+    margin: 0 0 var(--s-2);
   }
   .showcase__title-link {
     color: inherit;
@@ -215,32 +224,31 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
   }
 
   .showcase__tagline {
-    font-size: clamp(17px, 1.5vw, 20px);
-    line-height: 1.55;
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: 1.5;
     color: var(--text-primary);
-    margin: 0 0 var(--s-8);
-    max-width: 50ch;
+    margin: 0 0 var(--s-4);
   }
 
   .showcase__stats {
     list-style: none;
-    margin: 0 0 var(--s-8);
+    margin: 0 0 var(--s-4);
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--s-3);
   }
   .showcase__stats li {
     display: grid;
     gap: var(--s-1);
-    padding-top: var(--s-3);
+    padding-top: var(--s-2);
     border-top: 1px solid var(--border-subtle);
   }
   .showcase__stat-value {
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: clamp(28px, 3vw, 40px);
+    font-size: clamp(20px, 2vw, 28px);
     line-height: 1.0;
     color: var(--text-primary);
     margin: 0;
@@ -272,12 +280,19 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     gap: var(--s-3);
     border-bottom-color: var(--text-primary);
   }
-  .showcase__cta-arrow { transition: transform var(--dur-normal) var(--ease-out); }
-  .showcase__cta a:hover .showcase__cta-arrow { transform: translateX(2px); }
+  .showcase__cta-arrow {
+    font-size: 1.05em;
+    line-height: 0;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .showcase__cta a:hover .showcase__cta-arrow { transform: translate(2px, -2px); }
 
   .showcase__hero {
     position: relative;
-    min-height: 360px;
+    min-height: 440px;
+    max-width: 440px;
+    margin-inline: auto;
+    width: 100%;
   }
   .showcase__hero-link {
     display: block;

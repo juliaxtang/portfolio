@@ -111,11 +111,12 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     isolation: isolate;
   }
   .showcase::before {
+    /* Soft brand-color cloud contained within the section so adjacent
+       showcases don't produce hard edges where their gradients meet. */
     content: "";
     position: absolute;
-    inset: auto -10% -10% -10%;
-    height: 60%;
-    background: radial-gradient(60% 80% at 50% 50%, color-mix(in srgb, var(--cs-accent) 22%, transparent), transparent 70%);
+    inset: 0;
+    background: radial-gradient(55% 65% at 50% 50%, color-mix(in srgb, var(--cs-accent) 18%, transparent) 0%, transparent 50%);
     z-index: -1;
     pointer-events: none;
   }

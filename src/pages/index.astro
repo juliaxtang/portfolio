@@ -319,11 +319,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .v2-hero__pop {
     display: inline-block;
     color: var(--text-primary);
-    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;
     background-position: 0 100%;
-    background-size: 100% 100%;
-    padding: 0 4px;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
     border-radius: var(--r-xs);
   }
 
@@ -382,13 +382,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     background-size: 100% 0.55em;
   }
 
-  /* Pill words ("0-to-1", "millions") get a subtle scale-and-lift on
-     hover, since the wash is already on at rest. */
+  /* Pill words ("0-to-1", "millions") have a thin underline at rest;
+     on hover, the underline expands into a soft wash and the pill
+     subtly lifts (matches the .fx--delight treatment). */
   .v2-hero__pop {
-    transition: transform 220ms var(--ease-out);
+    transition:
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out),
+      transform 220ms var(--ease-out);
   }
   .fx--launch:hover .v2-hero__pop,
   .fx--reach:hover .v2-hero__pop {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
     transform: translateY(-1px) scale(1.04);
   }
 

@@ -266,17 +266,13 @@ const meta = content
     min-height: 0;
     position: relative;
   }
-  /* HeroOverlay's img is naturally in-flow and pushes the band taller
-     than the panel content. Pin it absolutely (via :global so the rule
-     reaches into the child component's scope) so the band height is
-     driven by the panel + padding only, matching the other bands. */
-  .cs-more__visual :global(.ho) { height: 100%; }
-  .cs-more__visual :global(.ho__img) {
-    position: absolute;
-    bottom: var(--s-6);
-    left: 50%;
-    transform: translateX(-50%);
-  }
+  /* HeroOverlay's image is sized at 90% width (capped 500px), height
+     auto, and aligned to the bottom of `.ho` via flex. With the band
+     fixed at clamp(500, 52vh, 540), the image stays inside the visual
+     column and any vertical overflow is clipped by the band's
+     overflow:hidden. We avoid overriding the image's transform here
+     because the parallax script writes to `img.style.transform` on
+     scroll. */
   .cs-more__band--flipped .cs-more__visual {
     grid-column: 2;
   }

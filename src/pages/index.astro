@@ -112,6 +112,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       role="Staff Product Designer"
       title="Snapchat Games"
       tagline="Designing the next chapter of gaming on Snapchat: how friends discover, play, and share games inside the app."
+      stats={[
+        { value: "30M", label: "Games DAU" },
+        { value: "↑ 0.136%", label: "Snap Send Human" },
+        { value: "↑ 120%", label: "Game Video Posts on iOS" },
+      ]}
       accent="#FFFC00"
       reverse
       id="snapchat-games"
@@ -160,12 +165,39 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   <FadeIn>
     <Showcase
+      companyLogo="/logos/snapchat.png"
+      companyName="Snapchat"
+      role="Staff Product Designer"
+      title="Topic Chats"
+      tagline="A publicly launched feature bringing interest-based group conversations to Snapchat users worldwide."
+      ctaHref="https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/"
+      ctaLabel="Read about it"
+      accent="#FFFC00"
+      id="topic-chats"
+    >
+      <MediaParallax
+        src="/projects/topic-chats/topic-chat-sizzle.mp4"
+        aspect="9 / 16"
+        maxWidth="324px"
+        label="Topic Chats feature sizzle reel"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
       companyLogo="/logos/tinder.png"
       companyName="Tinder"
       year={2022}
       role="Product Design Lead"
       title="App Redesign"
       tagline="A globally launched UI refresh with richer profile content and delightful new interactions, rolled out to every Tinder user worldwide."
+      features={[
+        "Dark Mode",
+        "Profile Prompts",
+        "Quizzes",
+        "New Swipe and Match Animations",
+      ]}
       ctaHref="https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/"
       ctaLabel="Read about it"
       accent="#FD297C"
@@ -322,8 +354,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       title="Onboarding Redesign"
       tagline="A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop."
       stats={[
-        { value: "100%", label: "Understood key functions by end of session" },
-        { value: "100%", label: "Understood key benefits by end of session" },
+        { value: "100%", label: "test participants understood key functions of the app" },
+        { value: "100%", label: "test participants understood how to perform core actions on the app" },
         { value: "5 days", label: "Sprint kickoff to tested prototype" },
       ]}
       ctaHref={`${base}/product-design/tv-time-onboarding`}
@@ -337,6 +369,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         label="TV Time onboarding flow on two phones"
         badgeSrc="/projects/tv-time-onboarding/webby-honoree.png"
         badgeAlt="Webby Honoree badge"
+        badgeWidth="clamp(100px, 28%, 145px)"
         radius="0"
       />
     </Showcase>

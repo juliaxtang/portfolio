@@ -16,6 +16,25 @@
 <div class="field-wrap" aria-hidden="true">
   <canvas class="field-canvas"></canvas>
 </div>
+<div class="dots-hint" data-dots-hint aria-hidden="true">
+  <svg class="dots-hint__arrow" viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M82 64 C 70 50, 58 30, 38 18 C 28 12, 18 9, 10 8"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      fill="none"
+    />
+    <path
+      d="M10 8 L 19 3 M10 8 L 16 15"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      fill="none"
+    />
+  </svg>
+  <span class="dots-hint__label">click me</span>
+</div>
 
 <script is:inline>
   (() => {
@@ -97,6 +116,29 @@
       host.addEventListener("mousemove", onMove);
       host.addEventListener("mouseleave", onLeave);
       host.addEventListener("click", onClick);
+
+      // First-visit hint: a tiny curved arrow + "click me" appears the
+      // first time the user mouses over the dots, and dismisses on click.
+      // Persisted in localStorage so it's truly once-per-user.
+      const hint = wrap.parentElement?.querySelector("[data-dots-hint]");
+      const HINT_KEY = "pearl-hint-seen";
+      let hintSeen = false;
+      try { hintSeen = localStorage.getItem(HINT_KEY) === "1"; } catch (_) {}
+      if (hint && !hintSeen && !reduceMotion) {
+        const showHint = () => {
+          hint.classList.add("is-visible");
+          host.removeEventListener("mousemove", showHint);
+        };
+        const dismissHint = () => {
+          hint.classList.remove("is-visible");
+          hint.classList.add("is-dismissed");
+          try { localStorage.setItem(HINT_KEY, "1"); } catch (_) {}
+          host.removeEventListener("mousemove", showHint);
+          host.removeEventListener("click", dismissHint);
+        };
+        host.addEventListener("mousemove", showHint);
+        host.addEventListener("click", dismissHint);
+      }
 
       const ro = new ResizeObserver(build);
       ro.observe(wrap);
@@ -205,6 +247,42 @@
     height: 100%;
     display: block;
   }
+  .dots-hint {
+    position: absolute;
+    right: clamp(24px, 6vw, 72px);
+    bottom: 6%;
+    z-index: 1;
+    display: inline-flex;
+    align-items: flex-end;
+    gap: var(--s-2);
+    pointer-events: none;
+    color: var(--text-secondary, #6b6776);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(15px, 1.4vw, 18px);
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out);
+  }
+  .dots-hint.is-visible { opacity: 0.85; transform: translateY(0); }
+  .dots-hint.is-dismissed {
+    opacity: 0 !important;
+    transform: translateY(-4px);
+    transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
+  }
+  .dots-hint__arrow {
+    width: clamp(56px, 6vw, 80px);
+    height: auto;
+    display: block;
+    margin-bottom: -4px;
+  }
+  .dots-hint__label { white-space: nowrap; padding-bottom: 2px; }
+
+  @media (max-width: 720px) {
+    .dots-hint { display: none; }
+  }
+
   @media (max-width: 720px) {
     .field-wrap {
       /* Center the cloud on mobile since the layout collapses to a single column. */

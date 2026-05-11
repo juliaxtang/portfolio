@@ -63,10 +63,18 @@ const id = "hpc-" + Math.random().toString(36).slice(2, 8);
 
         function update() {
           raf = 0;
-          const hero = root.closest(".cs-hero");
+          const hero = root.closest(".cs-hero, .cs-more__band");
           if (!hero) return;
           const rect = hero.getBoundingClientRect();
-          const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
+          /* Symmetric viewport-traversal progress: 0 when the band first
+             enters the bottom, 0.5 at center, 1 when it exits the top.
+             Works both for the case-study hero at the top of the page
+             AND the MoreWork band at the bottom (where you can't scroll
+             past the band's top edge, but you CAN scroll it in/through). */
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          const progress = total <= 0 ? 0
+            : Math.min(Math.max((vh - rect.top) / total, 0), 1);
           cols.forEach(function (col, i) {
             const img = imgs[i];
             if (!img) return;

@@ -16,7 +16,7 @@ interface Props {
   role?: string;
   team?: string[];
   tags?: string[];
-  hero?: { src: string; alt: string; poster?: string; isVideo?: boolean };
+  hero?: { src: string; alt: string; poster?: string; isVideo?: boolean; noFade?: boolean };
   accent?: string;
   heroVisual?: { type: string; flipped?: boolean; lightText?: boolean; bg?: string };
 }
@@ -49,7 +49,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
 
 <section class:list={["cs-hero", flipped && "cs-hero--flipped", hasVisual && "cs-hero--has-visual", lightText && "cs-hero--light-text", heroBg === "aurora" && "cs-hero--aurora"]} style={accentStyle}>
   {hero && heroSrc && (
-    <div class="cs-hero__bleed" aria-hidden="true">
+    <div class={"cs-hero__bleed" + (hero.noFade ? " cs-hero__bleed--no-fade" : "")} aria-hidden="true">
       {hero.isVideo ? (
         <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
       ) : (
@@ -143,7 +143,9 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
   }
   /* Soft fade toward the panel side so the text reads cleanly.
      Only shown when there is no visual slot — when a visual is present
-     the panel sits in its own column and doesn't need a gradient. */
+     the panel sits in its own column and doesn't need a gradient. Opt
+     out per-project via `hero.noFade: true` when the source image is
+     already a finished composition that fills the band edge-to-edge. */
   .cs-hero:not(.cs-hero--has-visual) .cs-hero__bleed::after {
     content: "";
     position: absolute;
@@ -166,6 +168,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
       color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
     );
   }
+  .cs-hero__bleed--no-fade::after { display: none; }
 
   /* Light-text mode: override token values so all panel text reads on dark hero images. */
   .cs-hero--light-text {

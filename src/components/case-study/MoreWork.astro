@@ -1,156 +1,446 @@
 ---
 /**
- * MoreWork — "Check out some of my other work!" section at the bottom of
- * each case study. Pulls sibling case studies from the projects collection,
- * orders them by `order`, and shows up to N (default 2) excluding the current.
+ * MoreWork — bottom of each case-study page. Pairs the homepage's
+ * Showcase TEXT content (brand, title, tagline, stats, CTA) with the
+ * case study's own Hero treatment: accent-tinted band, frontmatter
+ * hero image, and the same `heroVisual` (phones / overlay / columns)
+ * the case-study page uses. The accent and visual mirror the next
+ * project's case-study Hero so the band reads as a clean preview.
+ *
+ * The whole band is one link — tapping anywhere routes to the next
+ * case study.
  */
 import { getCollection } from "astro:content";
+import { showcaseContent } from "../../data/showcases";
+import HeroTwoPhones from "./HeroTwoPhones.astro";
+import HeroOverlay from "./HeroOverlay.astro";
+import HeroProfileColumns from "./HeroProfileColumns.astro";
 
 interface Props {
   currentSlug: string;
-  limit?: number;
 }
-const { currentSlug, limit = 2 } = Astro.props;
+const { currentSlug } = Astro.props;
 
 const all = await getCollection("projects", ({ data }) => !data.draft);
-const siblings = all
-  .filter((p) => p.id !== currentSlug && p.slug !== currentSlug)
-  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
-  .slice(0, limit);
+const ordered = all.sort(
+  (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999)
+);
+const currentIdx = ordered.findIndex(
+  (p) => p.id === currentSlug || (p as any).slug === currentSlug
+);
+const nextEntry =
+  ordered.length > 1
+    ? ordered[(Math.max(currentIdx, 0) + 1) % ordered.length]
+    : undefined;
+const nextSlug = nextEntry
+  ? ((nextEntry as any).slug ?? nextEntry.id)
+  : undefined;
+
+const content = nextSlug ? showcaseContent[nextSlug] : undefined;
+const hero = nextEntry?.data.hero;
+const accent = nextEntry?.data.accent;
+const hv = nextEntry?.data.heroVisual;
+const flipped = hv?.flipped ?? false;
+const lightText = hv?.lightText ?? false;
+const auroraBg = hv?.bg === "aurora";
+const hasVisual = !!hv;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p?: string) =>
+  !p
+    ? undefined
+    : p.startsWith("http") || p.startsWith(base)
+      ? p
+      : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const heroSrc = resolve(hero?.src);
+const heroPoster = resolve(hero?.poster);
+const logoSrc = resolve(content?.companyLogo);
+const accentStyle = accent ? `--cs-accent:${accent};` : "";
+
+const meta = content
+  ? [content.year ? String(content.year) : null, content.role]
+      .filter(Boolean)
+      .join(" · ")
+  : "";
 ---
 
-{siblings.length > 0 && (
-  <section class="cs-more">
-    <div class="cs-more__inner">
-      <h2 class="cs-more__title">Check out some of my other work</h2>
-      <ul class="cs-more__grid">
-        {siblings.map((p) => {
-          const slug = (p as any).slug ?? p.id;
-          const cover = p.data.cover ?? p.data.hero?.src;
-          const coverResolved = cover && (cover.startsWith("http") || cover.startsWith(base)
-            ? cover
-            : `${base}${cover.startsWith("/") ? "" : "/"}${cover}`);
-          return (
-            <li>
-              <a class="cs-more__cell" href={`${base}/product-design/${slug}`}>
-                <div class="cs-more__media">
-                  {coverResolved ? <img src={coverResolved} alt={p.data.coverAlt ?? p.data.hero?.alt ?? ""} loading="lazy" /> : <div class="cs-more__placeholder" />}
-                </div>
-                <div class="cs-more__body">
-                  <h3 class="cs-more__h">{p.data.title}<span class="cs-more__arrow" aria-hidden="true">→</span></h3>
-                  <p class="cs-more__sub">{p.data.summary}</p>
-                </div>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+{nextEntry && content && (
+  <aside class="cs-more" style={accentStyle} aria-label="Next case study" id={`more-work-${nextSlug}`}>
+    <div class="cs-more__banner">
+      <span class="cs-more__banner-text">Check out some of my other work:</span>
     </div>
-  </section>
+
+    <a
+      class:list={[
+        "cs-more__band",
+        flipped && "cs-more__band--flipped",
+        hasVisual && "cs-more__band--has-visual",
+        lightText && "cs-more__band--light-text",
+        auroraBg && "cs-more__band--aurora",
+      ]}
+      href={`${base}/product-design/${nextSlug}`}
+      aria-label={`Read the ${content.title} case study`}
+    >
+      {heroSrc && (
+        <div class="cs-more__bleed" aria-hidden="true">
+          {hero?.isVideo ? (
+            <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
+          ) : (
+            <img src={heroSrc} alt="" loading="lazy" />
+          )}
+        </div>
+      )}
+
+      <div class="cs-more__overlay">
+        {hasVisual && (
+          <div class="cs-more__visual">
+            {hv.type === "two-phones" && hv.phone1 && hv.phone2 && (
+              <HeroTwoPhones phone1={hv.phone1} phone2={hv.phone2} />
+            )}
+            {hv.type === "overlay" && hv.src && (
+              <HeroOverlay src={hv.src} />
+            )}
+            {hv.type === "columns" && hv.col1 && hv.col2 && hv.col3 && (
+              <HeroProfileColumns col1={hv.col1} col2={hv.col2} col3={hv.col3} />
+            )}
+          </div>
+        )}
+
+        <div class="cs-more__panel">
+          <div class="cs-more__brand">
+            {logoSrc && (
+              <img class="cs-more__brand-logo" src={logoSrc} alt="" loading="lazy" />
+            )}
+            <span class="cs-more__brand-name">{content.companyName}</span>
+          </div>
+
+          {meta && <p class="t-eyebrow cs-more__meta">{meta}</p>}
+
+          <h2 class="cs-more__title">{content.title}</h2>
+
+          <p class="cs-more__tagline">{content.tagline}</p>
+
+          {content.stats.length > 0 && (
+            <ul class="cs-more__stats">
+              {content.stats.map((s) => (
+                <li>
+                  <p class="cs-more__stat-value">{s.value}</p>
+                  <p class="cs-more__stat-label">{s.label}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <span class="cs-more__cta">
+            <span class="cs-more__cta-label">Read case study</span>
+            <i class="ph ph-arrow-up-right cs-more__cta-arrow" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+    </a>
+  </aside>
 )}
 
 <style>
   .cs-more {
-    padding-block: var(--s-20);
-    background: var(--bg-sunken-warm);
+    --cs-accent: var(--brand-primary);
+    display: block;
     border-top: 1px solid var(--border-subtle);
+    background: var(--bg-canvas);
   }
-  .cs-more__inner {
+
+  /* Banner is sized to match the case-study section banner pattern so
+     all section dividers across the page share the same vertical rhythm.
+     The aurora composition is intentionally rotated and weighted
+     differently from --brand-aurora so it stays visually distinct when
+     the next-project band itself uses aurora (Tappy Cloud). The thin
+     shadow at the bottom enforces the seam even when both layers tint
+     the same neutral. */
+  .cs-more__banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(var(--s-5), 1.6vw, var(--s-8)) var(--s-6);
+    background:
+      radial-gradient(520px 320px at 12% 30%, #F4D9CC 0%, transparent 65%),
+      radial-gradient(520px 320px at 88% 70%, #C5DCEA 0%, transparent 65%),
+      radial-gradient(600px 300px at 50% -10%, #DCD2E8 0%, transparent 70%),
+      var(--bg-canvas);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 8%, transparent);
+  }
+  .cs-more__banner-text {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: clamp(18px, 1.8vw, 24px);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    text-align: center;
+  }
+
+  .cs-more__band {
+    /* Fixed height (not min-height) so every page's next-project band
+       lands at the same size regardless of how the panel content wraps.
+       Shorter than the hero (clamp(480px, 56vh, 640px)) — this band is
+       a transition out of the page, not another hero. */
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+    height: clamp(540px, 54vh, 580px);
+    display: grid;
+    grid-template-areas: "stack";
+    text-decoration: none;
+    color: inherit;
+  }
+  .cs-more__band--aurora { background: var(--brand-aurora); }
+  .cs-more__band:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: -3px;
+  }
+
+  .cs-more__bleed {
+    grid-area: stack;
+    overflow: hidden;
+    position: relative;
+  }
+  /* Absolutely positioned so the image doesn't push the band taller
+     than the min-height (e.g. festival-mode's hero PNG is 1440x733
+     and would otherwise force the band to ~652px on a 1280-wide viewport). */
+  .cs-more__bleed img,
+  .cs-more__bleed video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 25% center;
+    display: block;
+  }
+  /* Aurora hero hides the bleed image entirely — the gradient is the
+     full visual. */
+  .cs-more__band--aurora .cs-more__bleed { display: none; }
+
+  /* Light-text mode: override token values so all panel text reads on
+     dark hero images. */
+  .cs-more__band--light-text {
+    --text-primary: #fff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-tertiary: rgba(255, 255, 255, 0.55);
+  }
+
+  .cs-more__overlay {
+    grid-area: stack;
+    position: relative;
+    z-index: 1;
+    width: 100%;
     max-width: var(--content-max);
     margin: 0 auto;
-    padding: 0 var(--s-8);
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-12));
+    padding-block: clamp(var(--s-6), 2.8vw, var(--s-10));
+    display: grid;
+    grid-template-columns: 1fr minmax(360px, 0.85fr);
+    align-items: center;
+    gap: var(--s-8);
   }
-  @media (max-width: 720px) {
-    .cs-more__inner { padding: 0 var(--s-5); }
+  /* When there's no visual, the panel takes its natural column on the
+     right; the bleed image fills the rest of the band underneath. */
+  .cs-more__band:not(.cs-more__band--has-visual) .cs-more__overlay {
+    grid-template-columns: 1fr minmax(360px, 0.85fr);
+  }
+  /* Flipped: panel left, visual right */
+  .cs-more__band--flipped .cs-more__overlay {
+    grid-template-columns: minmax(360px, 0.85fr) 1fr;
+  }
+
+  .cs-more__visual {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    min-height: 0;
+    position: relative;
+  }
+  /* Pin the HeroOverlay image absolutely so it doesn't push the
+     visual column taller than the panel (which would offset the
+     centered text downward). Compose translateX(-50%) for centering
+     with the parallax `--scroll-y` variable so HeroOverlay's scroll
+     handler can still animate vertical drift. */
+  .cs-more__visual :global(.ho) {
+    height: 100%;
+    align-items: center;
+  }
+  .cs-more__visual :global(.ho__img) {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(50% + var(--scroll-y, 0px)));
+  }
+  .cs-more__band--flipped .cs-more__visual {
+    grid-column: 2;
+  }
+
+  .cs-more__panel {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    gap: var(--s-3);
+    justify-items: start;
+    max-width: 560px;
+  }
+  .cs-more__band--flipped .cs-more__panel {
+    grid-column: 1;
+  }
+
+  /* Aurora bg: strip the overlay's vertical padding so the columns visual
+     can fill the band top-to-bottom (matches Hero behavior). */
+  .cs-more__band--aurora .cs-more__overlay {
+    padding-block: 0;
+    align-items: stretch;
+  }
+  .cs-more__band--aurora .cs-more__panel {
+    padding-block: clamp(var(--s-10), 4vw, var(--s-16));
+    align-content: center;
+  }
+
+  @media (max-width: 980px) {
+    .cs-more__band {
+      height: auto;
+    }
+    .cs-more__bleed {
+      aspect-ratio: 16 / 10;
+      max-height: 44vh;
+    }
+    .cs-more__overlay,
+    .cs-more__band--flipped .cs-more__overlay {
+      grid-template-columns: 1fr;
+      padding-block: var(--s-8);
+      gap: var(--s-6);
+    }
+    .cs-more__visual,
+    .cs-more__band--flipped .cs-more__visual,
+    .cs-more__panel,
+    .cs-more__band--flipped .cs-more__panel {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .cs-more__panel { max-width: none; }
+  }
+
+  .cs-more__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin: 0;
+  }
+  .cs-more__brand-logo {
+    height: clamp(12px, 1vw, 14px);
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .cs-more__brand-name {
+    font-family: var(--font-sans);
+    font-size: clamp(15px, 1.4vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+
+  .cs-more__meta {
+    margin: 0;
+    color: var(--text-tertiary);
   }
 
   .cs-more__title {
     font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: clamp(26px, 3vw, 36px);
-    line-height: 1.15;
+    font-weight: 700;
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text-primary);
-    margin: 0 0 var(--s-8);
+    margin: 0;
   }
 
-  .cs-more__grid {
+  .cs-more__tagline {
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0;
+    max-width: 46ch;
+  }
+
+  .cs-more__stats {
     list-style: none;
-    margin: 0;
-    padding: 0;
+    margin: var(--s-1) 0 0;
+    padding: var(--s-3) 0 0;
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-5);
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: var(--s-3);
   }
-  @media (max-width: 720px) {
-    .cs-more__grid { grid-template-columns: 1fr; }
-  }
-
-  .cs-more__cell {
+  .cs-more__stats li {
     display: grid;
-    gap: var(--s-4);
-    padding: var(--s-4);
-    border-radius: var(--r-lg);
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: transform var(--dur-normal) var(--ease-out),
-                box-shadow var(--dur-normal) var(--ease-out),
-                border-color var(--dur-normal) var(--ease-out);
+    gap: var(--s-1);
   }
-  .cs-more__cell:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--brand-primary-2);
-  }
-
-  .cs-more__media {
-    aspect-ratio: 16 / 10;
-    border-radius: var(--r-md);
-    overflow: hidden;
-    background: var(--brand-aurora);
-  }
-  .cs-more__media img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform var(--dur-slow) var(--ease-out);
-  }
-  .cs-more__cell:hover .cs-more__media img { transform: scale(1.03); }
-
-  .cs-more__placeholder {
-    width: 100%; height: 100%;
-    background: var(--brand-gradient-soft);
-  }
-
-  .cs-more__body { padding: var(--s-2) var(--s-3) var(--s-3); display: grid; gap: var(--s-2); }
-
-  .cs-more__h {
+  .cs-more__stat-value {
     font-family: var(--font-sans);
-    font-size: 22px;
     font-weight: 500;
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.1;
     letter-spacing: -0.018em;
-    line-height: 1.2;
-    margin: 0;
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-2);
-  }
-  .cs-more__arrow {
-    font-size: 18px;
-    color: var(--text-tertiary);
-    transition: transform var(--dur-normal) var(--ease-out),
-                color var(--dur-normal) var(--ease-out);
-  }
-  .cs-more__cell:hover .cs-more__arrow {
-    transform: translateX(4px);
+    font-variant-numeric: tabular-nums;
     color: var(--text-primary);
-  }
-  .cs-more__sub {
     margin: 0;
-    font-size: 15px;
-    line-height: 1.5;
+  }
+  .cs-more__stat-label {
+    font-size: 13px;
+    line-height: 1.4;
     color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Neutral pill so it reads cleanly against any accent color. */
+  .cs-more__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-2);
+    padding: 10px 18px;
+    border-radius: var(--r-full);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    background: rgba(255, 255, 255, 0.92);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: #1A1A1A;
+    line-height: 1;
+    backdrop-filter: blur(6px);
+    transition:
+      background var(--dur-normal) var(--ease-out),
+      border-color var(--dur-normal) var(--ease-out),
+      color var(--dur-normal) var(--ease-out),
+      gap var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-out),
+      box-shadow var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__cta-arrow {
+    font-size: 1.05em;
+    line-height: 0;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__band:hover .cs-more__cta,
+  .cs-more__band:focus-visible .cs-more__cta {
+    gap: var(--s-3);
+    background: #1A1A1A;
+    color: #fff;
+    border-color: #1A1A1A;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.5);
+  }
+  .cs-more__band:hover .cs-more__cta-arrow,
+  .cs-more__band:focus-visible .cs-more__cta-arrow {
+    transform: translate(2px, -2px);
   }
 </style>

@@ -19,9 +19,12 @@ interface Props {
   images: ImageItem[];
   height?: string;
   wide?: boolean;
+  centered?: boolean;
+  gap?: string;
+  caption?: string;
 }
 
-const { images, height = "480px", wide = false } = Astro.props;
+const { images, height = "480px", wide = false, centered = false, gap, caption } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 function resolve(src: string): string {
@@ -29,10 +32,14 @@ function resolve(src: string): string {
   return `${base}${src.startsWith("/") ? "" : "/"}${src}`;
 }
 
-const cls = ["cs-strip", wide ? "cs-strip--wide" : ""].filter(Boolean).join(" ");
+const cls = [
+  "cs-strip",
+  wide ? "cs-strip--wide" : "",
+  centered ? "cs-strip--centered" : "",
+].filter(Boolean).join(" ");
 ---
 
-<div class={cls} style={`--strip-h:${height}`}>
+<div class={cls} style={`--strip-h:${height}${gap !== undefined ? `;--strip-gap:${gap}` : ""}`}>
   <ul class="cs-strip__track" role="list">
     {images.map(img => (
       <li class="cs-strip__item">
@@ -41,6 +48,7 @@ const cls = ["cs-strip", wide ? "cs-strip--wide" : ""].filter(Boolean).join(" ")
       </li>
     ))}
   </ul>
+  {caption && <p class="cs-strip__caption cs-strip__caption--block">{caption}</p>}
 </div>
 
 <style>
@@ -53,10 +61,17 @@ const cls = ["cs-strip", wide ? "cs-strip--wide" : ""].filter(Boolean).join(" ")
     margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
     margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
   }
+  .cs-strip--centered {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cs-strip--centered .cs-strip__track {
+    justify-content: center;
+  }
 
   .cs-strip__track {
     display: flex;
-    gap: var(--s-4);
+    gap: var(--strip-gap, var(--s-4));
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -97,7 +112,11 @@ const cls = ["cs-strip", wide ? "cs-strip--wide" : ""].filter(Boolean).join(" ")
     line-height: 1.5;
     color: var(--text-tertiary);
     text-align: center;
-    margin-top: var(--s-2);
+    margin: var(--s-2) auto 0;
     max-width: 220px;
+  }
+  .cs-strip__caption--block {
+    max-width: none;
+    margin: var(--s-3) auto 0;
   }
 </style>

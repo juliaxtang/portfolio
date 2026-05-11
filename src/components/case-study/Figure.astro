@@ -30,6 +30,7 @@ interface Props {
   aspect?: string;
   maxHeight?: string;
   background?: "soft" | "surface" | "none";
+  centered?: boolean;
   class?: string;
 }
 
@@ -43,6 +44,7 @@ const {
   aspect,
   maxHeight,
   background = "none",
+  centered = false,
   class: className = "",
 } = Astro.props;
 
@@ -64,6 +66,7 @@ const cls = [
   frame ? "cs-figure--framed" : "",
   device !== "auto" ? `cs-figure--device-${device}` : "",
   `cs-figure--bg-${background}`,
+  centered ? "cs-figure--centered" : "",
   className,
 ].filter(Boolean).join(" ");
 
@@ -97,6 +100,13 @@ const mediaStyle = styleParts.join(";");
     max-width: var(--content-max);
     margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
     margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+  /* Centered wide figure: same max-width as wide, but auto-centered on page
+     instead of left-aligning with the narrow prose column. Used for lone
+     wide images that should sit centered when not paired with prose. */
+  .cs-figure--centered.cs-figure--wide {
+    margin-left: auto;
+    margin-right: auto;
   }
   .cs-figure--bleed  {
     max-width: none;

@@ -29,11 +29,24 @@ const resolve = (p: string) =>
         let raf = 0;
         function update() {
           raf = 0;
-          const hero = root.closest(".cs-hero");
+          const hero = root.closest(".cs-hero, .cs-more__band");
           if (!hero) return;
           const rect = hero.getBoundingClientRect();
-          const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
-          img.style.transform = "translate3d(0," + (-progress * 48) + "px,0)";
+          /* Symmetric viewport-traversal: 0 when the band first enters
+             the bottom, 0.5 at center, 1 when it exits the top. Works
+             for the case-study hero at the top AND the MoreWork band at
+             the bottom (where you can't scroll the band fully past the
+             viewport, only into/through it). */
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const progress = Math.min(Math.max((vh - rect.top) / total, 0), 1);
+          const centered = progress - 0.5;
+          /* Write the scroll offset to a CSS custom property instead of
+             setting `transform` directly. This lets the host stylesheet
+             (e.g. the MoreWork band) compose its own transform without
+             being stomped on by the scroll handler. */
+          img.style.setProperty("--scroll-y", (-centered * 140).toFixed(1) + "px");
         }
         window.addEventListener("scroll", function () {
           if (!raf) raf = requestAnimationFrame(update);
@@ -64,6 +77,7 @@ const resolve = (p: string) =>
   }
 
   .ho__img {
+    --scroll-y: 0px;
     width: 90%;
     max-width: 500px;
     height: auto;
@@ -72,5 +86,6 @@ const resolve = (p: string) =>
     will-change: transform;
     filter: drop-shadow(0 24px 48px rgba(0,0,0,0.20));
     transform-origin: bottom center;
+    transform: translate3d(0, var(--scroll-y), 0);
   }
 </style>

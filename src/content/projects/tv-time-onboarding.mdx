@@ -29,6 +29,8 @@ import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
 import Callout from "../../components/case-study/Callout.astro";
 import IconList from "../../components/case-study/IconList.astro";
+import Quote from "../../components/case-study/Quote.astro";
+import Carousel from "../../components/case-study/Carousel.astro";
 
 <Section size="sub" stage="Overview" eyebrow="Overview" title="TV Time is a tracking app for movies and TV.">
 It's available on iOS, Android, and web. Over 16 million users across the
@@ -116,22 +118,20 @@ found that there were three types of onboarding.
 - **Tooltips** are similar to inline hints; they progressively disclose product features and are easily dismissible.
 </Section>
 
-<Figure
-  src="/projects/tv-time-onboarding/onboarding-feedly.webp"
-  alt="Feedly onboarding screen using inline hints"
-  caption="Feedly uses in-line hints to guide new users through their first session."
-  width="narrow"
-  device="phone"
-  background="none"
-/>
-
-<Figure
-  src="/projects/tv-time-onboarding/onboarding-typeform.webp"
-  alt="Typeform onboarding screen using dismissible tooltips"
-  caption='Typeform uses dismissible tooltips to highlight features. Users can also tap "What Else?" for more.'
-  width="narrow"
-  background="none"
-/>
+<div class="cs-pair">
+  <figure class="cs-pair__item">
+    <div class="cs-pair__media">
+      <img src="/projects/tv-time-onboarding/onboarding-feedly.webp" alt="Feedly onboarding screen using inline hints" loading="lazy" />
+    </div>
+    <figcaption>Feedly uses in-line hints to guide new users through their first session.</figcaption>
+  </figure>
+  <figure class="cs-pair__item">
+    <div class="cs-pair__media">
+      <img src="/projects/tv-time-onboarding/onboarding-typeform.webp" alt="Typeform onboarding screen using dismissible tooltips" loading="lazy" />
+    </div>
+    <figcaption>Typeform uses dismissible tooltips to highlight features. Users can also tap "What Else?" for more.</figcaption>
+  </figure>
+</div>
 
 <Section stage="Research" title="Slides, wizards, and tutorials" size="sub" hideFromNav>
 - **Slides.** Slideshows, showcases, and explanatory screens are good for benefits-oriented onboarding, but won't give users the real experience.
@@ -148,27 +148,17 @@ found that there were three types of onboarding.
   background="none"
 />
 
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/onboarding-wizard-1.webp"
-    alt="Wizard-style onboarding step 1"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/onboarding-wizard-2.webp"
-    alt="Wizard-style onboarding step 2"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
-
-<Figure
-  src="/projects/tv-time-onboarding/onboarding-wizard-3.webp"
-  alt="Wizard-style onboarding step 3"
+<Strip
+  height="280px"
+  centered
+  wide
+  gap="0"
   caption="A wizard sets users up before dropping them into the app."
-  width="narrow"
-  background="none"
+  images={[
+    { src: "/projects/tv-time-onboarding/onboarding-wizard-1.webp", alt: "Wizard-style onboarding step 1" },
+    { src: "/projects/tv-time-onboarding/onboarding-wizard-2.webp", alt: "Wizard-style onboarding step 2" },
+    { src: "/projects/tv-time-onboarding/onboarding-wizard-3.webp", alt: "Wizard-style onboarding step 3" },
+  ]}
 />
 
 <Section stage="Define" eyebrow="Sprint Day 1" title="Framing the Problem" banner />
@@ -176,10 +166,14 @@ found that there were three types of onboarding.
 <Section size="sub" stage="Define" title="Understanding TV Time users" hideFromNav>
 We spent much of Day 1 mapping out the challenge, starting first at the
 end by agreeing to a long-term goal:
+</Section>
 
-> All users come away from their first session understanding key
-> function, key benefits, and core habits.
+<Quote>
+All users come away from their first session understanding key function,
+key benefits, and core habits.
+</Quote>
 
+<Section size="sub" stage="Define" hideFromNav>
 We then identified three core user types of TV Time, using data gathered
 from prior user research.
 </Section>
@@ -207,6 +201,7 @@ our map.
   alt="Sprint Day 1 user map covering Trackers, Discoverers, and Watchers"
   caption="Day 1 user map"
   width="wide"
+  centered
   background="none"
   maxHeight="640px"
 />
@@ -216,22 +211,10 @@ The next part of the exercise involved reframing potential issues as
 opportunities on sticky notes, organizing them, and voting on them.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/hmw-1.webp"
-    alt="Sticky-note wall from the How Might We exercise"
-    caption="HMW sticky notes"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/hmw-2.webp"
-    alt="Voted-on HMW questions for the team to focus on"
-    caption="The four we picked"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
+<Strip height="300px" centered images={[
+  { src: "/projects/tv-time-onboarding/hmw-1.webp", alt: "Sticky-note wall from the How Might We exercise", caption: "HMW sticky notes" },
+  { src: "/projects/tv-time-onboarding/hmw-2.webp", alt: "Voted-on HMW questions for the team to focus on", caption: "The four we picked" },
+]} />
 
 <Section size="sub" stage="Define" title="The four HMWs we picked">
 Out of a sea of sticky notes, we highlighted a select few to focus on:
@@ -255,15 +238,28 @@ loop, and ultimately communicate the value of the app: creating pins and
 boards allows me to curate and collect content for future reference.
 </Section>
 
-<Strip images={[
-  { src: "/projects/tv-time-onboarding/pinterest-1.webp", alt: "Pinterest onboarding asking users to choose topics of interest" },
-  { src: "/projects/tv-time-onboarding/pinterest-2.webp", alt: "Pinterest onboarding generating personalized pins" },
-  { src: "/projects/tv-time-onboarding/pinterest-3.webp", alt: "Pinterest onboarding explaining what pins are while results load", caption: "After registration, Pinterest prompts you to choose 5+ topics of interest. While you wait, they explain what pins are." },
-  { src: "/projects/tv-time-onboarding/pinterest-4.webp", alt: "Pinterest walkthrough of saving the first pin" },
-  { src: "/projects/tv-time-onboarding/pinterest-5.webp", alt: "Pinterest walkthrough of creating the first board" },
-  { src: "/projects/tv-time-onboarding/pinterest-6.webp", alt: "Pinterest walkthrough of adding more ideas to the board" },
-  { src: "/projects/tv-time-onboarding/pinterest-7.webp", alt: "Pinterest walkthrough completing the core habit loop", caption: "Then they walk you through saving your first pin, creating your first board, and adding more ideas." },
-]} />
+<Strip
+  height="380px"
+  centered
+  caption="After registration, Pinterest prompts you to choose 5+ topics of interest. While you wait, they explain what pins are."
+  images={[
+    { src: "/projects/tv-time-onboarding/pinterest-1.webp", alt: "Pinterest onboarding asking users to choose topics of interest" },
+    { src: "/projects/tv-time-onboarding/pinterest-2.webp", alt: "Pinterest onboarding generating personalized pins" },
+    { src: "/projects/tv-time-onboarding/pinterest-3.webp", alt: "Pinterest onboarding explaining what pins are while results load" },
+  ]}
+/>
+
+<Strip
+  height="360px"
+  centered
+  caption="Then they walk you through saving your first pin, creating your first board, and adding more ideas."
+  images={[
+    { src: "/projects/tv-time-onboarding/pinterest-4.webp", alt: "Pinterest walkthrough of saving the first pin" },
+    { src: "/projects/tv-time-onboarding/pinterest-5.webp", alt: "Pinterest walkthrough of creating the first board" },
+    { src: "/projects/tv-time-onboarding/pinterest-6.webp", alt: "Pinterest walkthrough of adding more ideas to the board" },
+    { src: "/projects/tv-time-onboarding/pinterest-7.webp", alt: "Pinterest walkthrough completing the core habit loop" },
+  ]}
+/>
 
 <Section size="sub" stage="Ideate" title="Sketching solutions">
 After our demos, we split up and spent some time individually taking
@@ -271,27 +267,11 @@ notes and brainstorming. I first reviewed what we had so far and jotted
 down some notes and ideas.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/sketch-notes-1.webp"
-    alt="Notes and ideas from individual brainstorming"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/sketch-notes-2.webp"
-    alt="More notes and ideas from individual brainstorming"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
-
-<Figure
-  src="/projects/tv-time-onboarding/sketch-notes-3.webp"
-  alt="Notes synthesizing brainstorm before the solution sketch"
-  width="narrow"
-  background="none"
-/>
+<Strip height="420px" centered wide images={[
+  { src: "/projects/tv-time-onboarding/sketch-notes-1.webp", alt: "Notes and ideas from individual brainstorming" },
+  { src: "/projects/tv-time-onboarding/sketch-notes-2.webp", alt: "More notes and ideas from individual brainstorming" },
+  { src: "/projects/tv-time-onboarding/sketch-notes-3.webp", alt: "Notes synthesizing brainstorm before the solution sketch" },
+]} />
 
 <Section size="sub" stage="Ideate" title="The three-panel sketch">
 Then it was time for the solution sketch. We were tasked with creating a
@@ -304,6 +284,7 @@ paper. Here's mine.
   alt="Three-panel storyboard sketch for personalized onboarding"
   caption="My three-panel sketch"
   width="wide"
+  centered
   background="none"
   maxHeight="600px"
 />
@@ -329,16 +310,42 @@ onboarding experience depending on the type of user.
 - A user would tap the CTA based on the value prop most appealing to them on the registration screen.
 - The onboarding experience that follows would be tailored to that value prop.
 - Once they're done, they'd be dropped at a place in the app most relevant to their user type.
-
-### Strengths of this approach
-- It addresses the key HMWs we identified earlier: determining user intent and personalizing onboarding to that intent, and defining and narrowing the core habit loop we want to teach.
-- It allows us to provide value for all user types, not just Trackers.
-- It teaches users the value of tracking as it relates to their specific user type or use case, framed as a core habit loop.
-
-### Areas to keep an eye on
-- Because onboarding will be targeted and personalized, users may not get a chance to learn about other areas of the app.
-- Users may just tap the first CTA they see to get started, rather than choosing based on the area they're most interested in. This could be okay if we make sure to prioritize the screens. We know Trackers are our top users, so that can be the first screen.
 </Section>
+
+<TwoUp ratio="1:1" gap="lg" align="start">
+  <div class="cs-pros-cons">
+    <h3 class="cs-pros-cons__head cs-pros-cons__head--success">
+      <span class="cs-icon cs-icon--success" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <path d="M7.5 12.5l3 3 6-6.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <span>Strengths of this approach</span>
+    </h3>
+    <ul>
+      <li>It addresses the key HMWs we identified earlier: determining user intent and personalizing onboarding to that intent, and defining and narrowing the core habit loop we want to teach.</li>
+      <li>It allows us to provide value for all user types, not just Trackers.</li>
+      <li>It teaches users the value of tracking as it relates to their specific user type or use case, framed as a core habit loop.</li>
+    </ul>
+  </div>
+  <div class="cs-pros-cons">
+    <h3 class="cs-pros-cons__head cs-pros-cons__head--warning">
+      <span class="cs-icon cs-icon--warning" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
+          <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
+          <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+        </svg>
+      </span>
+      <span>Areas to keep an eye on</span>
+    </h3>
+    <ul>
+      <li>Because onboarding will be targeted and personalized, users may not get a chance to learn about other areas of the app.</li>
+      <li>Users may just tap the first CTA they see to get started, rather than choosing based on the area they're most interested in. This could be okay if we make sure to prioritize the screens. We know Trackers are our top users, so that can be the first screen.</li>
+    </ul>
+  </div>
+</TwoUp>
 
 <Section size="sub" stage="Design" eyebrow="Wireframing" title="The rest of the flow">
 I spent the afternoon sketching out the rest of the flow for my
@@ -351,6 +358,7 @@ of the team.
   alt="Mid-fidelity wireframes for the personalized onboarding flow"
   caption="Wireframing the rest of the flow"
   width="wide"
+  centered
   background="none"
   maxHeight="640px"
 />
@@ -366,9 +374,8 @@ nothing.)
 <Figure
   src="/projects/tv-time-onboarding/hifi-overview.png"
   alt="Hi-fi screens overview for the personalized onboarding flow"
-  width="wide"
+  width="bleed"
   background="none"
-  maxHeight="720px"
 />
 
 <Section size="sub" stage="Design" title="Three unique flows">
@@ -377,30 +384,11 @@ build out three unique flows for the prototype. I worked closely with our
 assigned Sprint Copywriter to personalize the copy in each flow.
 </Section>
 
-<Strip height="380px" images={[
+<Carousel slides={[
   { src: "/projects/tv-time-onboarding/flow-tracker.webp", alt: "Hi-fi flow for the Tracker user type", caption: "Tracker flow" },
   { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Hi-fi flow for the Discoverer user type", caption: "Discoverer flow" },
   { src: "/projects/tv-time-onboarding/flow-watcher.webp", alt: "Hi-fi flow for the Watcher user type", caption: "Watcher flow" },
 ]} />
-
-<Section size="sub" stage="Design" title="Hi-fi prototype">
-The second half of the day was spent building out a high-fidelity
-InVision prototype to use for the next day's round of in-person moderated
-user testing.
-
-### Try Me!
-</Section>
-
-<div style="max-width: 320px; margin: var(--s-8) auto; aspect-ratio: 9 / 19.5; border: 1px dashed var(--border-default); border-radius: var(--r-lg); background: var(--brand-wash-soft); display: grid; place-items: center; padding: var(--s-6); text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-tertiary);">
-  Interactive InVision prototype<br/>(placeholder · drop the embed here)
-</div>
-
-<Section size="sub" stage="Design" hideFromNav>
-Some notes when using the prototype:
-
-- Due to the limited functionality of the prototype, the "Step 2: Set Your Progress" screen only allows you to mark S4 | E10 as watched before proceeding.
-- Once you get to the end of the flow, tapping the last screen will take you back to the beginning.
-</Section>
 
 <Section stage="Test" eyebrow="Sprint Day 5" title="Testing" banner />
 
@@ -410,10 +398,14 @@ evaluate potential solutions to our problem rather than come up with a
 final solution to be implemented, our focus in user testing was to
 evaluate the general concept of the solution and how effective it was in
 achieving our long-term goal:
+</Section>
 
-> All users come away from their first session understanding key
-> function, key benefits, and core habits.
+<Quote>
+All users come away from their first session understanding key function,
+key benefits, and core habits.
+</Quote>
 
+<Section size="sub" stage="Test" hideFromNav>
 As part of this, we counterbalanced the prototypes with sessions in the
 actual app to see if users could understand how to use the actual app
 better after interacting with our onboarding prototypes. We also made
@@ -423,14 +415,25 @@ app.
 
 <Section size="sub" stage="Test" title="Results: success!">
 Our testing found that the prototype was mostly successful.
-
-### The new onboarding flow was mostly effective in meeting our long-term goal
-- **All** participants understood the **key functions** of the app by the end of the session.
-- **All** participants understood the **key benefits** of the app by the end of the session.
-- **50%** of participants were familiar with **tracking** (our core habit loop) by the end. All participants came away knowing how to search and add shows.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
+<TwoUp ratio="1:1" gap="lg" align="center">
+  <div class="cs-result">
+    <h3 class="cs-result__head">
+      <span class="cs-icon cs-icon--success" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <path d="M7.5 12.5l3 3 6-6.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <span>The new onboarding flow was mostly effective in meeting our long-term goal</span>
+    </h3>
+    <ul>
+      <li><strong>All</strong> participants understood the <strong>key functions</strong> of the app by the end of the session.</li>
+      <li><strong>All</strong> participants understood the <strong>key benefits</strong> of the app by the end of the session.</li>
+      <li><strong>50%</strong> of participants were familiar with <strong>tracking</strong> (our core habit loop) by the end. All participants came away knowing how to search and add shows.</li>
+    </ul>
+  </div>
   <Figure
     src="/projects/tv-time-onboarding/testing-1.webp"
     alt="Testing screen showing the search and add experience"
@@ -438,6 +441,25 @@ Our testing found that the prototype was mostly successful.
     width="narrow"
     background="none"
   />
+</TwoUp>
+
+<TwoUp ratio="1:1" gap="lg" align="center">
+  <div class="cs-result">
+    <h3 class="cs-result__head">
+      <span class="cs-icon cs-icon--success" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" fill="currentColor" />
+          <path d="M7.5 12.5l3 3 6-6.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <span>Users understood the real app better after the prototype</span>
+    </h3>
+    <ul>
+      <li><strong>All</strong> participants understood how to search and add shows in the real app.</li>
+      <li><strong>50%</strong> of participants immediately and easily knew how to accomplish other tasks in the real app.</li>
+    </ul>
+    <p>One participant noted that compared to the real app and the other prototype, mine had more guidance and explained the app better. It also felt easier to understand and use.</p>
+  </div>
   <Figure
     src="/projects/tv-time-onboarding/testing-2.webp"
     alt="Testing screen showing reused controls between onboarding and the real app"
@@ -447,33 +469,54 @@ Our testing found that the prototype was mostly successful.
   />
 </TwoUp>
 
-<Section size="sub" stage="Test" title="Users understood the real app better after the prototype">
-- **All** participants understood how to search and add shows in the real app.
-- **50%** of participants immediately and easily knew how to accomplish other tasks in the real app.
-
-One participant noted that compared to the real app and the other
-prototype, mine had more guidance and explained the app better. It also
-felt easier to understand and use.
+<Section size="sub" stage="Test" title="Areas of concern">
+Testing also flagged a couple of areas where users got tripped up.
 </Section>
 
-<Section size="sub" stage="Test" title="Users thought they could watch in-app" icon="warning">
-- **75% of participants** came away thinking you could watch shows or movies directly in the app, despite messaging on the welcome screens saying otherwise.
-- All participants who followed the Watcher flow came away understanding that you couldn't watch in the app, but that the app could direct you to where you could watch.
-</Section>
-
-<Section size="sub" stage="Test" title="Users did not swipe on the first screen" icon="warning">
-- **75% of participants** did not know about the swipe functionality on the welcome screen that allowed them to view different CTAs.
-- We had suspected this might be the case and put the Tracker flow first to help drive the tracking use case.
-- An auto-scroll was also added to the welcome screens to make the feature more discoverable.
-</Section>
-
-<Figure
-  src="/projects/tv-time-onboarding/testing-swipe.webp"
-  alt="Welcome screen showing the swipe interaction users missed"
-  caption="The welcome screen swipe users missed"
-  width="narrow"
-  background="none"
-/>
+<TwoUp ratio="1:1" gap="lg" align="center">
+  <div>
+    <div class="cs-result" style="margin-bottom: var(--s-6);">
+      <h3 class="cs-result__head">
+        <span class="cs-icon cs-icon--warning" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
+            <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
+            <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+          </svg>
+        </span>
+        <span>Users thought they could watch in-app</span>
+      </h3>
+      <ul>
+        <li><strong>75% of participants</strong> came away thinking you could watch shows or movies directly in the app, despite messaging on the welcome screens saying otherwise.</li>
+        <li>All participants who followed the Watcher flow came away understanding that you couldn't watch in the app, but that the app could direct you to where you could watch.</li>
+      </ul>
+    </div>
+    <div class="cs-result">
+      <h3 class="cs-result__head">
+        <span class="cs-icon cs-icon--warning" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
+            <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
+            <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+          </svg>
+        </span>
+        <span>Users did not swipe on the first screen</span>
+      </h3>
+      <ul>
+        <li><strong>75% of participants</strong> did not know about the swipe functionality on the welcome screen that allowed them to view different CTAs.</li>
+        <li>We had suspected this might be the case and put the Tracker flow first to help drive the tracking use case.</li>
+        <li>An auto-scroll was also added to the welcome screens to make the feature more discoverable.</li>
+      </ul>
+    </div>
+  </div>
+  <Figure
+    src="/projects/tv-time-onboarding/testing-swipe.webp"
+    alt="Welcome screen showing the swipe interaction users missed"
+    caption="The welcome screen swipe users missed"
+    width="narrow"
+    background="none"
+  />
+</TwoUp>
 
 <Section stage="Impact" eyebrow="Did this work?" title="Evaluation" banner />
 
@@ -487,17 +530,14 @@ that redesign.
   <Stat
     value="100%"
     label="Of participants understood the app's key functions by the end of the session."
-    caption="Functions"
   />
   <Stat
     value="100%"
     label="Of participants understood the app's key benefits by the end of the session."
-    caption="Benefits"
   />
   <Stat
     value="50%"
     label="Of participants were familiar with tracking, the core habit loop, by the end."
-    caption="Core habit"
   />
 </Stats>
 

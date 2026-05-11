@@ -199,17 +199,17 @@ p.cs-inline-figure__eyebrow {
 }
 
 /* ==========================================================
-   COMPONENT CAROUSEL — horizontal scrollable strip of image
+   AUTO STRIP — horizontal scrollable strip of image
    cells (used for the Tappy content-component preview).
    ========================================================== */
 /* Full-bleed carousel: track bleeds to the viewport edges so the user sees
    the next card peeking in. Inner padding aligns the first card with the
    page reading column. */
-.cs-carousel {
+.cs-strip {
   margin: var(--s-6) 0 var(--s-8);
   max-width: none;
 }
-.cs-carousel__track {
+.cs-strip__track {
   display: flex;
   gap: var(--s-4);
   overflow-x: auto;
@@ -221,20 +221,20 @@ p.cs-inline-figure__eyebrow {
      by the carousel script reveals it at 30% opacity during interaction. */
   scrollbar-width: none;
 }
-.cs-carousel__track::-webkit-scrollbar { height: 0; background: transparent; }
-.cs-carousel__track::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
-.cs-carousel__track.is-user-scrolling {
+.cs-strip__track::-webkit-scrollbar { height: 0; background: transparent; }
+.cs-strip__track::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+.cs-strip__track.is-user-scrolling {
   scrollbar-width: thin;
   scrollbar-color: rgba(21, 23, 28, 0.3) transparent;
 }
-.cs-carousel__track.is-user-scrolling::-webkit-scrollbar { height: 8px; }
-.cs-carousel__track.is-user-scrolling::-webkit-scrollbar-thumb {
+.cs-strip__track.is-user-scrolling::-webkit-scrollbar { height: 8px; }
+.cs-strip__track.is-user-scrolling::-webkit-scrollbar-thumb {
   background: rgba(21, 23, 28, 0.3);
 }
-.cs-carousel__track > * {
+.cs-strip__track > * {
   flex: 0 0 auto;
 }
-.cs-carousel__card {
+.cs-strip__card {
   display: block;
   width: 320px;
   height: auto;
@@ -243,7 +243,7 @@ p.cs-inline-figure__eyebrow {
   border: 1px solid var(--border-subtle);
 }
 @media (max-width: 720px) {
-  .cs-carousel__card { width: 260px; }
+  .cs-strip__card { width: 260px; }
 }
 
 /* Style-guide cell with a media preview at the top and prose below. */
@@ -330,4 +330,146 @@ p.cs-bullet-stats__label {
 }
 @media (max-width: 540px) {
   .cs-bullet-stats { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================
+   CASE STUDY — inline icon helpers (used inside MDX bodies)
+   ========================================================== */
+.cs-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+.cs-icon svg { width: 100%; height: 100%; display: block; }
+.cs-icon--success { color: #1FA463; }
+.cs-icon--warning { color: #F4B400; }
+
+.cs-pros-cons { padding: 0; }
+.cs-pros-cons__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 0 0 var(--s-4);
+}
+.cs-pros-cons ul {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+  padding-left: var(--s-5);
+}
+.cs-pros-cons li { margin-bottom: var(--s-2); }
+
+/* Side-by-side result/concern blocks (text column next to image) */
+.cs-result {
+  display: grid;
+  gap: var(--s-3);
+}
+.cs-result__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 0 0 var(--s-3);
+}
+.cs-result ul {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+  padding-left: var(--s-5);
+}
+.cs-result li { margin-bottom: var(--s-2); }
+.cs-result p { font-size: 16px; line-height: 1.6; margin: var(--s-3) 0 0; }
+
+/* Stacked equal-height flow images (used by the tv-time onboarding case) */
+.cs-flow-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+  max-width: var(--content-max);
+  margin: var(--s-10) auto;
+  padding-inline: var(--s-5);
+}
+.cs-flow {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+}
+.cs-flow img {
+  display: block;
+  height: 360px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+.cs-flow figcaption {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .cs-flow img { height: 240px; }
+}
+
+/* Equal-height side-by-side pair that contains within column width (used by
+   the tv-time onboarding Feedly/Typeform comparison) */
+.cs-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-6);
+  max-width: var(--content-narrow);
+  margin: var(--s-8) auto;
+  padding-inline: var(--s-5);
+  align-items: start;
+}
+.cs-pair__item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.cs-pair__media {
+  width: 100%;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.cs-pair__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.cs-pair__item figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .cs-pair { grid-template-columns: 1fr; }
+  .cs-pair__media { height: 220px; }
 }

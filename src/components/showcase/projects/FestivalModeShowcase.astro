@@ -1,0 +1,56 @@
+---
+import Showcase from "../Showcase.astro";
+import PhonePair from "../PhonePair.astro";
+import { showcaseContent } from "../../../data/showcases";
+
+interface Props {
+  reverse?: boolean;
+  id?: string;
+}
+const { reverse = false, id = "festival-mode" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const data = showcaseContent["festival-mode"];
+---
+
+<Showcase
+  companyLogo={data.companyLogo}
+  companyName={data.companyName}
+  year={data.year}
+  role={data.role}
+  title={data.title}
+  tagline={data.tagline}
+  stats={data.stats}
+  ctaHref={`${base}/product-design/festival-mode`}
+  accent={data.accent}
+  reverse={reverse}
+  id={id}
+>
+  <PhonePair
+    phones={[
+      {
+        src: "/projects/festival-mode/phone-1.png",
+        alt: "Festival Mode opt-in screen with Join now and No thanks buttons",
+        left: -0.04,
+        top: 0.08,
+        width: 0.66,
+        aspect: "1408 / 2356",
+        drift: 64,
+        hoverLift: 10,
+        z: 2,
+      },
+      {
+        src: "/projects/festival-mode/phone-2.png",
+        alt: "Add festivals screen with EDC Las Vegas, Stagecoach, and Festivalgoers options",
+        left: 0.42,
+        top: 0.02,
+        width: 0.56,
+        aspect: "1288 / 2344",
+        drift: -28,
+        hoverLift: 6,
+        z: 1,
+      },
+    ]}
+    maxWidth="500px"
+    aspect="1 / 1"
+  />
+</Showcase>

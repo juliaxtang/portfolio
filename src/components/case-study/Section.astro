@@ -17,7 +17,7 @@ interface Props {
   title?: string;
   wide?: boolean;
   banner?: boolean;
-  icon?: "warning" | "info";
+  icon?: "warning" | "info" | "success";
   size?: "lg" | "sub";
   id?: string;
   stage?: string;
@@ -72,6 +72,14 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
                   </svg>
                 </span>
               )}
+              {icon === "success" && (
+                <span class="cs-icon cs-icon--success" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" fill="currentColor" />
+                    <path d="M7.5 12.5l3 3 6-6.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              )}
               <span>{title}</span>
             </h2>
           )}
@@ -88,6 +96,14 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
                   <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
                   <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
                   <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+                </svg>
+              </span>
+            )}
+            {icon === "success" && (
+              <span class="cs-icon cs-icon--success" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="currentColor" />
+                  <path d="M7.5 12.5l3 3 6-6.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </span>
             )}
@@ -159,7 +175,8 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
     flex-shrink: 0;
   }
   .cs-icon svg { width: 100%; height: 100%; display: block; }
-  .cs-icon--warning { color: var(--cs-accent, var(--brand-primary)); }
+  .cs-icon--warning { color: #F4B400; }
+  .cs-icon--success { color: #1FA463; }
 
   /* ===== Full-bleed banner ===== */
   .cs-banner {

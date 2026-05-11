@@ -1,0 +1,53 @@
+---
+import Showcase from "../Showcase.astro";
+import PhoneColumns from "../PhoneColumns.astro";
+import { showcaseContent } from "../../../data/showcases";
+
+interface Props {
+  reverse?: boolean;
+  id?: string;
+}
+const { reverse = false, id = "custom-lists" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const data = showcaseContent["custom-lists"];
+---
+
+<Showcase
+  companyLogo={data.companyLogo}
+  companyName={data.companyName}
+  year={data.year}
+  role={data.role}
+  title={data.title}
+  tagline={data.tagline}
+  stats={data.stats}
+  ctaHref={`${base}/product-design/custom-lists`}
+  accent={data.accent}
+  reverse={reverse}
+  id={id}
+>
+  <PhoneColumns
+    left={[
+      "/projects/custom-lists/phone-1.png",
+      "/projects/custom-lists/phone-3.png",
+    ]}
+    right={[
+      "/projects/custom-lists/phone-2.png",
+      "/projects/custom-lists/phone-4.png",
+    ]}
+    altLeft={[
+      "Guilty Pleasures private list with show posters",
+      "Custom order list with manually arranged shows",
+    ]}
+    altRight={[
+      "Custom Lists screen showing alphabetical sort with Best of 2019, Guilty Pleasures, Weekend Bingeing",
+      "Watching with Friends shared list",
+    ]}
+    badgeSrc="/projects/custom-lists/webby-honoree.png"
+    badgeAlt="Webby Honoree badge"
+    maxWidth="440px"
+    minHeight="700"
+    rightOffset={0.28}
+    rightShift="-86px"
+    driftRange={60}
+  />
+</Showcase>

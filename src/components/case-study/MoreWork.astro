@@ -181,13 +181,14 @@ const meta = content
   }
 
   .cs-more__band {
-    /* Shorter than the hero (which is clamp(480px, 56vh, 640px)) — this
-       is a transition out of the page, not another hero. */
-    --cs-more-min-h: clamp(360px, 44vh, 480px);
+    /* Fixed height (not min-height) so every page's next-project band
+       lands at the same size regardless of how the panel content wraps.
+       Shorter than the hero (clamp(480px, 56vh, 640px)) — this band is
+       a transition out of the page, not another hero. */
     position: relative;
     overflow: hidden;
     background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
-    min-height: var(--cs-more-min-h);
+    height: clamp(500px, 52vh, 540px);
     display: grid;
     grid-template-areas: "stack";
     text-decoration: none;
@@ -201,13 +202,16 @@ const meta = content
 
   .cs-more__bleed {
     grid-area: stack;
-    width: 100%;
-    height: 100%;
     overflow: hidden;
     position: relative;
   }
+  /* Absolutely positioned so the image doesn't push the band taller
+     than the min-height (e.g. festival-mode's hero PNG is 1440x733
+     and would otherwise force the band to ~652px on a 1280-wide viewport). */
   .cs-more__bleed img,
   .cs-more__bleed video {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -262,6 +266,17 @@ const meta = content
     min-height: 0;
     position: relative;
   }
+  /* HeroOverlay's img is naturally in-flow and pushes the band taller
+     than the panel content. Pin it absolutely (via :global so the rule
+     reaches into the child component's scope) so the band height is
+     driven by the panel + padding only, matching the other bands. */
+  .cs-more__visual :global(.ho) { height: 100%; }
+  .cs-more__visual :global(.ho__img) {
+    position: absolute;
+    bottom: var(--s-6);
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .cs-more__band--flipped .cs-more__visual {
     grid-column: 2;
   }
@@ -270,7 +285,7 @@ const meta = content
     grid-column: 2;
     grid-row: 1;
     display: grid;
-    gap: var(--s-4);
+    gap: var(--s-3);
     justify-items: start;
     max-width: 560px;
   }
@@ -291,7 +306,7 @@ const meta = content
 
   @media (max-width: 980px) {
     .cs-more__band {
-      min-height: 0;
+      height: auto;
     }
     .cs-more__bleed {
       aspect-ratio: 16 / 10;
@@ -341,7 +356,7 @@ const meta = content
   .cs-more__title {
     font-family: var(--font-sans);
     font-weight: 700;
-    font-size: clamp(36px, 4.6vw, 64px);
+    font-size: clamp(32px, 4vw, 52px);
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text-primary);
@@ -358,13 +373,13 @@ const meta = content
 
   .cs-more__stats {
     list-style: none;
-    margin: var(--s-2) 0 0;
-    padding: var(--s-4) 0 0;
+    margin: var(--s-1) 0 0;
+    padding: var(--s-3) 0 0;
     border-top: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
     width: 100%;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: var(--s-4);
+    gap: var(--s-3);
   }
   .cs-more__stats li {
     display: grid;

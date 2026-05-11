@@ -83,8 +83,8 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     tagline:
       "A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop.",
     stats: [
-      { value: "100%", label: "Understood key functions by end of session" },
-      { value: "100%", label: "Understood key benefits by end of session" },
+      { value: "100%", label: "test participants understood key functions of the app" },
+      { value: "100%", label: "test participants understood how to perform core actions on the app" },
       { value: "5 days", label: "Sprint kickoff to tested prototype" },
     ],
     accent: "#DCD2E8",

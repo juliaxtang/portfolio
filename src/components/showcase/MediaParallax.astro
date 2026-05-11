@@ -30,6 +30,8 @@ interface Props {
   radius?: string;
   /** Force <video> or <img> rendering instead of inferring from extension. */
   as?: "video" | "image";
+  /** Override the badge width (CSS value). Defaults to clamp(128px, 37%, 190px). */
+  badgeWidth?: string;
 }
 
 const {
@@ -43,6 +45,7 @@ const {
   badgeRange = 70,
   radius = "var(--r-lg)",
   as,
+  badgeWidth,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -60,7 +63,7 @@ const isVideo =
   class="media-parallax"
   data-phone-range={phoneRange}
   data-badge-range={badgeRange}
-  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};`}
+  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};${badgeWidth ? `--mp-badge-w:${badgeWidth};` : ""}`}
 >
   <div class={"media-parallax__media" + (isVideo ? " media-parallax__media--clip" : " media-parallax__media--free")}>
     {isVideo ? (
@@ -215,7 +218,7 @@ const isVideo =
     position: absolute;
     top: clamp(20px, 5%, 44px);
     right: 0;
-    width: clamp(128px, 37%, 190px);
+    width: var(--mp-badge-w, clamp(128px, 37%, 190px));
     height: auto;
     z-index: 2;
     border-radius: 50%;

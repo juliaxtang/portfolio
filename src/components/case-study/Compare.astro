@@ -62,15 +62,10 @@ const right = slots.right ? await slots.render("right") : null;
   .cs-compare__col {
     display: grid;
     gap: var(--s-4);
-    padding: var(--s-5);
-    border-radius: var(--r-lg);
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    transition: border-color var(--dur-normal) var(--ease);
+    transition: opacity var(--dur-normal) var(--ease);
   }
   .cs-compare__col.is-winner {
-    border-color: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 70%, transparent);
-    background: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 8%, var(--bg-surface));
+    opacity: 1;
   }
 
   .cs-compare__head {

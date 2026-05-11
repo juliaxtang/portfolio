@@ -1,9 +1,11 @@
 ---
 /**
  * Hero — case-study hero band. The hero image is full-bleed across the
- * entire band; the project info (brand mark, title, summary, tags, meta)
- * floats on top of the band in the right column. The band's tinted
- * background fills any area the image doesn't cover.
+ * entire band; the project info floats in one column and an optional
+ * visual (phones, columns, overlay) fills the other.
+ *
+ * `heroVisual.flipped` puts the visual on the RIGHT and the panel on the
+ * LEFT, reversing the default layout (visual left, panel right).
  */
 interface Props {
   title: string;
@@ -16,9 +18,14 @@ interface Props {
   tags?: string[];
   hero?: { src: string; alt: string; poster?: string; isVideo?: boolean; noFade?: boolean };
   accent?: string;
+  heroVisual?: { type: string; flipped?: boolean; lightText?: boolean; bg?: string };
 }
 
-const { title, summary, company, companyLogo, year, role, team = [], tags = [], hero, accent } = Astro.props;
+const { title, summary, company, companyLogo, year, role, team = [], tags = [], hero, accent, heroVisual } = Astro.props;
+const flipped = heroVisual?.flipped ?? false;
+const hasVisual = !!heroVisual;
+const lightText = heroVisual?.lightText ?? false;
+const heroBg = heroVisual?.bg;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p?: string) =>
@@ -40,7 +47,7 @@ const meta: Meta[] = [
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
 ---
 
-<section class="cs-hero" style={accentStyle}>
+<section class:list={["cs-hero", flipped && "cs-hero--flipped", hasVisual && "cs-hero--has-visual", lightText && "cs-hero--light-text", heroBg === "aurora" && "cs-hero--aurora"]} style={accentStyle}>
   {hero && heroSrc && (
     <div class={"cs-hero__bleed" + (hero.noFade ? " cs-hero__bleed--no-fade" : "")} aria-hidden="true">
       {hero.isVideo ? (
@@ -52,6 +59,11 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
   )}
 
   <div class="cs-hero__overlay">
+    {hasVisual && (
+      <div class="cs-hero__visual">
+        <slot name="visual" />
+      </div>
+    )}
     <div class="cs-hero__panel">
       {company && (
         <p class="cs-hero__brand">
@@ -108,6 +120,10 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     grid-template-areas: "stack";
   }
 
+  .cs-hero--aurora {
+    background: var(--brand-aurora);
+  }
+
   .cs-hero__bleed {
     grid-area: stack;
     width: 100%;
@@ -123,11 +139,12 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     object-position: 25% center;
     display: block;
   }
-  /* Soft fade on the right half so the overlay panel reads cleanly even
-     when the hero image is busy across the full width. Opt out per-project
-     via `hero.noFade: true` when the source image is already a finished
-     composition that fills the band edge-to-edge. */
-  .cs-hero__bleed::after {
+  /* Soft fade toward the panel side so the text reads cleanly.
+     Only shown when there is no visual slot — when a visual is present
+     the panel sits in its own column and doesn't need a gradient. Opt
+     out per-project via `hero.noFade: true` when the source image is
+     already a finished composition that fills the band edge-to-edge. */
+  .cs-hero:not(.cs-hero--has-visual) .cs-hero__bleed::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -140,7 +157,33 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
       color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
     );
   }
+  .cs-hero--flipped:not(.cs-hero--has-visual) .cs-hero__bleed::after {
+    background: linear-gradient(
+      270deg,
+      transparent 0%,
+      transparent 40%,
+      color-mix(in srgb, var(--cs-accent) 38%, var(--bg-canvas)) 75%,
+      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
+    );
+  }
   .cs-hero__bleed--no-fade::after { display: none; }
+
+  /* Light-text mode: override token values so all panel text reads on dark hero images. */
+  .cs-hero--light-text {
+    --text-primary: #fff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-tertiary: rgba(255, 255, 255, 0.55);
+  }
+  .cs-hero--light-text .cs-hero__tag {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .cs-hero--light-text .cs-hero__tag:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--bg-canvas);
+    border-color: rgba(255, 255, 255, 0.9);
+  }
 
   .cs-hero__overlay {
     grid-area: stack;
@@ -152,31 +195,76 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     padding-inline: clamp(var(--s-5), 4vw, var(--s-12));
     padding-block: clamp(var(--s-10), 4vw, var(--s-16));
     display: grid;
+    /* Default: visual left (1fr), panel right (fixed min-width) */
     grid-template-columns: 1fr minmax(360px, 0.85fr);
     align-items: center;
+    gap: var(--s-8);
+  }
+
+  /* Flipped: panel left, visual right */
+  .cs-hero--flipped .cs-hero__overlay {
+    grid-template-columns: minmax(360px, 0.85fr) 1fr;
+  }
+
+  /* Visual area — fills the available column height */
+  .cs-hero__visual {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    min-height: 0;
+  }
+  .cs-hero--flipped .cs-hero__visual {
+    grid-column: 2;
   }
 
   .cs-hero__panel {
     grid-column: 2;
+    grid-row: 1;
     display: grid;
     gap: var(--s-4);
     justify-items: start;
   }
+  .cs-hero--flipped .cs-hero__panel {
+    grid-column: 1;
+  }
+
+  /* Aurora (columns) hero: strip vertical overlay padding so columns
+     fill top-to-bottom, clipped at the hero boundary (overflow: hidden). */
+  .cs-hero--aurora .cs-hero__bleed { display: none; }
+  .cs-hero--aurora .cs-hero__overlay {
+    padding-block: 0;
+    align-items: stretch;
+  }
+  .cs-hero--aurora .cs-hero__panel {
+    padding-block: clamp(var(--s-10), 4vw, var(--s-16));
+    align-self: center;
+  }
+
+  /* When no visual slot is present, panel spans both columns (legacy). */
+  .cs-hero__overlay:not(:has(.cs-hero__visual)) {
+    grid-template-columns: 1fr minmax(360px, 0.85fr);
+  }
+  .cs-hero__overlay:not(:has(.cs-hero__visual)) .cs-hero__panel {
+    grid-column: 2;
+  }
 
   @media (max-width: 980px) {
-    .cs-hero {
-      min-height: 0;
-    }
+    .cs-hero { min-height: 0; }
     .cs-hero__bleed {
       aspect-ratio: 16 / 9;
       max-height: 50vh;
     }
-    .cs-hero__overlay {
+    .cs-hero__overlay,
+    .cs-hero--flipped .cs-hero__overlay {
       grid-template-columns: 1fr;
       padding-block: var(--s-8);
       background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+      gap: 0;
     }
-    .cs-hero__panel { grid-column: 1; }
+    .cs-hero__visual,
+    .cs-hero--flipped .cs-hero__visual { display: none; }
+    .cs-hero__panel,
+    .cs-hero--flipped .cs-hero__panel { grid-column: 1; grid-row: 1; }
   }
 
   .cs-hero__brand {
@@ -205,10 +293,9 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     letter-spacing: 0;
   }
   .cs-hero__brand-logo {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--r-sm);
-    object-fit: cover;
+    height: 20px;
+    width: auto;
+    object-fit: contain;
     display: block;
   }
 

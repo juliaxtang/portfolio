@@ -28,6 +28,8 @@ interface Props {
   title: string;
   tagline?: string;
   stats?: StatProps[];
+  /** Optional bullet list rendered between tagline and CTA (e.g. "Featuring:"). */
+  features?: string[];
   ctaHref?: string;
   ctaLabel?: string;
   accent?: string;
@@ -35,8 +37,9 @@ interface Props {
   /** Optional anchor id so a sticky nav can deep-link to this section. */
   id?: string;
   /** When true, render as a placeholder block — no case study link, a
-   *  "Coming soon" pill instead of the CTA, and the title/hero are not
-   *  clickable. */
+   *  disabled "Case study coming soon" button instead of the CTA, and the
+   *  title/hero are not clickable. Hovering anywhere on the showcase swaps
+   *  the button label to "Ask me about it!" (still in disabled style). */
   comingSoon?: boolean;
 }
 const {
@@ -47,8 +50,9 @@ const {
   title,
   tagline,
   stats = [],
+  features = [],
   ctaHref,
-  ctaLabel = "Read the full case study",
+  ctaLabel = "Read case study",
   accent,
   reverse = false,
   id,
@@ -88,6 +92,14 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
         {isLinked ? <a class="showcase__title-link" href={ctaHref}>{title}</a> : title}
       </h2>
       {tagline && <p class="showcase__tagline">{tagline}</p>}
+      {features.length > 0 && (
+        <div class="showcase__features">
+          <p class="showcase__features-label">Featuring:</p>
+          <ul class="showcase__features-list">
+            {features.map((f) => <li>{f}</li>)}
+          </ul>
+        </div>
+      )}
       {stats.length > 0 && (
         <ul class="showcase__stats">
           {stats.map((s) => (
@@ -100,7 +112,10 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
       )}
       {comingSoon ? (
         <p class="showcase__coming-soon">
-          <span class="showcase__coming-soon-pill">Coming soon</span>
+          <button class="showcase__coming-soon-btn" disabled aria-disabled="true">
+            <span class="showcase__cs-default">Case study coming soon</span>
+            <span class="showcase__cs-hover" aria-hidden="true">Ask me about it!</span>
+          </button>
         </p>
       ) : ctaHref && (
         <p class="showcase__cta">
@@ -239,12 +254,20 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     margin: 0 0 var(--s-4);
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
     gap: var(--s-3);
   }
   .showcase__stats li {
     display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
     gap: var(--s-1);
+  }
+  /* Games-specific: "30M" is so short that the equal-width grid creates
+     an uneven visual gap. Nudge the middle stat left to optically balance. */
+  #snapchat-games .showcase__stats li:nth-child(2) {
+    transform: translateX(-30px);
   }
   .showcase__stat-value {
     font-family: var(--font-sans);
@@ -337,35 +360,143 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     transform: translateY(-3px);
   }
 
+  /* Features list (e.g. "Featuring: Dark Mode, Prompts…") */
+  .showcase__features {
+    margin-bottom: var(--s-4);
+  }
+  .showcase__features-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 var(--s-1);
+    font-weight: 500;
+  }
+  .showcase__features-list {
+    list-style: disc;
+    padding-left: var(--s-4);
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* Coming-soon disabled button */
   .showcase__coming-soon { margin: 0; }
-  .showcase__coming-soon-pill {
+  .showcase__coming-soon-btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--s-2);
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--cs-accent) 14%, transparent);
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 12px;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: var(--r-full);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    border: 1px solid color-mix(in srgb, var(--cs-accent) 36%, transparent);
+    border: 1.5px solid var(--border-default);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+    /* width set by JS after font measurement */
+    transition: width 220ms var(--ease-out);
   }
-  .showcase__coming-soon-pill::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--cs-accent);
-    animation: showcase-pulse 1.8s var(--ease-out) infinite;
+
+  .showcase__cs-default {
+    white-space: nowrap;
+    transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
   }
-  @keyframes showcase-pulse {
-    0%, 100% { opacity: 0.4; transform: scale(0.9); }
-    50%      { opacity: 1;   transform: scale(1.1); }
+  .showcase__cs-hover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out);
   }
+
+  /* JS adds .cs-hovered to the button on hover of title / hero / button */
+  .showcase__coming-soon-btn.cs-hovered .showcase__cs-default {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  .showcase__coming-soon-btn.cs-hovered .showcase__cs-hover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .showcase__coming-soon-pill::before { animation: none; }
+    .showcase__coming-soon-btn { transition: none; }
+    .showcase__cs-default,
+    .showcase__cs-hover { transition: none; }
   }
 </style>
+
+<script is:inline>
+  (function () {
+    function initComingSoon() {
+      document.querySelectorAll(".showcase__coming-soon-btn").forEach(function (btn) {
+        var showcase = btn.closest(".showcase");
+        if (!showcase) return;
+        var defaultEl = btn.querySelector(".showcase__cs-default");
+        var hoverEl   = btn.querySelector(".showcase__cs-hover");
+        if (!defaultEl || !hoverEl) return;
+
+        // Measure default width
+        var defaultW = btn.offsetWidth;
+
+        // Briefly swap to hover state (no transition) to measure its width
+        btn.style.transition   = "none";
+        defaultEl.style.opacity    = "0";
+        defaultEl.style.visibility = "hidden";
+        hoverEl.style.position  = "static";
+        hoverEl.style.opacity   = "1";
+        hoverEl.style.transform = "none";
+        var hoverW = btn.offsetWidth;
+
+        // Restore
+        defaultEl.style.opacity    = "";
+        defaultEl.style.visibility = "";
+        hoverEl.style.position  = "";
+        hoverEl.style.opacity   = "";
+        hoverEl.style.transform = "";
+
+        // Lock initial width, then re-enable the width transition
+        btn.style.width = defaultW + "px";
+        void btn.offsetWidth; // force reflow
+        btn.style.transition = "";
+
+        var title = showcase.querySelector(".showcase__title");
+        var hero  = showcase.querySelector(".showcase__hero");
+        var triggers = [btn, title, hero].filter(Boolean);
+
+        var leaveTimer;
+        function activate() {
+          clearTimeout(leaveTimer);
+          btn.style.width = hoverW + "px";
+          btn.classList.add("cs-hovered");
+        }
+        function deactivate() {
+          leaveTimer = setTimeout(function () {
+            btn.style.width = defaultW + "px";
+            btn.classList.remove("cs-hovered");
+          }, 40);
+        }
+
+        triggers.forEach(function (el) {
+          el.addEventListener("mouseenter", activate);
+          el.addEventListener("mouseleave", deactivate);
+        });
+      });
+    }
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(initComingSoon);
+    } else if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initComingSoon, { once: true });
+    } else {
+      initComingSoon();
+    }
+  })();
+</script>

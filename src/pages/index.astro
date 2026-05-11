@@ -15,6 +15,7 @@ import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
 import VideoStack from "../components/showcase/VideoStack.astro";
+import MediaParallax from "../components/showcase/MediaParallax.astro";
 import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
 import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
 import CustomListsShowcase from "../components/showcase/projects/CustomListsShowcase.astro";
@@ -110,6 +111,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       role="Staff Product Designer"
       title="Snapchat Games"
       tagline="Designing the next chapter of gaming on Snapchat: how friends discover, play, and share games inside the app."
+      stats={[
+        { value: "30M", label: "Games DAU" },
+        { value: "↑ 0.136%", label: "Snap Send Human" },
+        { value: "↑ 120%", label: "Game Video Posts on iOS" },
+      ]}
       accent="#FFFC00"
       reverse
       id="snapchat-games"
@@ -158,12 +164,44 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   <FadeIn>
     <Showcase
+      companyLogo="/logos/snapchat.png"
+      companyName="Snapchat"
+      role="Staff Product Designer"
+      title="Topic Chats"
+      tagline="Topic Chats are Snapchat’s bet on real-time community, allowing Snapchatters 18+ a way to connect over shared interests and cultural moments."
+      stats={[
+        { value: "↑ DAU", label: "Particularly during live events" },
+        { value: "40k", label: "Simultaneously active in chat during peak times" },
+        { value: "208k", label: "Messages sent a week and counting" },
+      ]}
+      ctaHref="https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/"
+      ctaLabel="Read about it"
+      accent="#FFFC00"
+      id="topic-chats"
+    >
+      <MediaParallax
+        src="/projects/topic-chats/topic-chat-sizzle.mp4"
+        aspect="9 / 16"
+        maxWidth="324px"
+        label="Topic Chats feature sizzle reel"
+      />
+    </Showcase>
+  </FadeIn>
+
+  <FadeIn>
+    <Showcase
       companyLogo="/logos/tinder.png"
       companyName="Tinder"
       year={2022}
       role="Product Design Lead"
       title="App Redesign"
       tagline="A globally launched UI refresh with richer profile content and delightful new interactions, rolled out to every Tinder user worldwide."
+      features={[
+        "Dark Mode",
+        "Profile Prompts",
+        "Quizzes",
+        "New Swipe and Match Animations",
+      ]}
       ctaHref="https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/"
       ctaLabel="Read about it"
       accent="#FD297C"

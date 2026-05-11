@@ -6,12 +6,19 @@ tags: ["Tinder", "Strategy", "Branding", "0-to-1"]
 year: 2022
 role: "Product Design Lead"
 company: "Tinder"
+companyLogo: "/logos/tinder.png"
+team: ["Product Design Lead", "Product Manager", "Engineers", "Data Scientist", "UX Research", "Marketing", "Creative"]
 hero:
-  src: "/projects/festival-mode/phone-cardstack.png"
-  alt: "Phone mockup of Festival Mode showing the EDC Las Vegas cardstack"
+  src: "/projects/festival-mode/hero-background.png"
+  alt: "Festival Mode hero background"
 cover: "/projects/festival-mode/phone-explore-entry.png"
 coverAlt: "Festival Mode entry on Explore"
-accent: "#FA7255"
+heroVisual:
+  type: "two-phones"
+  phone1: "/projects/festival-mode/phone 1.png"
+  phone2: "/projects/festival-mode/phone 2.png"
+  flipped: false
+  lightText: true
 ---
 
 import Section from "../../components/case-study/Section.astro";
@@ -27,23 +34,17 @@ import PersonaTrait from "../../components/case-study/PersonaTrait.astro";
 import Quote from "../../components/case-study/Quote.astro";
 import SourceNote from "../../components/case-study/SourceNote.astro";
 
-<Section stage="Overview" eyebrow="Overview" title="A seasonal experience on Explore">
+<Section size="sub" stage="Overview" eyebrow="Overview" title="A seasonal experience on Explore">
 A new experience on Tinder Explore that lets festivalgoers meet others
 going to the same festival. The team relaunched and refreshed Festival
 Mode in just two months for the return of IRL events, and the experience
 went on to outperform the main Tinder swipe deck on both engagement and
 conversation rate.
-
-### Role
-Product Design Lead, partnering with a Product Manager, a team of
-engineers, a Data Scientist, a UX Researcher, and the Marketing and
-Creative teams.
-
-### Duration
-Two months from kickoff to launch.
 </Section>
 
-<Section stage="Define" eyebrow="Define" title="Why not just relaunch the 2019 version?">
+<Section stage="Define" eyebrow="Define" title="Understanding the constraints" banner />
+
+<Section size="sub" stage="Define" title="Why not just relaunch the 2019 version?" hideFromNav>
 Festival Mode initially launched in 2019, but got pulled when festivals
 were cancelled during the pandemic. With the return of IRL events, Tinder
 wanted to relaunch it. The 2019 version had real limitations, mostly
@@ -84,7 +85,7 @@ because it didn't have a permanent home in the app.
   />
 </TwoUp>
 
-<Section stage="Define" eyebrow="Define" title="Why Festival Mode, why now?">
+<Section size="sub" stage="Define" title="Why Festival Mode, why now?" hideFromNav>
 Tinder's strategy team had a sharper read on the moment.
 </Section>
 
@@ -101,7 +102,7 @@ Music is the #1 interest among Tinder members worldwide. So many of our
 members are excited to jump back into in-person events.
 </Quote>
 
-<Section stage="Define" eyebrow="Define" title="Project goals and success metrics">
+<Section size="sub" stage="Define" title="Project goals and success metrics" hideFromNav>
 The relaunch had to move three different sets of needs forward at once.
 </Section>
 
@@ -120,12 +121,14 @@ The relaunch had to move three different sets of needs forward at once.
   </Callout>
 </Callouts>
 
-<Section stage="Define" title="Success metrics">
+<Section size="sub" stage="Define" title="Success metrics" hideFromNav>
 We agreed on three success metrics up front: **Explore tile opens**,
 **likes sent**, and **conversations started**.
 </Section>
 
-<Section stage="Research" eyebrow="Research" title="Who are festivalgoers?">
+<Section stage="Research" eyebrow="Research" title="Understanding festivalgoers" banner />
+
+<Section size="sub" stage="Research" title="Who are festivalgoers?" hideFromNav>
 Consumer research and user interviews told us that festivalgoers go to
 multiple events per year, are open to going alone, and use apps for both
 social and event discovery.
@@ -137,13 +140,13 @@ social and event discovery.
   <Stat value="56%" label="Would go alone if they really wanted to attend." caption="Solo-curious" />
 </Stats>
 
-<Section stage="Research" title="Target demographic">
+<Section size="sub" stage="Research" title="Target demographic" hideFromNav>
 - 18 to 35 year olds.
 - Living in the US, UK, Spain, Norway, Germany, France, the Netherlands, and Australia.
 - EDM, R&B, country, and mixed-genre music fans.
 </Section>
 
-<Section stage="Research" eyebrow="Research" title="Meet Jen, our persona">
+<Section size="sub" stage="Research" title="Meet Jen, our persona" hideFromNav>
 To keep the team aligned, we built a persona around the shared patterns
 we saw in interviews.
 </Section>
@@ -172,7 +175,7 @@ we saw in interviews.
   </PersonaTrait>
 </Persona>
 
-<Section stage="Research" eyebrow="Research" title="What other apps were doing">
+<Section size="sub" stage="Research" title="What other apps were doing" hideFromNav>
 We looked at apps Jen-like users mentioned to understand what was already
 out there and where the gap was.
 </Section>
@@ -192,7 +195,9 @@ out there and where the gap was.
   </Callout>
 </Callouts>
 
-<Section stage="Ideate" eyebrow="Ideate" title="Picking a layout for the Explore entry">
+<Section stage="Ideate" eyebrow="Ideation" title="Shaping the solution" banner />
+
+<Section size="sub" stage="Ideate" title="Picking a layout for the Explore entry" hideFromNav>
 Explore was a new tab in the app with experiences that helped people
 connect in fun, focused ways. Festival Mode would be one of those
 experiences, so we needed to figure out how it should appear on the
@@ -207,7 +212,7 @@ hero tile.
 - The **hero tile won** on both swipes sent and tile opens. We went with that.
 </Section>
 
-<Section stage="Ideate" eyebrow="Ideate" title="Narrowing the MVP">
+<Section size="sub" stage="Ideate" title="Narrowing the MVP" hideFromNav>
 Two months meant ruthless scoping. After early reviews with engineers, we
 deferred richer features (RSVPs, event-specific prompts) to future
 milestones. The MVP scope landed on three things.
@@ -225,7 +230,9 @@ milestones. The MVP scope landed on three things.
   </Callout>
 </Callouts>
 
-<Section stage="Test" eyebrow="Test" title="Single-select or multi-select?">
+<Section stage="Test" eyebrow="Testing" title="Testing and iterating" banner />
+
+<Section size="sub" stage="Test" title="Single-select or multi-select?" hideFromNav>
 The biggest open UX question was whether festivalgoers should pick one
 festival or multiple. We had two hypotheses.
 
@@ -258,7 +265,7 @@ versus multi-select with one mixed cardstack.
   />
 </Compare>
 
-<Section stage="Test" eyebrow="Test" title="Results">
+<Section size="sub" stage="Test" title="Results" hideFromNav>
 The MVP met festivalgoers' needs. Across 12 participants:
 
 - **10 of 12** said they'd use it. All described it as intuitive and easy to use.
@@ -272,7 +279,7 @@ I like to get to know people a bit before meeting up with them. This
 feature helps me to do that.
 </Quote>
 
-<Section stage="Refine" eyebrow="Refine" title="The combination flow">
+<Section size="sub" stage="Test" title="The combination flow" hideFromNav>
 The final UX combined what worked from each test condition into one flow.
 </Section>
 
@@ -300,9 +307,11 @@ The final UX combined what worked from each test condition into one flow.
   background="none"
 />
 
-<Section stage="Design" eyebrow="Final designs" title="What shipped">
-The final experience flowed as Explore entry → opt-in → festival
-cardstack → toggle festival, with each festival getting its own brand
+<Section stage="Design" eyebrow="Final designs" title="What shipped" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+The final experience flowed as Explore entry, opt-in, festival
+cardstack, and toggle festival, with each festival getting its own brand
 treatment inside a shared system.
 </Section>
 
@@ -353,7 +362,9 @@ treatment inside a shared system.
   background="none"
 />
 
-<Section stage="Impact" eyebrow="Impact" title="Results after launch" wide>
+<Section stage="Impact" eyebrow="Impact" title="Results after launch" banner />
+
+<Section size="sub" stage="Impact" hideFromNav>
 Users were more engaged in Festival Mode than they were in the main
 Tinder experience. The generic Festivalgoers tile meaningfully expanded
 the audience without diluting the core experience.
@@ -377,7 +388,7 @@ the audience without diluting the core experience.
   />
 </Stats>
 
-<Section stage="Impact" eyebrow="Looking ahead" title="Influence on the Explore roadmap">
+<Section size="sub" stage="Impact" title="Influence on the Explore roadmap" hideFromNav>
 Festival Mode's seasonal success directly informed Explore's future
 roadmap.
 </Section>
@@ -399,7 +410,7 @@ roadmap.
   </Callout>
 </Callouts>
 
-<Section stage="Impact" title="Future milestones we sketched">
+<Section size="sub" stage="Impact" title="Future milestones we sketched" hideFromNav>
 - **RSVP to events.** "Interested" or "Going" signals to let other users know intent.
 - **Event-based prompts.** Use our existing Spotify integration to let users add the top artists they want to see at a specific festival.
 </Section>

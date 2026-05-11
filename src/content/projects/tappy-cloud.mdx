@@ -6,12 +6,17 @@ tags: ["Tinder", "Profiles", "Design Systems", "Tooling"]
 year: 2023
 role: "Product Design Lead"
 company: "Tinder"
-hero:
-  src: "/projects/tappy-cloud/phone-tappy-ia.png"
-  alt: "Phone mockup showing Tinder's new Tappy profile architecture"
+companyLogo: "/logos/tinder.png"
+team: ["Product Manager", "Engineers", "Data Science", "UX Research", "Design Systems"]
 cover: "/projects/tappy-cloud/phone-just-joined.png"
 coverAlt: "Tappy Cloud profile with Just Joined tag"
-accent: "#FD297C"
+heroVisual:
+  type: "columns"
+  col1: "/projects/tappy-cloud/column 1.png"
+  col2: "/projects/tappy-cloud/column 2.png"
+  col3: "/projects/tappy-cloud/column 3.png"
+  flipped: true
+  bg: "aurora"
 ---
 
 import Section from "../../components/case-study/Section.astro";
@@ -25,24 +30,17 @@ import Compare from "../../components/case-study/Compare.astro";
 import Quote from "../../components/case-study/Quote.astro";
 import SourceNote from "../../components/case-study/SourceNote.astro";
 
-<Section stage="Overview" eyebrow="Overview" title="Tappy, but smarter">
+<Section size="sub" stage="Overview" eyebrow="Overview" title="Tappy, but smarter">
 On Tinder, you tap left or right on a profile to flip through profile
 "pages," each combining a photo with profile content. Internally, we call
 those tappable photo+content pages **Tappy**. Tappy was static, hardcoded,
 and hard to scale, so I led a six-month effort to turn it into a
 backend-driven, dynamically configurable system, with the tooling to match.
-
-### Role
-Product Design Lead, partnering with a Product Manager, a team of engineers,
-the Data Science team, the UX Research team, the Design Systems team, and
-adjacent teams across every company vertical.
-
-### Duration
-Six months from kickoff to launch of the centralized tooling, with rollout
-and integration continuing afterwards.
 </Section>
 
-<Section stage="Define" eyebrow="Define" title="What was wrong with Tappy">
+<Section stage="Define" eyebrow="Define" title="What was wrong with Tappy" banner />
+
+<Section size="sub" stage="Define" title="Three structural problems" hideFromNav>
 At the time, Tappy suffered from three structural problems that limited
 both what users saw and what teams could ship.
 </Section>
@@ -62,7 +60,7 @@ both what users saw and what teams could ship.
   </Callout>
 </Callouts>
 
-<Section stage="Define" eyebrow="Project goals" title="Three goals, one system">
+<Section size="sub" stage="Define" title="Three goals, one system" hideFromNav>
 The redesign had to move three things forward at once. Each goal mapped
 cleanly to one of the structural problems above, which is how we knew the
 solution had to be a system, not a feature.
@@ -83,7 +81,9 @@ solution had to be a system, not a feature.
   </Callout>
 </Callouts>
 
-<Section stage="Research" eyebrow="Research" title="What past experiments told us">
+<Section stage="Research" eyebrow="Research" title="Grounding in how people use Tappy" banner />
+
+<Section size="sub" stage="Research" title="What past experiments told us" hideFromNav>
 Before designing anything, I pulled together prior analytics and ran fresh
 testing to ground the work in how people actually use Tappy.
 </Section>
@@ -95,7 +95,7 @@ testing to ground the work in how people actually use Tappy.
   <Stat value="5 lines" label="Optimal length for a bio. Anything longer or shorter reduces the chance of a like." caption="Bio sweet spot" />
 </Stats>
 
-<Section stage="Research" eyebrow="Research" title="Where attention actually lands">
+<Section size="sub" stage="Research" title="Where attention actually lands" hideFromNav>
 Card-sort and qualitative testing surfaced a clear hierarchy of what users
 look at, in what order, and why.
 
@@ -113,7 +113,7 @@ look at, in what order, and why.
   device="phone"
 />
 
-<Section stage="Research" eyebrow="Research" title="Men and women look at profiles differently">
+<Section size="sub" stage="Research" title="Men and women look at profiles differently" hideFromNav>
 A round of A/B tests surfaced a strong gender split. Men preferred seeing
 distance first; women preferred bio first. Showing distance first for men
 led to revenue lifts of about **0.6%** and a **0.4%** increase in user
@@ -140,7 +140,9 @@ impact.
   />
 </Compare>
 
-<Section stage="Plan" eyebrow="Plan" title="Four design principles">
+<Section stage="Plan" eyebrow="Planning" title="Principles and milestones" banner />
+
+<Section size="sub" stage="Plan" title="Four design principles" hideFromNav>
 Before we shaped the solution, the team aligned on four principles to
 steer every design decision.
 </Section>
@@ -161,7 +163,7 @@ steer every design decision.
   </Callout>
 </Callouts>
 
-<Section stage="Plan" eyebrow="Plan" title="Four milestones, sequenced for value">
+<Section size="sub" stage="Plan" title="Four milestones, sequenced for value" hideFromNav>
 We sequenced the work into four milestones so the team could start
 unlocking value early without waiting for the full system.
 </Section>
@@ -185,7 +187,9 @@ unlocking value early without waiting for the full system.
   </Callout>
 </Callouts>
 
-<Section stage="Design" eyebrow="Design M1" title="A small set of profile content components">
+<Section stage="Design" eyebrow="Design" title="Building the system" banner />
+
+<Section size="sub" stage="Design" title="A small set of profile content components" hideFromNav>
 The first milestone was making everything modular. I audited every kind of
 content that lived on Tappy and reduced the surface area to a small set of
 reusable components, each with a defined use and styling rules.
@@ -215,7 +219,7 @@ reusable components, each with a defined use and styling rules.
   </Callout>
 </Callouts>
 
-<Section stage="Design" eyebrow="Design M1" title="A new information architecture">
+<Section size="sub" stage="Design" title="A new information architecture" hideFromNav>
 Tappy's new architecture splits a profile into three distinct zones, each
 with its own purpose. The system labels zone is system-driven, the namerow
 is identity, and the profile content zone is what the user authored.
@@ -229,7 +233,7 @@ is identity, and the profile content zone is what the user authored.
   device="phone"
 />
 
-<Section stage="Design" eyebrow="Design M1" title="Content maximums on Tappy">
+<Section size="sub" stage="Design" title="Content maximums on Tappy" hideFromNav>
 We needed guardrails so a Tappy page could be configured freely without
 becoming overwhelming. Each profile element got a "line height" from 1 to 5
 based on its actual rendered height, and we capped a Tappy page at **5
@@ -238,7 +242,7 @@ incorrect swipes, so we kept stacking rules clear and let the system
 enforce them automatically.
 </Section>
 
-<Section stage="Design" eyebrow="Design M3" title="Introducing TaCo, the Tappy Configurator">
+<Section size="sub" stage="Design" title="Introducing TaCo, the Tappy Configurator" hideFromNav>
 With the components and IA in place, the centralizing piece was a tool any
 internal team could use to configure Tappy.
 </Section>
@@ -267,7 +271,7 @@ internal team could use to configure Tappy.
   maxHeight="640px"
 />
 
-<Section stage="Design" eyebrow="Validation" title="Testing TaCo with the people who'd use it">
+<Section size="sub" stage="Design" title="Testing TaCo with the people who'd use it" hideFromNav>
 Target users were PMs, engineers, designers, and data scientists. We
 measured time on task, success rate, and the System Usability Scale.
 </Section>
@@ -278,7 +282,9 @@ measured time on task, success rate, and the System Usability Scale.
   <Stat value="↓" label="Shortest time on task across the alternatives we tested." caption="Time on task" />
 </Stats>
 
-<Section stage="Impact" eyebrow="Impact" title="What TaCo unlocked">
+<Section stage="Impact" eyebrow="Impact" title="What TaCo unlocked" banner />
+
+<Section size="sub" stage="Impact" hideFromNav>
 TaCo lets us run the right experiments quickly, and then run a lot of
 them. The numbers compound. By the most recent count, teams have launched
 **50+ Tappy experiments** with TaCo. Across all experiments, profile
@@ -303,7 +309,7 @@ personalization moved every metric we cared about.
   />
 </Stats>
 
-<Section stage="Impact" eyebrow="Impact" title="The most successful experiment so far">
+<Section size="sub" stage="Impact" title="The most successful experiment so far" hideFromNav>
 The standout experiment to date is distance optimization: we only show
 distance when it's under a threshold. The result, from a single
 experiment, was a clear lift across three independent metrics.
@@ -325,7 +331,7 @@ experiment, was a clear lift across three independent metrics.
   />
 </TwoUp>
 
-<Section stage="Impact" eyebrow="Impact" title="Component-by-component wins">
+<Section size="sub" stage="Impact" title="Component-by-component wins" hideFromNav>
 The reusable components also unlocked entirely new content types on
 profiles. A few of the experiments that landed.
 </Section>
@@ -384,7 +390,7 @@ profiles. A few of the experiments that landed.
   </div>
 </TwoUp>
 
-<Section stage="Impact" eyebrow="Looking ahead" title="The future of personalization">
+<Section size="sub" stage="Impact" title="The future of personalization" hideFromNav>
 With the foundations in place, we're exploring ML and AI integration to
 intelligently spotlight compatibilities based on profile data. The same
 infrastructure that powers a hand-tuned Tappy ordering today is the

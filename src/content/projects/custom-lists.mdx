@@ -59,7 +59,7 @@ existing version of Custom Lists. We revisited the findings from those
 tests and identified two main themes around user pain points.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg" wide>
+<TwoUp ratio="1:1" gap="lg" wide align="center">
   <Section title="Confusing information architecture" icon="warning" size="sub" hideFromNav>
   - **75% of participants** expected to be able to create a new Custom List from the main Custom Lists screen.
   - **All participants** found the location of certain functions (renaming lists, editing contents of a list) were not where they expected.
@@ -69,15 +69,19 @@ tests and identified two main themes around user pain points.
     alt="Main Custom Lists screen"
     caption="Main Custom Lists screen"
     width="narrow"
+    device="phone"
+    background="none"
   />
 </TwoUp>
 
-<TwoUp ratio="1:1" gap="lg" wide>
+<TwoUp ratio="1:1" gap="lg" wide align="center">
   <Figure
     src="/projects/custom-lists/lists-screen-2.webp"
     alt="Add shows screen with pain-point annotations"
-    caption="Main Custom Lists screen"
+    caption="Add shows screen"
     width="narrow"
+    device="phone"
+    background="none"
   />
   <Section title="Difficulty adding shows to a list*" icon="warning" size="sub" hideFromNav>
   - **50% of participants** wanted to add shows they weren't following to a list.**
@@ -255,6 +259,8 @@ Custom List functions, describing the experience as "easy to use,"
     alt="In-app announcement introducing the new Custom Lists"
     caption="New Custom Lists announcement"
     width="narrow"
+    device="phone"
+    background="none"
   />
 </TwoUp>
 
@@ -280,48 +286,47 @@ Custom Lists.
   src="/projects/custom-lists/final-designs.webp"
   alt="The final hi-fi designs for the new Custom Lists feature"
   caption="The final designs"
-  width="wide"
+  width="bleed"
   background="none"
-  maxHeight="720px"
 />
 
 <Section size="sub" stage="Design" title="Improvements and additions">
 Our solution addressed both user pain points and user wants, and in the
 process of addressing both, we were able to also satisfy business goals.
-The new and improved Custom Lists included:
-
-### More intuitive information architecture
-
-### More control and clarity when editing list contents
-- The ability to add content you're not following.
-- Feedback when adding and removing content.
-- Sorting and filtering functionality to make long lists easier to parse.
+The new and improved Custom Lists included more intuitive information
+architecture, clearer editing controls, new social features, and new
+personalization options.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
+<TwoUp ratio="1:1" gap="lg" wide align="center">
+  <Section size="sub" stage="Design" title="New social functionality" hideFromNav>
+  - The ability to share lists.
+  - The ability to copy others' lists.
+  </Section>
   <Figure
     src="/projects/custom-lists/editing-flow.gif"
     alt="Animated walkthrough of the improved flow for editing list contents"
     caption="Improved flow for editing list contents"
     width="narrow"
+    device="phone"
+    background="none"
   />
+</TwoUp>
+
+<TwoUp ratio="1:1" gap="lg" wide align="center">
   <Figure
     src="/projects/custom-lists/creating-list.gif"
     alt="Animated walkthrough of creating a new list with the new personalization options"
     caption="Creating a new list with new personalization options"
     width="narrow"
+    device="phone"
+    background="none"
   />
+  <Section size="sub" stage="Design" title="Additional personalization options" hideFromNav>
+  - The option to create a private list.
+  - The option to add a description to a list.
+  </Section>
 </TwoUp>
-
-<Section size="sub" stage="Design" title="New social and personalization">
-### New social functionality
-- The ability to share lists.
-- The ability to copy others' lists.
-
-### Additional personalization options
-- The option to create a private list.
-- The option to add a description to a list.
-</Section>
 
 <Section stage="Impact" eyebrow="Did this work?" title="Evaluation" banner />
 
@@ -330,7 +335,7 @@ After conducting an A/B test on the new version of Custom Lists, we saw
 that the metrics moved in the right direction across the board.
 </Section>
 
-<Stats cols={3} wide>
+<Stats cols={3}>
   <Stat
     value="↑ 14%"
     label="Increase in the number of new users who created a Custom List."

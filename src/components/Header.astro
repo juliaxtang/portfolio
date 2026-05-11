@@ -1,10 +1,19 @@
 ---
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 const links = [
   { href: `${base}/`, label: "Work" },
   { href: `${base}/about`, label: "About" },
   { href: `${base}/resume.pdf`, label: "Resume", external: true },
 ];
+function isActive(href: string) {
+  if (href.endsWith(".pdf")) return false;
+  const normalized = href.replace(/\/$/, "") || "/";
+  if (normalized === base || normalized === `${base}/` || normalized === "/") {
+    return pathname === base || pathname === "/" || pathname === "";
+  }
+  return pathname.startsWith(normalized);
+}
 ---
 
 <header class="site-header" id="site-header">
@@ -20,6 +29,9 @@ const links = [
               href={l.href}
               {...(l.external
                 ? { target: "_blank", rel: "noopener" }
+                : {})}
+              {...(isActive(l.href)
+                ? { "aria-current": "page" }
                 : {})}
             >
               {l.label}
@@ -216,6 +228,13 @@ const links = [
   }
   .nav-links a:hover { color: var(--text-primary); }
   .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a[aria-current="page"] {
+    color: var(--text-primary);
+  }
+  .nav-links a[aria-current="page"]::after {
+    transform: scaleX(1);
+    background: var(--brand-primary);
+  }
 
   @media (max-width: 540px) {
     .site-header { padding: var(--s-4) var(--s-5); }

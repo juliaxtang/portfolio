@@ -124,12 +124,14 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     background: var(--brand-aurora);
   }
 
+  /* Absolutely positioned so the background image's intrinsic dimensions
+     don't size the grid cell — the hero band height comes from overlay
+     content (panel + visual), not from the bleed image. */
   .cs-hero__bleed {
     grid-area: stack;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
     overflow: hidden;
-    position: relative;
   }
   .cs-hero__bleed img,
   .cs-hero__bleed video {
@@ -206,12 +208,15 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     grid-template-columns: minmax(360px, 0.85fr) 1fr;
   }
 
-  /* Visual area — fills the available column height */
+  /* Visual area — fills the available column height. `position: relative`
+     so floating-phone visuals can absolutely position against this column
+     without pushing the hero band taller. */
   .cs-hero__visual {
     grid-column: 1;
     grid-row: 1;
     align-self: stretch;
     min-height: 0;
+    position: relative;
   }
   .cs-hero--flipped .cs-hero__visual {
     grid-column: 2;

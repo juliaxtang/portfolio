@@ -1,0 +1,87 @@
+---
+/**
+ * AsSeenOn — press logo row for case-study footers.
+ *
+ * Renders a "As seen on:" label followed by an evenly spaced row of logos.
+ * Logos are normalized to a shared height so they read as a single row
+ * regardless of their source aspect ratios.
+ */
+interface Logo {
+  src: string;
+  alt: string;
+}
+interface Props {
+  logos: Logo[];
+  label?: string;
+  height?: string;
+}
+const { logos, label = "As seen on:", height = "28px" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<section class="aso" style={`--aso-h:${height}`} aria-label={label}>
+  <div class="aso__inner">
+    <p class="aso__label">{label}</p>
+    <ul class="aso__logos" role="list">
+      {logos.map((logo) => (
+        <li class="aso__item">
+          <img src={resolve(logo.src)} alt={logo.alt} loading="lazy" />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .aso {
+    margin: var(--s-12) auto var(--s-4);
+    padding: var(--s-8) var(--s-5);
+    max-width: var(--content-max);
+  }
+  .aso__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-6) var(--s-8);
+    border-top: 1px solid var(--border-default);
+    padding-top: var(--s-8);
+  }
+  .aso__label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  .aso__logos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-8);
+  }
+  .aso__item {
+    display: flex;
+    align-items: center;
+  }
+  .aso__item img {
+    height: var(--aso-h);
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    display: block;
+    opacity: 0.78;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .aso__item img:hover {
+    opacity: 1;
+  }
+</style>

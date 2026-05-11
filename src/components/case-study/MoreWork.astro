@@ -188,7 +188,7 @@ const meta = content
     position: relative;
     overflow: hidden;
     background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
-    height: clamp(500px, 52vh, 540px);
+    height: clamp(540px, 54vh, 580px);
     display: grid;
     grid-template-areas: "stack";
     text-decoration: none;
@@ -261,13 +261,21 @@ const meta = content
     min-height: 0;
     position: relative;
   }
-  /* HeroOverlay's image is sized at 90% width (capped 500px), height
-     auto, and aligned to the bottom of `.ho` via flex. With the band
-     fixed at clamp(500, 52vh, 540), the image stays inside the visual
-     column and any vertical overflow is clipped by the band's
-     overflow:hidden. We avoid overriding the image's transform here
-     because the parallax script writes to `img.style.transform` on
-     scroll. */
+  /* Pin the HeroOverlay image absolutely so it doesn't push the
+     visual column taller than the panel (which would offset the
+     centered text downward). Compose translateX(-50%) for centering
+     with the parallax `--scroll-y` variable so HeroOverlay's scroll
+     handler can still animate vertical drift. */
+  .cs-more__visual :global(.ho) {
+    height: 100%;
+    align-items: center;
+  }
+  .cs-more__visual :global(.ho__img) {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(50% + var(--scroll-y, 0px)));
+  }
   .cs-more__band--flipped .cs-more__visual {
     grid-column: 2;
   }

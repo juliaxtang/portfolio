@@ -1,0 +1,249 @@
+---
+/**
+ * MediaParallax — a single piece of media (video or image) with the same
+ * scroll-driven vertical parallax and hover lift/scale/tilt as the App
+ * Redesign hero (PhoneVideoParallax). An optional circular badge floats
+ * over the upper-right with the same wind-up spin on hover.
+ *
+ * Used by Festival Mode (FMSizzle9-16.mp4, no badge) and TV Time Onboarding
+ * (hero-2.webp + Webby Honoree badge) so the three Tinder/TV-Time hero blocks
+ * share one visual language without per-case-study one-off implementations.
+ */
+interface Props {
+  /** Source path. .mp4/.webm/.mov render as <video>; everything else as <img>. */
+  src: string;
+  /** Native aspect ratio of the asset (CSS aspect-ratio string, e.g. "9 / 16"). */
+  aspect: string;
+  /** Max width of the media element. Tune to match App Redesign visual
+   *  height: ~324px at 1114/2268 → ~659px tall. */
+  maxWidth?: string;
+  /** Alt / aria-label for the media. */
+  label?: string;
+  /** Optional circular badge (e.g., Webby Honoree). */
+  badgeSrc?: string;
+  badgeAlt?: string;
+  /** Phone parallax range (px). Positive = drifts up as section scrolls past. */
+  phoneRange?: number;
+  /** Badge parallax range (px), typically smaller than phoneRange. */
+  badgeRange?: number;
+  /** Override the default rounded-corner radius on the media. */
+  radius?: string;
+  /** Force <video> or <img> rendering instead of inferring from extension. */
+  as?: "video" | "image";
+}
+
+const {
+  src,
+  aspect,
+  maxWidth = "324px",
+  label = "",
+  badgeSrc,
+  badgeAlt = "",
+  phoneRange = 120,
+  badgeRange = 70,
+  radius = "var(--r-lg)",
+  as,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const isVideo =
+  as === "video" ||
+  (as !== "image" && /\.(mp4|webm|mov)(\?|$)/i.test(src));
+---
+
+<div
+  class="media-parallax"
+  data-phone-range={phoneRange}
+  data-badge-range={badgeRange}
+  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};`}
+>
+  <div class={"media-parallax__media" + (isVideo ? " media-parallax__media--clip" : " media-parallax__media--free")}>
+    {isVideo ? (
+      <video
+        class="media-parallax__video"
+        src={resolve(src)}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label={label}
+      />
+    ) : (
+      <img
+        class="media-parallax__img"
+        src={resolve(src)}
+        alt={label}
+        draggable="false"
+        loading="lazy"
+      />
+    )}
+  </div>
+  {badgeSrc && (
+    <img
+      class="media-parallax__badge"
+      src={resolve(badgeSrc)}
+      alt={badgeAlt}
+      draggable="false"
+      loading="lazy"
+    />
+  )}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+      document.querySelectorAll(".media-parallax").forEach((root) => {
+        const phoneRange = parseFloat(root.dataset.phoneRange || "60");
+        const badgeRange = parseFloat(root.dataset.badgeRange || "30");
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5;
+          root.style.setProperty("--phone-y", (-centered * phoneRange).toFixed(1) + "px");
+          root.style.setProperty("--badge-y", (-centered * badgeRange).toFixed(1) + "px");
+        };
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .media-parallax {
+    position: relative;
+    width: 100%;
+    max-width: var(--mp-max-w, 324px);
+    margin: 0 auto;
+    /* Same top padding rhythm as PhoneVideoParallax so badge has room
+       to float and the overall vertical extent matches App Redesign. */
+    padding-top: clamp(48px, 12%, 88px);
+    padding-right: clamp(32px, 8%, 70px);
+    isolation: isolate;
+    --phone-y: 0px;
+    --badge-y: 0px;
+    --phone-lift: 0px;
+    --phone-scale: 1;
+    --phone-tilt: 0deg;
+    --badge-spin: 0deg;
+    --badge-scale: 1;
+  }
+
+  .media-parallax__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--mp-aspect);
+    background: transparent;
+    will-change: transform;
+    transform: translate3d(0, calc(var(--phone-y) + var(--phone-lift)), 0)
+               rotate(var(--phone-tilt))
+               scale(var(--phone-scale));
+    transform-origin: 50% 60%;
+    transition:
+      transform 520ms var(--ease-out),
+      filter 520ms var(--ease-out);
+    cursor: pointer;
+  }
+  /* Videos: rounded-corner mask. Images: free-form so transparent
+     edges in the source don't get clipped to a rectangle on hover. */
+  .media-parallax__media--clip {
+    border-radius: var(--mp-radius);
+    overflow: hidden;
+  }
+  .media-parallax__media--free {
+    border-radius: 0;
+    overflow: visible;
+  }
+  /* Drop shadows live on the media itself so transparent-bg images
+     (like hero-2.webp where the phones are already cut out) don't
+     render a rectangular box behind them. Videos get a soft shadow
+     via filter so it follows the rounded corners. */
+  .media-parallax__video {
+    filter: drop-shadow(0 18px 30px rgba(60, 30, 120, 0.18));
+  }
+  .media-parallax__img {
+    filter: drop-shadow(0 10px 20px rgba(40, 30, 80, 0.12));
+  }
+  .media-parallax:hover .media-parallax__media,
+  .media-parallax:focus-within .media-parallax__media {
+    --phone-lift: -10px;
+    --phone-scale: 1.035;
+    --phone-tilt: -1.2deg;
+  }
+  .media-parallax:hover .media-parallax__video,
+  .media-parallax:focus-within .media-parallax__video {
+    filter: drop-shadow(0 28px 44px rgba(60, 30, 120, 0.28));
+  }
+  .media-parallax:hover .media-parallax__img,
+  .media-parallax:focus-within .media-parallax__img {
+    filter: drop-shadow(0 18px 32px rgba(40, 30, 80, 0.22));
+  }
+
+  .media-parallax__video,
+  .media-parallax__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .media-parallax__badge {
+    position: absolute;
+    top: clamp(20px, 5%, 44px);
+    right: 0;
+    width: clamp(128px, 37%, 190px);
+    height: auto;
+    z-index: 2;
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    will-change: transform;
+    transform: translate3d(0, var(--badge-y), 0)
+               rotate(var(--badge-spin))
+               scale(var(--badge-scale));
+    transition:
+      transform 620ms var(--ease-out),
+      box-shadow 620ms var(--ease-out);
+  }
+  .media-parallax:hover .media-parallax__badge,
+  .media-parallax:focus-within .media-parallax__badge {
+    --badge-spin: 10deg;
+    --badge-scale: 1.08;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .media-parallax__media,
+    .media-parallax__badge {
+      transform: none !important;
+      transition: none !important;
+    }
+    .media-parallax:hover .media-parallax__media,
+    .media-parallax:hover .media-parallax__badge {
+      transform: none !important;
+    }
+  }
+</style>

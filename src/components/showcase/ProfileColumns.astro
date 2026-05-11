@@ -33,6 +33,10 @@ interface Props {
   maxWidth?: string;
   altLeft?: string;
   altRight?: string;
+  /** Floor on the visible window height (CSS length). When the sibling
+   *  text column is shorter than this, the cluster keeps this height
+   *  so adjacent showcase heroes can be roughly the same vertical size. */
+  minHeight?: string;
 }
 const {
   left,
@@ -43,6 +47,7 @@ const {
   maxWidth = "360px",
   altLeft = "",
   altRight = "",
+  minHeight,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -59,7 +64,8 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
   id={id}
   data-speed={speed}
   data-right-offset={rightOffset}
-  style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};`}
+  style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};${minHeight ? `--pc-min-h:${minHeight};` : ""}`}
+  data-min-height={minHeight}
 >
   <div class="profile-cols__col">
     <img src={resolve(left)} alt={altLeft} loading="lazy" draggable="false" data-img />
@@ -89,12 +95,14 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
         // with the case-study info on the desktop two-column layout.
         const showcase = root.closest(".showcase");
         const text = showcase ? showcase.querySelector(".showcase__text") : null;
+        const minHeight = parseFloat(root.dataset.minHeight || "0");
         const matchHeight = () => {
           // Only match in two-column mode — when stacked vertically, the
           // text sits below the hero so heights aren't meant to align.
           const twoCol = window.matchMedia("(min-width: 901px)").matches;
           if (twoCol && text && text.clientHeight > 0) {
-            root.style.height = text.clientHeight + "px";
+            const h = Math.max(text.clientHeight, minHeight);
+            root.style.height = h + "px";
             root.dataset.matched = "true";
           } else {
             root.style.height = "";
@@ -183,12 +191,14 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
     position: relative;
     overflow: hidden;
     border-radius: var(--r-lg);
-    /* Soft top/bottom fade so the strip dissolves into the page. */
+    /* Subtle top/bottom fade so the strip dissolves into the page
+       without looking foggy — fully opaque through most of the column,
+       a short soft fade only at the very edges. */
     --mask: linear-gradient(
       to bottom,
       transparent 0%,
-      #000 14%,
-      #000 86%,
+      #000 6%,
+      #000 94%,
       transparent 100%
     );
     -webkit-mask-image: var(--mask);

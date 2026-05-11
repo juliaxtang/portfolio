@@ -1,0 +1,174 @@
+---
+/**
+ * PhonePair — two phones arranged side-by-side with subtle, smooth
+ * scroll parallax. Each phone drifts at a slightly different rate so
+ * the composition feels alive without breaking the staged layout —
+ * they always stay in roughly the same relative position to each other.
+ *
+ * On hover, each phone also drifts subtly in the same independent
+ * fashion (small lift / tilt counter-shift on one vs the other).
+ *
+ * The phone PNGs are expected to come pre-rotated (rotation baked into
+ * the image) — this component handles position and scroll-driven Y
+ * drift only.
+ */
+interface Phone {
+  src: string;
+  alt?: string;
+  /** Left position as fraction of container width (0..1). */
+  left: number;
+  /** Top position as fraction of container height (0..1). */
+  top: number;
+  /** Visual width as fraction of container width (0..1). */
+  width: number;
+  /** Native aspect ratio of the source PNG (CSS aspect-ratio string). */
+  aspect: string;
+  /** This phone's parallax drift in px — total range over a full
+   *  scroll-through. Positive = drifts up on scroll. Keep small and
+   *  vary slightly between phones for subtle independence. */
+  drift?: number;
+  /** Hover lift in px — how much this phone shifts on hover. */
+  hoverLift?: number;
+  /** Stacking order; higher = on top. */
+  z?: number;
+}
+interface Props {
+  phones: Phone[];
+  /** Max width of the whole composition. */
+  maxWidth?: string;
+  /** Container aspect ratio (CSS aspect-ratio string). */
+  aspect?: string;
+}
+
+const {
+  phones,
+  maxWidth = "440px",
+  aspect = "1 / 1",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div
+  class="phone-pair"
+  style={`--pp-max-w:${maxWidth};--pp-aspect:${aspect};`}
+>
+  {phones.map((p, i) => (
+    <div
+      class="phone-pair__phone"
+      style={`
+        --x:${(p.left * 100).toFixed(2)}%;
+        --y:${(p.top * 100).toFixed(2)}%;
+        --w:${(p.width * 100).toFixed(2)}%;
+        --aspect:${p.aspect};
+        --drift:${p.drift ?? 30}px;
+        --hover-lift:${p.hoverLift ?? 6}px;
+        z-index:${p.z ?? i + 1};
+      `}
+      data-drift={p.drift ?? 30}
+    >
+      <img
+        src={resolve(p.src)}
+        alt={p.alt || ""}
+        draggable="false"
+        loading="lazy"
+      />
+    </div>
+  ))}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+      document.querySelectorAll(".phone-pair").forEach((root) => {
+        const phones = Array.from(root.querySelectorAll(".phone-pair__phone"));
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          // -0.5 .. +0.5 so the phones are at rest mid-pass.
+          const centered = progress - 0.5;
+          phones.forEach((phone) => {
+            const drift = parseFloat(phone.dataset.drift || "30");
+            const y = -centered * drift;
+            phone.style.setProperty("--scroll-y", y.toFixed(1) + "px");
+          });
+        };
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .phone-pair {
+    position: relative;
+    width: 100%;
+    max-width: var(--pp-max-w, 440px);
+    aspect-ratio: var(--pp-aspect, 1 / 1);
+    margin: 0 auto;
+    isolation: isolate;
+  }
+
+  .phone-pair__phone {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    aspect-ratio: var(--aspect, 9 / 19.5);
+    --scroll-y: 0px;
+    --hover-y: 0px;
+    --hover-scale: 1;
+    will-change: transform, filter;
+    transform: translate3d(0, calc(var(--scroll-y) + var(--hover-y)), 0)
+               scale(var(--hover-scale));
+    transition: transform 520ms var(--ease-out),
+                filter 320ms var(--ease-out);
+  }
+  /* Each phone responds to its OWN hover independently — the other
+     phone stays put. Slight lift + small scale; transform-origin: center
+     so the scale-up doesn't drift the phone off its position. */
+  .phone-pair__phone:hover {
+    --hover-y: calc(-1 * var(--hover-lift));
+    --hover-scale: 1.05;
+    z-index: 50;
+  }
+  .phone-pair__phone:hover img {
+    filter: drop-shadow(0 30px 48px rgba(40, 30, 80, 0.30));
+  }
+  .phone-pair__phone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 20px 36px rgba(40, 30, 80, 0.20));
+    pointer-events: none;
+    transition: filter 320ms var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-pair__phone { transition: none !important; transform: none !important; }
+  }
+</style>

@@ -1,0 +1,256 @@
+---
+/**
+ * PhoneVideoParallax — looping video inside a phone frame, plus a circular
+ * badge in the corner. Both phone and badge ease vertically on scroll so the
+ * composition has a gentle parallax as the section passes through the
+ * viewport (matches the Tinder block on the original Framer site).
+ *
+ * The video sits behind the phone-frame PNG. The PNG has a transparent
+ * "screen" area, so the video shows through and the purple bezel sits over
+ * the top. The video is inset slightly from the container edges so it
+ * doesn't bleed into the transparent corners of the PNG.
+ */
+interface Props {
+  /** Looping video shown inside the phone screen. */
+  videoSrc: string;
+  /** Transparent phone-frame PNG that overlays the video. */
+  frameSrc: string;
+  /** Badge PNG floated in the upper-right corner. */
+  badgeSrc: string;
+  /** Optional alt-text-equivalent (used as aria-label on the video). */
+  videoLabel?: string;
+  badgeAlt?: string;
+  /** How far (in px) the phone translates as the section moves through
+   *  the viewport. Positive value = phone drifts upward on scroll. */
+  phoneRange?: number;
+  /** Badge drift (in px). Same direction as the phone, but a smaller
+   *  magnitude so it feels lighter than the device — gives a layered
+   *  parallax instead of badge-locked-to-page. */
+  badgeRange?: number;
+}
+
+const {
+  videoSrc,
+  frameSrc,
+  badgeSrc,
+  videoLabel = "",
+  badgeAlt = "",
+  phoneRange = 120,
+  badgeRange = 70,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const id = "pvp-" + Math.random().toString(36).slice(2, 9);
+---
+
+<div
+  class="phone-video"
+  id={id}
+  data-phone-range={phoneRange}
+  data-badge-range={badgeRange}
+>
+  <div class="phone-video__phone">
+    <div class="phone-video__screen">
+      <video
+        class="phone-video__video"
+        src={resolve(videoSrc)}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label={videoLabel}
+      />
+    </div>
+    <img
+      class="phone-video__frame"
+      src={resolve(frameSrc)}
+      alt=""
+      aria-hidden="true"
+      draggable="false"
+      loading="lazy"
+    />
+  </div>
+  <img
+    class="phone-video__badge"
+    src={resolve(badgeSrc)}
+    alt={badgeAlt}
+    draggable="false"
+    loading="lazy"
+  />
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+      document.querySelectorAll(".phone-video").forEach((root) => {
+        const phoneRange = parseFloat(root.dataset.phoneRange || "60");
+        const badgeRange = parseFloat(root.dataset.badgeRange || "30");
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          // Map 0..1 to -0.5..+0.5 so the element is at rest mid-passage
+          // and drifts symmetrically before/after.
+          const centered = progress - 0.5;
+          const phoneY = -centered * phoneRange;
+          const badgeY = -centered * badgeRange;
+          // CSS custom properties so the hover transform can compose with
+          // the scroll-driven Y offset without one overwriting the other.
+          root.style.setProperty("--phone-y", phoneY.toFixed(1) + "px");
+          root.style.setProperty("--badge-y", badgeY.toFixed(1) + "px");
+        };
+
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .phone-video {
+    position: relative;
+    width: 100%;
+    /* ~10% smaller than the prior 360px so the composition sits a little
+       more comfortably alongside the showcase copy. */
+    max-width: 324px;
+    margin: 0 auto;
+    /* Reserve room for the (now larger) badge that floats outside the
+       phone frame's upper-right. */
+    padding-top: clamp(48px, 12%, 88px);
+    padding-right: clamp(32px, 8%, 70px);
+    isolation: isolate;
+    --phone-y: 0px;
+    --badge-y: 0px;
+    --phone-lift: 0px;
+    --phone-scale: 1;
+    --phone-tilt: 0deg;
+    --badge-spin: 0deg;
+    --badge-scale: 1;
+  }
+
+  .phone-video__phone {
+    position: relative;
+    width: 100%;
+    /* Match the source phone-frame.png aspect ratio (1114 x 2268). */
+    aspect-ratio: 1114 / 2268;
+    will-change: transform;
+    transform: translate3d(0, calc(var(--phone-y) + var(--phone-lift)), 0)
+               rotate(var(--phone-tilt))
+               scale(var(--phone-scale));
+    transform-origin: 50% 60%;
+    transition:
+      transform 520ms var(--ease-out),
+      filter 520ms var(--ease-out);
+    cursor: pointer;
+  }
+  .phone-video:hover .phone-video__phone,
+  .phone-video:focus-within .phone-video__phone {
+    --phone-lift: -10px;
+    --phone-scale: 1.035;
+    --phone-tilt: -1.2deg;
+  }
+
+  /* The screen sits inside the bezel's transparent inner cutout. Inset
+     values measured straight off the source PNG (1114×2268, cutout
+     starts at x=50 / y=44): top/bottom 1.94%, left/right 4.49%. The
+     rounded corners match the cutout's 150px corner radius. The frame
+     image overlays on top, so the visible video edge ends up flush
+     with the inside of the bezel. */
+  .phone-video__screen {
+    position: absolute;
+    top: 1.94%;
+    bottom: 1.94%;
+    left: 4.49%;
+    right: 4.49%;
+    overflow: hidden;
+    border-radius: 13.46% / 6.61%;
+    background: #000;
+    z-index: 0;
+  }
+
+  .phone-video__video {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    display: block;
+  }
+
+  .phone-video__frame {
+    position: absolute;
+    /* Frame is rendered ~2px shorter (height only, same width). The
+       trim comes off the TOP — the bezel slides down a couple px so
+       its inner edge no longer leaves a sliver above the video. */
+    inset: 2px 0 0 0;
+    width: 100%;
+    height: calc(100% - 2px);
+    object-fit: fill;
+    pointer-events: none;
+    z-index: 1;
+    /* Subtle soft shadow so the device sits on the page. */
+    filter: drop-shadow(0 18px 30px rgba(60, 30, 120, 0.18));
+  }
+
+  .phone-video__badge {
+    position: absolute;
+    /* Dropped down a bit so it overlaps the phone's upper-right edge
+       instead of floating in space above it. */
+    top: clamp(20px, 5%, 44px);
+    right: 0;
+    /* +10% from the previous size. */
+    width: clamp(128px, 37%, 190px);
+    height: auto;
+    z-index: 2;
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    will-change: transform;
+    transform: translate3d(0, var(--badge-y), 0)
+               rotate(var(--badge-spin))
+               scale(var(--badge-scale));
+    transition:
+      transform 620ms var(--ease-out),
+      box-shadow 620ms var(--ease-out);
+  }
+  .phone-video:hover .phone-video__badge,
+  .phone-video:focus-within .phone-video__badge {
+    /* Spin opposite to the phone's -1.2deg tilt for a wind-up feel. */
+    --badge-spin: 10deg;
+    --badge-scale: 1.08;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-video__phone,
+    .phone-video__badge {
+      transform: none !important;
+      transition: none !important;
+    }
+    .phone-video:hover .phone-video__phone,
+    .phone-video:hover .phone-video__badge {
+      transform: none !important;
+    }
+  }
+</style>

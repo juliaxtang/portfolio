@@ -55,6 +55,7 @@ const {
   comingSoon = false,
 } = Astro.props;
 const isLinked = !!ctaHref && !comingSoon;
+const isExternal = !!ctaHref && /^https?:\/\//.test(ctaHref);
 
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -103,7 +104,11 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
         </p>
       ) : ctaHref && (
         <p class="showcase__cta">
-          <a href={ctaHref}>
+          <a
+            href={ctaHref}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+          >
             {ctaLabel} <i class="ph ph-arrow-up-right showcase__cta-arrow" aria-hidden="true"></i>
           </a>
         </p>
@@ -111,7 +116,14 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     </div>
     <div class={"showcase__hero" + (isLinked ? " showcase__hero--linked" : "")}>
       {isLinked ? (
-        <a class="showcase__hero-link" href={ctaHref} aria-label={`Read the ${title} case study`} tabindex="-1">
+        <a
+          class="showcase__hero-link"
+          href={ctaHref}
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
+          aria-label={isExternal ? `${ctaLabel}: ${title}` : `Read the ${title} case study`}
+          tabindex="-1"
+        >
           <slot />
         </a>
       ) : (

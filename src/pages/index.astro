@@ -15,6 +15,7 @@ import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneStack from "../components/showcase/PhoneStack.astro";
 import ProfileColumns from "../components/showcase/ProfileColumns.astro";
+import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
 import ComingSoonHero from "../components/showcase/ComingSoonHero.astro";
 import CompareSlider from "../components/showcase/CompareSlider.astro";
 
@@ -121,14 +122,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <Showcase
       companyLogo="/logos/tinder.png"
       companyName="Tinder"
+      year={2022}
       role="Product Design Lead"
       title="App Redesign"
       tagline="A globally launched UI refresh with richer profile content and delightful new interactions, rolled out to every Tinder user worldwide."
+      ctaHref="https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/"
+      ctaLabel="Read about it"
       accent="#FD297C"
       id="app-redesign"
-      comingSoon
     >
-      <ComingSoonHero logo="/logos/tinder.png" logoAlt="Tinder" />
+      <PhoneVideoParallax
+        videoSrc="/projects/tinder-app-redesign/sparks-recording.mp4"
+        frameSrc="/projects/tinder-app-redesign/phone-frame.png"
+        badgeSrc="/projects/tinder-app-redesign/Hackathon_winner_badge.png"
+        videoLabel="Tinder Sparks profile redesign in motion"
+        badgeAlt="2022 Tinder Hackathon Winner badge"
+      />
     </Showcase>
   </FadeIn>
 

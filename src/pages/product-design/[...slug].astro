@@ -2,6 +2,24 @@
 import { getCollection, render } from "astro:content";
 import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
 
+// Case-study components are passed here so MDX files don't need per-file
+// imports. Keystatic strips those imports when it writes files back, so
+// providing them at render time keeps everything working after edits.
+import Callout from "../../components/case-study/Callout.astro";
+import Callouts from "../../components/case-study/Callouts.astro";
+import Compare from "../../components/case-study/Compare.astro";
+import Figure from "../../components/case-study/Figure.astro";
+import IconList from "../../components/case-study/IconList.astro";
+import Persona from "../../components/case-study/Persona.astro";
+import PersonaTrait from "../../components/case-study/PersonaTrait.astro";
+import Quote from "../../components/case-study/Quote.astro";
+import Section from "../../components/case-study/Section.astro";
+import SourceNote from "../../components/case-study/SourceNote.astro";
+import Stat from "../../components/case-study/Stat.astro";
+import Stats from "../../components/case-study/Stats.astro";
+import TwoUp from "../../components/case-study/TwoUp.astro";
+import Video from "../../components/case-study/Video.astro";
+
 export async function getStaticPaths() {
   const projects = await getCollection("projects", ({ data }) => !data.draft);
   return projects.map((entry) => ({
@@ -13,8 +31,14 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const slug = ((entry as any).slug ?? entry.id) as string;
+
+const components = {
+  Callout, Callouts, Compare, Figure, IconList,
+  Persona, PersonaTrait, Quote, Section, SourceNote,
+  Stat, Stats, TwoUp, Video,
+};
 ---
 
 <CaseStudyLayout entry={entry} slug={slug}>
-  <Content />
+  <Content components={components} />
 </CaseStudyLayout>

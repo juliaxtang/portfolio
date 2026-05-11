@@ -3,21 +3,24 @@
  * Section — the basic vertical block used inside a case-study body.
  *
  * Defaults to a centered narrow column for prose. Pass `wide` to fill the
- * standard content max width (good for grids of media). Each section has a
- * consistent vertical rhythm so case studies of different lengths feel like
- * the same family.
+ * standard content max width (good for grids of media).
+ *
+ * `banner` renders the section's eyebrow + title in a full-bleed colored
+ * band that uses the case-study accent wash. Use it for major section
+ * dividers (Research and Analysis, Ideation, Testing and Iterating, etc).
+ *
+ * `icon="warning"` prepends a small inline glyph next to the title — used
+ * for pain-point callouts.
  */
 interface Props {
   eyebrow?: string;
   title?: string;
   wide?: boolean;
+  banner?: boolean;
+  icon?: "warning" | "info";
+  size?: "lg" | "sub";
   id?: string;
-  /** High-level case-study stage shown in the nav rail (Overview, Define,
-   *  Research, Plan, Design, Test, Refine, Impact, etc.). Multiple sections
-   *  can share a stage; the nav collapses them to one entry per stage and
-   *  scrollspy lights up the stage that contains the current section. */
   stage?: string;
-  /** Set to true to hide this section from the in-page nav. */
   hideFromNav?: boolean;
   class?: string;
 }
@@ -26,23 +29,22 @@ const {
   eyebrow,
   title,
   wide = false,
+  banner = false,
+  icon,
+  size = "lg",
   id,
   stage,
   hideFromNav = false,
   class: className = "",
 } = Astro.props;
 
-// Auto-generate a stable id from the title if one isn't provided.
 const slugify = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const finalId = id ?? (title ? slugify(title) : undefined);
 
-// Use the explicit stage if provided, otherwise fall back to the eyebrow,
-// otherwise the title. This keeps existing case studies working but lets new
-// ones drive the nav by stage.
 const navLabel = stage ?? eyebrow ?? title;
 
-const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", className]
+const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", banner ? "cs-section--banner" : "", size === "sub" ? "cs-section--sub" : "", className]
   .filter(Boolean)
   .join(" ");
 ---
@@ -55,12 +57,47 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", cla
   data-cs-stage={stage ?? eyebrow ?? ""}
 >
   {(eyebrow || title) && (
-    <header class="cs-section__head">
-      {eyebrow && <p class="t-eyebrow cs-section__eyebrow">{eyebrow}</p>}
-      {title && <h2 class="cs-section__title t-h2">{title}</h2>}
-    </header>
+    banner ? (
+      <div class="cs-banner">
+        <div class="cs-banner__inner">
+          {eyebrow && <p class="t-eyebrow cs-banner__eyebrow">{eyebrow}</p>}
+          {title && (
+            <h2 class="cs-banner__title">
+              {icon === "warning" && (
+                <span class="cs-icon cs-icon--warning" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
+                    <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+                  </svg>
+                </span>
+              )}
+              <span>{title}</span>
+            </h2>
+          )}
+        </div>
+      </div>
+    ) : (
+      <header class="cs-section__head">
+        {eyebrow && <p class="t-eyebrow cs-section__eyebrow">{eyebrow}</p>}
+        {title && (
+          <h2 class="cs-section__title t-h2">
+            {icon === "warning" && (
+              <span class="cs-icon cs-icon--warning" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 3.5 21 19.5H3L12 3.5Z" fill="currentColor" />
+                  <path d="M12 10v4" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" />
+                  <circle cx="12" cy="17" r="1.2" fill="#1A1A1A" />
+                </svg>
+              </span>
+            )}
+            <span>{title}</span>
+          </h2>
+        )}
+      </header>
+    )
   )}
-  <div class="cs-section__body">
+  <div class={banner ? "cs-section__body cs-section__body--banner" : "cs-section__body"}>
     <slot />
   </div>
 </section>
@@ -71,7 +108,19 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", cla
     padding-block: var(--s-12);
   }
   .cs-section--narrow { max-width: var(--content-narrow); }
-  .cs-section--wide   { max-width: var(--content-max); }
+  /* Wide sections left-align with narrow text, same margin formula. */
+  .cs-section--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+
+  /* Banner sections are full-bleed: reset width and inner padding. */
+  .cs-section--banner {
+    max-width: none;
+    padding-block: 0;
+    margin-block: var(--s-12);
+  }
 
   @media (max-width: 720px) {
     .cs-section { padding-block: var(--s-10); }
@@ -80,13 +129,82 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", cla
   .cs-section__head {
     display: grid;
     gap: var(--s-3);
-    margin-bottom: var(--s-8);
+    margin-bottom: var(--s-6);
   }
   .cs-section__eyebrow { margin: 0; }
-  .cs-section__title   { margin: 0; }
+  .cs-section__title   { margin: 0; display: inline-flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
 
-  /* Default body typography — works for prose-heavy sections. Wider sections
-     usually contain media and don't need this, but it's harmless when they do. */
+  /* Sub-section title: smaller, sans bold — for in-page subsections that
+     aren't a major banner divider (e.g. pain-point callouts). */
+  .cs-section--sub { padding-block: var(--s-8); }
+  .cs-section--sub .cs-section__title {
+    font-family: var(--font-sans);
+    font-size: clamp(22px, 2.2vw, 28px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.014em;
+  }
+  .cs-section--sub .cs-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .cs-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+  .cs-icon svg { width: 100%; height: 100%; display: block; }
+  .cs-icon--warning { color: var(--cs-accent, var(--brand-primary)); }
+
+  /* ===== Full-bleed banner ===== */
+  .cs-banner {
+    background: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 38%, var(--bg-canvas));
+    padding-block: clamp(var(--s-6), 2.4vw, var(--s-10));
+  }
+  .cs-banner__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    /* Align banner title left edge with centered narrow-column text.
+       100% resolves to the viewport-wide parent (.cs-banner), so:
+         - When viewport ≤ 1240px: need (viewport − 760) / 2 = (100% − 760px) / 2
+         - When viewport > 1240px: need fixed (1240 − 760) / 2 = 240px
+       min() picks the smaller value, which is correct in both cases. */
+    padding-inline: min(
+      calc((var(--content-max) - var(--content-narrow)) / 2),
+      calc((100% - var(--content-narrow)) / 2)
+    );
+    display: grid;
+    gap: var(--s-2);
+  }
+  .cs-banner__eyebrow { margin: 0; color: var(--text-secondary); }
+  .cs-banner__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    flex-wrap: wrap;
+  }
+
+  .cs-section__body--banner {
+    max-width: var(--content-max);
+    margin: var(--s-10) auto 0;
+    padding-inline: min(
+      calc((var(--content-max) - var(--content-narrow)) / 2),
+      calc((100% - var(--content-narrow)) / 2)
+    );
+  }
+
+  /* Default body typography. */
   .cs-section__body :global(p) {
     font-size: 18px;
     line-height: 1.65;
@@ -97,12 +215,12 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", cla
 
   .cs-section__body :global(h3) {
     font-family: var(--font-sans);
-    font-size: clamp(22px, 2.4vw, 28px);
-    font-weight: 500;
-    letter-spacing: -0.018em;
-    line-height: 1.2;
+    font-size: clamp(16px, 1.3vw, 19px);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    line-height: 1.3;
     color: var(--text-primary);
-    margin: var(--s-10) 0 var(--s-4);
+    margin: var(--s-8) 0 var(--s-3);
   }
   .cs-section__body :global(h3:first-child) { margin-top: 0; }
 

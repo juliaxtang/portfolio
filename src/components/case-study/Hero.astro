@@ -1,23 +1,24 @@
 ---
 /**
- * Hero — case-study hero block. Renders the eyebrow row (company / year /
- * role), the title, the summary, and an optional hero media (image or video).
- *
- * The case-study layout calls this automatically from the frontmatter, so
- * .mdx files don't import it themselves.
+ * Hero — case-study hero band. The hero image is full-bleed across the
+ * entire band; the project info (brand mark, title, summary, tags, meta)
+ * floats on top of the band in the right column. The band's tinted
+ * background fills any area the image doesn't cover.
  */
 interface Props {
   title: string;
   summary: string;
   company?: string;
+  companyLogo?: string;
   year?: number;
   role?: string;
+  team?: string[];
   tags?: string[];
   hero?: { src: string; alt: string; poster?: string; isVideo?: boolean };
   accent?: string;
 }
 
-const { title, summary, company, year, role, tags = [], hero, accent } = Astro.props;
+const { title, summary, company, companyLogo, year, role, team = [], tags = [], hero, accent } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p?: string) =>
@@ -27,151 +28,266 @@ const resolve = (p?: string) =>
 
 const heroSrc = resolve(hero?.src);
 const heroPoster = resolve(hero?.poster);
+const logoSrc = resolve(companyLogo);
 
-const meta = [
-  company && { label: "Company", value: company },
+type Meta = { label: string; value?: string; values?: string[] };
+const meta: Meta[] = [
+  team.length > 0 && { label: "Team", values: team },
   role && { label: "Role", value: role },
   year && { label: "Year", value: String(year) },
-].filter(Boolean) as { label: string; value: string }[];
+].filter(Boolean) as Meta[];
 
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
 ---
 
 <section class="cs-hero" style={accentStyle}>
-  <div class="cs-hero__inner">
-    {tags.length > 0 && (
-      <p class="cs-hero__tags">
-        {tags.map((t, i) => (
-          <>
-            <span class="cs-hero__tag">{t}</span>
-            {i < tags.length - 1 && <span class="cs-hero__tag-sep" aria-hidden="true">·</span>}
-          </>
-        ))}
-      </p>
-    )}
-
-    <h1 class="cs-hero__title">{title}</h1>
-    <p class="cs-hero__summary">{summary}</p>
-
-    {meta.length > 0 && (
-      <dl class="cs-hero__meta">
-        {meta.map((m) => (
-          <div class="cs-hero__meta-item">
-            <dt class="t-eyebrow">{m.label}</dt>
-            <dd>{m.value}</dd>
-          </div>
-        ))}
-      </dl>
-    )}
-  </div>
-
   {hero && heroSrc && (
-    <div class="cs-hero__media-wrap">
-      <div class="cs-hero__media">
-        {hero.isVideo ? (
-          <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
-        ) : (
-          <img src={heroSrc} alt={hero.alt} />
-        )}
-      </div>
+    <div class="cs-hero__bleed" aria-hidden="true">
+      {hero.isVideo ? (
+        <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
+      ) : (
+        <img src={heroSrc} alt={hero.alt} />
+      )}
     </div>
   )}
+
+  <div class="cs-hero__overlay">
+    <div class="cs-hero__panel">
+      {company && (
+        <p class="cs-hero__brand">
+          {logoSrc ? (
+            <img class="cs-hero__brand-logo" src={logoSrc} alt={`${company} logo`} />
+          ) : (
+            <span class="cs-hero__brand-mark" aria-hidden="true">{company.charAt(0)}</span>
+          )}
+          <span class="cs-hero__brand-name">{company}</span>
+        </p>
+      )}
+
+      <h1 class="cs-hero__title">{title}</h1>
+
+      <p class="cs-hero__summary">{summary}</p>
+
+      {tags.length > 0 && (
+        <ul class="cs-hero__tags" aria-label="Skills">
+          {tags.map((t) => (
+            <li class="cs-hero__tag">{t}</li>
+          ))}
+        </ul>
+      )}
+
+      {meta.length > 0 && (
+        <dl class="cs-hero__meta">
+          {meta.map((m) => (
+            <div class="cs-hero__meta-item">
+              <dt class="t-eyebrow">{m.label}</dt>
+              {m.values ? (
+                <dd class="cs-hero__meta-list">
+                  {m.values.map((v) => <span>{v}</span>)}
+                </dd>
+              ) : (
+                <dd>{m.value}</dd>
+              )}
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+  </div>
 </section>
 
 <style>
   .cs-hero {
     --cs-accent: var(--brand-primary);
-    padding-top: var(--s-12);
-    padding-bottom: var(--s-12);
-    background:
-      radial-gradient(60% 80% at 20% 10%, color-mix(in srgb, var(--cs-accent) 35%, transparent) 0%, transparent 60%),
-      radial-gradient(50% 60% at 90% 0%, color-mix(in srgb, var(--brand-secondary) 30%, transparent) 0%, transparent 60%),
-      var(--bg-canvas);
-  }
-
-  .cs-hero__inner {
-    max-width: var(--content-narrow);
-    margin: 0 auto;
-    padding: 0 var(--s-8);
+    --cs-hero-min-h: clamp(480px, 56vh, 640px);
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+    min-height: var(--cs-hero-min-h);
     display: grid;
-    gap: var(--s-5);
-  }
-  @media (max-width: 720px) {
-    .cs-hero__inner { padding: 0 var(--s-5); }
+    grid-template-areas: "stack";
   }
 
-  .cs-hero__tags {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: 0;
-    display: flex;
-    flex-wrap: wrap;
+  .cs-hero__bleed {
+    grid-area: stack;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .cs-hero__bleed img,
+  .cs-hero__bleed video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 25% center;
+    display: block;
+  }
+  /* Soft fade on the right half so the overlay panel reads cleanly even
+     when the hero image is busy across the full width. */
+  .cs-hero__bleed::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 40%,
+      color-mix(in srgb, var(--cs-accent) 38%, var(--bg-canvas)) 75%,
+      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
+    );
+  }
+
+  .cs-hero__overlay {
+    grid-area: stack;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-12));
+    padding-block: clamp(var(--s-10), 4vw, var(--s-16));
+    display: grid;
+    grid-template-columns: 1fr minmax(360px, 0.85fr);
+    align-items: center;
+  }
+
+  .cs-hero__panel {
+    grid-column: 2;
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+  }
+
+  @media (max-width: 980px) {
+    .cs-hero {
+      min-height: 0;
+    }
+    .cs-hero__bleed {
+      aspect-ratio: 16 / 9;
+      max-height: 50vh;
+    }
+    .cs-hero__overlay {
+      grid-template-columns: 1fr;
+      padding-block: var(--s-8);
+      background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+    }
+    .cs-hero__panel { grid-column: 1; }
+  }
+
+  .cs-hero__brand {
+    display: inline-flex;
     align-items: center;
     gap: var(--s-2);
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
   }
-  .cs-hero__tag-sep { color: var(--text-disabled); }
+  .cs-hero__brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .cs-hero__brand-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    object-fit: cover;
+    display: block;
+  }
 
   .cs-hero__title {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-weight: 400;
-    font-size: clamp(48px, 7vw, 96px);
-    line-height: 1.0;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: clamp(36px, 4.6vw, 64px);
+    line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text-primary);
     margin: 0;
   }
 
   .cs-hero__summary {
-    font-size: clamp(18px, 1.7vw, 22px);
+    font-size: clamp(15px, 1.2vw, 17px);
     line-height: 1.55;
     color: var(--text-primary);
     margin: 0;
-    max-width: 60ch;
+    max-width: 46ch;
+  }
+
+  .cs-hero__tags {
+    list-style: none;
+    margin: var(--s-2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .cs-hero__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border-radius: var(--r-full);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+    backdrop-filter: blur(6px);
+    cursor: default;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease),
+      color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+    will-change: transform;
+  }
+  .cs-hero__tag:hover {
+    transform: scale(1.06);
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    border-color: var(--text-primary);
+    box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--text-primary) 50%, transparent);
   }
 
   .cs-hero__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-8);
-    margin: var(--s-4) 0 0;
-    padding: var(--s-5) 0 0;
-    border-top: 1px solid var(--border-subtle);
+    gap: var(--s-5) var(--s-8);
+    margin: var(--s-2) 0 0;
+    padding: var(--s-4) 0 0;
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    width: 100%;
   }
-  .cs-hero__meta-item { display: grid; gap: var(--s-1); }
+  .cs-hero__meta-item { display: grid; gap: var(--s-1); align-content: start; }
   .cs-hero__meta dt { margin: 0; }
   .cs-hero__meta dd {
     margin: 0;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text-primary);
   }
-
-  .cs-hero__media-wrap {
-    max-width: var(--content-max);
-    margin: var(--s-12) auto 0;
-    padding: 0 var(--s-8);
-  }
-  @media (max-width: 720px) {
-    .cs-hero__media-wrap { padding: 0 var(--s-5); }
-  }
-
-  .cs-hero__media {
-    border-radius: var(--r-xl);
-    overflow: hidden;
-    background: var(--bg-sunken);
-    aspect-ratio: 16 / 9;
-    box-shadow: var(--shadow-md);
-  }
-  .cs-hero__media img,
-  .cs-hero__media video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .cs-hero__meta-list {
+    display: grid;
+    gap: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--text-primary);
   }
 </style>

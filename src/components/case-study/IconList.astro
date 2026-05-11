@@ -1,0 +1,93 @@
+---
+/**
+ * IconList — a vertical list of icon + caption rows. Each row's icon sits
+ * in a circular badge tinted with the case-study accent. Caption text is
+ * uppercase mono with a regular tail.
+ *
+ * Pass items as a prop: { icon: "track" | "discover" | "notify" | "warning",
+ * lead: "TRACK", tail: "shows and movies you love" }.
+ *
+ * Default-slot version is supported for richer rows, but the prop API is
+ * what the MDX files use.
+ */
+interface Item {
+  icon: "track" | "discover" | "notify";
+  lead: string;
+  tail: string;
+}
+interface Props {
+  items: Item[];
+  align?: "center" | "left";
+}
+const { items, align = "left" } = Astro.props;
+
+const paths = {
+  track: `<rect x="6" y="5" width="13" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M9 8h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="6" y="14" width="13" height="6" rx="1.5" stroke="currentColor" stroke-width="2"/><path d="M9 17h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+  discover: `<circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+  notify: `<path d="M12 4a5 5 0 0 0-5 5v3l-2 3h14l-2-3V9a5 5 0 0 0-5-5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`,
+};
+---
+
+<ul class={`cs-iconlist cs-iconlist--${align}`}>
+  {items.map((item) => (
+    <li class="cs-iconlist__row">
+      <span class="cs-iconlist__badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" set:html={paths[item.icon]} />
+      </span>
+      <p class="cs-iconlist__text">
+        <span class="cs-iconlist__lead">{item.lead}</span>
+        <span class="cs-iconlist__tail"> {item.tail}</span>
+      </p>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .cs-iconlist {
+    list-style: none;
+    margin: var(--s-10) auto;
+    padding: 0;
+    display: grid;
+    gap: var(--s-5);
+    max-width: var(--content-narrow);
+  }
+  .cs-iconlist--center { justify-items: center; }
+
+  .cs-iconlist__row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+  }
+
+  .cs-iconlist__badge {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--r-full);
+    background: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 55%, var(--bg-canvas));
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cs-iconlist__badge svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+
+  .cs-iconlist__text {
+    margin: 0;
+    font-size: clamp(18px, 1.8vw, 22px);
+    line-height: 1.35;
+    color: var(--text-secondary);
+  }
+  .cs-iconlist__lead {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .cs-iconlist__tail { color: var(--text-secondary); }
+</style>

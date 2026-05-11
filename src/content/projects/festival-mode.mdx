@@ -7,7 +7,7 @@ year: 2022
 role: "Product Design Lead"
 company: "Tinder"
 companyLogo: "/logos/tinder.png"
-team: ["Product Design Lead", "Product Manager", "Engineers", "Data Scientist", "UX Research", "Marketing", "Creative"]
+team: ["Product Manager", "Engineers", "Data Scientist", "UX Researcher", "Marketing"]
 hero:
   src: "/projects/festival-mode/hero-background.png"
   alt: "Festival Mode hero background"
@@ -15,8 +15,8 @@ cover: "/projects/festival-mode/phone-explore-entry.png"
 coverAlt: "Festival Mode entry on Explore"
 heroVisual:
   type: "two-phones"
-  phone1: "/projects/festival-mode/phone 1.png"
-  phone2: "/projects/festival-mode/phone 2.png"
+  phone1: "/projects/festival-mode/phone-1.png"
+  phone2: "/projects/festival-mode/phone-2.png"
   flipped: false
   lightText: true
 ---
@@ -33,6 +33,7 @@ import Persona from "../../components/case-study/Persona.astro";
 import PersonaTrait from "../../components/case-study/PersonaTrait.astro";
 import Quote from "../../components/case-study/Quote.astro";
 import SourceNote from "../../components/case-study/SourceNote.astro";
+import AsSeenOn from "../../components/case-study/AsSeenOn.astro";
 
 <Section size="sub" stage="Overview" eyebrow="Overview" title="A seasonal experience on Explore">
 A new experience on Tinder Explore that lets festivalgoers meet others
@@ -422,4 +423,13 @@ roadmap.
   width="narrow"
   device="phone"
   background="none"
+/>
+
+<AsSeenOn
+  logos={[
+    { src: "/projects/festival-mode/mashable-logo.png", alt: "Mashable" },
+    { src: "/projects/festival-mode/engadget-logo.png", alt: "Engadget" },
+    { src: "/projects/festival-mode/techcrunch-logo.png", alt: "TechCrunch" },
+    { src: "/projects/festival-mode/daily-mail-logo.png", alt: "Daily Mail" },
+  ]}
 />

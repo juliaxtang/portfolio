@@ -1,10 +1,12 @@
 ---
 /**
- * HeroTwoPhones — two floating phone images for case-study heroes.
+ * HeroTwoPhones — two phones for case-study heroes, mirroring the
+ * homepage PhonePair sizing, positioning, and scroll parallax so a case
+ * study's hero matches the corresponding showcase card.
  *
- * Phone 2 sits slightly higher and behind. Phone 1 is slightly lower,
- * overlaps phone 2 from the left, and sits in front. Both shift upward
- * on scroll with a subtle depth difference.
+ * Hardcoded to the homepage Festival Mode card layout (the only current
+ * consumer). If another case study adopts two-phones, accept positioning
+ * props instead of hardcoding here.
  */
 interface Props {
   phone1: string;
@@ -16,12 +18,54 @@ const { phone1, phone2, alt1 = "", alt2 = "" } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p: string) =>
   p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
-const id = "htp-" + Math.random().toString(36).slice(2, 8);
+
+/* Top offsets are shifted up vs the homepage card so both phones fit
+   fully inside the (shorter) case-study hero band. The relative ordering
+   (phone 2 slightly higher than phone 1) is preserved. */
+const phones = [
+  {
+    src: resolve(phone1),
+    alt: alt1,
+    left: -0.04,
+    top: -0.04,
+    width: 0.66,
+    aspect: "1408 / 2356",
+    drift: 64,
+    hoverLift: 10,
+    z: 2,
+  },
+  {
+    src: resolve(phone2),
+    alt: alt2,
+    left: 0.42,
+    top: -0.06,
+    width: 0.56,
+    aspect: "1288 / 2344",
+    drift: -28,
+    hoverLift: 6,
+    z: 1,
+  },
+];
 ---
 
-<div class="htp" id={id} aria-hidden="true">
-  <img class="htp__phone htp__phone--2" src={resolve(phone2)} alt={alt2} draggable="false" />
-  <img class="htp__phone htp__phone--1" src={resolve(phone1)} alt={alt1} draggable="false" />
+<div class="htp" aria-hidden="true">
+  {phones.map((p) => (
+    <div
+      class="htp__phone"
+      style={`
+        --x:${(p.left * 100).toFixed(2)}%;
+        --y:${(p.top * 100).toFixed(2)}%;
+        --w:${(p.width * 100).toFixed(2)}%;
+        --aspect:${p.aspect};
+        --drift:${p.drift}px;
+        --hover-lift:${p.hoverLift}px;
+        z-index:${p.z};
+      `}
+      data-drift={p.drift}
+    >
+      <img src={p.src} alt={p.alt} draggable="false" />
+    </div>
+  ))}
 </div>
 
 <script is:inline>
@@ -30,28 +74,28 @@ const id = "htp-" + Math.random().toString(36).slice(2, 8);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     function init() {
       document.querySelectorAll(".htp").forEach(function (root) {
-        const phones = root.querySelectorAll(".htp__phone");
+        const phones = Array.from(root.querySelectorAll(".htp__phone"));
         let raf = 0;
         function update() {
           raf = 0;
-          const hero = root.closest(".cs-hero");
-          if (!hero) return;
-          const rect = hero.getBoundingClientRect();
+          const rect = root.getBoundingClientRect();
           const vh = window.innerHeight || document.documentElement.clientHeight;
           const total = vh + rect.height;
           if (total <= 0) return;
-          // centered: 0 at mid-passage, -0.5 entering, +0.5 exiting — symmetric drift
-          const centered = (vh - rect.top) / total - 0.5;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5;
           phones.forEach(function (phone) {
-            const range = phone.classList.contains("htp__phone--1") ? 100 : 70;
-            const y = -centered * range;
-            phone.style.transform = "translate3d(0," + y + "px,0)";
+            const drift = parseFloat(phone.dataset.drift || "30");
+            const y = -centered * drift;
+            phone.style.setProperty("--scroll-y", y.toFixed(1) + "px");
           });
         }
-        window.addEventListener("scroll", function () {
+        function onScroll() {
           if (!raf) raf = requestAnimationFrame(update);
-        }, { passive: true });
-        window.addEventListener("resize", update);
+        }
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
         update();
       });
     }
@@ -64,39 +108,55 @@ const id = "htp-" + Math.random().toString(36).slice(2, 8);
 </script>
 
 <style>
+  /* Absolutely positioned so phones float over the visual column
+     without pushing the hero band taller. Sized to match the homepage
+     PhonePair (500×500) and centered in the visual column. */
   .htp {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    /* let phones overflow the hero top edge for the floating look */
-    overflow: visible;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100%, 500px);
+    aspect-ratio: 1 / 1;
+    isolation: isolate;
     pointer-events: none;
   }
 
   .htp__phone {
     position: absolute;
-    bottom: 0;
-    width: 46%;
-    height: auto;
-    display: block;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    aspect-ratio: var(--aspect, 9 / 19.5);
+    --scroll-y: 0px;
+    --hover-y: 0px;
+    --hover-scale: 1;
+    will-change: transform, filter;
+    transform: translate3d(0, calc(var(--scroll-y) + var(--hover-y)), 0)
+               scale(var(--hover-scale));
+    transition: transform 520ms var(--ease-out),
+                filter 320ms var(--ease-out);
+    pointer-events: auto;
+  }
+  .htp__phone:hover {
+    --hover-y: calc(-1 * var(--hover-lift));
+    --hover-scale: 1.05;
+    z-index: 50;
+  }
+  .htp__phone:hover img {
+    filter: drop-shadow(0 30px 48px rgba(40, 30, 80, 0.30));
+  }
+  .htp__phone img {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    will-change: transform;
-    filter: drop-shadow(0 32px 64px rgba(0,0,0,0.22));
-    transform-origin: bottom center;
-    transition: filter 0.3s;
+    display: block;
+    filter: drop-shadow(0 20px 36px rgba(40, 30, 80, 0.20));
+    pointer-events: none;
+    transition: filter 320ms var(--ease-out);
   }
 
-  /* Phone 2: right side, raised, behind */
-  .htp__phone--2 {
-    right: 4%;
-    bottom: 6%;
-    z-index: 1;
-  }
-
-  /* Phone 1: left of phone 2, lower, in front, slight overlap */
-  .htp__phone--1 {
-    left: 6%;
-    bottom: 0;
-    z-index: 2;
+  @media (prefers-reduced-motion: reduce) {
+    .htp__phone { transition: none !important; transform: none !important; }
   }
 </style>

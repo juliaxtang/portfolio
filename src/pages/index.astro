@@ -13,14 +13,12 @@ import FadeIn from "../components/FadeIn.astro";
 import PearlField from "../components/PearlField.astro";
 import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
-import ProfileColumns from "../components/showcase/ProfileColumns.astro";
 import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
-import ComingSoonHero from "../components/showcase/ComingSoonHero.astro";
-import MediaParallax from "../components/showcase/MediaParallax.astro";
-import PhoneCluster from "../components/showcase/PhoneCluster.astro";
-import PhoneColumns from "../components/showcase/PhoneColumns.astro";
-import PhonePair from "../components/showcase/PhonePair.astro";
 import VideoStack from "../components/showcase/VideoStack.astro";
+import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
+import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
+import CustomListsShowcase from "../components/showcase/projects/CustomListsShowcase.astro";
+import TVTimeOnboardingShowcase from "../components/showcase/projects/TVTimeOnboardingShowcase.astro";
 
 // "delight" rendered letter-by-letter so each can wave on hover. "Julia"
 // gets the same treatment for the greeting hover.
@@ -182,164 +180,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </FadeIn>
 
   <FadeIn>
-    <Showcase
-      companyLogo="/logos/tinder.png"
-      companyName="Tinder"
-      year={2023}
-      role="Product Design Lead"
-      title="Tappy Cloud"
-      tagline="Turned Tinder's static profile system into a backend-driven, dynamically configurable one. The centralized tool that came out of it, TaCo, has since powered 50+ profile experiments."
-      stats={[
-        { value: "↑ 20%", label: "More likes sent across all experiments" },
-        { value: "$50–110M", label: "In revenue lift, attributed" },
-        { value: "50+", label: "Tappy experiments launched on TaCo" },
-      ]}
-      ctaHref={`${base}/product-design/tappy-cloud`}
-      accent="#FD297C"
-      reverse
-      id="tappy-cloud"
-    >
-      <ProfileColumns
-        left="/projects/tappy-cloud/profiles-left.png"
-        right="/projects/tappy-cloud/profiles-right.png"
-        altLeft="Tinder profiles styled by Tappy Cloud"
-        altRight="More Tinder profiles styled by Tappy Cloud"
-        maxWidth="480px"
-        minHeight="780"
-      />
-    </Showcase>
+    <TappyCloudShowcase reverse />
   </FadeIn>
 
   <FadeIn>
-    <Showcase
-      companyLogo="/logos/tinder.png"
-      companyName="Tinder"
-      year={2022}
-      role="Product Design Lead"
-      title="Festival Mode"
-      tagline="A seasonal experience on Tinder Explore that lets festivalgoers meet others going to the same festival. Two months from kickoff to launch, with engagement that doubled the main Tinder swipe deck."
-      stats={[
-        { value: "2×", label: "More likes sent and convos started vs. main app" },
-        { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
-        { value: "2 months", label: "From kickoff to launch" },
-      ]}
-      ctaHref={`${base}/product-design/festival-mode`}
-      accent="#FA7255"
-      id="festival-mode"
-    >
-      <PhonePair
-        phones={[
-          {
-            src: "/projects/festival-mode/phone-1.png",
-            alt: "Festival Mode opt-in screen with Join now and No thanks buttons",
-            /* phone-1's source PNG has ~22% horizontal transparent
-               padding (rotation overhang) vs phone-2's ~10%, so it
-               needs a wider container to render at the same visible
-               phone size. */
-            left: -0.04,
-            top: 0.08,
-            width: 0.66,
-            aspect: "1408 / 2356",
-            /* Strong upward drift on this phone. */
-            drift: 64,
-            hoverLift: 10,
-            z: 2,
-          },
-          {
-            src: "/projects/festival-mode/phone-2.png",
-            alt: "Add festivals screen with EDC Las Vegas, Stagecoach, and Festivalgoers options",
-            left: 0.42,
-            top: 0.02,
-            width: 0.56,
-            aspect: "1288 / 2344",
-            /* Opposite drift direction (negative) so the two phones
-               read as moving against each other on scroll, not
-               together. Keep the magnitude smaller so they don't
-               drift far apart. */
-            drift: -28,
-            hoverLift: 6,
-            z: 1,
-          },
-        ]}
-        maxWidth="500px"
-        aspect="1 / 1"
-      />
-    </Showcase>
+    <FestivalModeShowcase />
   </FadeIn>
 
   <FadeIn>
-    <Showcase
-      companyLogo="/logos/tv time.png"
-      companyName="TV Time"
-      year={2020}
-      role="UX Designer"
-      title="Custom Lists"
-      tagline="Redesigned TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable. Lifted list creation by double digits across new and existing users."
-      stats={[
-        { value: "↑ 14%", label: "More new users created a list" },
-        { value: "↑ 15%", label: "More lists created by new users" },
-        { value: "↑ 10%", label: "More lists created by existing users" },
-      ]}
-      ctaHref={`${base}/product-design/custom-lists`}
-      accent="#F4D9CC"
-      reverse
-      id="custom-lists"
-    >
-      <PhoneColumns
-        left={[
-          "/projects/custom-lists/phone-1.png",
-          "/projects/custom-lists/phone-3.png",
-        ]}
-        right={[
-          "/projects/custom-lists/phone-2.png",
-          "/projects/custom-lists/phone-4.png",
-        ]}
-        altLeft={[
-          "Guilty Pleasures private list with show posters",
-          "Custom order list with manually arranged shows",
-        ]}
-        altRight={[
-          "Custom Lists screen showing alphabetical sort with Best of 2019, Guilty Pleasures, Weekend Bingeing",
-          "Watching with Friends shared list",
-        ]}
-        badgeSrc="/projects/custom-lists/webby-honoree.png"
-        badgeAlt="Webby Honoree badge"
-        maxWidth="440px"
-        minHeight="700"
-        rightOffset={0.28}
-        rightShift="-86px"
-        driftRange={60}
-      />
-    </Showcase>
+    <CustomListsShowcase reverse />
   </FadeIn>
 
   <FadeIn>
-    <Showcase
-      companyLogo="/logos/tv time.png"
-      companyName="TV Time"
-      year={2020}
-      role="UX Designer"
-      title="Onboarding Redesign"
-      tagline="A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop."
-      stats={[
-        { value: "100%", label: "Understood key functions by end of session" },
-        { value: "100%", label: "Understood key benefits by end of session" },
-        { value: "5 days", label: "Sprint kickoff to tested prototype" },
-      ]}
-      ctaHref={`${base}/product-design/tv-time-onboarding`}
-      accent="#DCD2E8"
-      id="tv-time-onboarding"
-    >
-      <MediaParallax
-        src="/projects/tv-time-onboarding/hero-2.webp"
-        aspect="656 / 686"
-        maxWidth="500px"
-        label="TV Time onboarding flow on two phones"
-        badgeSrc="/projects/tv-time-onboarding/webby-honoree.png"
-        badgeAlt="Webby Honoree badge"
-        radius="0"
-      />
-    </Showcase>
+    <TVTimeOnboardingShowcase />
   </FadeIn>
 </BaseLayout>
 

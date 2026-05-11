@@ -1,0 +1,41 @@
+---
+/**
+ * Tappy Cloud Showcase block — homepage version (interactive hero).
+ * The footer "more work" block on case-study pages uses MoreWork.astro
+ * instead, which pairs this same text content with the case-study Hero.
+ */
+import Showcase from "../Showcase.astro";
+import ProfileColumns from "../ProfileColumns.astro";
+import { showcaseContent } from "../../../data/showcases";
+
+interface Props {
+  reverse?: boolean;
+  id?: string;
+}
+const { reverse = false, id = "tappy-cloud" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const data = showcaseContent["tappy-cloud"];
+---
+
+<Showcase
+  companyLogo={data.companyLogo}
+  companyName={data.companyName}
+  year={data.year}
+  role={data.role}
+  title={data.title}
+  tagline={data.tagline}
+  stats={data.stats}
+  ctaHref={`${base}/product-design/tappy-cloud`}
+  accent={data.accent}
+  reverse={reverse}
+  id={id}
+>
+  <ProfileColumns
+    left="/projects/tappy-cloud/profiles-left.png"
+    right="/projects/tappy-cloud/profiles-right.png"
+    altLeft="Tinder profiles styled by Tappy Cloud"
+    altRight="More Tinder profiles styled by Tappy Cloud"
+    maxWidth="480px"
+    minHeight="780"
+  />
+</Showcase>

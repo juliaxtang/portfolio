@@ -29,6 +29,10 @@ const projects = defineCollection({
           alt: z.string(),
           poster: z.string().optional(),
           isVideo: z.boolean().default(false),
+          /* Skip the soft fade overlay on the right edge of the hero image
+             (used when the image already extends cleanly across the band
+             and the fade would just dim a finished composition). */
+          noFade: z.boolean().default(false),
         })
         .optional(),
       cover: z.string().optional(),

@@ -1,0 +1,37 @@
+---
+import Showcase from "../Showcase.astro";
+import MediaParallax from "../MediaParallax.astro";
+import { showcaseContent } from "../../../data/showcases";
+
+interface Props {
+  reverse?: boolean;
+  id?: string;
+}
+const { reverse = false, id = "tv-time-onboarding" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const data = showcaseContent["tv-time-onboarding"];
+---
+
+<Showcase
+  companyLogo={data.companyLogo}
+  companyName={data.companyName}
+  year={data.year}
+  role={data.role}
+  title={data.title}
+  tagline={data.tagline}
+  stats={data.stats}
+  ctaHref={`${base}/product-design/tv-time-onboarding`}
+  accent={data.accent}
+  reverse={reverse}
+  id={id}
+>
+  <MediaParallax
+    src="/projects/tv-time-onboarding/hero-2.webp"
+    aspect="656 / 686"
+    maxWidth="500px"
+    label="TV Time onboarding flow on two phones"
+    badgeSrc="/projects/tv-time-onboarding/webby-honoree.png"
+    badgeAlt="Webby Honoree badge"
+    radius="0"
+  />
+</Showcase>

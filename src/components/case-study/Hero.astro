@@ -14,7 +14,7 @@ interface Props {
   role?: string;
   team?: string[];
   tags?: string[];
-  hero?: { src: string; alt: string; poster?: string; isVideo?: boolean };
+  hero?: { src: string; alt: string; poster?: string; isVideo?: boolean; noFade?: boolean };
   accent?: string;
 }
 
@@ -42,7 +42,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
 
 <section class="cs-hero" style={accentStyle}>
   {hero && heroSrc && (
-    <div class="cs-hero__bleed" aria-hidden="true">
+    <div class={"cs-hero__bleed" + (hero.noFade ? " cs-hero__bleed--no-fade" : "")} aria-hidden="true">
       {hero.isVideo ? (
         <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
       ) : (
@@ -124,7 +124,9 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     display: block;
   }
   /* Soft fade on the right half so the overlay panel reads cleanly even
-     when the hero image is busy across the full width. */
+     when the hero image is busy across the full width. Opt out per-project
+     via `hero.noFade: true` when the source image is already a finished
+     composition that fills the band edge-to-edge. */
   .cs-hero__bleed::after {
     content: "";
     position: absolute;
@@ -138,6 +140,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
       color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
     );
   }
+  .cs-hero__bleed--no-fade::after { display: none; }
 
   .cs-hero__overlay {
     grid-area: stack;

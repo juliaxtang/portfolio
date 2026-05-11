@@ -1,156 +1,370 @@
 ---
 /**
- * MoreWork — "Check out some of my other work!" section at the bottom of
- * each case study. Pulls sibling case studies from the projects collection,
- * orders them by `order`, and shows up to N (default 2) excluding the current.
+ * MoreWork — bottom of each case-study page. Pairs the homepage's
+ * Showcase TEXT content (brand, title, tagline, stats, CTA) with the
+ * case study's own Hero treatment (accent-tinted full-bleed band +
+ * frontmatter hero image). The accent matches the next project's
+ * case-study Hero (frontmatter), so the band reads as a preview of
+ * the next page.
+ *
+ * Layout: the band's background is the accent color across its full
+ * width. The hero image bleeds in from the left. The text panel
+ * overlays the right side and sits directly on the accent — no
+ * separate panel background.
  */
 import { getCollection } from "astro:content";
+import { showcaseContent } from "../../data/showcases";
 
 interface Props {
   currentSlug: string;
-  limit?: number;
 }
-const { currentSlug, limit = 2 } = Astro.props;
+const { currentSlug } = Astro.props;
 
 const all = await getCollection("projects", ({ data }) => !data.draft);
-const siblings = all
-  .filter((p) => p.id !== currentSlug && p.slug !== currentSlug)
-  .sort((a, b) => (a.data.order ?? 999) - (b.data.order ?? 999))
-  .slice(0, limit);
+const ordered = all.sort(
+  (a, b) => (a.data.order ?? 999) - (b.data.order ?? 999)
+);
+const currentIdx = ordered.findIndex(
+  (p) => p.id === currentSlug || (p as any).slug === currentSlug
+);
+const nextEntry =
+  ordered.length > 1
+    ? ordered[(Math.max(currentIdx, 0) + 1) % ordered.length]
+    : undefined;
+const nextSlug = nextEntry
+  ? ((nextEntry as any).slug ?? nextEntry.id)
+  : undefined;
+
+const content = nextSlug ? showcaseContent[nextSlug] : undefined;
+const hero = nextEntry?.data.hero;
+const accent = nextEntry?.data.accent;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p?: string) =>
+  !p
+    ? undefined
+    : p.startsWith("http") || p.startsWith(base)
+      ? p
+      : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const heroSrc = resolve(hero?.src);
+const heroPoster = resolve(hero?.poster);
+const logoSrc = resolve(content?.companyLogo);
+const accentStyle = accent ? `--cs-accent:${accent};` : "";
+
+const meta = content
+  ? [content.year ? String(content.year) : null, content.role]
+      .filter(Boolean)
+      .join(" · ")
+  : "";
 ---
 
-{siblings.length > 0 && (
-  <section class="cs-more">
-    <div class="cs-more__inner">
-      <h2 class="cs-more__title">Check out some of my other work</h2>
-      <ul class="cs-more__grid">
-        {siblings.map((p) => {
-          const slug = (p as any).slug ?? p.id;
-          const cover = p.data.cover ?? p.data.hero?.src;
-          const coverResolved = cover && (cover.startsWith("http") || cover.startsWith(base)
-            ? cover
-            : `${base}${cover.startsWith("/") ? "" : "/"}${cover}`);
-          return (
-            <li>
-              <a class="cs-more__cell" href={`${base}/product-design/${slug}`}>
-                <div class="cs-more__media">
-                  {coverResolved ? <img src={coverResolved} alt={p.data.coverAlt ?? p.data.hero?.alt ?? ""} loading="lazy" /> : <div class="cs-more__placeholder" />}
-                </div>
-                <div class="cs-more__body">
-                  <h3 class="cs-more__h">{p.data.title}<span class="cs-more__arrow" aria-hidden="true">→</span></h3>
-                  <p class="cs-more__sub">{p.data.summary}</p>
-                </div>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+{nextEntry && content && (
+  <aside class="cs-more" style={accentStyle} aria-label="Next case study" id={`more-work-${nextSlug}`}>
+    <div class="cs-more__banner">
+      <span class="cs-more__banner-text">Check out some of my other work:</span>
     </div>
-  </section>
+
+    <a
+      class="cs-more__band"
+      href={`${base}/product-design/${nextSlug}`}
+      aria-label={`Read the ${content.title} case study`}
+    >
+      {heroSrc && (
+        <div class={"cs-more__bleed" + (hero?.noFade ? " cs-more__bleed--no-fade" : "")} aria-hidden="true">
+          {hero?.isVideo ? (
+            <video src={heroSrc} poster={heroPoster} autoplay muted playsinline loop preload="metadata"></video>
+          ) : (
+            <img src={heroSrc} alt="" loading="lazy" />
+          )}
+        </div>
+      )}
+
+      <div class="cs-more__overlay">
+        <div class="cs-more__panel">
+          <div class="cs-more__brand">
+            {logoSrc && (
+              <img class="cs-more__brand-logo" src={logoSrc} alt="" loading="lazy" />
+            )}
+            <span class="cs-more__brand-name">{content.companyName}</span>
+          </div>
+
+          {meta && <p class="t-eyebrow cs-more__meta">{meta}</p>}
+
+          <h2 class="cs-more__title">{content.title}</h2>
+
+          <p class="cs-more__tagline">{content.tagline}</p>
+
+          {content.stats.length > 0 && (
+            <ul class="cs-more__stats">
+              {content.stats.map((s) => (
+                <li>
+                  <p class="cs-more__stat-value">{s.value}</p>
+                  <p class="cs-more__stat-label">{s.label}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <span class="cs-more__cta">
+            <span class="cs-more__cta-label">Read case study</span>
+            <i class="ph ph-arrow-up-right cs-more__cta-arrow" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
+    </a>
+  </aside>
 )}
 
 <style>
   .cs-more {
-    padding-block: var(--s-20);
-    background: var(--bg-sunken-warm);
+    --cs-accent: var(--brand-primary);
+    display: block;
     border-top: 1px solid var(--border-subtle);
+    background: var(--bg-canvas);
   }
-  .cs-more__inner {
+
+  /* Aurora-filled banner. Pixel-sized radial gradients so the lobes stay
+     round and full-bodied at any banner width. */
+  .cs-more__banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(var(--s-10), 8vw, var(--s-16)) var(--s-6);
+    background:
+      radial-gradient(700px 500px at 18% 60%, #C5DCEA 0%, transparent 65%),
+      radial-gradient(700px 500px at 82% 40%, #DCD2E8 0%, transparent 65%),
+      radial-gradient(900px 500px at 50% 130%, #F4D9CC 0%, transparent 70%),
+      var(--bg-canvas);
+  }
+  .cs-more__banner-text {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: clamp(22px, 2.4vw, 32px);
+    line-height: 1.2;
+    letter-spacing: -0.018em;
+    color: var(--text-primary);
+    text-align: center;
+  }
+
+  .cs-more__band {
+    --cs-more-min-h: clamp(480px, 56vh, 640px);
+    position: relative;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+    min-height: var(--cs-more-min-h);
+    display: grid;
+    grid-template-areas: "stack";
+    text-decoration: none;
+    color: inherit;
+  }
+  .cs-more__band:focus-visible {
+    outline: 3px solid var(--text-primary);
+    outline-offset: -3px;
+  }
+
+  .cs-more__bleed {
+    grid-area: stack;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .cs-more__bleed img,
+  .cs-more__bleed video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 25% center;
+    display: block;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .cs-more__band:hover .cs-more__bleed img,
+  .cs-more__band:hover .cs-more__bleed video {
+    transform: scale(1.025);
+  }
+  /* Soft fade on the image's right edge so the text panel reads cleanly
+     against the accent color without any extra panel backdrop. Opt out
+     via `hero.noFade: true` per project. */
+  .cs-more__bleed::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 42%,
+      color-mix(in srgb, var(--cs-accent) 38%, var(--bg-canvas)) 72%,
+      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
+    );
+  }
+  .cs-more__bleed--no-fade::after { display: none; }
+
+  .cs-more__overlay {
+    grid-area: stack;
+    position: relative;
+    z-index: 1;
+    width: 100%;
     max-width: var(--content-max);
     margin: 0 auto;
-    padding: 0 var(--s-8);
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-12));
+    display: grid;
+    grid-template-columns: 1fr minmax(360px, 0.85fr);
+    align-items: center;
   }
-  @media (max-width: 720px) {
-    .cs-more__inner { padding: 0 var(--s-5); }
+
+  .cs-more__panel {
+    grid-column: 2;
+    display: grid;
+    gap: var(--s-4);
+    justify-items: start;
+    padding-block: clamp(var(--s-8), 3vw, var(--s-12));
+    max-width: 560px;
+  }
+
+  @media (max-width: 980px) {
+    .cs-more__band {
+      min-height: 0;
+    }
+    .cs-more__bleed {
+      aspect-ratio: 16 / 10;
+      max-height: 44vh;
+    }
+    .cs-more__bleed::after {
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        transparent 50%,
+        color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
+      );
+    }
+    .cs-more__bleed--no-fade::after { display: none; }
+    .cs-more__overlay {
+      grid-template-columns: 1fr;
+      padding-block: var(--s-6);
+    }
+    .cs-more__panel {
+      grid-column: 1;
+      padding-block: var(--s-6);
+      max-width: none;
+    }
+  }
+
+  .cs-more__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin: 0;
+  }
+  .cs-more__brand-logo {
+    height: clamp(12px, 1vw, 14px);
+    width: auto;
+    display: block;
+    object-fit: contain;
+  }
+  .cs-more__brand-name {
+    font-family: var(--font-sans);
+    font-size: clamp(15px, 1.4vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+
+  .cs-more__meta {
+    margin: 0;
+    color: var(--text-tertiary);
   }
 
   .cs-more__title {
     font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: clamp(26px, 3vw, 36px);
-    line-height: 1.15;
+    font-weight: 700;
+    font-size: clamp(36px, 4.6vw, 64px);
+    line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text-primary);
-    margin: 0 0 var(--s-8);
+    margin: 0;
   }
 
-  .cs-more__grid {
+  .cs-more__tagline {
+    font-size: clamp(15px, 1.2vw, 17px);
+    line-height: 1.55;
+    color: var(--text-primary);
+    margin: 0;
+    max-width: 46ch;
+  }
+
+  .cs-more__stats {
     list-style: none;
-    margin: 0;
-    padding: 0;
+    margin: var(--s-2) 0 0;
+    padding: var(--s-4) 0 0;
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--s-5);
-  }
-  @media (max-width: 720px) {
-    .cs-more__grid { grid-template-columns: 1fr; }
-  }
-
-  .cs-more__cell {
-    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: var(--s-4);
-    padding: var(--s-4);
-    border-radius: var(--r-lg);
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: transform var(--dur-normal) var(--ease-out),
-                box-shadow var(--dur-normal) var(--ease-out),
-                border-color var(--dur-normal) var(--ease-out);
   }
-  .cs-more__cell:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--brand-primary-2);
+  .cs-more__stats li {
+    display: grid;
+    gap: var(--s-1);
   }
-
-  .cs-more__media {
-    aspect-ratio: 16 / 10;
-    border-radius: var(--r-md);
-    overflow: hidden;
-    background: var(--brand-aurora);
-  }
-  .cs-more__media img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform var(--dur-slow) var(--ease-out);
-  }
-  .cs-more__cell:hover .cs-more__media img { transform: scale(1.03); }
-
-  .cs-more__placeholder {
-    width: 100%; height: 100%;
-    background: var(--brand-gradient-soft);
-  }
-
-  .cs-more__body { padding: var(--s-2) var(--s-3) var(--s-3); display: grid; gap: var(--s-2); }
-
-  .cs-more__h {
+  .cs-more__stat-value {
     font-family: var(--font-sans);
-    font-size: 22px;
     font-weight: 500;
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.1;
     letter-spacing: -0.018em;
-    line-height: 1.2;
-    margin: 0;
-    display: flex;
-    align-items: baseline;
-    gap: var(--s-2);
-  }
-  .cs-more__arrow {
-    font-size: 18px;
-    color: var(--text-tertiary);
-    transition: transform var(--dur-normal) var(--ease-out),
-                color var(--dur-normal) var(--ease-out);
-  }
-  .cs-more__cell:hover .cs-more__arrow {
-    transform: translateX(4px);
+    font-variant-numeric: tabular-nums;
     color: var(--text-primary);
-  }
-  .cs-more__sub {
     margin: 0;
-    font-size: 15px;
-    line-height: 1.5;
+  }
+  .cs-more__stat-label {
+    font-size: 13px;
+    line-height: 1.4;
     color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Neutral pill so it reads cleanly against any accent color. */
+  .cs-more__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-2);
+    padding: 10px 18px;
+    border-radius: var(--r-full);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
+    background: rgba(255, 255, 255, 0.92);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+    backdrop-filter: blur(6px);
+    transition:
+      background var(--dur-normal) var(--ease-out),
+      border-color var(--dur-normal) var(--ease-out),
+      color var(--dur-normal) var(--ease-out),
+      gap var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-out),
+      box-shadow var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__cta-arrow {
+    font-size: 1.05em;
+    line-height: 0;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .cs-more__band:hover .cs-more__cta,
+  .cs-more__band:focus-visible .cs-more__cta {
+    gap: var(--s-3);
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    border-color: var(--text-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -12px color-mix(in srgb, var(--text-primary) 50%, transparent);
+  }
+  .cs-more__band:hover .cs-more__cta-arrow,
+  .cs-more__band:focus-visible .cs-more__cta-arrow {
+    transform: translate(2px, -2px);
   }
 </style>

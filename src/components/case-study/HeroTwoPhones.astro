@@ -34,7 +34,7 @@ const id = "htp-" + Math.random().toString(36).slice(2, 8);
         let raf = 0;
         function update() {
           raf = 0;
-          const hero = root.closest(".cs-hero");
+          const hero = root.closest(".cs-hero, .cs-more__band");
           if (!hero) return;
           const rect = hero.getBoundingClientRect();
           const vh = window.innerHeight || document.documentElement.clientHeight;

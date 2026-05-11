@@ -45,14 +45,19 @@ const cls = ["cs-callout", `cs-callout--${tone}`].join(" ");
     border: 1px solid var(--cs-callout-border);
   }
 
+  .cs-callout--soft {
+    --cs-callout-bg: var(--bg-surface);
+    --cs-callout-border: var(--border-default);
+  }
+
   .cs-callout--outline {
     --cs-callout-bg: var(--bg-surface);
     --cs-callout-border: var(--border-default);
   }
 
   .cs-callout--accent {
-    --cs-callout-bg: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 22%, transparent);
-    --cs-callout-border: color-mix(in srgb, var(--cs-accent, var(--brand-primary)) 60%, transparent);
+    --cs-callout-bg: var(--bg-surface);
+    --cs-callout-border: var(--border-default);
   }
 
   .cs-callout__head {

@@ -1,0 +1,219 @@
+---
+/**
+ * VideoStack — a fanned overlap of phone-shaped videos. Used on the
+ * Snapchat Games showcase to show three game experiences (live
+ * multiplayer, storefront, turn-based) in one composition.
+ *
+ * Visual: phones drift diagonally from front-right to back-left so the
+ * "top" video stays the focal point while the others read as a series
+ * peeking out behind it.
+ *
+ * Behaviors:
+ *  - Scroll: the whole stack drifts subtly vertically as the section
+ *    passes through the viewport.
+ *  - Hover an item: it pulls forward, scales up, and straightens; the
+ *    others fade and shrink slightly (same idiom as PhoneCluster).
+ */
+interface Item {
+  src: string;
+  alt?: string;
+  /** Position of this phone within the stack, as a fraction (0..1)
+   *  of the container's width and height. */
+  left: number;
+  top: number;
+  /** Z-stacking — higher = closer to the front. */
+  z: number;
+  /** Rotation in degrees at rest. Hover counter-rotates this to 0. */
+  rotation?: number;
+  /** Optional poster image displayed before the video loads. */
+  poster?: string;
+  /** Per-item override for the phone container's aspect ratio. Use this
+   *  when the source video isn't the same shape as the rest of the stack
+   *  so it doesn't letterbox inside the frame. */
+  aspect?: string;
+  /** Per-item width override (fraction 0..1 of the stack width). Useful
+   *  to scale a shorter-aspect video so its rendered HEIGHT matches the
+   *  rest of the stack. */
+  width?: number;
+}
+interface Props {
+  items: Item[];
+  /** Phone aspect ratio (CSS aspect-ratio string). */
+  itemAspect?: string;
+  /** Each phone's width as a fraction of the container width. */
+  itemWidth?: number;
+  /** Max width of the whole stack. */
+  maxWidth?: string;
+  /** Aspect ratio of the cluster container. */
+  aspect?: string;
+  /** Scroll drift in px (whole stack). */
+  driftRange?: number;
+}
+
+const {
+  items,
+  itemAspect = "9 / 19.5",
+  itemWidth = 0.5,
+  maxWidth = "540px",
+  aspect = "0.95 / 1",
+  driftRange = 40,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div
+  class="video-stack"
+  data-drift={driftRange}
+  style={`--vs-max-w:${maxWidth};--vs-aspect:${aspect};--vs-item-aspect:${itemAspect};--vs-item-w:${(itemWidth * 100).toFixed(2)}%;`}
+>
+  {items.map((it) => (
+    <div
+      class="video-stack__item"
+      style={`
+        --x:${(it.left * 100).toFixed(2)}%;
+        --y:${(it.top * 100).toFixed(2)}%;
+        --rot:${(it.rotation ?? 0).toFixed(2)}deg;
+        ${it.aspect ? `aspect-ratio:${it.aspect};` : ""}
+        ${it.width != null ? `width:${(it.width * 100).toFixed(2)}%;` : ""}
+        z-index:${it.z};
+      `}
+      aria-label={it.alt || ""}
+    >
+      <video
+        src={resolve(it.src)}
+        poster={it.poster ? resolve(it.poster) : undefined}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-label={it.alt || ""}
+      />
+    </div>
+  ))}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+      document.querySelectorAll(".video-stack").forEach((root) => {
+        const drift = parseFloat(root.dataset.drift || "40");
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5;
+          root.style.setProperty("--stack-y", (-centered * drift).toFixed(1) + "px");
+        };
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .video-stack {
+    position: relative;
+    width: 100%;
+    max-width: var(--vs-max-w, 540px);
+    aspect-ratio: var(--vs-aspect, 0.95 / 1);
+    /* Push the stack to the LEFT inside its column so all the slack
+       in the column lives on the right side, between the videos and
+       the showcase copy. Without this, the stack fills its column and
+       the rightmost video sits right next to the text. */
+    margin: 0 auto 0 0;
+    isolation: isolate;
+    --stack-y: 0px;
+  }
+  @media (max-width: 900px) {
+    .video-stack { margin-right: auto; }
+  }
+
+  .video-stack__item {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--vs-item-w, 50%);
+    aspect-ratio: var(--vs-item-aspect, 9 / 19.5);
+    border-radius: 28px;
+    overflow: hidden;
+    background: #0c0d11;
+    box-shadow:
+      0 24px 40px rgba(20, 22, 28, 0.22),
+      0 8px 16px rgba(20, 22, 28, 0.10);
+    will-change: transform;
+    transform:
+      translate3d(0, var(--stack-y), 0)
+      rotate(var(--rot));
+    transform-origin: 50% 60%;
+    transition:
+      transform 520ms var(--ease-out),
+      opacity 320ms var(--ease-out),
+      filter 320ms var(--ease-out),
+      box-shadow 520ms var(--ease-out);
+    cursor: pointer;
+    outline: none;
+  }
+  .video-stack__item video {
+    width: 100%;
+    height: 100%;
+    /* `contain` so videos with aspect ratios different from the 9:19.5
+       phone-screen container don't get cropped at the sides. The dark
+       item background fills any letterbox gap so it still reads as a
+       phone screen. */
+    object-fit: contain;
+    display: block;
+    border-radius: inherit;
+  }
+
+  /* Hover an item → it scales up and straightens. The other videos
+     stay at full brightness — the focal phone simply lifts forward
+     rather than dimming the rest of the stack. */
+  .video-stack__item:hover {
+    opacity: 1 !important;
+    filter: none !important;
+    transform:
+      translate3d(0, calc(var(--stack-y) - 10px), 0)
+      rotate(0deg)
+      scale(1.06) !important;
+    z-index: 100 !important;
+    box-shadow:
+      0 36px 60px rgba(20, 22, 28, 0.32),
+      0 16px 28px rgba(20, 22, 28, 0.16);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-stack__item {
+      transition: none !important;
+      transform: rotate(var(--rot)) !important;
+    }
+    .video-stack:hover .video-stack__item {
+      opacity: 1 !important;
+      filter: none !important;
+      transform: rotate(var(--rot)) !important;
+    }
+  }
+</style>

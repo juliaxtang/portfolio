@@ -1,0 +1,238 @@
+---
+/**
+ * PhoneCluster — a scattered composition of pre-rendered phone mockups
+ * (rotation/perspective baked into each PNG) plus a circular badge.
+ *
+ * Used on the Custom Lists showcase. Positions come straight off the source
+ * Figma frame at
+ * https://www.figma.com/design/DQPVTorjCgMf8cznj4cIoj/Simple-Mockup-Free-Scene?node-id=1-184
+ * The normalized bbox of the four used phones is roughly 38.6% × 40.6% each.
+ *
+ * Behaviors:
+ *  - Scroll: phones drift vertically on scroll; left-column phones move
+ *    opposite to right-column phones, echoing Tappy Cloud's ProfileColumns.
+ *  - Hover a phone: it scales up and straightens out into the foreground;
+ *    the others fade and pull back.
+ *  - Badge in the upper-right gets the same wind-up spin on hover as the
+ *    App Redesign Hackathon badge.
+ */
+interface Phone {
+  src: string;
+  alt?: string;
+  /** Position within the cluster, normalized 0..1 (left, top). */
+  left: number;
+  top: number;
+  /** Visual width as a fraction of the cluster width. Defaults to the
+   *  Figma bbox value (~38.6%). */
+  width?: number;
+  /** Which parallax column. Left and right drift in opposite directions. */
+  column: "left" | "right";
+  /** Stacking order (higher = on top). */
+  z?: number;
+  /** Default rotation in degrees. Source PNGs are straight-on phone
+   *  screens; this rotation is applied via CSS to produce the tilted
+   *  diamond composition. On hover, the phone returns to 0°. */
+  tilt?: number;
+}
+interface Props {
+  phones: Phone[];
+  badgeSrc?: string;
+  badgeAlt?: string;
+  /** Max width of the whole cluster. */
+  maxWidth?: string;
+  /** Aspect ratio of the cluster container (matches Figma frame ~0.65). */
+  aspect?: string;
+  /** Per-column scroll drift in px. Total range = 2*driftRange (one up,
+   *  one down). */
+  driftRange?: number;
+}
+
+const {
+  phones,
+  badgeSrc,
+  badgeAlt = "",
+  maxWidth = "560px",
+  aspect = "0.78 / 1",
+  driftRange = 50,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div
+  class="phone-cluster"
+  data-drift={driftRange}
+  style={`--pc-max-w:${maxWidth};--pc-aspect:${aspect};`}
+>
+  {phones.map((p, i) => (
+    <div
+      class={`phone-cluster__phone phone-cluster__phone--${p.column}`}
+      style={`
+        --x:${(p.left * 100).toFixed(2)}%;
+        --y:${(p.top * 100).toFixed(2)}%;
+        --w:${((p.width ?? 0.386) * 100).toFixed(2)}%;
+        --tilt:${p.tilt ?? 15}deg;
+        z-index:${p.z ?? i + 1};
+      `}
+      tabindex="0"
+      aria-label={p.alt || ""}
+    >
+      <img
+        src={resolve(p.src)}
+        alt={p.alt || ""}
+        draggable="false"
+        loading="lazy"
+      />
+    </div>
+  ))}
+  {badgeSrc && (
+    <img
+      class="phone-cluster__badge"
+      src={resolve(badgeSrc)}
+      alt={badgeAlt}
+      draggable="false"
+      loading="lazy"
+    />
+  )}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+      document.querySelectorAll(".phone-cluster").forEach((root) => {
+        const drift = parseFloat(root.dataset.drift || "50");
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5; // -0.5 .. 0.5
+          // Single drift applied to the whole diamond so the composition
+          // moves as one piece (instead of opposite per-column drifts).
+          root.style.setProperty("--cluster-y", (-centered * drift).toFixed(1) + "px");
+        };
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .phone-cluster {
+    position: relative;
+    width: 100%;
+    max-width: var(--pc-max-w, 560px);
+    aspect-ratio: var(--pc-aspect, 0.78 / 1);
+    margin: 0 auto;
+    isolation: isolate;
+    --cluster-y: 0px;
+    --badge-spin: 0deg;
+    --badge-scale: 1;
+    /* Whole-diamond parallax — the cluster itself drifts on scroll so the
+       phones (and the badge) move as one composition, instead of each
+       column drifting independently. */
+    transform: translate3d(0, var(--cluster-y), 0);
+    will-change: transform;
+  }
+
+  .phone-cluster__phone {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    /* Source PNGs are now portrait phone screens (1408 x 2850 → ~9:19.5). */
+    aspect-ratio: 1408 / 2850;
+    transform-origin: center center;
+    will-change: transform, opacity, filter;
+    transition:
+      transform 520ms var(--ease-out),
+      opacity 320ms var(--ease-out),
+      filter 320ms var(--ease-out);
+    outline: none;
+  }
+  .phone-cluster__phone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    /* The IMG is decorative — only the container itself is the hover hit
+       target. Without this the rotated IMG corners can dip into adjacent
+       containers and cause hover-flicker. */
+    pointer-events: none;
+    filter: drop-shadow(0 18px 28px rgba(40, 30, 80, 0.14));
+    /* Default tilt for the diamond look. Source PNGs are straight-on
+       phone screens; the per-phone --tilt CSS var (set inline) rotates
+       them so the cluster reads as a tilted composition.
+       Negative direction (counter-clockwise) matches the reference scene. */
+    transform: rotate(calc(-1 * var(--tilt, 15deg)));
+    transition: filter 320ms var(--ease-out),
+                transform 520ms var(--ease-out);
+  }
+
+  /* Hover a phone → it lifts slightly and the IMG straightens to 0°.
+     The other phones stay fully visible at their grid positions — no
+     dim, no blur — so the 2x2 composition keeps reading as a clean
+     aligned set. */
+  .phone-cluster__phone:hover {
+    transform: translate3d(0, -8px, 0) scale(1.04);
+    z-index: 50;
+  }
+  .phone-cluster__phone:hover img {
+    transform: rotate(0deg);
+    filter: drop-shadow(0 24px 36px rgba(40, 30, 80, 0.22));
+  }
+
+  .phone-cluster__badge {
+    position: absolute;
+    /* Same absolute size band as the Hackathon badge on App Redesign so
+       both awards read at the same visual weight. */
+    top: clamp(-12px, 0%, 16px);
+    right: clamp(-16px, -2%, 0px);
+    width: clamp(128px, 32%, 190px);
+    height: auto;
+    z-index: 60;
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    will-change: transform;
+    transform: rotate(var(--badge-spin)) scale(var(--badge-scale));
+    transition:
+      transform 620ms var(--ease-out),
+      box-shadow 620ms var(--ease-out);
+  }
+  .phone-cluster:hover .phone-cluster__badge,
+  .phone-cluster:focus-within .phone-cluster__badge {
+    --badge-spin: 10deg;
+    --badge-scale: 1.08;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-cluster,
+    .phone-cluster__phone,
+    .phone-cluster__badge {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+</style>

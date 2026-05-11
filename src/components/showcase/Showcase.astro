@@ -299,7 +299,11 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
   .showcase__hero {
     position: relative;
     min-height: 440px;
-    max-width: 440px;
+    /* Wider than the previous 440 cap so heroes that want to match the
+       App Redesign phone's ~659px visual height (Custom Lists cluster,
+       TV Time hero-2.webp) can do so without being clipped by the column.
+       Smaller heroes still cap themselves via their own max-width. */
+    max-width: 540px;
     margin-inline: auto;
     width: 100%;
   }

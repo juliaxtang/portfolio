@@ -1,0 +1,265 @@
+---
+/**
+ * PhoneColumns — two staggered columns of phone screens, each with its
+ * own scroll parallax. Modeled on Tappy Cloud's ProfileColumns but with
+ * an array of phone PNG sources per column instead of a single tall
+ * strip image.
+ *
+ * The right column starts pre-shifted vertically so the rows stagger
+ * visually. As the section scrolls through the viewport the two columns
+ * drift in opposite directions (left up, right down or vice versa),
+ * creating a gentle "feed scrolling past" feel without rotating or
+ * scaling the phones.
+ *
+ * Optionally a circular badge can sit at the top-right corner.
+ */
+interface Props {
+  /** Phone PNG paths stacked top-to-bottom in the LEFT column. */
+  left: string[];
+  /** Phone PNG paths stacked top-to-bottom in the RIGHT column. */
+  right: string[];
+  altLeft?: string[];
+  altRight?: string[];
+  /** Max width of the whole component. */
+  maxWidth?: string;
+  /** Visible window height (CSS length) before JS measures the sibling
+   *  text column. JS may grow this to match. */
+  minHeight?: string;
+  /** Aspect ratio of each phone PNG (so each img reserves the right
+   *  vertical space inside its column). */
+  itemAspect?: string;
+  /** Gap between phones stacked within a column. */
+  itemGap?: string;
+  /** Gap between the two columns. */
+  columnGap?: string;
+  /** Initial vertical stagger of the right column, as a fraction (0..1)
+   *  of one phone's height. */
+  rightOffset?: number;
+  /** Extra px nudge added to the right column's vertical position.
+   *  Negative values shift the right column up. */
+  rightShift?: string;
+  /** Per-column scroll drift in px. Left column drifts up by this amount
+   *  and right column drifts down (or vice versa). */
+  driftRange?: number;
+  /** Optional circular badge (e.g., Webby Honoree) over the upper-right. */
+  badgeSrc?: string;
+  badgeAlt?: string;
+}
+
+const {
+  left,
+  right,
+  altLeft = [],
+  altRight = [],
+  maxWidth = "440px",
+  minHeight,
+  itemAspect = "1408 / 2850",
+  itemGap = "var(--s-4)",
+  columnGap = "var(--s-3)",
+  rightOffset = 0.28,
+  rightShift = "0px",
+  driftRange = 60,
+  badgeSrc,
+  badgeAlt = "",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div
+  class="phone-cols"
+  data-drift={driftRange}
+  data-right-offset={rightOffset}
+  data-min-height={minHeight}
+  style={`
+    --pc-max-w:${maxWidth};
+    --pc-item-aspect:${itemAspect};
+    --pc-item-gap:${itemGap};
+    --pc-column-gap:${columnGap};
+    --pc-right-offset:${rightOffset};
+    --pc-right-shift:${rightShift};
+    ${minHeight ? `--pc-min-h:${minHeight};` : ""}
+  `}
+>
+  <div class="phone-cols__col phone-cols__col--left">
+    <div class="phone-cols__stack">
+      {left.map((src, i) => (
+        <img
+          src={resolve(src)}
+          alt={altLeft[i] || ""}
+          draggable="false"
+          loading="lazy"
+        />
+      ))}
+    </div>
+  </div>
+  <div class="phone-cols__col phone-cols__col--right">
+    <div class="phone-cols__stack">
+      {right.map((src, i) => (
+        <img
+          src={resolve(src)}
+          alt={altRight[i] || ""}
+          draggable="false"
+          loading="lazy"
+        />
+      ))}
+    </div>
+  </div>
+  {badgeSrc && (
+    <img
+      class="phone-cols__badge"
+      src={resolve(badgeSrc)}
+      alt={badgeAlt}
+      draggable="false"
+      loading="lazy"
+    />
+  )}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelectorAll(".phone-cols").forEach((root) => {
+        const drift = parseFloat(root.dataset.drift || "60");
+        const minHeight = parseFloat(root.dataset.minHeight || "0");
+        const showcase = root.closest(".showcase");
+        const text = showcase ? showcase.querySelector(".showcase__text") : null;
+
+        // Set the cluster's MIN height to the sibling text column (or
+        // minHeight, whichever is larger). With overflow:visible the
+        // cluster can grow past this when the phones need more room —
+        // they never get cropped.
+        const matchHeight = () => {
+          const twoCol = window.matchMedia("(min-width: 901px)").matches;
+          if (twoCol && text && text.clientHeight > 0) {
+            const h = Math.max(text.clientHeight, minHeight);
+            root.style.minHeight = h + "px";
+            root.style.height = "";
+          } else {
+            root.style.minHeight = "";
+            root.style.height = "";
+          }
+        };
+        matchHeight();
+        if (text) {
+          const ro = new ResizeObserver(matchHeight);
+          ro.observe(text);
+        }
+        window.addEventListener("resize", matchHeight);
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(matchHeight);
+        }
+
+        if (reduced) return;
+
+        const stacks = Array.from(root.querySelectorAll(".phone-cols__stack"));
+        let raf = 0;
+        const update = () => {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5; // -0.5 .. 0.5
+          // Left column drifts up, right column drifts down — opposite
+          // directions as the section moves through the viewport.
+          stacks.forEach((stack, i) => {
+            const dir = i === 0 ? -1 : 1;
+            const y = dir * -centered * drift;
+            stack.style.transform = "translate3d(0," + y.toFixed(1) + "px,0)";
+          });
+        };
+
+        const onScroll = () => {
+          if (!raf) raf = requestAnimationFrame(update);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .phone-cols {
+    position: relative;
+    width: 100%;
+    max-width: var(--pc-max-w, 440px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--pc-column-gap, var(--s-3));
+    isolation: isolate;
+  }
+
+  .phone-cols__col {
+    position: relative;
+    /* No overflow clipping — phones render in full even if the column's
+       layout box would otherwise cut them off. */
+    overflow: visible;
+  }
+  /* Stagger the right column down by a fraction of one phone's height
+     so the rows don't line up across columns — same offset idiom as
+     Tappy Cloud's ProfileColumns. A negative px offset can be applied
+     via --pc-right-shift to nudge the whole right column up. */
+  .phone-cols__col--right .phone-cols__stack {
+    padding-top: calc(
+      (100% * 2850 / 1408) * var(--pc-right-offset, 0.28)
+      + var(--pc-right-shift, 0px)
+    );
+  }
+
+  .phone-cols__stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pc-item-gap, var(--s-4));
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+  }
+  .phone-cols__stack img {
+    width: 100%;
+    aspect-ratio: var(--pc-item-aspect, 1408 / 2850);
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 18px 28px rgba(40, 30, 80, 0.14));
+  }
+
+  .phone-cols__badge {
+    position: absolute;
+    /* Float over the upper-right corner — same placement and size band
+       as the Hackathon badge on App Redesign. */
+    top: clamp(-12px, 0%, 16px);
+    right: clamp(-16px, -2%, 0px);
+    width: clamp(120px, 32%, 180px);
+    height: auto;
+    z-index: 10;
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    transition:
+      transform 620ms var(--ease-out),
+      box-shadow 620ms var(--ease-out);
+  }
+  .phone-cols:hover .phone-cols__badge {
+    transform: rotate(10deg) scale(1.08);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .phone-cols__stack { transform: none !important; }
+    .phone-cols__badge { transition: none !important; transform: none !important; }
+  }
+</style>

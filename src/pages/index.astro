@@ -13,11 +13,14 @@ import FadeIn from "../components/FadeIn.astro";
 import PearlField from "../components/PearlField.astro";
 import CompanyPills from "../components/CompanyPills.astro";
 import Showcase from "../components/showcase/Showcase.astro";
-import PhoneStack from "../components/showcase/PhoneStack.astro";
 import ProfileColumns from "../components/showcase/ProfileColumns.astro";
 import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
 import ComingSoonHero from "../components/showcase/ComingSoonHero.astro";
-import CompareSlider from "../components/showcase/CompareSlider.astro";
+import MediaParallax from "../components/showcase/MediaParallax.astro";
+import PhoneCluster from "../components/showcase/PhoneCluster.astro";
+import PhoneColumns from "../components/showcase/PhoneColumns.astro";
+import PhonePair from "../components/showcase/PhonePair.astro";
+import VideoStack from "../components/showcase/VideoStack.astro";
 
 // "delight" rendered letter-by-letter so each can wave on hover. "Julia"
 // gets the same treatment for the greeting hover.
@@ -114,7 +117,44 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       id="snapchat-games"
       comingSoon
     >
-      <ComingSoonHero logo="/logos/snapchat.png" logoAlt="Snapchat" />
+      <VideoStack
+        items={[
+          {
+            src: "/projects/snapchat-games/storefront.mp4",
+            alt: "Snapchat Games storefront",
+            left: 0.02,
+            top: 0.14,
+            z: 1,
+            rotation: -9,
+            /* Storefront recording is 804x1622 — shorter than the 9:19.5
+               default; declare the true aspect so it fills its frame. */
+            aspect: "804 / 1622",
+            /* Override width so this video's rendered HEIGHT matches the
+               other two (which use itemWidth 0.46 at 9:19.5). Width is
+               picked so target_height * aspect = width. */
+            width: 0.494,
+          },
+          {
+            src: "/projects/snapchat-games/live-multiplayer.mp4",
+            alt: "Live multiplayer Snapchat game",
+            left: 0.55,
+            top: 0.10,
+            z: 2,
+            rotation: 9,
+          },
+          {
+            src: "/projects/snapchat-games/turn-based.mov",
+            alt: "Turn-based game on Snapchat",
+            left: 0.28,
+            top: 0.00,
+            z: 3,
+            rotation: 0,
+          },
+        ]}
+        maxWidth="440px"
+        aspect="0.95 / 1"
+        itemWidth={0.46}
+      />
     </Showcase>
   </FadeIn>
 
@@ -164,6 +204,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         right="/projects/tappy-cloud/profiles-right.png"
         altLeft="Tinder profiles styled by Tappy Cloud"
         altRight="More Tinder profiles styled by Tappy Cloud"
+        maxWidth="480px"
+        minHeight="780"
       />
     </Showcase>
   </FadeIn>
@@ -185,14 +227,42 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       accent="#FA7255"
       id="festival-mode"
     >
-      <PhoneStack
-        items={[
-          { src: "/projects/festival-mode/phone-explore-entry.png", alt: "Festival Mode entry on Explore",       label: "Explore entry" },
-          { src: "/projects/festival-mode/phone-opting-in.png",     alt: "Multi-festival opt-in",                label: "Opt in to festivals" },
-          { src: "/projects/festival-mode/phone-cardstack.png",     alt: "EDC Las Vegas branded cardstack",      label: "Festival cardstack" },
-          { src: "/projects/festival-mode/phone-toggling.png",      alt: "Toggle festival lineup",               label: "Toggle festivals" },
+      <PhonePair
+        phones={[
+          {
+            src: "/projects/festival-mode/phone-1.png",
+            alt: "Festival Mode opt-in screen with Join now and No thanks buttons",
+            /* phone-1's source PNG has ~22% horizontal transparent
+               padding (rotation overhang) vs phone-2's ~10%, so it
+               needs a wider container to render at the same visible
+               phone size. */
+            left: -0.04,
+            top: 0.08,
+            width: 0.66,
+            aspect: "1408 / 2356",
+            /* Strong upward drift on this phone. */
+            drift: 64,
+            hoverLift: 10,
+            z: 2,
+          },
+          {
+            src: "/projects/festival-mode/phone-2.png",
+            alt: "Add festivals screen with EDC Las Vegas, Stagecoach, and Festivalgoers options",
+            left: 0.42,
+            top: 0.02,
+            width: 0.56,
+            aspect: "1288 / 2344",
+            /* Opposite drift direction (negative) so the two phones
+               read as moving against each other on scroll, not
+               together. Keep the magnitude smaller so they don't
+               drift far apart. */
+            drift: -28,
+            hoverLift: 6,
+            z: 1,
+          },
         ]}
-        aspect="1 / 2"
+        maxWidth="500px"
+        aspect="1 / 1"
       />
     </Showcase>
   </FadeIn>
@@ -215,22 +285,31 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       reverse
       id="custom-lists"
     >
-      <div class="v2-gif-wrap">
-        <div class="v2-gif-wrap__device">
-          <img
-            src={`${base}/projects/custom-lists/creating-list.gif`}
-            alt="Animated walkthrough of creating a new Custom List with personalization options"
-            loading="lazy"
-          />
-        </div>
-        <div class="v2-gif-wrap__device v2-gif-wrap__device--secondary">
-          <img
-            src={`${base}/projects/custom-lists/editing-flow.gif`}
-            alt="Animated walkthrough of editing a Custom List's contents"
-            loading="lazy"
-          />
-        </div>
-      </div>
+      <PhoneColumns
+        left={[
+          "/projects/custom-lists/phone-1.png",
+          "/projects/custom-lists/phone-3.png",
+        ]}
+        right={[
+          "/projects/custom-lists/phone-2.png",
+          "/projects/custom-lists/phone-4.png",
+        ]}
+        altLeft={[
+          "Guilty Pleasures private list with show posters",
+          "Custom order list with manually arranged shows",
+        ]}
+        altRight={[
+          "Custom Lists screen showing alphabetical sort with Best of 2019, Guilty Pleasures, Weekend Bingeing",
+          "Watching with Friends shared list",
+        ]}
+        badgeSrc="/projects/custom-lists/webby-honoree.png"
+        badgeAlt="Webby Honoree badge"
+        maxWidth="440px"
+        minHeight="700"
+        rightOffset={0.28}
+        rightShift="-86px"
+        driftRange={60}
+      />
     </Showcase>
   </FadeIn>
 
@@ -251,16 +330,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       accent="#DCD2E8"
       id="tv-time-onboarding"
     >
-      <PhoneStack
-        items={[
-          { src: "/projects/tv-time-onboarding/flow-tracker.webp",    alt: "Onboarding flow for the Tracker user type",     label: "Tracker flow" },
-          { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Onboarding flow for the Discoverer user type", label: "Discoverer flow" },
-          { src: "/projects/tv-time-onboarding/flow-watcher.webp",    alt: "Onboarding flow for the Watcher user type",    label: "Watcher flow" },
-        ]}
-        aspect="690 / 610"
-        fit="contain"
-        cardWidth="clamp(280px, 60%, 460px)"
-        frame={false}
+      <MediaParallax
+        src="/projects/tv-time-onboarding/hero-2.webp"
+        aspect="656 / 686"
+        maxWidth="500px"
+        label="TV Time onboarding flow on two phones"
+        badgeSrc="/projects/tv-time-onboarding/webby-honoree.png"
+        badgeAlt="Webby Honoree badge"
+        radius="0"
       />
     </Showcase>
   </FadeIn>
@@ -451,54 +528,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   :global(.wave-text) { display: inline-block; }
   :global(.wave-letter) { display: inline-block; }
 
-  /* === GIF/video wrap for Custom Lists ===
-     `isolation: isolate` creates a stacking context so the secondary card's
-     lower z-index doesn't escape into the next section. The wrap also has
-     overflow:hidden so a hover transform can't push a phone outside its
-     section bounds. */
-  .v2-gif-wrap {
-    position: relative;
-    aspect-ratio: 1.6 / 1;
-    perspective: 1400px;
-    isolation: isolate;
-    overflow: hidden;
-  }
-  .v2-gif-wrap__device {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 56%;
-    aspect-ratio: 9 / 19.5;
-    border-radius: 28px;
-    overflow: hidden;
-    background: #0c0d11;
-    padding: 6px;
-    box-shadow: 0 30px 60px -25px rgba(20,22,28,0.18), 0 12px 24px -12px rgba(20,22,28,0.10);
-    transform: translate(-50%, -2%) rotate(-3deg);
-    transition: transform 600ms var(--ease-out), box-shadow 600ms var(--ease-out);
-    z-index: 2;
-  }
-  .v2-gif-wrap__device--secondary {
-    z-index: 1;
-    transform: translate(-22%, 6%) rotate(6deg) scale(0.92);
-    filter: brightness(0.95);
-  }
-  .v2-gif-wrap:hover .v2-gif-wrap__device {
-    transform: translate(-58%, -4%) rotate(-5deg);
-  }
-  .v2-gif-wrap:hover .v2-gif-wrap__device--secondary {
-    transform: translate(-14%, 8%) rotate(8deg) scale(0.94);
-  }
-  .v2-gif-wrap__device img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 22px;
-    display: block;
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .v2-gif-wrap__device { transition: none; }
     .v2-hero__wave { animation: none; }
   }
 </style>

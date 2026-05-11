@@ -1,0 +1,246 @@
+---
+/**
+ * Carousel — horizontal scroll-snap carousel with peeking neighbors and
+ * arrow controls. The active slide centers in the viewport at the
+ * content-max width; the previous/next slides peek in from each side, and
+ * arrow buttons overlaid on the peeks scroll to the adjacent slide.
+ *
+ * Props:
+ *   slides — array of { src, alt, caption? }
+ *   peek   — px of each neighbor visible on each side (default 80)
+ */
+interface SlideItem {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+interface Props {
+  slides: SlideItem[];
+  peek?: number;
+}
+
+const { slides, peek = 96 } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+function resolve(src: string): string {
+  if (src.startsWith("http") || src.startsWith(base)) return src;
+  return `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+}
+const id = `cs-carousel-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="cs-carousel" data-cs-carousel id={id} style={`--peek:${peek}px`}>
+  <button class="cs-carousel__btn cs-carousel__btn--prev" type="button" aria-label="Previous slide" data-dir="-1">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <ul class="cs-carousel__track" role="list">
+    {slides.map((s, i) => (
+      <li class="cs-carousel__slide" data-index={i}>
+        <img src={resolve(s.src)} alt={s.alt} loading="lazy" />
+        {s.caption && <p class="cs-carousel__caption">{s.caption}</p>}
+      </li>
+    ))}
+  </ul>
+
+  <button class="cs-carousel__btn cs-carousel__btn--next" type="button" aria-label="Next slide" data-dir="1">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <div class="cs-carousel__dots" role="tablist" aria-label="Carousel pagination">
+    {slides.map((_, i) => (
+      <button
+        type="button"
+        class={`cs-carousel__dot${i === 0 ? " is-active" : ""}`}
+        data-index={i}
+        role="tab"
+        aria-label={`Go to slide ${i + 1}`}
+        aria-selected={i === 0 ? "true" : "false"}
+      />
+    ))}
+  </div>
+</div>
+
+<style>
+  .cs-carousel {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-block: var(--s-10);
+  }
+
+  .cs-carousel__track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--s-5);
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Inset so first/last slides can still center. */
+    padding-inline: calc(var(--peek) + var(--s-5));
+    scrollbar-width: none;
+  }
+  .cs-carousel__track::-webkit-scrollbar { display: none; }
+
+  .cs-carousel__slide {
+    flex: 0 0 calc(100vw - 2 * var(--peek) - 2 * var(--s-5));
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .cs-carousel__slide img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: var(--r-md);
+  }
+
+  .cs-carousel__caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Arrow buttons centered vertically over the peeking neighbors. */
+  .cs-carousel__btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px -4px rgba(0,0,0,0.18);
+    transition: transform .2s var(--ease-out, ease), background .2s ease;
+  }
+  .cs-carousel__btn:hover { background: var(--text-primary); color: var(--text-inverse); transform: translateY(-50%) scale(1.05); }
+  .cs-carousel__btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .cs-carousel__btn:disabled:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    transform: translateY(-50%);
+  }
+  .cs-carousel__btn svg { width: 22px; height: 22px; }
+  .cs-carousel__btn--prev { left: calc(var(--peek) - 24px); }
+  .cs-carousel__btn--next { right: calc(var(--peek) - 24px); }
+
+  .cs-carousel__dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-4);
+  }
+  .cs-carousel__dot {
+    appearance: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 0;
+    padding: 0;
+    background: var(--border-default);
+    cursor: pointer;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .cs-carousel__dot:hover { background: var(--text-tertiary); }
+  .cs-carousel__dot.is-active {
+    background: var(--text-primary);
+    transform: scale(1.25);
+  }
+
+  @media (max-width: 720px) {
+    .cs-carousel { --peek: 32px; }
+    .cs-carousel__btn { width: 40px; height: 40px; }
+    .cs-carousel__btn svg { width: 18px; height: 18px; }
+  }
+</style>
+
+<script>
+  const carousels = document.querySelectorAll<HTMLElement>("[data-cs-carousel]");
+  carousels.forEach((root) => {
+    const track = root.querySelector<HTMLElement>(".cs-carousel__track");
+    if (!track) return;
+    const slides = Array.from(track.querySelectorAll<HTMLElement>(".cs-carousel__slide"));
+    if (!slides.length) return;
+
+    let currentIdx = 0;
+    const dots = Array.from(root.querySelectorAll<HTMLElement>(".cs-carousel__dot"));
+    const btnPrev = root.querySelector<HTMLButtonElement>(".cs-carousel__btn--prev");
+    const btnNext = root.querySelector<HTMLButtonElement>(".cs-carousel__btn--next");
+
+    const setActive = (i: number) => {
+      currentIdx = i;
+      dots.forEach((d, di) => {
+        const on = di === i;
+        d.classList.toggle("is-active", on);
+        d.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      if (btnPrev) btnPrev.disabled = i <= 0;
+      if (btnNext) btnNext.disabled = i >= slides.length - 1;
+    };
+
+    const goto = (idx: number) => {
+      const i = Math.max(0, Math.min(slides.length - 1, idx));
+      const s = slides[i];
+      const left = s.offsetLeft - (track.clientWidth - s.clientWidth) / 2;
+      setActive(i);
+      track.scrollTo({ left, behavior: "smooth" });
+    };
+
+    root.querySelectorAll<HTMLButtonElement>(".cs-carousel__btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const dir = Number(btn.dataset.dir || "1");
+        goto(currentIdx + dir);
+      });
+    });
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => goto(i));
+    });
+
+    setActive(0);
+
+    // Keep currentIdx in sync if the user scrolls manually (touch swipe etc).
+    let scrollTimer: number | undefined;
+    track.addEventListener("scroll", () => {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        const center = track.scrollLeft + track.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        slides.forEach((s, i) => {
+          const sCenter = s.offsetLeft + s.clientWidth / 2;
+          const d = Math.abs(sCenter - center);
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        setActive(best);
+      }, 100);
+    });
+  });
+</script>

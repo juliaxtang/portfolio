@@ -46,7 +46,7 @@ const resolve = (p: string) =>
              setting `transform` directly. This lets the host stylesheet
              (e.g. the MoreWork band) compose its own transform without
              being stomped on by the scroll handler. */
-          img.style.setProperty("--scroll-y", (-centered * 64).toFixed(1) + "px");
+          img.style.setProperty("--scroll-y", (-centered * 140).toFixed(1) + "px");
         }
         window.addEventListener("scroll", function () {
           if (!raf) raf = requestAnimationFrame(update);

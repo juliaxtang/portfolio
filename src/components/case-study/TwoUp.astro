@@ -10,9 +10,10 @@ interface Props {
   align?: "start" | "center" | "stretch";
   gap?: "sm" | "md" | "lg";
   wide?: boolean;
+  centered?: boolean;
 }
 
-const { ratio = "1:1", align = "stretch", gap = "md", wide = false } = Astro.props;
+const { ratio = "1:1", align = "stretch", gap = "md", wide = false, centered = false } = Astro.props;
 const ratioMap: Record<string, string> = {
   "1:1": "1fr 1fr",
   "1:2": "1fr 2fr",
@@ -23,7 +24,11 @@ const gapMap: Record<string, string> = {
   md: "var(--s-6)",
   lg: "var(--s-10)",
 };
-const cls = ["cs-twoup", wide ? "cs-twoup--wide" : ""].filter(Boolean).join(" ");
+const cls = [
+  "cs-twoup",
+  wide ? "cs-twoup--wide" : "",
+  centered ? "cs-twoup--centered" : "",
+].filter(Boolean).join(" ");
 const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${align};`;
 ---
 
@@ -45,6 +50,10 @@ const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[ga
     max-width: var(--content-max);
     margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
     margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+  .cs-twoup--centered {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   @media (max-width: 720px) {

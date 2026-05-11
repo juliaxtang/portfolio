@@ -13,9 +13,9 @@
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 const companies = [
-  { co: "snap",   name: "Snapchat", logo: "snapchat.png" },
-  { co: "tinder", name: "Tinder",   logo: "tinder.png"   },
-  { co: "tvtime", name: "TV Time",  logo: "tv time.png"  },
+  { co: "snap",   name: "Snapchat", logo: "snapchat.png", target: "snapchat-games" },
+  { co: "tinder", name: "Tinder",   logo: "tinder.png",   target: "app-redesign"   },
+  { co: "tvtime", name: "TV Time",  logo: "tv time.png",  target: "custom-lists"   },
 ];
 ---
 
@@ -23,7 +23,7 @@ const companies = [
   {
     companies.map((c) => (
       <li>
-        <span class="co-pill" tabindex="0" data-co={c.co}>
+        <span class="co-pill" tabindex="0" data-co={c.co} data-target={c.target}>
           <span class="co-logo" aria-hidden="true">
             <img src={`${base}/logos/${encodeURI(c.logo)}`} alt="" loading="lazy" />
           </span>
@@ -33,6 +33,21 @@ const companies = [
     ))
   }
 </ul>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".co-pill[data-target]").forEach((pill) => {
+    const scrollTo = () => {
+      const id = pill.dataset.target;
+      const target = id ? document.getElementById(id) : null;
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    pill.addEventListener("click", scrollTo);
+    pill.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); scrollTo(); }
+    });
+  });
+</script>
 
 <style>
   .co-pills {
@@ -57,7 +72,7 @@ const companies = [
     letter-spacing: -0.005em;
     color: var(--text-primary);
     line-height: 1;
-    cursor: default;
+    cursor: pointer;
     user-select: none;
     transition:
       background-color 240ms var(--ease-out),

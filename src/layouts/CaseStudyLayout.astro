@@ -13,6 +13,9 @@
  */
 import BaseLayout from "./BaseLayout.astro";
 import Hero from "../components/case-study/Hero.astro";
+import HeroTwoPhones from "../components/case-study/HeroTwoPhones.astro";
+import HeroOverlay from "../components/case-study/HeroOverlay.astro";
+import HeroProfileColumns from "../components/case-study/HeroProfileColumns.astro";
 import MoreWork from "../components/case-study/MoreWork.astro";
 import SectionNav from "../components/case-study/SectionNav.astro";
 import FadeIn from "../components/FadeIn.astro";
@@ -27,6 +30,7 @@ const { data } = entry;
 
 const ogImage = data.hero?.src ?? data.cover;
 const csVars = data.accent ? `--cs-accent:${data.accent};` : "";
+const hv = data.heroVisual;
 ---
 
 <BaseLayout title={data.title} description={data.summary} ogImage={ogImage}>
@@ -43,7 +47,18 @@ const csVars = data.accent ? `--cs-accent:${data.accent};` : "";
         tags={data.tags}
         hero={data.hero}
         accent={data.accent}
-      />
+        heroVisual={hv}
+      >
+        {hv?.type === "two-phones" && hv.phone1 && hv.phone2 && (
+          <HeroTwoPhones slot="visual" phone1={hv.phone1} phone2={hv.phone2} />
+        )}
+        {hv?.type === "overlay" && hv.src && (
+          <HeroOverlay slot="visual" src={hv.src} />
+        )}
+        {hv?.type === "columns" && hv.col1 && hv.col2 && hv.col3 && (
+          <HeroProfileColumns slot="visual" col1={hv.col1} col2={hv.col2} col3={hv.col3} />
+        )}
+      </Hero>
     </FadeIn>
 
     <div class="cs__shell">

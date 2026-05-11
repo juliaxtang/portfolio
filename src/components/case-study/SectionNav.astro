@@ -1,21 +1,18 @@
 ---
 /**
- * SectionNav — sticky in-page nav rail for case studies.
+ * SectionNav — floating in-page nav rail for case studies.
  *
- * The nav is built client-side from `.cs-section[data-cs-section]` elements
- * in the page (each authored as `<Section title="...">`). Each entry shows
- * the section's nav label, links to `#<id>`, and highlights when the
- * matching section is the most prominent one in the viewport.
+ * Positioned fixed at the left edge of the viewport, sitting below the
+ * global header. Auto-hides after a short period of inactivity (no
+ * scroll, no hover) so the page can fully breathe; reappears as soon as
+ * the user starts scrolling or hovers near the left edge.
  *
- * Layout:
- *   - Desktop (≥1100px): vertical rail floats left of the content column
- *   - Below 1100px:      collapses into a sticky horizontal pill bar near
- *                        the top of the page (under the global header)
+ * Built client-side from `.cs-section[data-cs-section]` elements; entries
+ * are grouped by stage so the rail stays short.
  */
 ---
 
-<aside class="cs-nav" aria-label="Sections">
-  <p class="cs-nav__eyebrow">On this page</p>
+<aside class="cs-nav is-hidden" aria-label="Sections" data-cs-nav-rail>
   <ol class="cs-nav__list" data-cs-nav>
     <!-- Filled in by the inline script below. -->
   </ol>
@@ -25,8 +22,6 @@
   (function () {
     if (typeof window === "undefined") return;
 
-    // Defer until the body is parsed so `.cs-section` elements (which
-    // appear after this script in the DOM) are available.
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", init, { once: true });
     } else {
@@ -34,25 +29,19 @@
     }
 
     function init() {
+    const rail = document.querySelector("[data-cs-nav-rail]");
     const list = document.querySelector("[data-cs-nav]");
-    if (!list) return;
+    if (!list || !rail) return;
 
     const sections = Array.from(
       document.querySelectorAll(".cs-section[data-cs-section]")
     ).filter((s) => s.id);
 
     if (sections.length < 2) {
-      // Don't show the nav for very short case studies.
-      const aside = list.closest(".cs-nav");
-      if (aside) aside.remove();
+      rail.remove();
       return;
     }
 
-    // Group sections by stage and dedupe globally so each stage label
-    // appears only once in the nav (in order of first appearance). When a
-    // case study iterates Design → Test → Design → Test, the nav still
-    // shows just "Design" and "Test"; the active class hops between them
-    // as you scroll.
     const stageOrder = [];
     const stageMap = new Map();
     for (const s of sections) {
@@ -83,16 +72,6 @@
       });
     };
 
-    // IntersectionObserver tracks which sections are visible. We pick the
-    // earliest visible one as "current" — feels right when the user is
-    // scrolling down through long sections.
-    // Track each section's top relative to the document, then on scroll pick
-    // the one whose top is just above the activation line (~25% from top).
-    // This handles the gap between sections (where figures sit) gracefully —
-    // the previous section stays active until you reach the next one.
-    // Build a flat list of all sections in DOM order with a back-pointer to
-    // their stage group, so scroll tracking still works across the merged
-    // (deduped) nav. Sections appear in DOM order, not stage order.
     const sectionToItem = new Map();
     for (let i = 0; i < groups.length; i++) {
       for (const s of groups[i].sections) sectionToItem.set(s, items[i]);
@@ -110,19 +89,82 @@
       }
       setActive(current.item.id);
     };
+
+    // ===== Auto-hide behavior =====
+    // The rail stays hidden while the hero is visible. Once the user scrolls
+    // past the hero, it appears on scroll/pointer-near-edge and auto-hides
+    // after 2s of inactivity.
+    const HIDE_AFTER_MS = 2000;
+    const EDGE_REVEAL_PX = 48;
+    let hideTimer = null;
+    let heroPassed = false;
+
+    const reveal = () => {
+      if (!heroPassed) return;
+      rail.classList.remove("is-hidden");
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        if (!rail.matches(":hover")) rail.classList.add("is-hidden");
+      }, HIDE_AFTER_MS);
+    };
+
+    // Watch the hero bidirectionally — show nav when hero leaves viewport,
+    // hide it again if the user scrolls back up and hero re-enters.
+    const hero = document.querySelector(".cs-hero");
+    if (hero) {
+      new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              // Hero visible again — force-hide and lock
+              heroPassed = false;
+              if (hideTimer) clearTimeout(hideTimer);
+              rail.classList.add("is-hidden");
+            } else {
+              // Hero left viewport — unlock and reveal
+              heroPassed = true;
+              reveal();
+            }
+          }
+        },
+        { threshold: 0 }
+      ).observe(hero);
+    } else {
+      heroPassed = true;
+    }
+
     const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        updateActive();
-        ticking = false;
-      });
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          updateActive();
+          ticking = false;
+        });
+      }
+      reveal();
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
+
+    // Edge-of-viewport hover detection (desktop only). Pointer near the
+    // left edge brings the rail back even if the user isn't actively
+    // scrolling.
+    window.addEventListener(
+      "pointermove",
+      (e) => {
+        if (e.clientX <= EDGE_REVEAL_PX) reveal();
+      },
+      { passive: true }
+    );
+    rail.addEventListener("pointerenter", reveal);
+    rail.addEventListener("pointerleave", () => {
+      if (hideTimer) clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => rail.classList.add("is-hidden"), HIDE_AFTER_MS);
+    });
+
+    // Always start hidden; hero observer controls first reveal.
     updateActive();
 
-    // Smooth scroll on click; leave the URL hash intact.
     items.forEach((it) => {
       it.link.addEventListener("click", (e) => {
         e.preventDefault();
@@ -137,24 +179,26 @@
 
 <style>
   .cs-nav {
-    /* Desktop: floats left of the content. Hidden below 1100px. */
-    position: sticky;
-    top: var(--s-16);
-    align-self: start;
-    width: 200px;
-    max-width: 200px;
-    margin-right: var(--s-6);
-    padding-block: var(--s-3);
+    position: fixed;
+    top: clamp(96px, 14vh, 160px);
+    left: var(--s-5);
+    z-index: 20;
+    width: 148px;
+    padding: var(--s-2) var(--s-2);
+    background: color-mix(in srgb, var(--bg-canvas) 90%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--r-md);
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      opacity var(--dur-slow) var(--ease-out);
+    will-change: transform, opacity;
   }
-
-  .cs-nav__eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin: 0 0 var(--s-3);
+  /* Start hidden — JS unlocks after hero leaves viewport */
+  .cs-nav.is-hidden {
+    transform: translateX(calc(-100% - var(--s-5)));
+    opacity: 0;
+    pointer-events: none;
   }
 
   .cs-nav__list {
@@ -193,29 +237,31 @@
     background: var(--brand-wash-soft);
   }
 
-  /* Below 1100px: collapse to a sticky horizontal scroller below the page header. */
-  @media (max-width: 1100px) {
+  /* On narrow viewports, collapse to a sticky horizontal scroller below
+     the page header. The auto-hide behavior doesn't apply on mobile. */
+  @media (max-width: 900px) {
     .cs-nav {
       position: sticky;
-      top: 64px;
+      top: 56px;
+      left: 0;
       width: 100%;
-      max-width: 100%;
-      margin: 0;
       padding: var(--s-3) var(--s-5);
-      background: color-mix(in srgb, var(--bg-canvas) 92%, transparent);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: color-mix(in srgb, var(--bg-canvas) 94%, transparent);
+      border-radius: 0;
       border-bottom: 1px solid var(--border-subtle);
       z-index: 10;
     }
-    .cs-nav__eyebrow { display: none; }
+    .cs-nav.is-hidden {
+      transform: none;
+      opacity: 1;
+      pointer-events: auto;
+    }
     .cs-nav__list {
       display: flex;
       gap: var(--s-2);
       border-left: none;
       overflow-x: auto;
       scrollbar-width: none;
-      padding-bottom: var(--s-1);
     }
     .cs-nav__list::-webkit-scrollbar { display: none; }
     .cs-nav__list :global(a) {
@@ -234,6 +280,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .cs-nav { transition: none; }
     .cs-nav__list :global(a) { transition: none; }
   }
 </style>

@@ -9,4 +9,7 @@ export default defineConfig({
   build: {
     assets: 'assets',
   },
+  server: {
+    port: parseInt(process.env.PORT || '4321'),
+  },
 });

@@ -236,14 +236,20 @@ const resolve = (p: string) =>
     object-fit: contain;
     display: block;
     filter: drop-shadow(0 18px 28px rgba(40, 30, 80, 0.14));
+    transition:
+      transform 380ms var(--ease-out),
+      filter 380ms var(--ease-out);
+  }
+  .phone-cols__stack img:hover {
+    transform: scale(1.04) translateY(-4px);
+    filter: drop-shadow(0 28px 40px rgba(40, 30, 80, 0.22));
   }
 
   .phone-cols__badge {
     position: absolute;
-    /* Float over the upper-right corner — same placement and size band
-       as the Hackathon badge on App Redesign. */
+    /* Hang off the upper-right corner of the right-column phone. */
     top: clamp(-12px, 0%, 16px);
-    right: clamp(-16px, -2%, 0px);
+    right: clamp(-52px, -12%, -20px);
     width: clamp(120px, 32%, 180px);
     height: auto;
     z-index: 10;

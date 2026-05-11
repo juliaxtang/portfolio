@@ -84,9 +84,20 @@ const mediaStyle = styleParts.join(";");
 <style>
   .cs-figure {
     margin: var(--s-8) auto;
+    transition: transform 0.35s var(--ease-out, cubic-bezier(0.2, 0, 0, 1));
+    will-change: transform;
+  }
+  .cs-figure:hover {
+    transform: scale(1.015);
   }
   .cs-figure--narrow { max-width: var(--content-narrow); }
-  .cs-figure--wide   { max-width: var(--content-max); }
+  /* Wide figures left-align with narrow text, right margin matches the
+     natural right-side margin of full content-max centering. */
+  .cs-figure--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
   .cs-figure--bleed  {
     max-width: none;
     width: 100vw;
@@ -102,11 +113,16 @@ const mediaStyle = styleParts.join(";");
   .cs-figure__media {
     border-radius: var(--r-lg);
     overflow: hidden;
-    /* Cap height so tall portrait images never dominate the viewport. */
-    max-height: 80vh;
+  }
+  /* Only switch to flex centering when a fixed aspect-ratio is set,
+     so wide natural-aspect images don't get letterboxed inside a tall box. */
+  .cs-figure--device-phone .cs-figure__media,
+  .cs-figure--device-tablet .cs-figure__media {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Cap so portrait mockups don't dominate. */
+    max-height: 72vh;
   }
 
   /* Background variants — covers letterboxing space when an image's natural
@@ -114,6 +130,11 @@ const mediaStyle = styleParts.join(";");
   .cs-figure--bg-soft    .cs-figure__media { background: var(--brand-wash-soft); }
   .cs-figure--bg-surface .cs-figure__media { background: var(--bg-surface); }
   .cs-figure--bg-none    .cs-figure__media { background: transparent; }
+
+  /* Drop shadow on all non-transparent figures. */
+  .cs-figure:not(.cs-figure--bg-none):not(.cs-figure--framed) .cs-figure__media {
+    box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.14), 0 1px 4px -1px rgba(0, 0, 0, 0.06);
+  }
 
   .cs-figure--bleed .cs-figure__media { border-radius: 0; }
 
@@ -129,9 +150,16 @@ const mediaStyle = styleParts.join(";");
 
   .cs-figure__media img {
     width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* When the figure has a fixed aspect (phone/tablet/explicit aspect),
+     stretch the img to fill so object-fit can letterbox cleanly. */
+  .cs-figure--device-phone .cs-figure__media img,
+  .cs-figure--device-tablet .cs-figure__media img {
+    width: 100%;
     height: 100%;
     object-fit: contain;
-    display: block;
   }
 
   .cs-figure__caption {

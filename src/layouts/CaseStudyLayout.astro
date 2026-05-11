@@ -26,17 +26,20 @@ const { entry, slug } = Astro.props;
 const { data } = entry;
 
 const ogImage = data.hero?.src ?? data.cover;
+const csVars = data.accent ? `--cs-accent:${data.accent};` : "";
 ---
 
 <BaseLayout title={data.title} description={data.summary} ogImage={ogImage}>
-  <article class="cs">
+  <article class="cs" style={csVars}>
     <FadeIn>
       <Hero
         title={data.title}
         summary={data.summary}
         company={data.company}
+        companyLogo={data.companyLogo}
         year={data.year}
         role={data.role}
+        team={data.team}
         tags={data.tags}
         hero={data.hero}
         accent={data.accent}
@@ -58,47 +61,13 @@ const ogImage = data.hero?.src ?? data.cover;
   .cs { display: block; }
 
   .cs__shell {
-    max-width: var(--content-max);
     margin: 0 auto;
-    padding: 0 var(--s-8);
     padding-bottom: var(--s-16);
-    display: grid;
-    grid-template-columns: 200px minmax(0, 1fr);
-    gap: var(--s-6);
-  }
-  @media (max-width: 1100px) {
-    .cs__shell {
-      grid-template-columns: 1fr;
-      padding: 0;
-      gap: 0;
-    }
-  }
-  @media (max-width: 720px) {
-    .cs__shell { padding: 0; }
   }
 
   .cs__body { min-width: 0; }
 
-  /* Restore narrow-section centering inside the body column on desktop —
-     the nav rail takes the left margin, so we re-center within the body. */
-  @media (min-width: 1101px) {
-    .cs__body :global(.cs-section--narrow),
-    .cs__body :global(.cs-figure--narrow),
-    .cs__body :global(.cs-twoup),
-    .cs__body :global(.cs-stats),
-    .cs__body :global(.cs-quote),
-    .cs__body :global(.cs-video) {
-      margin-left: auto;
-      margin-right: auto;
-    }
-  }
-
-  /* Below the nav-collapse breakpoint, restore standard inner padding so
-     content doesn't hit the viewport edges. */
-  @media (max-width: 1100px) {
-    .cs__body { padding: 0 var(--s-8); }
-  }
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .cs__body { padding: 0 var(--s-5); }
   }
 </style>

@@ -40,7 +40,12 @@ const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[ga
     margin: var(--s-8) auto;
     max-width: var(--content-narrow);
   }
-  .cs-twoup--wide { max-width: var(--content-max); }
+  /* Wide TwoUp left-aligns with narrow text, same formula as Figure--wide. */
+  .cs-twoup--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
 
   @media (max-width: 720px) {
     .cs-twoup { grid-template-columns: 1fr; }

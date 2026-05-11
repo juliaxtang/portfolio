@@ -255,10 +255,13 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
     gap: var(--s-3);
   }
   .showcase__stats li {
     display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
     gap: var(--s-1);
   }
   /* Games-specific: "30M" is so short that the equal-width grid creates

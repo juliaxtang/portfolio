@@ -123,21 +123,6 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     object-position: 25% center;
     display: block;
   }
-  /* Soft fade on the right half so the overlay panel reads cleanly even
-     when the hero image is busy across the full width. */
-  .cs-hero__bleed::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      transparent 40%,
-      color-mix(in srgb, var(--cs-accent) 38%, var(--bg-canvas)) 75%,
-      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 100%
-    );
-  }
 
   .cs-hero__overlay {
     grid-area: stack;

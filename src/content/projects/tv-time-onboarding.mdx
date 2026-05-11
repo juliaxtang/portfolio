@@ -19,6 +19,7 @@ accent: "#FFD53A"
 import Section from "../../components/case-study/Section.astro";
 import Figure from "../../components/case-study/Figure.astro";
 import TwoUp from "../../components/case-study/TwoUp.astro";
+import Strip from "../../components/case-study/Strip.astro";
 import Stats from "../../components/case-study/Stats.astro";
 import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
@@ -111,22 +112,22 @@ found that there were three types of onboarding.
 - **Tooltips** are similar to inline hints; they progressively disclose product features and are easily dismissible.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg" wide align="center">
-  <Figure
-    src="/projects/tv-time-onboarding/onboarding-feedly.webp"
-    alt="Feedly onboarding screen using inline hints"
-    caption="Feedly uses inline hints to guide new users through their first session."
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/onboarding-typeform.webp"
-    alt="Typeform onboarding screen using dismissible tooltips"
-    caption='Typeform uses dismissible tooltips to highlight features. Users can also tap "What Else?" for more.'
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
+<Figure
+  src="/projects/tv-time-onboarding/onboarding-feedly.webp"
+  alt="Feedly onboarding screen using inline hints"
+  caption="Feedly uses in-line hints to guide new users through their first session."
+  width="narrow"
+  device="phone"
+  background="none"
+/>
+
+<Figure
+  src="/projects/tv-time-onboarding/onboarding-typeform.webp"
+  alt="Typeform onboarding screen using dismissible tooltips"
+  caption='Typeform uses dismissible tooltips to highlight features. Users can also tap "What Else?" for more.'
+  width="narrow"
+  background="none"
+/>
 
 <Section stage="Research" title="Slides, wizards, and tutorials" size="sub" hideFromNav>
 - **Slides.** Slideshows, showcases, and explanatory screens are good for benefits-oriented onboarding, but won't give users the real experience.
@@ -250,59 +251,15 @@ loop, and ultimately communicate the value of the app: creating pins and
 boards allows me to curate and collect content for future reference.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-1.webp"
-    alt="Pinterest onboarding asking users to choose topics of interest"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-2.webp"
-    alt="Pinterest onboarding generating personalized pins"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
-
-<Figure
-  src="/projects/tv-time-onboarding/pinterest-3.webp"
-  alt="Pinterest onboarding explaining what pins are while results load"
-  caption="After registration, Pinterest prompts you to choose 5+ topics of interest. While you wait, they explain what pins are."
-  width="narrow"
-  background="none"
-/>
-
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-4.webp"
-    alt="Pinterest walkthrough of saving the first pin"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-5.webp"
-    alt="Pinterest walkthrough of creating the first board"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
-
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-6.webp"
-    alt="Pinterest walkthrough of adding more ideas to the board"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/pinterest-7.webp"
-    alt="Pinterest walkthrough completing the core habit loop"
-    caption="Then they walk you through saving your first pin, creating your first board, and adding more ideas."
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
+<Strip images={[
+  { src: "/projects/tv-time-onboarding/pinterest-1.webp", alt: "Pinterest onboarding asking users to choose topics of interest" },
+  { src: "/projects/tv-time-onboarding/pinterest-2.webp", alt: "Pinterest onboarding generating personalized pins" },
+  { src: "/projects/tv-time-onboarding/pinterest-3.webp", alt: "Pinterest onboarding explaining what pins are while results load", caption: "After registration, Pinterest prompts you to choose 5+ topics of interest. While you wait, they explain what pins are." },
+  { src: "/projects/tv-time-onboarding/pinterest-4.webp", alt: "Pinterest walkthrough of saving the first pin" },
+  { src: "/projects/tv-time-onboarding/pinterest-5.webp", alt: "Pinterest walkthrough of creating the first board" },
+  { src: "/projects/tv-time-onboarding/pinterest-6.webp", alt: "Pinterest walkthrough of adding more ideas to the board" },
+  { src: "/projects/tv-time-onboarding/pinterest-7.webp", alt: "Pinterest walkthrough completing the core habit loop", caption: "Then they walk you through saving your first pin, creating your first board, and adding more ideas." },
+]} />
 
 <Section size="sub" stage="Ideate" title="Sketching solutions">
 After our demos, we split up and spent some time individually taking
@@ -416,30 +373,11 @@ build out three unique flows for the prototype. I worked closely with our
 assigned Sprint Copywriter to personalize the copy in each flow.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg">
-  <Figure
-    src="/projects/tv-time-onboarding/flow-tracker.webp"
-    alt="Hi-fi flow for the Tracker user type"
-    caption="Tracker flow"
-    width="narrow"
-    background="none"
-  />
-  <Figure
-    src="/projects/tv-time-onboarding/flow-discoverer.webp"
-    alt="Hi-fi flow for the Discoverer user type"
-    caption="Discoverer flow"
-    width="narrow"
-    background="none"
-  />
-</TwoUp>
-
-<Figure
-  src="/projects/tv-time-onboarding/flow-watcher.webp"
-  alt="Hi-fi flow for the Watcher user type"
-  caption="Watcher flow"
-  width="narrow"
-  background="none"
-/>
+<Strip height="380px" images={[
+  { src: "/projects/tv-time-onboarding/flow-tracker.webp", alt: "Hi-fi flow for the Tracker user type", caption: "Tracker flow" },
+  { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Hi-fi flow for the Discoverer user type", caption: "Discoverer flow" },
+  { src: "/projects/tv-time-onboarding/flow-watcher.webp", alt: "Hi-fi flow for the Watcher user type", caption: "Watcher flow" },
+]} />
 
 <Section size="sub" stage="Design" title="Hi-fi prototype">
 The second half of the day was spent building out a high-fidelity
@@ -494,12 +432,14 @@ Our testing found that the prototype was mostly successful.
     alt="Testing screen showing the search and add experience"
     caption="Encouraging users to find their shows in Step 1 was effective in teaching users how to search and add shows."
     width="narrow"
+    background="none"
   />
   <Figure
     src="/projects/tv-time-onboarding/testing-2.webp"
     alt="Testing screen showing reused controls between onboarding and the real app"
     caption="Users understood how controls worked in the app after having seen the same controls in onboarding."
     width="narrow"
+    background="none"
   />
 </TwoUp>
 
@@ -528,6 +468,7 @@ felt easier to understand and use.
   alt="Welcome screen showing the swipe interaction users missed"
   caption="The welcome screen swipe users missed"
   width="narrow"
+  background="none"
 />
 
 <Section stage="Impact" eyebrow="Did this work?" title="Evaluation" banner />

@@ -8,7 +8,7 @@
  *   - "bleed"            — full viewport width, edge to edge
  *
  * `device`:
- *   - "phone"  — locks aspect to a phone screen (9/19.5), centers the image
+ *   - "phone"  — locks aspect to a phone screen (9/18), centers the image
  *   - "tablet" — locks to 4/3
  *   - "auto"   — natural aspect, capped by max-height (default)
  *
@@ -52,7 +52,7 @@ const resolved = src.startsWith("http") || src.startsWith(base)
   : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
 
 const aspectMap: Record<string, string | undefined> = {
-  phone: "9 / 19.5",
+  phone: "9 / 18",
   tablet: "4 / 3",
   auto: undefined,
 };
@@ -114,15 +114,19 @@ const mediaStyle = styleParts.join(";");
     border-radius: var(--r-lg);
     overflow: hidden;
   }
-  /* Only switch to flex centering when a fixed aspect-ratio is set,
-     so wide natural-aspect images don't get letterboxed inside a tall box. */
+  /* Phone/tablet figures: lock the container to the phone aspect ratio
+     so the image is constrained vertically and the caption sits right
+     below the phone with no large empty box. */
   .cs-figure--device-phone .cs-figure__media,
   .cs-figure--device-tablet .cs-figure__media {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* Cap so portrait mockups don't dominate. */
-    max-height: 72vh;
+    display: block;
+    text-align: center;
+  }
+  .cs-figure--device-phone .cs-figure__media {
+    aspect-ratio: 9 / 18;
+  }
+  .cs-figure--device-tablet .cs-figure__media {
+    aspect-ratio: 4 / 3;
   }
 
   /* Background variants — covers letterboxing space when an image's natural
@@ -153,13 +157,13 @@ const mediaStyle = styleParts.join(";");
     height: auto;
     display: block;
   }
-  /* When the figure has a fixed aspect (phone/tablet/explicit aspect),
-     stretch the img to fill so object-fit can letterbox cleanly. */
+  /* Phone/tablet image fills its container's width and uses its natural
+     height — no letterboxing or empty space. */
   .cs-figure--device-phone .cs-figure__media img,
   .cs-figure--device-tablet .cs-figure__media img {
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: auto;
+    margin: 0 auto;
   }
 
   .cs-figure__caption {

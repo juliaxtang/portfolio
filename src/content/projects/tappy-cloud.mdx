@@ -10,6 +10,7 @@ companyLogo: "/logos/tinder.png"
 team: ["Product Manager", "Engineers", "Data Science", "UX Research", "Design Systems"]
 cover: "/projects/tappy-cloud/phone-just-joined.png"
 coverAlt: "Tappy Cloud profile with Just Joined tag"
+accent: "#FD297C"
 heroVisual:
   type: "columns"
   col1: "/projects/tappy-cloud/column 1.png"
@@ -26,39 +27,68 @@ import Stats from "../../components/case-study/Stats.astro";
 import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
 import Callout from "../../components/case-study/Callout.astro";
-import Compare from "../../components/case-study/Compare.astro";
 import Quote from "../../components/case-study/Quote.astro";
-import SourceNote from "../../components/case-study/SourceNote.astro";
+import SlideCycle from "../../components/case-study/SlideCycle.astro";
+import IAReveal from "../../components/case-study/IAReveal.astro";
+import Carousel from "../../components/case-study/Carousel.astro";
 
-<Section size="sub" stage="Overview" eyebrow="Overview" title="Tappy, but smarter">
+<Section size="sub" stage="Overview" hideFromNav>
+
+<div class="cs-inline-figure">
+<div class="cs-inline-figure__body">
+
+<p class="cs-inline-figure__eyebrow">Overview</p>
+<h2 class="cs-inline-figure__title">Tappy, but smarter</h2>
+
 On Tinder, you tap left or right on a profile to flip through profile
 "pages," each combining a photo with profile content. Internally, we call
 those tappable photo+content pages **Tappy**. Tappy was static, hardcoded,
 and hard to scale, so I led a six-month effort to turn it into a
 backend-driven, dynamically configurable system, with the tooling to match.
+
+</div>
+<Figure
+  src="/projects/tappy-cloud/phone-emily.png"
+  alt="A Tinder profile showing photo, name, and profile content stacked into a single Tappy page."
+  caption="A single Tappy page, photo plus profile content"
+  width="narrow"
+  device="phone"
+  background="none"
+/>
+</div>
+
 </Section>
 
 <Section stage="Define" eyebrow="Define" title="What was wrong with Tappy" banner />
 
 <Section size="sub" stage="Define" title="Three structural problems" hideFromNav>
 At the time, Tappy suffered from three structural problems that limited
-both what users saw and what teams could ship.
+both what users saw and what teams could ship. Tap through each below to
+see the kind of profile each problem produced in the wild.
 </Section>
 
-<Callouts cols={3} wide>
-  <Callout eyebrow="Problem 1" title="Static profiles" tone="outline">
-    The ordering of Tappy elements was hardcoded with a one-size-fits-all
-    approach. Every user saw the same content in the same order.
-  </Callout>
-  <Callout eyebrow="Problem 2" title="No UI standardization" tone="outline">
-    Profile content looked visually disjointed because there was no shared
-    library of profile content components.
-  </Callout>
-  <Callout eyebrow="Problem 3" title="No centralized control" tone="outline">
-    No way to preview different content combinations or manage concurrent
-    Tappy experiments, leading to content collisions between teams.
-  </Callout>
-</Callouts>
+<SlideCycle
+  frames={[
+    {
+      src: "/projects/tappy-cloud/phone-problem-1.webp",
+      label: "No centralized control",
+      sublabel: "No way to preview or manage concurrent Tappy experiments, leading to content collisions.",
+      alt: "A Tinder profile for James 32 with overlapping content: a Vaccinated tag, a Swipe Note pill, and stacked bio lines, illustrating content collisions.",
+    },
+    {
+      src: "/projects/tappy-cloud/static-profiles.gif",
+      label: "Static profiles",
+      sublabel: "Element ordering was hardcoded with a one-size-fits-all approach.",
+      alt: "An animated mockup cycling through different profile photos, with all the supporting content (name, age, bio, basics) staying in exactly the same order, illustrating the static one-size-fits-all layout.",
+    },
+    {
+      src: "/projects/tappy-cloud/phone-problem-3.webp",
+      label: "No UI standardization",
+      sublabel: "Profile content looked visually disjointed because there was no shared component library.",
+      alt: "A Tinder profile for Emily 25 with a stylized Swipe Surge banner, a 'Save Queer Spaces' tag, and inconsistent pill treatments, illustrating disjointed UI.",
+    },
+  ]}
+/>
 
 <Section size="sub" stage="Define" title="Three goals, one system" hideFromNav>
 The redesign had to move three things forward at once. Each goal mapped
@@ -67,35 +97,42 @@ solution had to be a system, not a feature.
 </Section>
 
 <Callouts cols={3} wide>
-  <Callout number="1" title="Business" tone="accent">
+  <Callout number="1" title="Business" tone="outline">
     Create a centralized way for teams to preview and manage different
     Tappy content orderings.
   </Callout>
-  <Callout number="2" title="User" tone="accent">
+  <Callout number="2" title="User" tone="outline">
     Allow dynamic content ordering so we could surface the most relevant
     content to any given user.
   </Callout>
-  <Callout number="3" title="Product" tone="accent">
+  <Callout number="3" title="Product" tone="outline">
     Establish UI guidelines for consistency, scalability, and reduced
     visual clutter.
   </Callout>
 </Callouts>
 
-<Section stage="Research" eyebrow="Research" title="Grounding in how people use Tappy" banner />
+<Section stage="Research" eyebrow="Research" title="How people look at profiles" banner />
 
 <Section size="sub" stage="Research" title="What past experiments told us" hideFromNav>
 Before designing anything, I pulled together prior analytics and ran fresh
 testing to ground the work in how people actually use Tappy.
 </Section>
 
-<Stats cols={4} wide>
+<Stats cols={2} wide>
   <Stat value="96%" label="Of users only view content on Tappy itself, never reaching the longer profile detail view." caption="Tappy reach" />
   <Stat value="2/3" label="Of users only view the first Tappy page." caption="First-page bias" />
   <Stat value="<1s" label="Decisions on a profile often happen in less than a second." caption="Decision time" />
   <Stat value="5 lines" label="Optimal length for a bio. Anything longer or shorter reduces the chance of a like." caption="Bio sweet spot" />
 </Stats>
 
-<Section size="sub" stage="Research" title="Where attention actually lands" hideFromNav>
+<Section size="sub" stage="Research" hideFromNav>
+
+<div class="cs-inline-figure">
+<div class="cs-inline-figure__body">
+
+<p class="cs-inline-figure__eyebrow">Research</p>
+<h2 class="cs-inline-figure__title">Where attention actually lands</h2>
+
 Card-sort and qualitative testing surfaced a clear hierarchy of what users
 look at, in what order, and why.
 
@@ -103,15 +140,18 @@ look at, in what order, and why.
 - **Looking at subsequent pages signals interest.** If the first page captures interest, users tap into more pages to see more.
 - **Bio was unanimously ranked the most important** piece of content. Users use bios to assess personality, affirm authenticity, and gauge a profile's seriousness.
 - **Job, school, location, and interests** are also essential. Users look here for dealbreakers and commonalities. Beyond those, opinions varied.
-</Section>
 
+</div>
 <Figure
   src="/projects/tappy-cloud/phone-fixation.png"
-  alt="Phone mockup overlaid with eye-tracking heatmap showing where attention lands on Tappy"
-  caption="Fixation points on Tappy from user testing"
+  alt="A profile with an eye-tracking heatmap overlay, the 'fixation points on Tappy' label rendered into the image."
   width="narrow"
   device="phone"
+  background="none"
 />
+</div>
+
+</Section>
 
 <Section size="sub" stage="Research" title="Men and women look at profiles differently" hideFromNav>
 A round of A/B tests surfaced a strong gender split. Men preferred seeing
@@ -121,24 +161,28 @@ satisfaction. The right ordering of content for the right user has a big
 impact.
 </Section>
 
-<Compare leftLabel="What Joe sees" rightLabel="What Emily sees">
-  <Figure
-    slot="left"
-    src="/projects/tappy-cloud/phone-joe.png"
-    alt="A profile as it appears to a male user, with distance shown first"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-  <Figure
-    slot="right"
-    src="/projects/tappy-cloud/phone-emily.png"
-    alt="A profile as it appears to a female user, with bio shown first"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-</Compare>
+<TwoUp ratio="1:1" gap="lg">
+  <div style="text-align:center;">
+    <p style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 calc(-1 * var(--s-8) + var(--s-1));">What Joe sees</p>
+    <Figure
+      src="/projects/tappy-cloud/phone-joe.png"
+      alt="A profile as it appears to a male user, with distance shown first."
+      width="narrow"
+      device="phone"
+      background="none"
+    />
+  </div>
+  <div style="text-align:center;">
+    <p style="font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 calc(-1 * var(--s-8) + var(--s-1));">What Emily sees</p>
+    <Figure
+      src="/projects/tappy-cloud/phone-emily.png"
+      alt="A profile as it appears to a female user, with bio shown first."
+      width="narrow"
+      device="phone"
+      background="none"
+    />
+  </div>
+</TwoUp>
 
 <Section stage="Plan" eyebrow="Planning" title="Principles and milestones" banner />
 
@@ -147,18 +191,18 @@ Before we shaped the solution, the team aligned on four principles to
 steer every design decision.
 </Section>
 
-<Callouts cols={4} wide>
-  <Callout number="1" title="Personalized">
+<Callouts cols={2} wide>
+  <Callout number="1" title="Personalized" tone="outline">
     The solution should cater to individual user preferences and behaviors.
   </Callout>
-  <Callout number="2" title="Scalable">
+  <Callout number="2" title="Scalable" tone="outline">
     Develop a system that can efficiently grow and accommodate new business
     or user needs.
   </Callout>
-  <Callout number="3" title="Easy to use">
+  <Callout number="3" title="Easy to use" tone="outline">
     Seamless for Tinder users, and easy for internal teams to adopt.
   </Callout>
-  <Callout number="4" title="Unified">
+  <Callout number="4" title="Unified" tone="outline">
     Maintain a cohesive visual language across the product.
   </Callout>
 </Callouts>
@@ -195,42 +239,100 @@ content that lived on Tappy and reduced the surface area to a small set of
 reusable components, each with a defined use and styling rules.
 </Section>
 
-<Callouts cols={3} wide>
-  <Callout title="Content tag">
-    For system labels (Active, Online now, Just joined, Recommended). One
-    per profile, displayed above the namerow, max 25 characters.
-  </Callout>
-  <Callout title="Body text">
-    For bios and other multi-line text. Truncates with an ellipsis.
-  </Callout>
-  <Callout title="Text + icon">
-    Single-line items with an icon (school, job, distance).
-  </Callout>
-  <Callout title="Pill labels">
-    Short labels in groups or stacks (interests, lifestyle descriptors).
-    Configurable colors, optional icons.
-  </Callout>
-  <Callout title="Image + icon">
-    Content with imagery, optional title and body text (Spotify Anthem,
-    Relationship Intent).
-  </Callout>
-  <Callout title="Image grid">
-    Up to four images (top Spotify artists, Instagram).
-  </Callout>
-</Callouts>
+<Carousel>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-content-tag.webp" alt="Content tag pill preview" /></div>
+      <h3 class="cs-comp-card__title">Content tag</h3>
+      <ul class="cs-comp-card__body">
+        <li>For system labels.</li>
+        <li>Character max: 25 incl. spaces.</li>
+        <li>One per profile, above the namerow.</li>
+        <li>May include icon and pathing.</li>
+      </ul>
+    </article>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-body-text.webp" alt="Body text preview" /></div>
+      <h3 class="cs-comp-card__title">Body text</h3>
+      <ul class="cs-comp-card__body">
+        <li>Unstyled, multi-line.</li>
+        <li>Truncates with an ellipsis.</li>
+        <li>For bios and other freeform copy.</li>
+      </ul>
+    </article>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-text-icon.webp" alt="Text plus icon preview" /></div>
+      <h3 class="cs-comp-card__title">Text + icon</h3>
+      <ul class="cs-comp-card__body">
+        <li>Single line of text with a leading icon.</li>
+        <li>Can be styled or stacked.</li>
+        <li>For school, job, distance.</li>
+      </ul>
+    </article>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-pill-labels.webp" alt="Pill labels preview" /></div>
+      <h3 class="cs-comp-card__title">Pill labels</h3>
+      <ul class="cs-comp-card__body">
+        <li>Short labels in groups or stacks.</li>
+        <li>Configurable colors, optional icons.</li>
+        <li>For interests and lifestyle descriptors.</li>
+      </ul>
+    </article>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-image-icon.webp" alt="Image plus icon preview" /></div>
+      <h3 class="cs-comp-card__title">Image + icon</h3>
+      <ul class="cs-comp-card__body">
+        <li>Imagery with optional title and body text.</li>
+        <li>For Spotify Anthem and Relationship Intent.</li>
+      </ul>
+    </article>
+    <article class="cs-comp-card">
+      <div class="cs-comp-card__preview"><img src="/projects/tappy-cloud/preview-image-grid.webp" alt="Image grid preview" /></div>
+      <h3 class="cs-comp-card__title">Image grid</h3>
+      <ul class="cs-comp-card__body">
+        <li>Up to four images.</li>
+        <li>For top Spotify artists, Instagram.</li>
+      </ul>
+    </article>
+</Carousel>
 
 <Section size="sub" stage="Design" title="A new information architecture" hideFromNav>
 Tappy's new architecture splits a profile into three distinct zones, each
-with its own purpose. The system labels zone is system-driven, the namerow
-is identity, and the profile content zone is what the user authored.
+with its own purpose. Tap through to see how each zone is anchored on a
+real profile.
 </Section>
 
-<Figure
-  src="/projects/tappy-cloud/phone-tappy-ia.png"
-  alt="Phone mockup with the three zones called out: System labels, Namerow, Profile content"
-  caption="System labels, namerow, profile content"
-  width="narrow"
-  device="phone"
+<IAReveal
+  screen="/projects/tappy-cloud/ia-screen.webp"
+  bezel="/projects/tappy-cloud/ia-bezel.webp"
+  frames={[
+    {
+      src: "/projects/tappy-cloud/ia-anno-active.webp",
+      label: "System labels",
+      sublabel: "Reserved for system-driven content (Active, Just joined, Recommended). Above the namerow.",
+      alt: "An 'Active' content tag callout that covers the system labels zone above the namerow.",
+      top: "40%",
+      left: "-10%",
+      width: "60%",
+    },
+    {
+      src: "/projects/tappy-cloud/ia-anno-namerow.webp",
+      label: "Name and age",
+      sublabel: "The 'namerow.' Persistent on every profile page, anchoring identity.",
+      alt: "An 'Emily 25' callout that covers the namerow.",
+      top: "50%",
+      left: "0%",
+      width: "200%",
+    },
+    {
+      src: "/projects/tappy-cloud/ia-anno-content.webp",
+      label: "Profile content",
+      sublabel: "Below the namerow. Everything the user authored: bio, basics, interests, intent.",
+      alt: "A bio body callout that covers the profile content zone below the namerow.",
+      top: "55%",
+      left: "0%",
+      width: "100%",
+    },
+  ]}
 />
 
 <Section size="sub" stage="Design" title="Content maximums on Tappy" hideFromNav>
@@ -248,16 +350,16 @@ internal team could use to configure Tappy.
 </Section>
 
 <Callouts cols={2} wide>
-  <Callout number="1" title="Effortless ordering">
+  <Callout number="1" title="Effortless ordering" tone="outline">
     Let teams effortlessly create and manage different Tappy orderings.
   </Callout>
-  <Callout number="2" title="Live previews">
+  <Callout number="2" title="Live previews" tone="outline">
     Provide live previews of those orderings as they're configured.
   </Callout>
-  <Callout number="3" title="Built-in guardrails">
+  <Callout number="3" title="Built-in guardrails" tone="outline">
     Enforce content maximums to prevent profile overcrowding.
   </Callout>
-  <Callout number="4" title="Experimentation-native">
+  <Callout number="4" title="Experimentation-native" tone="outline">
     Integrate with our experimentation platform for easy A/B testing.
   </Callout>
 </Callouts>
@@ -266,9 +368,9 @@ internal team could use to configure Tappy.
   src="/projects/tappy-cloud/taco-desktop.png"
   alt="The TaCo tool in a desktop browser, showing drag-and-drop ordering with a live preview"
   caption="The Tappy Configurator (TaCo) tool"
-  width="wide"
+  width="narrow"
   background="none"
-  maxHeight="640px"
+  maxHeight="520px"
 />
 
 <Section size="sub" stage="Design" title="Testing TaCo with the people who'd use it" hideFromNav>
@@ -279,7 +381,7 @@ measured time on task, success rate, and the System Usability Scale.
 <Stats cols={3} wide>
   <Stat value="100%" label="Success rate on core configuration tasks across all participants." caption="Task success" />
   <Stat value="72.1" label="System Usability Scale rating, the highest of the alternatives we tested." caption="SUS rating" />
-  <Stat value="↓" label="Shortest time on task across the alternatives we tested." caption="Time on task" />
+  <Stat value="Fastest" label="Shortest time on task across the alternatives we tested." caption="Time on task" />
 </Stats>
 
 <Section stage="Impact" eyebrow="Impact" title="What TaCo unlocked" banner />
@@ -309,90 +411,125 @@ personalization moved every metric we cared about.
   />
 </Stats>
 
-<Section size="sub" stage="Impact" title="The most successful experiment so far" hideFromNav>
+<Section size="sub" stage="Impact" hideFromNav>
+
+<div class="cs-inline-figure">
+<div class="cs-inline-figure__body">
+
+<p class="cs-inline-figure__eyebrow">Impact</p>
+<h2 class="cs-inline-figure__title">The most successful experiment so far</h2>
+
 The standout experiment to date is distance optimization: we only show
 distance when it's under a threshold. The result, from a single
 experiment, was a clear lift across three independent metrics.
+
+<ul class="cs-bullet-stats">
+  <li>
+    <p class="cs-bullet-stats__value">↑ 0.8%</p>
+    <p class="cs-bullet-stats__label">More likes sent</p>
+  </li>
+  <li>
+    <p class="cs-bullet-stats__value">↑ 0.9%</p>
+    <p class="cs-bullet-stats__label">More matches</p>
+  </li>
+  <li>
+    <p class="cs-bullet-stats__value">↑ 0.2%</p>
+    <p class="cs-bullet-stats__label">Higher retention</p>
+  </li>
+</ul>
+
+</div>
+<Figure
+  src="/projects/tappy-cloud/phone-distance.png"
+  alt="A profile as a male user sees it, distance highlighted only when under the threshold"
+  caption="What Joe sees if Emily is less than 5 miles away"
+  width="narrow"
+  device="phone"
+  background="none"
+/>
+</div>
+
 </Section>
 
-<TwoUp ratio="2:1" gap="lg" wide>
-  <Callouts cols={1}>
-    <Callout title="↑ 0.8%" tone="outline">More likes sent.</Callout>
-    <Callout title="↑ 0.9%" tone="outline">More matches.</Callout>
-    <Callout title="↑ 0.2%" tone="outline">Higher retention.</Callout>
-  </Callouts>
-  <Figure
-    src="/projects/tappy-cloud/phone-distance.png"
-    alt="A profile as a male user sees it, distance highlighted only when under the threshold"
-    caption="What Joe sees if Emily is less than 5 miles away"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-</TwoUp>
-
-<Section size="sub" stage="Impact" title="Component-by-component wins" hideFromNav>
+<Section size="sub" stage="Impact" title="Unlocking new profile content with reusable components" hideFromNav>
 The reusable components also unlocked entirely new content types on
-profiles. A few of the experiments that landed.
+profiles. Tap through three of the experiments that landed.
 </Section>
 
-<TwoUp ratio="1:1" gap="lg" wide>
-  <Figure
-    src="/projects/tappy-cloud/phone-just-joined.png"
-    alt="A Tappy profile featuring the new Just Joined content tag"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-  <div>
-    <h3 style="font-family:var(--font-sans);font-size:20px;font-weight:600;margin:0 0 var(--s-3);">Content tags</h3>
-    <p style="font-size:15px;line-height:1.55;color:var(--text-secondary);margin:0 0 var(--s-3);">
-      Nearby tag with distance, plus Just Joined: <strong>+0.6%</strong> likes sent, <strong>+0.3%</strong> days active, <strong>+0.3%</strong> matches.
-    </p>
-    <p style="font-size:15px;line-height:1.55;color:var(--text-secondary);margin:0;">
-      Just Joined alone moved <strong>+1.5%</strong> 2-way conversations, <strong>+1.8%</strong> new matches, <strong>+1.2%</strong> likes sent.
-    </p>
-  </div>
-</TwoUp>
+<SlideCycle
+  aspect="1200 / 2415"
+  frames={[
+    {
+      device: "/projects/tappy-cloud/phone-just-joined-device.webp",
+      overlay: "/projects/tappy-cloud/phone-just-joined-overlay.webp",
+      overlayBottom: "38%",
+      overlayLeft: "-5%",
+      overlayWidth: "60%",
+      label: "Content tags",
+      alt: "A Morgan 23 profile featuring a 'Just joined' content tag above the namerow.",
+      bullets: [
+        { value: "+1.5%", label: "2-way conversations", positive: true },
+        { value: "+1.8%", label: "new matches", positive: true },
+        { value: "+1.2%", label: "likes sent", positive: true },
+      ],
+    },
+    {
+      device: "/projects/tappy-cloud/phone-relationship-intent-device.webp",
+      overlay: "/projects/tappy-cloud/phone-relationship-intent-overlay.webp",
+      overlayBottom: "14%",
+      overlayLeft: "-1%",
+      overlayWidth: "103%",
+      overlayMaxWidth: "200%",
+      label: "Relationship intent",
+      alt: "A Sam 25 profile with a 'Looking for / Long-term partner' Relationship Intent element.",
+      bullets: [
+        { value: "+0.4%", label: "swipes overall", positive: true },
+        { value: "+1.29%", label: "for women", positive: true },
+        { value: "+1.1%", label: "likes", positive: true },
+        { value: "+0.5%", label: "days active", positive: true },
+      ],
+    },
+    {
+      device: "/projects/tappy-cloud/phone-preferences-device.webp",
+      overlay: "/projects/tappy-cloud/phone-preferences-overlay.webp",
+      overlayBottom: "15.6%",
+      overlayLeft: "1%",
+      overlayWidth: "99%",
+      overlayMaxWidth: "200%",
+      label: "Preferences on Tappy",
+      alt: "An Alex 29 profile with a Preferences stack: Socially on weekends, Often, Non-smoker.",
+      bullets: [
+        { value: "+0.2%", label: "WAM (women)", positive: true },
+        { value: "+0.3%", label: "women's likes sent", positive: true },
+        { value: "+0.3%", label: "women's retention", positive: true },
+        { value: "+0.3%", label: "revenue", positive: true },
+      ],
+    },
+  ]}
+/>
 
-<TwoUp ratio="1:1" gap="lg" wide>
-  <div>
-    <h3 style="font-family:var(--font-sans);font-size:20px;font-weight:600;margin:0 0 var(--s-3);">Relationship intent on Tappy</h3>
-    <p style="font-size:15px;line-height:1.55;color:var(--text-secondary);margin:0 0 var(--s-3);">
-      <strong>+0.4%</strong> swipes sent overall, <strong>+1.29%</strong> for women specifically.
-    </p>
-    <p style="font-size:15px;line-height:1.55;color:var(--text-secondary);margin:0;">
-      Drove an increase in subscription purchases, <strong>+1.1%</strong> likes, <strong>+0.5%</strong> days active.
-    </p>
-  </div>
-  <Figure
-    src="/projects/tappy-cloud/phone-relationship-intent.png"
-    alt="A Tappy profile featuring the new Relationship Intent content"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-</TwoUp>
+<Section size="sub" stage="Impact" hideFromNav>
 
-<TwoUp ratio="1:1" gap="lg" wide>
-  <Figure
-    src="/projects/tappy-cloud/phone-preferences.png"
-    alt="A Tappy profile showing user preferences (lifestyle and habit pills)"
-    width="narrow"
-    device="phone"
-    background="none"
-  />
-  <div>
-    <h3 style="font-family:var(--font-sans);font-size:20px;font-weight:600;margin:0 0 var(--s-3);">Preferences on Tappy</h3>
-    <p style="font-size:15px;line-height:1.55;color:var(--text-secondary);margin:0;">
-      <strong>+0.2%</strong> weekly active messengers among women, <strong>+0.3%</strong> women's likes sent, <strong>+0.3%</strong> women's retention, <strong>+0.3%</strong> revenue.
-    </p>
-  </div>
-</TwoUp>
+<div class="cs-inline-figure">
+<div class="cs-inline-figure__body">
 
-<Section size="sub" stage="Impact" title="The future of personalization" hideFromNav>
+<p class="cs-inline-figure__eyebrow">Looking ahead</p>
+<h2 class="cs-inline-figure__title">The future of personalization</h2>
+
 With the foundations in place, we're exploring ML and AI integration to
 intelligently spotlight compatibilities based on profile data. The same
 infrastructure that powers a hand-tuned Tappy ordering today is the
 infrastructure that powers an automatically-personalized one tomorrow.
+
+</div>
+<Figure
+  src="/projects/tappy-cloud/phone-dan.webp"
+  alt="A Dan 28 profile with a 'Strong Match' AI annotation, spotlighting a chef-and-foodie compatibility."
+  caption="An AI-spotlighted compatibility, drafted on top of the new Tappy infrastructure"
+  width="narrow"
+  device="phone"
+  background="none"
+/>
+</div>
+
 </Section>

@@ -136,7 +136,8 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
 
   /* Sub-section title: smaller, sans bold — for in-page subsections that
      aren't a major banner divider (e.g. pain-point callouts). */
-  .cs-section--sub { padding-block: var(--s-8); }
+  .cs-section--sub { padding-block: var(--s-6); }
+  .cs-section--sub .cs-section__head { margin-bottom: var(--s-3); }
   .cs-section--sub .cs-section__title {
     font-family: var(--font-sans);
     font-size: clamp(22px, 2.2vw, 28px);

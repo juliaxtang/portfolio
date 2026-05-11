@@ -72,8 +72,11 @@ const cls = ["cs-callout", `cs-callout--${tone}`].join(" ");
     width: 28px;
     height: 28px;
     border-radius: var(--r-full);
-    background: var(--text-primary);
-    color: var(--text-inverse);
+    /* Style-guide accent (lavender mist) with dark on-brand text for
+       legibility. Not the case-study accent — that's reserved for
+       page-level hero treatments. */
+    background: var(--brand-accent);
+    color: var(--text-on-brand);
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;

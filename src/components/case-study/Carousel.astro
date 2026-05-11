@@ -1,0 +1,98 @@
+---
+/**
+ * Carousel — horizontal scrolling strip of cells.
+ *
+ * Wraps a `.cs-carousel__track` of arbitrary children (cards, images, etc).
+ * The track auto-scrolls slowly and loops continuously. Duplicates its
+ * contents on mount so the loop is seamless. Pauses briefly when the user
+ * interacts (wheel, touch, hover, focus) and resumes after inactivity.
+ *
+ * Respects `prefers-reduced-motion: reduce` — no auto-scroll in that case.
+ */
+interface Props {
+  /** Pixels per second of auto-scroll. Defaults to 24. */
+  speed?: number;
+  /** ms to stay paused after a user interaction. Defaults to 2000. */
+  pauseAfterInteraction?: number;
+}
+
+const { speed = 24, pauseAfterInteraction = 2000 } = Astro.props;
+const instanceId = "cc-" + Math.random().toString(36).slice(2, 9);
+---
+
+<div
+  class="cs-carousel"
+  data-cs-carousel={instanceId}
+  data-cs-carousel-speed={speed}
+  data-cs-carousel-pause={pauseAfterInteraction}
+>
+  <div class="cs-carousel__track">
+    <slot />
+  </div>
+</div>
+
+<script is:inline define:vars={{ instanceId }}>
+  (() => {
+    const root = document.querySelector(`[data-cs-carousel="${instanceId}"]`);
+    if (!root) return;
+    const track = root.querySelector(".cs-carousel__track");
+    if (!track) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    const speed = parseFloat(root.dataset.csCarouselSpeed || "24");
+    const pauseFor = parseFloat(root.dataset.csCarouselPause || "2000");
+
+    // Duplicate the initial children once so the loop is seamless. Mark
+    // the clones so we don't double-clone on a hot reload.
+    if (!track.dataset.csCloned) {
+      const items = Array.from(track.children);
+      for (const item of items) {
+        const clone = item.cloneNode(true);
+        clone.setAttribute("aria-hidden", "true");
+        clone.dataset.csClone = "1";
+        track.appendChild(clone);
+      }
+      track.dataset.csCloned = "1";
+    }
+
+    let pauseUntil = 0;
+    /* Accumulate fractional pixels so scrollLeft (which the browser rounds
+       to integers) advances reliably even at slow speeds. When the user
+       scrolls manually we resync to their value. */
+    let accum = track.scrollLeft;
+    /* 60Hz tick. Use setInterval so the loop is robust against tab/visibility
+       weirdness — and use a tick-based step so the speed is independent of
+       paint cadence. */
+    const fps = 60;
+    const dx = speed / fps;
+
+    let revealTimer;
+    const pause = () => {
+      pauseUntil = performance.now() + pauseFor;
+      accum = track.scrollLeft;
+      track.classList.add("is-user-scrolling");
+      if (revealTimer) clearTimeout(revealTimer);
+      revealTimer = setTimeout(() => {
+        track.classList.remove("is-user-scrolling");
+      }, pauseFor);
+    };
+    /* Only pause for explicit user-driven scroll inputs. Hovering should
+       not stop the loop — it'd be confusing for users who casually move
+       their cursor across the page. */
+    track.addEventListener("wheel", pause, { passive: true });
+    track.addEventListener("touchstart", pause, { passive: true });
+    track.addEventListener("pointerdown", pause);
+    root.addEventListener("focusin", pause);
+
+    setInterval(() => {
+      const half = track.scrollWidth / 2;
+      if (half <= 0) return;
+      if (performance.now() <= pauseUntil) return;
+      accum += dx;
+      if (accum >= half) accum -= half;
+      track.scrollLeft = accum;
+    }, 1000 / fps);
+  })();
+</script>

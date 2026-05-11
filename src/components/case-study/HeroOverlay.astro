@@ -32,8 +32,17 @@ const resolve = (p: string) =>
           const hero = root.closest(".cs-hero, .cs-more__band");
           if (!hero) return;
           const rect = hero.getBoundingClientRect();
-          const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1);
-          img.style.transform = "translate3d(0," + (-progress * 48) + "px,0)";
+          /* Symmetric viewport-traversal: 0 when the band first enters
+             the bottom, 0.5 at center, 1 when it exits the top. Works
+             for the case-study hero at the top AND the MoreWork band at
+             the bottom (where you can't scroll the band fully past the
+             viewport, only into/through it). */
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const progress = Math.min(Math.max((vh - rect.top) / total, 0), 1);
+          const centered = progress - 0.5;
+          img.style.transform = "translate3d(0," + (-centered * 64).toFixed(1) + "px,0)";
         }
         window.addEventListener("scroll", function () {
           if (!raf) raf = requestAnimationFrame(update);

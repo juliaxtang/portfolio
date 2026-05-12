@@ -23,6 +23,7 @@ heroVisual:
 
 import Section from "../../components/case-study/Section.astro";
 import Figure from "../../components/case-study/Figure.astro";
+import Video from "../../components/case-study/Video.astro";
 import TwoUp from "../../components/case-study/TwoUp.astro";
 import Stats from "../../components/case-study/Stats.astro";
 import Stat from "../../components/case-study/Stat.astro";
@@ -37,6 +38,11 @@ import CompApps from "../../components/case-study/CompApps.astro";
 import CompApp from "../../components/case-study/CompApp.astro";
 import LayoutTestCarousel from "../../components/case-study/LayoutTestCarousel.astro";
 import FinalDesignsRow from "../../components/case-study/FinalDesignsRow.astro";
+
+<Video
+  src="/projects/festival-mode/FestivalMode_horizontal-sizzle.mp4"
+  width="wide"
+/>
 
 <Section size="sub" stage="Background" title="Festival Mode in 2019" hideFromNav class="cs-festival-2019">
 Festival Mode first launched in 2019: a single-festival entry that let
@@ -375,7 +381,7 @@ deferred richer features (RSVPs, event-specific prompts) to future
 milestones. The MVP scope landed on three things.
 </Section>
 
-<Callouts cols={3} wide>
+<Callouts cols={3}>
   <Callout number="1" title="Multiple festival support">
     The core differentiator from 2019. I focused most of my UX work here.
   </Callout>
@@ -391,7 +397,7 @@ milestones. The MVP scope landed on three things.
   src="/projects/festival-mode/narrow-the-scope.png"
   alt="The MVP scope: festival picker, RSVP flow, artist selection, and Festival Mode profile"
   caption="The MVP we narrowed to: opt-in, festival selection, and a cardstack of fellow festivalgoers."
-  width="wide"
+  width="narrow"
   background="none"
   centered
 />
@@ -432,14 +438,6 @@ versus multi-select with one mixed cardstack.
 </Compare>
 
 <Section size="sub" stage="Test" title="UXR Results" hideFromNav>
-The MVP met festivalgoers' needs. Across 12 participants:
-
-- **10 of 12** said they'd use it. All described it as intuitive and easy to use.
-- **Multi-select preferred** for opt-in flexibility, since most hadn't decided on a single festival yet.
-- **Separated stacks felt more organized** during the actual swiping. The single mixed stack led to incorrect swipes because users couldn't tell which festival a person was from.
-- **Need for catch-all participation.** Due to partnership constraints, some users didn't see their festival listed but still wanted to participate.
-</Section>
-
 <Quote>
 I like to get to know people a bit before meeting up with them. This
 feature helps me to do that.
@@ -450,6 +448,14 @@ I would 10/10 use this. This would be so helpful in finding people to
 go with.
 </Quote>
 
+The MVP met festivalgoers' needs. Across 12 participants:
+
+- **10 of 12** said they'd use it. All described it as intuitive and easy to use.
+- **Multi-select preferred** for opt-in flexibility, since most hadn't decided on a single festival yet.
+- **Separated stacks felt more organized** during the actual swiping. The single mixed stack led to incorrect swipes because users couldn't tell which festival a person was from.
+- **Need for catch-all participation.** Due to partnership constraints, some users didn't see their festival listed but still wanted to participate.
+</Section>
+
 <Section size="sub" stage="Test" title="The combination flow" hideFromNav>
 Neither flow won outright, so I made the call to combine the strongest
 parts of each: the opt-in pattern from Flow 2, the swiping pattern from
@@ -459,8 +465,8 @@ Flow 1, plus a generic tile to solve the catch-all problem.
 <TwoUp ratio="1:1" gap="md" align="center">
   <Figure
     slot="left"
-    src="/projects/festival-mode/phone-refined-flow.png"
-    alt="Phone mockup showing the refined opt-in flow with multi-select festivals and a Festivalgoers catch-all option"
+    src="/projects/festival-mode/mid-fi-prototype.gif"
+    alt="Animated mid-fi prototype showing the refined opt-in flow with multi-select festivals and a Festivalgoers catch-all option"
     width="narrow"
     device="phone"
     background="none"

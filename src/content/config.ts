@@ -52,6 +52,7 @@ const projects = defineCollection({
       }).optional(),
       pubDate: z.coerce.date().optional(),
       draft: z.boolean().default(false),
+      password: z.string().optional(),
     }),
 });
 

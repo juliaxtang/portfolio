@@ -1,0 +1,366 @@
+---
+/**
+ * SlideCycle — interactive replacement for a stacked-frame animation.
+ *
+ * Renders a single phone mockup with labelled tabs in a vertical column
+ * next to it. Click a tab to cross-fade to that frame. No surrounding
+ * surface; the phone floats on the page background.
+ *
+ * Authoring:
+ *
+ *   <SlideCycle
+ *     frames={[
+ *       { src: "/path/01.webp", label: "Step 1", alt: "..." },
+ *       { src: "/path/02.webp", label: "Step 2", alt: "..." },
+ *     ]}
+ *   />
+ */
+interface Bullet {
+  value: string;
+  label: string;
+  /** Render value in the positive (green) treatment. */
+  positive?: boolean;
+}
+interface Frame {
+  /** Legacy single composited image. */
+  src?: string;
+  /** Layered: base device shot. All device images should share dimensions
+   *  so the phone bezel stays put across cells. */
+  device?: string;
+  /** Layered: annotation overlay rendered on top of the device. */
+  overlay?: string;
+  /** Optional positioning for the overlay (each as a CSS length/percentage).
+   *  Defaults to left:0, width:100%, bottom:0. */
+  overlayTop?: string;
+  overlayLeft?: string;
+  overlayRight?: string;
+  overlayBottom?: string;
+  overlayWidth?: string;
+  overlayMaxWidth?: string;
+  label: string;
+  alt: string;
+  sublabel?: string;
+  bullets?: Bullet[];
+}
+interface Props {
+  frames: Frame[];
+  caption?: string;
+  side?: "left" | "right";
+  /** CSS aspect-ratio of the media container. Defaults to 1000/1387, which
+   *  matches the original composited screenshots. Pass "1200/2415" (or
+   *  similar) when using device+overlay assets that are full phone shots. */
+  aspect?: string;
+}
+
+const { frames, caption, side = "left", aspect = "1000 / 1387" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (src: string) =>
+  src.startsWith("http") || src.startsWith(base)
+    ? src
+    : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+
+const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
+---
+
+<figure
+  class={`slide-cycle slide-cycle--${side}`}
+  data-slide-cycle={instanceId}
+  data-count={frames.length}
+>
+  <div class="slide-cycle__media" style={`--sc-aspect: ${aspect};`}>
+    {frames.map((f, i) => {
+      const isLayered = !!f.device;
+      const overlayStyle = isLayered && f.overlay
+        ? [
+            `left:${f.overlayLeft ?? "0"}`,
+            f.overlayRight !== undefined ? `right:${f.overlayRight}` : null,
+            f.overlayTop !== undefined ? `top:${f.overlayTop}` : null,
+            `bottom:${f.overlayBottom ?? "0"}`,
+            `width:${f.overlayWidth ?? "100%"}`,
+            f.overlayMaxWidth !== undefined ? `max-width:${f.overlayMaxWidth}` : null,
+          ].filter(Boolean).join(";")
+        : "";
+      return (
+        <div
+          class={i === 0 ? "slide-cycle__frame is-active" : "slide-cycle__frame"}
+          data-idx={i}
+        >
+          {isLayered ? (
+            <>
+              <img
+                class="slide-cycle__layer slide-cycle__layer--device"
+                src={resolve(f.device!)}
+                alt={f.alt}
+                loading={i === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              {f.overlay && (
+                <img
+                  class="slide-cycle__layer slide-cycle__layer--overlay"
+                  src={resolve(f.overlay)}
+                  alt=""
+                  style={overlayStyle}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              )}
+            </>
+          ) : (
+            <img
+              class="slide-cycle__layer"
+              src={resolve(f.src!)}
+              alt={f.alt}
+              loading={i === 0 ? "eager" : "lazy"}
+              decoding="async"
+            />
+          )}
+        </div>
+      );
+    })}
+  </div>
+
+  <div class="slide-cycle__tabs">
+    {frames.map((f, i) => (
+      <button
+        type="button"
+        data-tab={i}
+        class={i === 0 ? "slide-cycle__tab is-active" : "slide-cycle__tab"}
+        aria-pressed={i === 0 ? "true" : "false"}
+      >
+        <span class="slide-cycle__tab-index">{String(i + 1).padStart(2, "0")}</span>
+        <span class="slide-cycle__tab-label">{f.label}</span>
+        {f.sublabel && <span class="slide-cycle__tab-sub">{f.sublabel}</span>}
+        {f.bullets && (
+          <ul class="slide-cycle__tab-bullets">
+            {f.bullets.map((b) => (
+              <li>
+                <strong class={b.positive ? "is-positive" : ""}>{b.value}</strong> {b.label}
+              </li>
+            ))}
+          </ul>
+        )}
+      </button>
+    ))}
+  </div>
+
+  {caption && <figcaption class="slide-cycle__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .slide-cycle {
+    margin: 0 auto var(--s-6);
+    /* Match the page reading column so cells line up with the section title
+       and don't bloom past it. */
+    max-width: var(--content-narrow);
+    display: grid;
+    grid-template-columns: auto minmax(0, 360px);
+    grid-template-areas:
+      "media tabs"
+      "caption caption";
+    gap: var(--s-8);
+    align-items: center;
+  }
+  .slide-cycle--right {
+    grid-template-columns: minmax(0, 360px) auto;
+    grid-template-areas:
+      "tabs media"
+      "caption caption";
+  }
+
+  .slide-cycle__media {
+    grid-area: media;
+    position: relative;
+    /* Phone is wider; the image's natural aspect ratio determines the
+       container shape so transparent space around the phone doesn't
+       appear as a white block. */
+    width: 380px;
+    aspect-ratio: var(--sc-aspect, 1000 / 1387);
+    background: transparent;
+  }
+  /* Frame wrapper holds the per-cell layer stack (device + optional overlay).
+     Switches instantly between cells so the phone reads as one device whose
+     screen content swaps, rather than a cross-fade between phones. */
+  .slide-cycle__frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .slide-cycle__frame.is-active {
+    opacity: 1;
+  }
+  /* Base device layer fills the frame. */
+  .slide-cycle__layer--device,
+  .slide-cycle__frame > .slide-cycle__layer:only-child {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  /* Overlay sits on top of the device. Positioned by per-frame inline
+     styles (top/left/right/bottom/width); height auto preserves overlay's
+     natural aspect ratio. Animates in when the parent frame becomes active,
+     mirroring the IAReveal overlay animation. */
+  .slide-cycle__layer--overlay {
+    position: absolute;
+    height: auto;
+    object-fit: contain;
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+    transition:
+      opacity 0.55s var(--ease-out),
+      transform 0.7s var(--ease-out);
+  }
+  .slide-cycle__frame.is-active .slide-cycle__layer--overlay {
+    opacity: 1;
+    transform: translateY(0) scale(1.2);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide-cycle__layer--overlay { transition: none; }
+  }
+
+  .slide-cycle__tabs {
+    grid-area: tabs;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    align-self: center;
+  }
+
+  .slide-cycle__tab {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: var(--s-4) var(--s-5);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    transition:
+      border-color 0.2s var(--ease-out),
+      background-color 0.2s var(--ease-out),
+      transform 0.2s var(--ease-out);
+  }
+  .slide-cycle__tab:hover {
+    border-color: var(--text-tertiary);
+    transform: translateY(-1px);
+  }
+  .slide-cycle__tab:focus-visible {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 2px;
+  }
+  .slide-cycle__tab.is-active {
+    border-color: var(--text-primary);
+    background: var(--brand-wash-soft);
+  }
+
+  .slide-cycle__tab-index {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+  }
+  .slide-cycle__tab-label {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+  }
+  .slide-cycle__tab-sub {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .slide-cycle__tab-bullets {
+    margin: var(--s-2) 0 0;
+    padding-left: var(--s-5);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    list-style: disc;
+  }
+  .slide-cycle__tab-bullets li { margin-bottom: var(--s-1); }
+  .slide-cycle__tab-bullets li:last-child { margin-bottom: 0; }
+  .slide-cycle__tab-bullets strong { font-weight: 600; color: var(--text-primary); }
+  /* Positive metric: a green pulled from the style guide's success-adjacent
+     tokens. Falls back to a tinted text color for color-blind users. */
+  .slide-cycle__tab-bullets strong.is-positive { color: #1F8F5F; }
+
+  .slide-cycle__caption {
+    grid-area: caption;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: var(--s-3);
+    padding-inline: var(--s-4);
+  }
+
+  @media (max-width: 720px) {
+    .slide-cycle,
+    .slide-cycle--right {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "media"
+        "tabs"
+        "caption";
+      gap: var(--s-6);
+    }
+    .slide-cycle__media {
+      justify-self: center;
+      width: min(280px, 80vw);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide-cycle__media img {
+      transition: none;
+    }
+    .slide-cycle__tab {
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ instanceId }}>
+  (() => {
+    const root = document.querySelector(`[data-slide-cycle="${instanceId}"]`);
+    if (!root) return;
+    const frames = root.querySelectorAll(".slide-cycle__frame");
+    const tabs = root.querySelectorAll(".slide-cycle__tab");
+
+    const activate = (idx) => {
+      frames.forEach((im, i) => im.classList.toggle("is-active", i === idx));
+      tabs.forEach((tt, i) => {
+        const on = i === idx;
+        tt.classList.toggle("is-active", on);
+        tt.setAttribute("aria-pressed", String(on));
+      });
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => activate(i));
+      t.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          const next = (i + 1) % tabs.length;
+          tabs[next].focus();
+          activate(next);
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const prev = (i - 1 + tabs.length) % tabs.length;
+          tabs[prev].focus();
+          activate(prev);
+        }
+      });
+    });
+  })();
+</script>

@@ -1,0 +1,224 @@
+---
+/**
+ * IAReveal — same phone, cycling overlay annotations.
+ *
+ * Used for the Tappy IA section: one base phone (screen + bezel) stays
+ * fixed; each cell highlights a different zone by fading a callout chip
+ * in/out at the zone's anchor point on the screen.
+ *
+ * Each frame ties an overlay image to a label + sublabel. The overlay
+ * image's positioning is set via the per-frame `anchor` prop (top/left
+ * as percentages of the phone container).
+ */
+interface Frame {
+  src: string;
+  alt: string;
+  label: string;
+  sublabel?: string;
+  /** Top/left in % of the phone container. */
+  top: string;
+  left: string;
+  /** Overlay width in % of phone container. Defaults to 60%. */
+  width?: string;
+}
+interface Props {
+  screen: string;
+  bezel: string;
+  frames: Frame[];
+}
+
+const { screen, bezel, frames } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (src: string) =>
+  src.startsWith("http") || src.startsWith(base)
+    ? src
+    : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+
+const instanceId = "ia-" + Math.random().toString(36).slice(2, 9);
+---
+
+<figure class="ia-reveal" data-ia-reveal={instanceId} data-count={frames.length}>
+  <div class="ia-reveal__phone">
+    <img class="ia-reveal__screen" src={resolve(screen)} alt="" />
+    <img class="ia-reveal__bezel" src={resolve(bezel)} alt="" />
+    {frames.map((f, i) => (
+      <img
+        class={i === 0 ? "ia-reveal__overlay is-active" : "ia-reveal__overlay"}
+        src={resolve(f.src)}
+        alt={f.alt}
+        data-idx={i}
+        style={`top:${f.top};left:${f.left};width:${f.width ?? "60%"};`}
+        loading={i === 0 ? "eager" : "lazy"}
+        decoding="async"
+      />
+    ))}
+  </div>
+
+  <div class="ia-reveal__tabs">
+    {frames.map((f, i) => (
+      <button
+        type="button"
+        data-tab={i}
+        class={i === 0 ? "slide-cycle__tab is-active" : "slide-cycle__tab"}
+        aria-pressed={i === 0 ? "true" : "false"}
+      >
+        <span class="slide-cycle__tab-index">{String(i + 1).padStart(2, "0")}</span>
+        <span class="slide-cycle__tab-label">{f.label}</span>
+        {f.sublabel && <span class="slide-cycle__tab-sub">{f.sublabel}</span>}
+      </button>
+    ))}
+  </div>
+</figure>
+
+<style>
+  .ia-reveal {
+    margin: 0 auto var(--s-6);
+    max-width: var(--content-narrow);
+    display: grid;
+    grid-template-columns: auto minmax(0, 360px);
+    gap: var(--s-8);
+    align-items: center;
+  }
+
+  .ia-reveal__phone {
+    position: relative;
+    width: 320px;
+    aspect-ratio: 9 / 19.5;
+    flex-shrink: 0;
+  }
+  .ia-reveal__screen {
+    position: absolute;
+    /* Aligned with the bezel's screen aperture. */
+    top: 3.2%;
+    left: 7.3%;
+    width: 85.5%;
+    height: auto;
+    border-radius: 7%;
+    display: block;
+  }
+  .ia-reveal__bezel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 92%;
+    /* White bezel "screen" becomes transparent so the screen image below
+       shows through. Bezel border + notch stay solid. */
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  .ia-reveal__overlay {
+    position: absolute;
+    height: auto;
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+    transition:
+      opacity 0.55s var(--ease-out),
+      transform 0.7s var(--ease-out);
+    pointer-events: none;
+  }
+  .ia-reveal__overlay.is-active {
+    opacity: 1;
+    transform: translateY(0) scale(1.2);
+  }
+
+  .ia-reveal__tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    align-self: center;
+  }
+  /* Tab cells — mirror SlideCycle's tab styling since this component
+     intentionally shares its visual vocabulary. */
+  .ia-reveal :global(.slide-cycle__tab) {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-md);
+    padding: var(--s-4) var(--s-5);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    transition:
+      border-color 0.2s var(--ease-out),
+      background-color 0.2s var(--ease-out),
+      transform 0.2s var(--ease-out);
+  }
+  .ia-reveal :global(.slide-cycle__tab:hover) {
+    border-color: var(--text-tertiary);
+    transform: translateY(-1px);
+  }
+  .ia-reveal :global(.slide-cycle__tab:focus-visible) {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 2px;
+  }
+  .ia-reveal :global(.slide-cycle__tab.is-active) {
+    border-color: var(--text-primary);
+    background: var(--brand-wash-soft);
+  }
+  .ia-reveal :global(.slide-cycle__tab-index) {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+  }
+  .ia-reveal :global(.slide-cycle__tab-label) {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+  }
+  .ia-reveal :global(.slide-cycle__tab-sub) {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 720px) {
+    .ia-reveal { grid-template-columns: 1fr; gap: var(--s-6); }
+    .ia-reveal__phone { margin-inline: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ia-reveal__overlay { transition: none; }
+  }
+</style>
+
+<script is:inline define:vars={{ instanceId }}>
+  (() => {
+    const root = document.querySelector(`[data-ia-reveal="${instanceId}"]`);
+    if (!root) return;
+    const overlays = root.querySelectorAll(".ia-reveal__overlay");
+    const tabs = root.querySelectorAll(".slide-cycle__tab");
+
+    const activate = (idx) => {
+      overlays.forEach((o, i) => o.classList.toggle("is-active", i === idx));
+      tabs.forEach((t, i) => {
+        const on = i === idx;
+        t.classList.toggle("is-active", on);
+        t.setAttribute("aria-pressed", String(on));
+      });
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => activate(i));
+      t.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          const n = (i + 1) % tabs.length;
+          tabs[n].focus();
+          activate(n);
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const p = (i - 1 + tabs.length) % tabs.length;
+          tabs[p].focus();
+          activate(p);
+        }
+      });
+    });
+  })();
+</script>

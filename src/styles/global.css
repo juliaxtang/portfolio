@@ -151,6 +151,188 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ==========================================================
+   INLINE FIGURE — phone (or other media) next to its prose
+   Used inside <Section wide> when a vertical mockup should sit
+   beside its body text instead of stacked below.
+   ========================================================== */
+.cs-inline-figure {
+  /* Constrain to content-narrow so the phone column stays inside the page
+     reading margin. Phone column is locked to 320px so the iPhone bezel
+     doesn't try to expand to its Figure max-width and overflow the page. */
+  max-width: var(--content-narrow);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--s-8);
+  align-items: center;
+  margin-top: var(--s-4);
+}
+.cs-inline-figure__body { min-width: 0; }
+/* Override the section body's scoped :global(p) color rule (it wins on
+   specificity because it inherits the astro-scope attribute). */
+p.cs-inline-figure__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-tertiary) !important;
+  margin: 0 0 var(--s-3);
+}
+.cs-inline-figure__title {
+  font-family: var(--font-sans);
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 var(--s-4);
+}
+/* Zero the Figure's own outer margin so it sits flush with the body row,
+   and clamp Figure max-width so it never overflows its grid cell. */
+.cs-inline-figure > .cs-figure {
+  margin-block: 0;
+  max-width: 100%;
+}
+@media (max-width: 720px) {
+  .cs-inline-figure { grid-template-columns: 1fr; gap: var(--s-6); }
+  .cs-inline-figure > .cs-figure { margin-inline: auto; }
+}
+
+/* ==========================================================
+   AUTO STRIP — horizontal scrollable strip of image
+   cells (used for the Tappy content-component preview).
+   ========================================================== */
+/* Full-bleed carousel: track bleeds to the viewport edges so the user sees
+   the next card peeking in. Inner padding aligns the first card with the
+   page reading column. */
+.cs-strip {
+  margin: var(--s-6) 0 var(--s-8);
+  max-width: none;
+}
+.cs-strip__track {
+  display: flex;
+  gap: var(--s-4);
+  overflow-x: auto;
+  /* No scroll-snap: the carousel auto-scrolls continuously, and a snap rule
+     would yank scrollLeft back to a snap point on every sub-pixel tick. */
+  scroll-snap-type: none;
+  padding: var(--s-1) max(var(--s-5), calc((100% - var(--content-narrow)) / 2)) var(--s-3);
+  /* Hide scrollbar while auto-scrolling; the .is-user-scrolling state set
+     by the carousel script reveals it at 30% opacity during interaction. */
+  scrollbar-width: none;
+}
+.cs-strip__track::-webkit-scrollbar { height: 0; background: transparent; }
+.cs-strip__track::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+.cs-strip__track.is-user-scrolling {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(21, 23, 28, 0.3) transparent;
+}
+.cs-strip__track.is-user-scrolling::-webkit-scrollbar { height: 8px; }
+.cs-strip__track.is-user-scrolling::-webkit-scrollbar-thumb {
+  background: rgba(21, 23, 28, 0.3);
+}
+.cs-strip__track > * {
+  flex: 0 0 auto;
+}
+.cs-strip__card {
+  display: block;
+  width: 320px;
+  height: auto;
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+@media (max-width: 720px) {
+  .cs-strip__card { width: 260px; }
+}
+
+/* Style-guide cell with a media preview at the top and prose below. */
+.cs-comp-card {
+  width: 280px;
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+.cs-comp-card__preview {
+  width: 100%;
+  height: 110px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.cs-comp-card__preview img {
+  width: 100%;
+  height: auto;
+  /* Crop down to just the chip area at the top of each Figma frame. */
+  margin-top: 0;
+  display: block;
+}
+.cs-comp-card__title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 0;
+}
+.cs-comp-card__body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  padding-left: var(--s-4);
+}
+.cs-comp-card__body li { margin-bottom: var(--s-1); }
+.cs-comp-card__body li:last-child { margin-bottom: 0; }
+
+/* ==========================================================
+   BULLET STATS — homepage-style metric value+label pairs.
+   No boxes; just typography. Used for compact metric lists.
+   ========================================================== */
+.cs-bullet-stats {
+  list-style: none;
+  padding: 0 !important;
+  margin: var(--s-5) 0 0;
+  /* Hug content so the row doesn't reserve extra right-side space past the
+     last column. Subgrid still aligns value/label within each cell. */
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  grid-template-rows: auto auto;
+  gap: var(--s-1) var(--s-6);
+}
+.cs-bullet-stats li {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 2;
+  gap: var(--s-1);
+}
+/* !important defeats the section body's scoped :global(p) rule (which
+   sets 18px font + 20px bottom margin on every p). */
+p.cs-bullet-stats__value {
+  font-family: var(--font-sans) !important;
+  font-weight: 700 !important;
+  font-size: clamp(20px, 2vw, 26px) !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.018em !important;
+  font-variant-numeric: tabular-nums;
+  color: #1f9d55 !important;
+  margin: 0 !important;
+}
+p.cs-bullet-stats__label {
+  font-family: var(--font-sans) !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  color: var(--text-secondary) !important;
+  margin: 0 !important;
+}
+@media (max-width: 540px) {
+  .cs-bullet-stats { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================
    CASE STUDY — inline icon helpers (used inside MDX bodies)
    ========================================================== */
 .cs-icon {

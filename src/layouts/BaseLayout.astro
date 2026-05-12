@@ -16,6 +16,7 @@ const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
 const desc =
   description ??
   "Staff Product Designer at Snapchat — visual storytelling, motion, and UX for delightful product experiences.";
+const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
 ---
 
 <!doctype html>
@@ -30,8 +31,13 @@ const desc =
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={desc} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
+    <meta property="og:site_name" content={siteName} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={desc} />
+    <meta name="twitter:image" content={ogImageUrl} />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

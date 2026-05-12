@@ -33,7 +33,7 @@ const {
   title,
   tint = "dark",
   lightText = true,
-  minHeight = "clamp(420px, 56vh, 620px)",
+  minHeight = "auto",
   align = "center",
 } = Astro.props;
 
@@ -65,9 +65,7 @@ const cls = [
       <slot />
     </div>
   </div>
-</section>
-
-<script is:inline>
+  <script is:inline>
   (function () {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -99,7 +97,8 @@ const cls = [
       init();
     }
   })();
-</script>
+  </script>
+</section>
 
 <style>
   .cs-overlay {
@@ -175,10 +174,20 @@ const cls = [
       calc((var(--content-max) - var(--content-narrow)) / 2),
       calc((100% - var(--content-narrow)) / 2)
     );
-    padding-block: clamp(var(--s-10), 5vw, var(--s-16));
+    padding-top: clamp(var(--s-20), 11vw, var(--s-32));
+    padding-bottom: clamp(var(--s-8), 3vw, var(--s-10));
     display: grid;
-    gap: var(--s-8);
+    gap: var(--s-3);
     align-content: center;
+  }
+  /* Centered overlays vertically center their content: symmetric
+     padding-block so content sits in the middle of the band. The
+     padding is intentionally generous so the band reads as a tall,
+     hero-like section. */
+  .cs-overlay--align-center .cs-overlay__inner {
+    padding-top: clamp(var(--s-20), 11vw, var(--s-32));
+    padding-bottom: clamp(var(--s-20), 11vw, var(--s-32));
+    gap: var(--s-8);
   }
 
   .cs-overlay__head {
@@ -195,13 +204,17 @@ const cls = [
     text-align: left;
   }
   .cs-overlay__eyebrow { margin: 0; color: var(--text-secondary); }
+  /* Overlay titles use the display serif (Instrument Serif) so they read
+     as editorial pull statements, not as another bold-sans section
+     banner. */
   .cs-overlay__title {
     margin: 0;
-    font-family: var(--font-sans);
-    font-size: clamp(28px, 3.6vw, 44px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
     color: var(--text-primary);
   }
 
@@ -214,29 +227,23 @@ const cls = [
   }
 
   /* Highlight: a label + large display text for a single key statement
-     (e.g. "Project Goal: ..."). Not a card, just typographic prominence. */
+     (e.g. "Project Goal: ..."). Layout-only wrapper — typography comes
+     from the style-guide utility classes applied in the markup
+     (.t-eyebrow / .t-display-md). */
   :global(.cs-overlay__highlight) {
     display: grid;
-    gap: var(--s-3);
-    max-width: 18ch;
+    gap: var(--s-4);
+    width: 100%;
   }
-  :global(.cs-overlay__highlight-label) {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
+  :global(.cs-overlay__highlight--center) {
+    justify-items: center;
+    text-align: center;
+    margin-inline: auto;
   }
-  :global(.cs-overlay__highlight-text) {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-size: clamp(28px, 3.4vw, 40px);
-    font-weight: 700;
-    line-height: 1.12;
-    letter-spacing: -0.018em;
+  /* In light-text overlays, the goal headline should read as inverted body
+     text. Style-guide classes don't set their own color, so inherit from
+     the overlay's --text-primary override. */
+  .cs-overlay--light-text :global(.cs-overlay__highlight-text) {
     color: var(--text-primary);
-    max-width: 26ch;
   }
 </style>

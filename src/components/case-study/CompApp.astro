@@ -1,0 +1,108 @@
+---
+/**
+ * CompApp — a single competitor / reference app tile used in research
+ * sections. Renders as a centered column: logo on top, name underneath,
+ * a screen mockup, and a bullet list of findings below.
+ *
+ * Multiple <CompApp> can be placed inside a `.cs-comp-grid` div to lay
+ * them out as a centered, evenly spaced row.
+ */
+interface Props {
+  name: string;
+  logo: string;
+  logoAlt?: string;
+  screen: string;
+  screenAlt?: string;
+}
+
+const { name, logo, logoAlt = "", screen, screenAlt = "" } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div class="cs-comp">
+  <div class="cs-comp__inner">
+    <div class="cs-comp__header">
+      <img class="cs-comp__logo" src={resolve(logo)} alt={logoAlt} loading="lazy" />
+      <p class="cs-comp__name">{name}</p>
+    </div>
+    <div class="cs-comp__screen">
+      <img src={resolve(screen)} alt={screenAlt} loading="lazy" />
+    </div>
+    <div class="cs-comp__points">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Outer is a centering wrapper; inner is inline-block so the whole
+     column shrinks to the natural width of the largest child (the
+     image), and the bullet list below inherits that exact width. */
+  .cs-comp {
+    text-align: center;
+  }
+  .cs-comp__inner {
+    display: inline-block;
+    text-align: left;
+    max-width: 100%;
+  }
+  .cs-comp__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-3);
+    margin-bottom: var(--s-4);
+  }
+  .cs-comp__logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    display: block;
+    border-radius: var(--r-md);
+  }
+  .cs-comp__name {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .cs-comp__screen {
+    display: block;
+    text-align: center;
+    margin-bottom: var(--s-4);
+  }
+  .cs-comp__screen img {
+    max-height: 436px;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin-inline: auto;
+  }
+  .cs-comp__points {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    width: 100%;
+  }
+  .cs-comp__points :global(ul) {
+    list-style: disc;
+    margin: 0;
+    padding-left: var(--s-5);
+  }
+  .cs-comp__points :global(li) {
+    margin-bottom: var(--s-2);
+  }
+  .cs-comp__points :global(li:last-child) { margin-bottom: 0; }
+  .cs-comp__points :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+</style>

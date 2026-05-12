@@ -35,9 +35,9 @@ const {
   titleId,
 } = Astro.props;
 const ratioMap: Record<string, string> = {
-  "1:1": "1fr 1fr",
-  "1:2": "1fr 2fr",
-  "2:1": "2fr 1fr",
+  "1:1": "minmax(0, 1fr) minmax(0, 1fr)",
+  "1:2": "minmax(0, 1fr) minmax(0, 2fr)",
+  "2:1": "minmax(0, 2fr) minmax(0, 1fr)",
 };
 const gapMap: Record<string, string> = {
   sm: "var(--s-4)",
@@ -45,26 +45,31 @@ const gapMap: Record<string, string> = {
   lg: "var(--s-10)",
 };
 const hasHeader = Boolean(title || eyebrow);
+const hasLeftSlot = await Astro.slots.has("left");
+const hasRightSlot = await Astro.slots.has("right");
+const useNamedSlots = hasHeader || hasLeftSlot || hasRightSlot;
 const cls = [
   "cs-twoup",
   wide ? "cs-twoup--wide" : "",
   centered ? "cs-twoup--centered" : "",
   hasHeader ? "cs-twoup--headed" : "",
 ].filter(Boolean).join(" ");
-const headedAlign = hasHeader ? "center" : align;
-const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${headedAlign};`;
+const finalAlign = useNamedSlots && hasHeader ? "center" : align;
+const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${finalAlign};`;
 ---
 
 <div class={cls} style={styleVars}>
-  {hasHeader ? (
+  {useNamedSlots ? (
     <>
       <div class="cs-twoup__left">
-        <header class="cs-twoup__head">
-          {eyebrow && <p class="t-eyebrow cs-twoup__eyebrow">{eyebrow}</p>}
-          {title && (
-            <h2 id={titleId} class="cs-twoup__title">{title}</h2>
-          )}
-        </header>
+        {hasHeader && (
+          <header class="cs-twoup__head">
+            {eyebrow && <p class="t-eyebrow cs-twoup__eyebrow">{eyebrow}</p>}
+            {title && (
+              <h2 id={titleId} class="cs-twoup__title">{title}</h2>
+            )}
+          </header>
+        )}
         <slot name="left" />
       </div>
       <slot name="right" />

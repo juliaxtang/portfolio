@@ -1,0 +1,34 @@
+---
+/**
+ * CompApps — centered grid container for <CompApp> tiles.
+ */
+interface Props {
+  cols?: 2 | 3;
+}
+const { cols = 3 } = Astro.props;
+const cls = ["cs-comp-grid", `cs-comp-grid--${cols}`].join(" ");
+---
+
+<div class={cls}>
+  <slot />
+</div>
+
+<style>
+  .cs-comp-grid {
+    display: grid;
+    gap: var(--s-10) var(--s-8);
+    margin: var(--s-10) auto;
+    max-width: var(--content-max);
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-10));
+    justify-content: center;
+    align-items: start;
+  }
+  .cs-comp-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cs-comp-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 900px) {
+    .cs-comp-grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .cs-comp-grid { grid-template-columns: 1fr; }
+  }
+</style>

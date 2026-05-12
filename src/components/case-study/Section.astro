@@ -47,6 +47,7 @@ const navLabel = stage ?? eyebrow ?? title;
 const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", banner ? "cs-section--banner" : "", size === "sub" ? "cs-section--sub" : "", className]
   .filter(Boolean)
   .join(" ");
+const hasBody = await Astro.slots.has("default");
 ---
 
 <section
@@ -113,9 +114,11 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
       </header>
     )
   )}
-  <div class={banner ? "cs-section__body cs-section__body--banner" : "cs-section__body"}>
-    <slot />
-  </div>
+  {hasBody && (
+    <div class={banner ? "cs-section__body cs-section__body--banner" : "cs-section__body"}>
+      <slot />
+    </div>
+  )}
 </section>
 
 <style>
@@ -143,6 +146,9 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
   /* A banner immediately followed by an OverlayBanner sits flush with
      the overlay below it. */
   .cs-section--banner:has(+ section.cs-overlay) { margin-bottom: 0; }
+  /* And the reverse: a banner that immediately follows an OverlayBanner
+     hugs the overlay above it. */
+  :global(section.cs-overlay) + .cs-section--banner { margin-top: 0; }
 
   @media (max-width: 720px) {
     .cs-section { padding-block: var(--s-10); }
@@ -290,21 +296,4 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
   .cs-section.cs-festival-2019,
   .cs-section.cs-relaunch-2019 { padding-top: var(--s-24); }
 
-  /* Why-Explore stat tiles: oversized display value so the number reads
-     as the headline of each tile when stacked in a narrow column. */
-  .cs-section.cs-explore-stats :global(.cs-stat) {
-    padding: var(--s-5);
-    gap: var(--s-1);
-  }
-  .cs-section.cs-explore-stats :global(.cs-stat__value) {
-    font-family: var(--font-display);
-    font-weight: 400;
-    font-size: clamp(36px, 3.6vw, 48px);
-    line-height: 1;
-    letter-spacing: -0.02em;
-  }
-  .cs-section.cs-explore-stats :global(.cs-stat__label) {
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
 </style>

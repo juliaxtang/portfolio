@@ -1,0 +1,238 @@
+---
+/**
+ * PersonaOrbit — large circular persona image with floating cards that
+ * slightly overlap it from the left and right. The Jen-info card (name,
+ * age, trait pills) is rendered automatically at the top of the left
+ * column; pass any other cards via `slot="left"` / `slot="right"`.
+ *
+ * Parallax: both the image and the floating cards drift as the section
+ * scrolls through the viewport, in opposite directions for a layered
+ * feel. Respects `prefers-reduced-motion`.
+ */
+interface TraitPill {
+  icon: string;
+  label: string;
+}
+interface Props {
+  src: string;
+  alt?: string;
+  name: string;
+  age?: number | string;
+  traits?: TraitPill[];
+  parallax?: boolean;
+}
+
+const {
+  src,
+  alt = "",
+  name,
+  age,
+  traits = [],
+  parallax = true,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const cls = ["cs-orbit", parallax ? "cs-orbit--parallax" : ""].filter(Boolean).join(" ");
+---
+
+<section class={cls} data-cs-orbit-parallax={parallax ? "" : undefined}>
+  <div class="cs-orbit__inner">
+    <div class="cs-orbit__col cs-orbit__col--left">
+      <div class="cs-orbit__jen-card cs-orbit__card">
+        <p class="cs-orbit__name">
+          <span class="cs-orbit__name-text">{name}</span>
+          {age !== undefined && <span class="cs-orbit__age">, {age}</span>}
+        </p>
+        {traits.length > 0 && (
+          <ul class="cs-orbit__traits" role="list">
+            {traits.map((t) => (
+              <li class="cs-orbit__trait">
+                <img class="cs-orbit__trait-icon" src={resolve(t.icon)} alt="" />
+                <span>{t.label}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <slot name="left" />
+    </div>
+
+    <div class="cs-orbit__center">
+      <div class="cs-orbit__media">
+        <img class="cs-orbit__img" src={resolve(src)} alt={alt} loading="lazy" />
+      </div>
+    </div>
+
+    <div class="cs-orbit__col cs-orbit__col--right">
+      <slot name="right" />
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    function init() {
+      document.querySelectorAll("[data-cs-orbit-parallax]").forEach(function (root) {
+        var raf = 0;
+        function update() {
+          raf = 0;
+          var rect = root.getBoundingClientRect();
+          var vh = window.innerHeight || document.documentElement.clientHeight;
+          var total = vh + rect.height;
+          if (total <= 0) return;
+          var progress = Math.min(Math.max((vh - rect.top) / total, 0), 1);
+          var centered = progress - 0.5;
+          /* Image drifts vertically; the left column drifts upward as
+             you scroll down (negative Y) while the right column drifts
+             downward (positive Y) for a counter-rotating parallax. */
+          root.style.setProperty("--cs-orbit-img-y", (-centered * 140).toFixed(1) + "px");
+          root.style.setProperty("--cs-orbit-left-y", (-centered * 140).toFixed(1) + "px");
+          root.style.setProperty("--cs-orbit-right-y", (centered * 140).toFixed(1) + "px");
+        }
+        window.addEventListener("scroll", function () {
+          if (!raf) raf = requestAnimationFrame(update);
+        }, { passive: true });
+        window.addEventListener("resize", update);
+        update();
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>
+
+<style>
+  .cs-orbit {
+    margin: 0 auto var(--s-10);
+    max-width: var(--content-max);
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-10));
+  }
+  .cs-orbit__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Floating card cols */
+  .cs-orbit__col {
+    display: grid;
+    gap: var(--s-4);
+    position: relative;
+    z-index: 2;
+    will-change: transform;
+  }
+  /* Pull both columns aggressively inward so the cards visibly sit on
+     top of the central image, not just near it. Static translateY on
+     each column gives the staggered "floating" feel (left rides higher,
+     right sits lower); the parallax delta is added on top. */
+  .cs-orbit__col--left  {
+    margin-right: clamp(-140px, -10vw, -80px);
+    transform: translate3d(0, calc(-32px + var(--cs-orbit-left-y, 0px)), 0);
+  }
+  .cs-orbit__col--right {
+    margin-left:  clamp(-140px, -10vw, -80px);
+    transform: translate3d(0, calc(32px + var(--cs-orbit-right-y, 0px)), 0);
+  }
+
+  .cs-orbit__center {
+    position: relative;
+    z-index: 1;
+    transform: translate3d(0, var(--cs-orbit-img-y, 0px), 0);
+    will-change: transform;
+  }
+
+  /* The persona PNG already contains its own circular gradient frame,
+     so the wrapper is just a sizing/aspect box — no background and no
+     radius, otherwise we'd render a double-circle artifact. */
+  .cs-orbit__media {
+    width: clamp(570px, 57vw, 810px);
+    aspect-ratio: 1 / 1;
+  }
+  .cs-orbit__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+  }
+
+  /* Shared card surface used by the Jen card and any slotted Callouts. */
+  .cs-orbit__card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-lg);
+    padding: var(--s-5);
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.18);
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  /* The Jen card: name + trait pills. */
+  .cs-orbit__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+  .cs-orbit__age { color: var(--text-secondary); }
+
+  .cs-orbit__traits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2);
+  }
+  .cs-orbit__trait {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.2;
+  }
+  .cs-orbit__trait-icon {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  /* Slotted Callouts inherit a similar shadow so the whole orbit reads as
+     a layered composition. */
+  .cs-orbit__col :global(.cs-callout) {
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Stack on narrow viewports: image on top, cards below in a single column. */
+  @media (max-width: 900px) {
+    .cs-orbit__inner {
+      grid-template-columns: 1fr;
+      gap: var(--s-5);
+    }
+    .cs-orbit__center { order: -1; transform: none; }
+    .cs-orbit__col--left,
+    .cs-orbit__col--right {
+      margin: 0;
+      transform: none;
+    }
+    .cs-orbit__media { width: min(100%, 340px); margin-inline: auto; }
+  }
+</style>

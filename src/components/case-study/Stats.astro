@@ -5,9 +5,10 @@
 interface Props {
   cols?: 2 | 3 | 4;
   wide?: boolean;
+  class?: string;
 }
-const { cols = 3, wide = false } = Astro.props;
-const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : ""]
+const { cols = 3, wide = false, class: className = "" } = Astro.props;
+const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", className]
   .filter(Boolean)
   .join(" ");
 ---

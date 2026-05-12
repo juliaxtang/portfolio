@@ -17,28 +17,39 @@ interface Props {
   tone?: "soft" | "outline" | "accent";
   logo?: string;
   logoAlt?: string;
+  /** "brand" (default) renders the logo at full color. "icon" treats the
+   *  logo as a monochrome glyph and tints it to match the title color. */
+  logoMode?: "brand" | "icon";
 }
-const { eyebrow, title, number, tone = "soft", logo, logoAlt } = Astro.props;
+const { eyebrow, title, number, tone = "soft", logo, logoAlt, logoMode = "brand" } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolvedLogo = logo
   ? logo.startsWith("http") || logo.startsWith(base)
     ? logo
     : `${base}${logo.startsWith("/") ? "" : "/"}${logo}`
   : undefined;
-const cls = ["cs-callout", `cs-callout--${tone}`].join(" ");
+const cls = [
+  "cs-callout",
+  `cs-callout--${tone}`,
+  logoMode === "icon" ? "cs-callout--icon-logo" : "",
+].filter(Boolean).join(" ");
 ---
 
 <div class={cls}>
-  {resolvedLogo && (
-    <img class="cs-callout__logo" src={resolvedLogo} alt={logoAlt ?? ""} loading="lazy" />
-  )}
   {(number !== undefined || eyebrow) && (
     <div class="cs-callout__head">
       {number !== undefined && <span class="cs-callout__num">{number}</span>}
       {eyebrow && <p class="cs-callout__eyebrow t-eyebrow">{eyebrow}</p>}
     </div>
   )}
-  {title && <h3 class="cs-callout__title">{title}</h3>}
+  {(resolvedLogo || title) && (
+    <div class="cs-callout__title-row">
+      {resolvedLogo && (
+        <img class="cs-callout__logo" src={resolvedLogo} alt={logoAlt ?? ""} loading="lazy" />
+      )}
+      {title && <h3 class="cs-callout__title">{title}</h3>}
+    </div>
+  )}
   <div class="cs-callout__body">
     <slot />
   </div>
@@ -71,12 +82,22 @@ const cls = ["cs-callout", `cs-callout--${tone}`].join(" ");
     --cs-callout-border: var(--border-default);
   }
 
+  .cs-callout__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
   .cs-callout__logo {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--r-md);
+    width: 28px;
+    height: 28px;
     object-fit: contain;
     display: block;
+    flex-shrink: 0;
+  }
+  /* For monochrome icon-style logos (SVGs designed as glyphs, not brand
+     marks): tint the artwork to match the title text color. */
+  .cs-callout--icon-logo .cs-callout__logo {
+    filter: brightness(0) saturate(100%);
   }
 
   .cs-callout__head {

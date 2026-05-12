@@ -215,6 +215,91 @@ button { font: inherit; cursor: pointer; }
 .cs-result p { font-size: 16px; line-height: 1.6; margin: var(--s-3) 0 0; }
 
 /* Stacked equal-height flow images (used by the tv-time onboarding case) */
+/* Generic vertical stack utility: flexbox column with a small gap. Used
+   inside TwoUp slots when we want multiple cards stacked. */
+.cs-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* Combination-flow cells next to the refined-flow phone: narrower than
+   the column so the cards read as floating call-outs beside the device. */
+.cs-combo-cells { max-width: 380px; }
+
+/* Why-Explore funnel stats: oversized sans values so the percentages
+   read as headlines, matching the stat-tile treatment used elsewhere in
+   the case study (e.g. Tappy Cloud's outcome stats). */
+.cs-section.cs-explore-stats .cs-stat {
+  padding: var(--s-6);
+  gap: var(--s-3);
+}
+.cs-section.cs-explore-stats .cs-stat__value {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(40px, 4.4vw, 56px);
+  letter-spacing: -0.022em;
+  line-height: 1;
+}
+.cs-section.cs-explore-stats .cs-stat__label {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Results Stats: oversized headline-style values so the final outcomes
+   read as the visual punchline of the case study. */
+.cs-stats.cs-results-stats { gap: var(--s-5); }
+.cs-stats.cs-results-stats .cs-stat {
+  padding: var(--s-6) var(--s-6) var(--s-5);
+  gap: var(--s-4);
+}
+.cs-stats.cs-results-stats .cs-stat__value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 6.4vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.cs-stats.cs-results-stats .cs-stat__label {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Future-milestones layout: two phone gifs side by side, each with a
+   short caption directly below it (centered, capped to the gif width). */
+.cs-future-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-8);
+  align-items: start;
+  margin: var(--s-6) 0 0;
+}
+.cs-future-item {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  /* Match the device="phone" cap so the caption width tracks the gif. */
+  max-width: 320px;
+  margin-inline: auto;
+}
+.cs-future-caption {
+  margin: 0;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  max-width: 100%;
+}
+.cs-future-caption strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+@media (max-width: 540px) {
+  .cs-future-grid { grid-template-columns: 1fr; gap: var(--s-5); }
+}
+
 .cs-flow-stack {
   display: flex;
   flex-direction: column;

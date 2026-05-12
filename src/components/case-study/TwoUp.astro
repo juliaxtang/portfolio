@@ -2,8 +2,16 @@
 /**
  * TwoUp — two-column layout for side-by-side media or before/after pairs.
  *
- * Stacks on mobile. Use named slots <slot name="left" /> / <slot name="right" />,
- * or pass two children as default slot.
+ * Two usage modes:
+ *
+ *   Headless (default): pass two children as the default slot. They become
+ *   the two columns and the layout stacks on mobile.
+ *
+ *   Headed: pass `title` (and optionally `eyebrow`/`titleId`). The header
+ *   renders inside the left column directly above the left content. Use
+ *   named slots <slot name="left" /> and <slot name="right" /> to place
+ *   each column explicitly. The right column sits vertically centered
+ *   against the title-plus-left-content unit.
  */
 interface Props {
   ratio?: "1:1" | "1:2" | "2:1";
@@ -11,9 +19,21 @@ interface Props {
   gap?: "sm" | "md" | "lg";
   wide?: boolean;
   centered?: boolean;
+  title?: string;
+  eyebrow?: string;
+  titleId?: string;
 }
 
-const { ratio = "1:1", align = "stretch", gap = "md", wide = false, centered = false } = Astro.props;
+const {
+  ratio = "1:1",
+  align = "stretch",
+  gap = "md",
+  wide = false,
+  centered = false,
+  title,
+  eyebrow,
+  titleId,
+} = Astro.props;
 const ratioMap: Record<string, string> = {
   "1:1": "1fr 1fr",
   "1:2": "1fr 2fr",
@@ -24,16 +44,34 @@ const gapMap: Record<string, string> = {
   md: "var(--s-6)",
   lg: "var(--s-10)",
 };
+const hasHeader = Boolean(title || eyebrow);
 const cls = [
   "cs-twoup",
   wide ? "cs-twoup--wide" : "",
   centered ? "cs-twoup--centered" : "",
+  hasHeader ? "cs-twoup--headed" : "",
 ].filter(Boolean).join(" ");
-const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${align};`;
+const headedAlign = hasHeader ? "center" : align;
+const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[gap]};--cs-twoup-align:${headedAlign};`;
 ---
 
 <div class={cls} style={styleVars}>
-  <slot />
+  {hasHeader ? (
+    <>
+      <div class="cs-twoup__left">
+        <header class="cs-twoup__head">
+          {eyebrow && <p class="t-eyebrow cs-twoup__eyebrow">{eyebrow}</p>}
+          {title && (
+            <h2 id={titleId} class="cs-twoup__title">{title}</h2>
+          )}
+        </header>
+        <slot name="left" />
+      </div>
+      <slot name="right" />
+    </>
+  ) : (
+    <slot />
+  )}
 </div>
 
 <style>
@@ -45,7 +83,6 @@ const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[ga
     margin: var(--s-8) auto;
     max-width: var(--content-narrow);
   }
-  /* Wide TwoUp left-aligns with narrow text, same formula as Figure--wide. */
   .cs-twoup--wide {
     max-width: var(--content-max);
     margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
@@ -54,6 +91,20 @@ const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[ga
   .cs-twoup--centered {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .cs-twoup__left { display: grid; gap: var(--s-4); }
+  .cs-twoup__head { display: grid; gap: var(--s-2); }
+  .cs-twoup__eyebrow { margin: 0; color: var(--text-secondary); }
+  .cs-twoup__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: clamp(22px, 2.2vw, 28px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.014em;
+    color: var(--text-primary);
+    scroll-margin-top: var(--s-16);
   }
 
   @media (max-width: 720px) {

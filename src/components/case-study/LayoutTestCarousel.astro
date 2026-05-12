@@ -99,7 +99,7 @@ const id = `cs-layouts-${Math.random().toString(36).slice(2, 9)}`;
     margin: 0;
     padding: var(--s-3) clamp(var(--s-6), 10vw, var(--s-20));
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--s-5);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -109,9 +109,9 @@ const id = `cs-layouts-${Math.random().toString(36).slice(2, 9)}`;
   }
   .cs-layouts__track::-webkit-scrollbar { display: none; }
 
-  /* Image-only cards: no border or background — the screenshot speaks
-     for itself. Card sets the height that all images snap to so the
-     row reads as a uniform strip even with mixed aspect ratios. */
+  /* Cards flex top-to-bottom: reserved name area → image → metrics.
+     All name areas have the same min-height so every image starts at
+     the same Y regardless of name font size. */
   .cs-layouts__card {
     flex: 0 0 auto;
     scroll-snap-align: center;
@@ -123,15 +123,29 @@ const id = `cs-layouts-${Math.random().toString(36).slice(2, 9)}`;
     gap: var(--s-3);
   }
 
+  /* Non-winner: smaller label, secondary fill. */
   .cs-layouts__name {
     margin: 0;
+    /* Reserved height matches the winner name so images always start at
+       the same Y position across all cards. */
+    min-height: clamp(22px, 2vw, 28px);
+    display: flex;
+    align-items: center;
     font-family: var(--font-sans);
+    font-size: clamp(13px, 1.1vw, 15px);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  /* Winner name: full size, primary color. */
+  .cs-layouts__card--winner .cs-layouts__name {
     font-size: clamp(18px, 1.6vw, 22px);
     font-weight: 700;
     letter-spacing: -0.012em;
-    line-height: 1.2;
     color: var(--text-primary);
-    text-align: center;
   }
 
   .cs-layouts__card {

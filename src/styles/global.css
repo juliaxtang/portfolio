@@ -247,38 +247,45 @@ button { font: inherit; cursor: pointer; }
   color: var(--text-secondary);
 }
 
-/* Results Stats: oversized headline-style values so the final outcomes
-   read as the visual punchline of the case study. Soft tinted surface,
-   gentle ring + lift for a more refined card treatment. */
-.cs-stats.cs-results-stats { gap: var(--s-5); }
+/* Results Stats: editorial outcome cards. Each card has a colored top
+   accent, a large display value, and a tight label below it. */
+.cs-stats.cs-results-stats { gap: var(--s-4); }
 .cs-stats.cs-results-stats .cs-stat {
-  padding: var(--s-7) var(--s-6) var(--s-6);
-  gap: var(--s-5);
-  border-radius: var(--r-xl, 20px);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, var(--bg-surface) 60%),
-    var(--bg-soft, var(--bg-surface));
-  border: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 14px 30px -22px rgba(20, 16, 24, 0.18);
-  transition: transform .25s var(--ease-out, ease), box-shadow .25s ease;
+  padding: var(--s-6);
+  gap: var(--s-3);
+  border-radius: var(--r-xl);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 2px 16px -8px rgba(20, 16, 24, 0.10);
+  /* Colored top accent strip using brand gradient */
+  border-top: 3px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+/* Top accent bar via pseudo-element so it sits above border-radius */
+.cs-stats.cs-results-stats .cs-stat::before {
+  content: "";
+  position: absolute;
+  inset: -1px -1px auto -1px;
+  height: 3px;
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  background: var(--brand-gradient);
 }
 .cs-stats.cs-results-stats .cs-stat:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 20px 40px -22px rgba(20, 16, 24, 0.22);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px -10px rgba(20, 16, 24, 0.14);
 }
 .cs-stats.cs-results-stats .cs-stat__value {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(56px, 6.4vw, 88px);
+  font-size: clamp(44px, 5vw, 64px);
   line-height: 1;
   letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 .cs-stats.cs-results-stats .cs-stat__label {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.55;
   color: var(--text-secondary);
 }
@@ -294,7 +301,7 @@ button { font: inherit; cursor: pointer; }
 }
 .cs-future-item {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: var(--s-2);
   max-width: 320px;
   margin-inline: auto;
@@ -302,15 +309,20 @@ button { font: inherit; cursor: pointer; }
 .cs-future-item :global(.cs-figure) { margin-block: 0; }
 .cs-future-caption {
   margin: 0;
-  text-align: left;
+  text-align: center;
   font-size: 15px;
   line-height: 1.55;
   color: var(--text-secondary);
   max-width: 100%;
 }
 .cs-future-caption strong {
+  display: block;
   color: var(--text-primary);
   font-weight: 600;
+  margin-bottom: 2px;
+}
+.cs-future-caption span {
+  display: block;
 }
 @media (max-width: 540px) {
   .cs-future-grid { grid-template-columns: 1fr; gap: var(--s-5); }

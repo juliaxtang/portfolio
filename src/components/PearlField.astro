@@ -17,22 +17,7 @@
   <canvas class="field-canvas"></canvas>
 </div>
 <div class="dots-hint" data-dots-hint aria-hidden="true">
-  <svg class="dots-hint__arrow" viewBox="0 0 88 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M82 64 C 70 50, 58 30, 38 18 C 28 12, 18 9, 10 8"
-      stroke="currentColor"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      fill="none"
-    />
-    <path
-      d="M10 8 L 19 3 M10 8 L 16 15"
-      stroke="currentColor"
-      stroke-width="1.8"
-      stroke-linecap="round"
-      fill="none"
-    />
-  </svg>
+  <img class="dots-hint__arrow" src="/click-me-arrow.png" alt="arrow pointing to click me" />
   <span class="dots-hint__label">click me</span>
 </div>
 
@@ -275,7 +260,8 @@
     width: clamp(56px, 6vw, 80px);
     height: auto;
     display: block;
-    margin-bottom: -4px;
+    margin-bottom: 8px;
+    filter: brightness(0) saturate(100%) invert(38%) sepia(7%) saturate(330%) hue-rotate(199deg) brightness(91%) contrast(90%);
   }
   .dots-hint__label { white-space: nowrap; padding-bottom: 2px; }
 

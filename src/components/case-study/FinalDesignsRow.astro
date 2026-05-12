@@ -1,0 +1,220 @@
+---
+/**
+ * FinalDesignsRow — full-bleed band showing a horizontal row of phone
+ * screens at staggered vertical offsets, on top of a soft aurora wash.
+ *
+ * Each phone has a static Y offset (creating the wavy stagger) and a
+ * scroll-driven parallax that alternates direction across the row, so as
+ * the user scrolls the phones drift up/down/up/down. Respects
+ * `prefers-reduced-motion`.
+ */
+interface PhoneItem {
+  src: string;
+  alt: string;
+}
+type MetricIcon = "up" | "down" | "bulb";
+interface MetricItem {
+  icon: MetricIcon;
+  label: string;
+}
+interface Props {
+  phones: PhoneItem[];
+  metrics?: MetricItem[];
+  parallax?: boolean;
+}
+
+const { phones, metrics = [], parallax = true } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const cls = ["cs-finals", parallax ? "cs-finals--parallax" : ""].filter(Boolean).join(" ");
+---
+
+<section class={cls} data-cs-finals-parallax={parallax ? "" : undefined}>
+  <div class="cs-finals__row">
+    {phones.map((phone, i) => (
+      <div class="cs-finals__phone" data-index={i}>
+        <img src={resolve(phone.src)} alt={phone.alt} loading="lazy" />
+      </div>
+    ))}
+  </div>
+
+  {metrics.length > 0 && (
+    <ul class="cs-finals__metrics" role="list">
+      {metrics.map((m) => (
+        <li class={`cs-finals__metric cs-finals__metric--${m.icon}`}>
+          <span class="cs-finals__metric-icon" aria-hidden="true">
+            {m.icon === "up" && <span class="cs-finals__arrow">↑</span>}
+            {m.icon === "down" && <span class="cs-finals__arrow">↓</span>}
+            {m.icon === "bulb" && (
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18h6" />
+                <path d="M10 22h4" />
+                <path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2V18h6v-1.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2Z" />
+              </svg>
+            )}
+          </span>
+          <span class="cs-finals__metric-label">{m.label}</span>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <script is:inline>
+    (function () {
+      if (typeof window === "undefined") return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      function init() {
+        document.querySelectorAll("[data-cs-finals-parallax]").forEach(function (root) {
+          var raf = 0;
+          function update() {
+            raf = 0;
+            var rect = root.getBoundingClientRect();
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            var total = vh + rect.height;
+            if (total <= 0) return;
+            var progress = Math.min(Math.max((vh - rect.top) / total, 0), 1);
+            var centered = progress - 0.5;
+            root.style.setProperty("--cs-finals-y", (centered * 60).toFixed(1) + "px");
+          }
+          window.addEventListener("scroll", function () {
+            if (!raf) raf = requestAnimationFrame(update);
+          }, { passive: true });
+          window.addEventListener("resize", update);
+          update();
+        });
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init, { once: true });
+      } else {
+        init();
+      }
+    })();
+  </script>
+</section>
+
+<style>
+  .cs-finals {
+    position: relative;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    margin-block: var(--s-12);
+    padding-block: clamp(var(--s-12), 8vw, var(--s-20));
+    overflow: hidden;
+    isolation: isolate;
+    /* Transparent so the page's own canvas color flows through under the
+       transparent areas of the wave. Without this, the band paints its
+       own cream rectangle and creates a visible seam where it ends and
+       the next section begins. */
+    background: transparent;
+  }
+  /* Full-bleed wave behind the phones. Spans 100% width, sits centered
+     vertically so phones layer on top of it. */
+  .cs-finals::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: url("/projects/festival-mode/wave.png") center center / 100% auto no-repeat;
+    pointer-events: none;
+  }
+  .cs-finals > * { position: relative; z-index: 1; }
+
+  .cs-finals__row {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding-inline: clamp(var(--s-5), 4vw, var(--s-10));
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(var(--s-3), 1.6vw, var(--s-5));
+    align-items: center;
+  }
+
+  .cs-finals__phone {
+    display: flex;
+    justify-content: center;
+    will-change: transform;
+    transition: transform 0.45s var(--ease-out, ease);
+  }
+  .cs-finals__phone img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.18));
+  }
+
+  /* Static stagger: alternating up/down baseline so the row reads as a
+     wave. Combined with parallax that alternates direction. */
+  .cs-finals__phone[data-index="0"] {
+    transform: translate3d(0, calc(-24px + var(--cs-finals-y, 0px) * 1), 0);
+  }
+  .cs-finals__phone[data-index="1"] {
+    transform: translate3d(0, calc(24px + var(--cs-finals-y, 0px) * -1), 0);
+  }
+  .cs-finals__phone[data-index="2"] {
+    transform: translate3d(0, calc(-24px + var(--cs-finals-y, 0px) * 1), 0);
+  }
+  .cs-finals__phone[data-index="3"] {
+    transform: translate3d(0, calc(24px + var(--cs-finals-y, 0px) * -1), 0);
+  }
+
+  /* Metric row below the phones. Icon + short label per item, evenly
+     spaced across the band. */
+  .cs-finals__metrics {
+    list-style: none;
+    margin: clamp(var(--s-8), 5vw, var(--s-12)) auto 0;
+    padding: 0 clamp(var(--s-5), 4vw, var(--s-10));
+    max-width: var(--content-max);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--s-5);
+    align-items: center;
+    justify-items: center;
+  }
+  .cs-finals__metric {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-3);
+    font-family: var(--font-sans);
+    font-size: clamp(15px, 1.4vw, 18px);
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--text-primary);
+  }
+  .cs-finals__metric-icon {
+    display: inline-grid;
+    place-items: center;
+    line-height: 1;
+  }
+  .cs-finals__arrow {
+    font-size: clamp(22px, 2vw, 26px);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .cs-finals__metric--up   .cs-finals__metric-icon { color: #1FA463; }
+  .cs-finals__metric--down .cs-finals__metric-icon { color: #E5484D; }
+  .cs-finals__metric--bulb .cs-finals__metric-icon { color: #F4B400; }
+
+  @media (max-width: 720px) {
+    .cs-finals__metrics {
+      grid-template-columns: 1fr;
+      gap: var(--s-3);
+      justify-items: start;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cs-finals__row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--s-5) var(--s-4);
+    }
+    .cs-finals__phone[data-index="0"],
+    .cs-finals__phone[data-index="1"],
+    .cs-finals__phone[data-index="2"],
+    .cs-finals__phone[data-index="3"] {
+      transform: none;
+    }
+  }
+</style>

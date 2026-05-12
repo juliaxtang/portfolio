@@ -1,0 +1,249 @@
+---
+/**
+ * OverlayBanner — full-bleed section with a background image and inner
+ * content (eyebrow, title, freeform slot) overlaid on top.
+ *
+ * Use when a stage moment (e.g. "Why now?") deserves a hero-like
+ * treatment in the body of a case study, not just a soft brand-color
+ * band.
+ *
+ * `tint` adds a translucent overlay above the image for text legibility:
+ *   - "dark"  (default) — black 45% — for photographic/colorful images
+ *   - "light"           — white 55% — for dark-text on light imagery
+ *   - "none"            — no tint
+ *
+ * `lightText` flips the inner text tokens to white so Quote / Stats /
+ * SourceNote read on dark imagery.
+ */
+interface Props {
+  src: string;
+  alt?: string;
+  eyebrow?: string;
+  title?: string;
+  tint?: "dark" | "light" | "none";
+  lightText?: boolean;
+  minHeight?: string;
+  align?: "left" | "center";
+}
+
+const {
+  src,
+  alt = "",
+  eyebrow,
+  title,
+  tint = "dark",
+  lightText = true,
+  minHeight = "auto",
+  align = "center",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolved = src.startsWith("http") || src.startsWith(base)
+  ? src
+  : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+
+const cls = [
+  "cs-overlay",
+  `cs-overlay--tint-${tint}`,
+  `cs-overlay--align-${align}`,
+  lightText ? "cs-overlay--light-text" : "",
+].filter(Boolean).join(" ");
+---
+
+<section class={cls} style={`--cs-overlay-min-h:${minHeight}`} data-cs-overlay-parallax>
+  <div class="cs-overlay__bleed" aria-hidden={alt ? undefined : "true"}>
+    <img class="cs-overlay__bleed-img" src={resolved} alt={alt} loading="lazy" />
+  </div>
+  <div class="cs-overlay__inner">
+    {(eyebrow || title) && (
+      <header class="cs-overlay__head">
+        {eyebrow && <p class="t-eyebrow cs-overlay__eyebrow">{eyebrow}</p>}
+        {title && <h2 class="cs-overlay__title">{title}</h2>}
+      </header>
+    )}
+    <div class="cs-overlay__body">
+      <slot />
+    </div>
+  </div>
+  <script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    function init() {
+      document.querySelectorAll("[data-cs-overlay-parallax]").forEach(function (root) {
+        var raf = 0;
+        function update() {
+          raf = 0;
+          var rect = root.getBoundingClientRect();
+          var vh = window.innerHeight || document.documentElement.clientHeight;
+          var total = vh + rect.height;
+          if (total <= 0) return;
+          var progress = Math.min(Math.max((vh - rect.top) / total, 0), 1);
+          var centered = progress - 0.5;
+          /* Range: roughly +/- 60px. Scale(1.18) gives ~9% of band height
+             of headroom on top/bottom; 60px is well within that. */
+          root.style.setProperty("--cs-overlay-scroll-y", (-centered * 120).toFixed(1) + "px");
+        }
+        window.addEventListener("scroll", function () {
+          if (!raf) raf = requestAnimationFrame(update);
+        }, { passive: true });
+        window.addEventListener("resize", update);
+        update();
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
+  </script>
+</section>
+
+<style>
+  .cs-overlay {
+    position: relative;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    min-height: var(--cs-overlay-min-h);
+    overflow: hidden;
+    isolation: isolate;
+    display: grid;
+    grid-template-areas: "stack";
+  }
+  .cs-overlay__bleed {
+    grid-area: stack;
+    position: absolute;
+    inset: 0;
+  }
+  .cs-overlay__bleed img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    /* Scale up so parallax translation never exposes the image edges. */
+    transform: scale(1.18) translate3d(0, var(--cs-overlay-scroll-y, 0px), 0);
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cs-overlay__bleed img {
+      transform: scale(1.18);
+    }
+  }
+  .cs-overlay--tint-dark .cs-overlay__bleed::after,
+  .cs-overlay--tint-light .cs-overlay__bleed::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .cs-overlay--tint-dark .cs-overlay__bleed::after {
+    background: rgba(0, 0, 0, 0.45);
+  }
+  .cs-overlay--tint-light .cs-overlay__bleed::after {
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .cs-overlay--light-text {
+    --text-primary: #fff;
+    --text-secondary: rgba(255, 255, 255, 0.85);
+    --text-tertiary: rgba(255, 255, 255, 0.65);
+  }
+  /* Stat / Callout cards have their own light surface, so their text
+     needs to stay dark even when the surrounding banner is in light-text
+     mode. */
+  .cs-overlay--light-text :global(.cs-stat),
+  .cs-overlay--light-text :global(.cs-callout) {
+    --text-primary: #15171C;
+    --text-secondary: #5A5D66;
+    --text-tertiary: #8B8E96;
+  }
+
+  .cs-overlay__inner {
+    grid-area: stack;
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--content-max);
+    margin: 0 auto;
+    /* Left/right padding matches the case-study banner & narrow text column:
+       on wide viewports the content's left edge sits at the narrow-column
+       left edge, not at the viewport edge. */
+    padding-inline: min(
+      calc((var(--content-max) - var(--content-narrow)) / 2),
+      calc((100% - var(--content-narrow)) / 2)
+    );
+    padding-top: clamp(var(--s-20), 11vw, var(--s-32));
+    padding-bottom: clamp(var(--s-8), 3vw, var(--s-10));
+    display: grid;
+    gap: var(--s-3);
+    align-content: center;
+  }
+  /* Centered overlays vertically center their content: symmetric
+     padding-block so content sits in the middle of the band. The
+     padding is intentionally generous so the band reads as a tall,
+     hero-like section. */
+  .cs-overlay--align-center .cs-overlay__inner {
+    padding-top: clamp(var(--s-20), 11vw, var(--s-32));
+    padding-bottom: clamp(var(--s-20), 11vw, var(--s-32));
+    gap: var(--s-8);
+  }
+
+  .cs-overlay__head {
+    display: grid;
+    gap: var(--s-2);
+    max-width: var(--content-narrow);
+  }
+  .cs-overlay--align-center .cs-overlay__head {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .cs-overlay--align-left .cs-overlay__head {
+    margin-inline: 0;
+    text-align: left;
+  }
+  .cs-overlay__eyebrow { margin: 0; color: var(--text-secondary); }
+  /* Overlay titles use the display serif (Instrument Serif) so they read
+     as editorial pull statements, not as another bold-sans section
+     banner. */
+  .cs-overlay__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    color: var(--text-primary);
+  }
+
+  .cs-overlay__body {
+    display: grid;
+    gap: var(--s-6);
+    max-width: var(--content-max);
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  /* Highlight: a label + large display text for a single key statement
+     (e.g. "Project Goal: ..."). Layout-only wrapper — typography comes
+     from the style-guide utility classes applied in the markup
+     (.t-eyebrow / .t-display-md). */
+  :global(.cs-overlay__highlight) {
+    display: grid;
+    gap: var(--s-4);
+    width: 100%;
+  }
+  :global(.cs-overlay__highlight--center) {
+    justify-items: center;
+    text-align: center;
+    margin-inline: auto;
+  }
+  /* In light-text overlays, the goal headline should read as inverted body
+     text. Style-guide classes don't set their own color, so inherit from
+     the overlay's --text-primary override. */
+  .cs-overlay--light-text :global(.cs-overlay__highlight-text) {
+    color: var(--text-primary);
+  }
+</style>

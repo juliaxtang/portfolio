@@ -18,6 +18,10 @@ interface StatProps {
   value: string;
   label: string;
 }
+interface PressLogo {
+  src: string;
+  alt: string;
+}
 interface Props {
   /** Path to a company logo PNG/SVG. Rendered as a height-locked img next
    *  to the company name so the brand is the strongest signal in the row. */
@@ -32,6 +36,9 @@ interface Props {
   features?: string[];
   ctaHref?: string;
   ctaLabel?: string;
+  /** Optional press logos rendered as a small "As seen on" row just above
+   *  the CTA button. */
+  press?: PressLogo[];
   accent?: string;
   reverse?: boolean;
   /** Optional anchor id so a sticky nav can deep-link to this section. */
@@ -53,6 +60,7 @@ const {
   features = [],
   ctaHref,
   ctaLabel = "Read case study",
+  press = [],
   accent,
   reverse = false,
   id,
@@ -109,6 +117,18 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
             </li>
           ))}
         </ul>
+      )}
+      {press.length > 0 && (
+        <div class="showcase__press" aria-label="As seen on">
+          <span class="showcase__press-label">As seen on</span>
+          <ul class="showcase__press-logos" role="list">
+            {press.map((logo) => (
+              <li>
+                <img src={`${base}${logo.src.startsWith("/") ? "" : "/"}${logo.src}`} alt={logo.alt} loading="lazy" />
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       {comingSoon ? (
         <p class="showcase__coming-soon">
@@ -285,6 +305,41 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     color: var(--text-secondary);
     margin: 0;
   }
+
+  .showcase__press {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+    margin: 0 0 var(--s-3);
+  }
+  .showcase__press-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .showcase__press-logos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3) var(--s-4);
+  }
+  .showcase__press-logos img {
+    height: 16px;
+    width: auto;
+    max-width: 96px;
+    object-fit: contain;
+    display: block;
+    opacity: 0.65;
+    transition: opacity 200ms var(--ease-out);
+  }
+  .showcase__press-logos img:hover { opacity: 1; }
 
   .showcase__cta {
     margin: 0;

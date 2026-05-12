@@ -10,6 +10,7 @@ interface Props {
   caption?: string;
   width?: "narrow" | "wide" | "bleed";
   aspect?: string;
+  device?: "phone" | "auto";
   loop?: boolean;
   controls?: boolean;
 }
@@ -20,9 +21,12 @@ const {
   caption,
   width = "narrow",
   aspect,
+  device = "auto",
   loop = true,
   controls = false,
 } = Astro.props;
+
+const finalAspect = aspect ?? (device === "phone" ? "9 / 19.5" : undefined);
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p: string) =>
@@ -32,11 +36,15 @@ const resolve = (p: string) =>
 
 const resolvedSrc = resolve(src);
 const resolvedPoster = poster ? resolve(poster) : undefined;
-const cls = ["cs-video", `cs-figure--${width}`].join(" ");
+const cls = [
+  "cs-video",
+  `cs-figure--${width}`,
+  device === "phone" ? "cs-video--device-phone" : "",
+].filter(Boolean).join(" ");
 ---
 
 <figure class={cls}>
-  <div class="cs-video__media" style={aspect ? `aspect-ratio:${aspect}` : undefined}>
+  <div class="cs-video__media" style={finalAspect ? `aspect-ratio:${finalAspect}` : undefined}>
     <video
       src={resolvedSrc}
       poster={resolvedPoster}
@@ -66,6 +74,9 @@ const cls = ["cs-video", `cs-figure--${width}`].join(" ");
     overflow: hidden;
     background: var(--bg-sunken);
   }
+  /* Phone-shaped videos cap their width like Figure does for phone screens. */
+  .cs-video--device-phone .cs-video__media { max-width: 320px; margin-inline: auto; }
+  .cs-video--device-phone.cs-figure--wide .cs-video__media { max-width: 360px; }
   .cs-figure--bleed .cs-video__media { border-radius: 0; }
   .cs-video__media video {
     width: 100%;

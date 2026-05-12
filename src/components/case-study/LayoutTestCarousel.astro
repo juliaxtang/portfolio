@@ -1,0 +1,337 @@
+---
+/**
+ * LayoutTestCarousel — horizontal scroll-snap carousel of layout test
+ * variants. Each card shows a mockup screen on top, the variant name as
+ * the header, and the testing result below. The winner is highlighted
+ * with a "Winner" badge.
+ *
+ * Pass `variants` as a structured array. Cards snap horizontally on
+ * touch + mouse drag, and a row of dots reflects the active card.
+ */
+type MetricDirection = "down" | "up" | "flat";
+interface VariantMetrics {
+  swipesSent: MetricDirection;
+  tileOpens: MetricDirection;
+}
+interface Variant {
+  name: string;
+  image: string;
+  alt?: string;
+  metrics?: VariantMetrics;
+  note?: string;
+  winner?: boolean;
+  winnerNote?: string;
+}
+interface Props {
+  variants: Variant[];
+}
+
+const dirGlyph: Record<MetricDirection, string> = {
+  down: "↓",
+  up: "↑",
+  flat: "—",
+};
+
+const { variants } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const id = `cs-layouts-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="cs-layouts" data-cs-layouts id={id}>
+  <button class="cs-layouts__btn cs-layouts__btn--prev" type="button" aria-label="Previous layout" data-dir="-1">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+
+  <ul class="cs-layouts__track" role="list">
+    {variants.map((v, i) => (
+      <li class={"cs-layouts__card" + (v.winner ? " cs-layouts__card--winner" : "")} data-index={i} aria-label={v.name}>
+        <p class="cs-layouts__name">{v.name}</p>
+        <div class="cs-layouts__media">
+          <img class="cs-layouts__img" src={resolve(v.image)} alt={v.alt ?? v.name} loading="lazy" />
+          {v.winner && (
+            <img
+              class="cs-layouts__winner-badge"
+              src={resolve("/projects/festival-mode/winner.png")}
+              alt="Winner"
+              aria-hidden="true"
+            />
+          )}
+        </div>
+        {v.metrics && (
+          <ul class="cs-layouts__metrics" role="list">
+            <li class={`cs-layouts__metric cs-layouts__metric--${v.metrics.swipesSent}`}>
+              <span class="cs-layouts__metric-glyph" aria-hidden="true">{dirGlyph[v.metrics.swipesSent]}</span>
+              <span>Swipes Sent</span>
+            </li>
+            <li class={`cs-layouts__metric cs-layouts__metric--${v.metrics.tileOpens}`}>
+              <span class="cs-layouts__metric-glyph" aria-hidden="true">{dirGlyph[v.metrics.tileOpens]}</span>
+              <span>Tile opens</span>
+            </li>
+          </ul>
+        )}
+        {v.note && <p class="cs-layouts__note">*{v.note}</p>}
+      </li>
+    ))}
+  </ul>
+
+  <button class="cs-layouts__btn cs-layouts__btn--next" type="button" aria-label="Next layout" data-dir="1">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </button>
+</div>
+
+<style>
+  .cs-layouts {
+    position: relative;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    margin-block: var(--s-10);
+  }
+
+  .cs-layouts__track {
+    list-style: none;
+    margin: 0;
+    padding: var(--s-3) clamp(var(--s-6), 10vw, var(--s-20));
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cs-layouts__track::-webkit-scrollbar { display: none; }
+
+  /* Cards flex top-to-bottom: reserved name area → image → metrics.
+     All name areas have the same min-height so every image starts at
+     the same Y regardless of name font size. */
+  .cs-layouts__card {
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  /* Non-winner: smaller label, secondary fill. */
+  .cs-layouts__name {
+    margin: 0;
+    /* Reserved height matches the winner name so images always start at
+       the same Y position across all cards. */
+    min-height: clamp(22px, 2vw, 28px);
+    display: flex;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: clamp(13px, 1.1vw, 15px);
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.2;
+    color: var(--text-tertiary);
+    text-align: center;
+  }
+
+  /* Winner name: full size, primary color. */
+  .cs-layouts__card--winner .cs-layouts__name {
+    font-size: clamp(18px, 1.6vw, 22px);
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+
+  .cs-layouts__card {
+    /* Non-winner cards: 10% smaller than the winner. */
+    --cs-layouts-card-h: clamp(340px, 45vw, 437px);
+  }
+  .cs-layouts__card--winner {
+    /* Winner is the full size. */
+    --cs-layouts-card-h: clamp(420px, 56vw, 540px);
+  }
+  .cs-layouts__media {
+    position: relative;
+    height: var(--cs-layouts-card-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cs-layouts__img {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: var(--r-md);
+  }
+
+  /* Winner badge: a sticker image pinned at the top-right corner of the
+     device, lifted slightly above and outside the phone frame. The
+     phone is centered in .cs-layouts__media, so we offset from 50% by
+     ~half a phone width. */
+  .cs-layouts__winner-badge {
+    position: absolute;
+    top: -16px;
+    left: calc(50% + 60px);
+    width: clamp(76px, 9vw, 104px);
+    height: auto;
+    z-index: 2;
+    transform: rotate(8deg);
+    filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.18));
+    pointer-events: none;
+  }
+
+  /* Metric pair shown below each non-winner card: glyph + label per row. */
+  .cs-layouts__metrics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+    text-align: center;
+  }
+  .cs-layouts__metric {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1.2;
+  }
+  .cs-layouts__metric-glyph {
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 700;
+  }
+  .cs-layouts__metric--down  { color: #E5484D; }
+  .cs-layouts__metric--up    { color: #1FA463; }
+  .cs-layouts__metric--flat  { color: var(--text-tertiary); }
+
+  .cs-layouts__note {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-tertiary);
+    text-align: center;
+    max-width: 22ch;
+  }
+
+  /* Arrow buttons */
+  .cs-layouts__btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px -4px rgba(0,0,0,0.18);
+    transition: transform .2s var(--ease-out, ease), background .2s ease;
+  }
+  .cs-layouts__btn:hover {
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    transform: translateY(-50%) scale(1.05);
+  }
+  .cs-layouts__btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  .cs-layouts__btn:disabled:hover {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    transform: translateY(-50%);
+  }
+  .cs-layouts__btn svg { width: 20px; height: 20px; }
+  .cs-layouts__btn--prev { left: clamp(var(--s-3), 3vw, var(--s-8)); }
+  .cs-layouts__btn--next { right: clamp(var(--s-3), 3vw, var(--s-8)); }
+
+  @media (max-width: 720px) {
+    .cs-layouts__btn { display: none; }
+    .cs-layouts__track { padding-inline: var(--s-5); }
+  }
+</style>
+
+<script>
+  const carousels = document.querySelectorAll<HTMLElement>("[data-cs-layouts]");
+  carousels.forEach((root) => {
+    const track = root.querySelector<HTMLElement>(".cs-layouts__track");
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>(".cs-layouts__card"));
+    if (!cards.length) return;
+
+    const btnPrev = root.querySelector<HTMLButtonElement>(".cs-layouts__btn--prev");
+    const btnNext = root.querySelector<HTMLButtonElement>(".cs-layouts__btn--next");
+    let currentIdx = 0;
+
+    const setActive = (i: number) => {
+      currentIdx = i;
+      if (btnPrev) btnPrev.disabled = i <= 0;
+      if (btnNext) btnNext.disabled = i >= cards.length - 1;
+    };
+
+    const goto = (idx: number) => {
+      const i = Math.max(0, Math.min(cards.length - 1, idx));
+      const card = cards[i];
+      const left = card.offsetLeft - (track.clientWidth - card.clientWidth) / 2;
+      setActive(i);
+      track.scrollTo({ left, behavior: "smooth" });
+    };
+
+    root.querySelectorAll<HTMLButtonElement>(".cs-layouts__btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const dir = Number(btn.dataset.dir || "1");
+        goto(currentIdx + dir);
+      });
+    });
+
+    // Start centered on the winner card (or fall back to index 0).
+    const winnerIdx = cards.findIndex((c) => c.classList.contains("cs-layouts__card--winner"));
+    const startIdx = winnerIdx >= 0 ? winnerIdx : 0;
+    setActive(startIdx);
+    // Initial scroll without smooth-behavior so the card snaps into
+    // position before the user sees the carousel.
+    requestAnimationFrame(() => {
+      const startCard = cards[startIdx];
+      const prev = track.style.scrollBehavior;
+      track.style.scrollBehavior = "auto";
+      track.scrollLeft = startCard.offsetLeft - (track.clientWidth - startCard.clientWidth) / 2;
+      track.style.scrollBehavior = prev;
+    });
+
+    let scrollTimer: number | undefined;
+    track.addEventListener("scroll", () => {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        const center = track.scrollLeft + track.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        cards.forEach((c, i) => {
+          const cCenter = c.offsetLeft + c.clientWidth / 2;
+          const d = Math.abs(cCenter - center);
+          if (d < bestDist) { bestDist = d; best = i; }
+        });
+        setActive(best);
+      }, 80);
+    });
+  });
+</script>

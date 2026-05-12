@@ -137,6 +137,12 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
     padding-block: 0;
     margin-block: var(--s-12);
   }
+  /* The first banner (typically Background) sits flush against the hero;
+     no top margin. */
+  .cs-section--banner:first-of-type { margin-top: 0; }
+  /* A banner immediately followed by an OverlayBanner sits flush with
+     the overlay below it. */
+  .cs-section--banner:has(+ section.cs-overlay) { margin-bottom: 0; }
 
   @media (max-width: 720px) {
     .cs-section { padding-block: var(--s-10); }
@@ -220,6 +226,10 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
       calc((100% - var(--content-narrow)) / 2)
     );
   }
+  /* When a banner section has no body content (e.g. <Section banner />
+     used purely as a divider), the empty body div leaves a 40px ghost gap.
+     Collapse it so the next section sits flush against the banner. */
+  .cs-section__body--banner:empty { margin: 0; }
 
   /* Default body typography. */
   .cs-section__body :global(p) {
@@ -273,5 +283,27 @@ const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", ban
   .cs-section__body :global(strong) {
     font-weight: 600;
     color: var(--text-primary);
+  }
+
+  /* Page-specific overrides */
+  .cs-section.cs-festival-2019,
+  .cs-section.cs-relaunch-2019 { padding-top: var(--s-12); }
+
+  /* Why-Explore stat tiles: oversized display value so the number reads
+     as the headline of each tile when stacked in a narrow column. */
+  .cs-section.cs-explore-stats :global(.cs-stat) {
+    padding: var(--s-5);
+    gap: var(--s-1);
+  }
+  .cs-section.cs-explore-stats :global(.cs-stat__value) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 3.6vw, 48px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .cs-section.cs-explore-stats :global(.cs-stat__label) {
+    font-size: 13px;
+    color: var(--text-secondary);
   }
 </style>

@@ -33,99 +33,152 @@ import Persona from "../../components/case-study/Persona.astro";
 import PersonaTrait from "../../components/case-study/PersonaTrait.astro";
 import Quote from "../../components/case-study/Quote.astro";
 import SourceNote from "../../components/case-study/SourceNote.astro";
-import AsSeenOn from "../../components/case-study/AsSeenOn.astro";
+import OverlayBanner from "../../components/case-study/OverlayBanner.astro";
 
-<Section size="sub" stage="Overview" eyebrow="Overview" title="A seasonal experience on Explore">
-A new experience on Tinder Explore that lets festivalgoers meet others
-going to the same festival. The team relaunched and refreshed Festival
-Mode in just two months for the return of IRL events, and the experience
-went on to outperform the main Tinder swipe deck on both engagement and
-conversation rate.
+<Section size="sub" stage="Background" title="Festival Mode in 2019" hideFromNav class="cs-festival-2019">
+Festival Mode first launched in 2019: a single-festival entry that let
+users opt in to swipe on people going to the same event. It got pulled
+when festivals were cancelled during the pandemic. With IRL events
+returning in 2022, Tinder wanted to bring it back and refresh it for the
+way the app had evolved.
 </Section>
 
-<Section stage="Define" eyebrow="Define" title="Understanding the constraints" banner />
+<Figure
+  src="/projects/festival-mode/2019-festival-mode.png"
+  alt="The 2019 Festival Mode screens: EDC Las Vegas entry and the in-deck profile"
+  caption="The 2019 version: a one-time, single-festival entry attached to the main swipe deck."
+  width="narrow"
+  background="none"
+  maxWidth="462px"
+/>
 
-<Section size="sub" stage="Define" title="Why not just relaunch the 2019 version?" hideFromNav>
-Festival Mode initially launched in 2019, but got pulled when festivals
-were cancelled during the pandemic. With the return of IRL events, Tinder
-wanted to relaunch it. The 2019 version had real limitations, mostly
-because it didn't have a permanent home in the app.
+<Section size="sub" stage="Background" title="And where it would live: Explore" hideFromNav>
+  <TwoUp ratio="2:1" gap="lg" align="center">
+    Explore was a new tab in Tinder built around focused ways to connect.
+    Instead of one global cardstack, users could pick from themed
+    categories like Looking for Friends or Coffee Date, or jump into chat
+    games and alternate swipe modes when they wanted a break from the
+    main deck. The relaunched Festival Mode would live there, as a
+    curated experience for festivalgoers.
+
+    <Figure
+      src="/projects/festival-mode/tinder-explore.png"
+      alt="The Tinder Explore tab, with a grid of themed experience tiles"
+      width="narrow"
+      background="none"
+      maxWidth="264px"
+    />
+  </TwoUp>
 </Section>
 
-<Callouts cols={3} wide>
-  <Callout eyebrow="Limitation 1" title="One-time entry point" tone="outline">
-    Limited flexibility. Could only run one festival at a time, which
-    capped partnership opportunities.
-  </Callout>
-  <Callout eyebrow="Limitation 2" title="Forced decisions" tone="outline">
-    Users had to decide there and then if they were interested. The
-    opt-out was hidden.
-  </Callout>
-  <Callout eyebrow="Limitation 3" title="Lack of curation" tone="outline">
-    Positioning on the main page meant no way to guarantee you'd only
-    see people from your festival.
-  </Callout>
-</Callouts>
+<Section stage="Define" eyebrow="Define" title="Understanding the context" banner />
 
-<TwoUp ratio="1:1" gap="lg">
+<OverlayBanner
+  src="/projects/festival-mode/why-festival-mode-bg.png"
+  alt="A festival crowd in front of a stage lit with colored light"
+  title="Why Festival Mode, why now?"
+  align="left"
+>
+  <Quote attribution="Kyle Miller, VP of Product Innovation, Tinder">
+  Music is the #1 interest among Tinder members worldwide. So many of our
+  members are excited to jump back into in-person events.
+  </Quote>
+
+  <Stats cols={3} wide>
+    <Stat value="1 in 3" label="Singles planned to attend a festival or concert in 2022." caption="Demand" />
+    <Stat value="64%" label="Of singles said they enjoyed meeting new people at live music events." caption="Intent" />
+    <Stat value="61%" label="Had made lasting connections with someone they met at a concert or festival." caption="Outcomes" />
+  </Stats>
+
+  <SourceNote>Source: Online survey of 2000+ U.S. adults in April 2022 by Tinder.</SourceNote>
+</OverlayBanner>
+
+<Section size="sub" stage="Define" title="Why not just relaunch the 2019 version?" hideFromNav class="cs-relaunch-2019">
+The 2019 version had real limitations, mostly because it didn't have a
+permanent home in the app.
+</Section>
+
+<TwoUp ratio="1:1" gap="md" align="center">
   <Figure
-    src="/projects/festival-mode/phone-2019-1.png"
-    alt="A 2019 Festival Mode screen on Tinder, showing the legacy single-festival entry"
-    caption="The 2019 version"
+    src="/projects/festival-mode/one-time-entry-point.gif"
+    alt="Animated walkthrough showing the 2019 one-time entry point limitation"
     width="narrow"
     device="phone"
     background="none"
   />
+  <Callout eyebrow="Limitation 1" title="One-time entry point" tone="outline">
+    Could only run one festival at a time, which capped partnership
+    opportunities (**limited flexibility**). And once users hit the
+    entry, they had to decide right then if they were interested. The
+    opt-out was hidden (**forced decisions**).
+  </Callout>
+</TwoUp>
+
+<TwoUp ratio="1:1" gap="md" align="center">
+  <Callout eyebrow="Limitation 2" title="Lack of curation" tone="outline">
+    Positioning on the main page meant no way to guarantee you'd only
+    see people from your festival.
+  </Callout>
   <Figure
-    src="/projects/festival-mode/phone-2019-2.png"
-    alt="A second 2019 Festival Mode screen showing the legacy main-page placement"
-    caption="Limited curation"
+    src="/projects/festival-mode/lack-of-curation.gif"
+    alt="Animated walkthrough showing the lack of curation in the 2019 placement"
     width="narrow"
     device="phone"
     background="none"
   />
 </TwoUp>
 
-<Section size="sub" stage="Define" title="Why Festival Mode, why now?" hideFromNav>
-Tinder's strategy team had a sharper read on the moment.
+<Section size="sub" stage="Define" title="Why Explore was the right home" hideFromNav class="cs-explore-stats">
+Explore had the traffic, but engagement was thin. Concept testing showed
+users got overwhelmed by content that felt too general. A purpose-built
+Festival Mode tile could give the page the specificity it was missing.
+
+<TwoUp ratio="2:1" gap="sm" align="center">
+  <Figure
+    src="/projects/festival-mode/why-explore-was-the-right-home.png"
+    alt="The Tinder Explore tab showing Your Passions and Welcome to Explore tiles"
+    width="narrow"
+    background="none"
+    maxWidth="336px"
+  />
+  <Stats cols={1}>
+    <Stat value="90%" label="Of active Tinder users visit Explore." />
+    <Stat value="25%" label="Of those visitors have opened an experience tile." />
+    <Stat value="20%" label="Of tile-openers go on to open a second one." />
+  </Stats>
+</TwoUp>
 </Section>
 
-<Stats cols={3} wide>
-  <Stat value="1 in 3" label="Singles planned to attend a festival or concert in 2022." caption="Demand" />
-  <Stat value="64%" label="Of singles said they enjoyed meeting new people at live music events." caption="Intent" />
-  <Stat value="61%" label="Had made lasting connections with someone they met at a concert or festival." caption="Outcomes" />
-</Stats>
+<OverlayBanner
+  src="/projects/festival-mode/project-goals-bg.png"
+  alt="Festival crowd at dusk in front of a stage"
+  eyebrow="Define · The Goal"
+  align="left"
+>
+  <div class="cs-overlay__highlight">
+    <p class="cs-overlay__highlight-label">Project Goal</p>
+    <p class="cs-overlay__highlight-text">
+      Create a revamped Festival Mode that allows excited post-pandemic
+      festivalgoers to connect.
+    </p>
+  </div>
 
-<SourceNote>Source: Online survey of 2000+ U.S. adults in April 2022 by Tinder.</SourceNote>
-
-<Quote attribution="Kyle Miller, VP of Product Innovation, Tinder">
-Music is the #1 interest among Tinder members worldwide. So many of our
-members are excited to jump back into in-person events.
-</Quote>
-
-<Section size="sub" stage="Define" title="Project goals and success metrics" hideFromNav>
-The relaunch had to move three different sets of needs forward at once.
-</Section>
-
-<Callouts cols={3} wide>
-  <Callout number="1" title="Project" tone="accent">
-    Create a revamped Festival Mode that allows excited post-pandemic
-    festivalgoers to connect.
-  </Callout>
-  <Callout number="2" title="Business" tone="accent">
-    Introduce a persistent entry point in Explore to drive Explore
-    engagement.
-  </Callout>
-  <Callout number="3" title="Partner" tone="accent">
-    Deliver this solution ahead of festival dates to ensure success with
-    festival partners.
-  </Callout>
-</Callouts>
-
-<Section size="sub" stage="Define" title="Success metrics" hideFromNav>
-We agreed on three success metrics up front: **Explore tile opens**,
-**likes sent**, and **conversations started**.
-</Section>
+  <Callouts cols={3} wide>
+    <Callout title="Business Goal" tone="outline">
+      Introduce a persistent entry point in Explore to drive Explore
+      engagement.
+    </Callout>
+    <Callout title="Partner Goal" tone="outline">
+      Deliver this solution ahead of festival dates to ensure success
+      with festival partners.
+    </Callout>
+    <Callout title="Success Metrics" tone="outline">
+      - Explore tile opens
+      - Likes sent
+      - Conversations started
+    </Callout>
+  </Callouts>
+</OverlayBanner>
 
 <Section stage="Research" eyebrow="Research" title="Understanding festivalgoers" banner />
 
@@ -182,15 +235,30 @@ out there and where the gap was.
 </Section>
 
 <Callouts cols={3} wide>
-  <Callout title="Eventbrite" tone="outline">
+  <Callout
+    title="Eventbrite"
+    tone="outline"
+    logo="/projects/festival-mode/eventbrite-logo.png"
+    logoAlt="Eventbrite logo"
+  >
     Curated community content, robust filtering and sorting for events.
     Mainly used for event discovery. **No social features.**
   </Callout>
-  <Callout title="Meetup" tone="outline">
+  <Callout
+    title="Meetup"
+    tone="outline"
+    logo="/projects/festival-mode/meetup-logo.png"
+    logoAlt="Meetup logo"
+  >
     News feed, groups and events that enable IRL connections. **No way to
     connect before a meetup.**
   </Callout>
-  <Callout title="Radiate" tone="outline">
+  <Callout
+    title="Radiate"
+    tone="outline"
+    logo="/projects/festival-mode/radiate-logo.png"
+    logoAlt="Radiate logo"
+  >
     Follow users, RSVP "Going" or "Interested" to unlock event pages.
     **Forum-style, not conducive to 1:1 connections.**
   </Callout>
@@ -198,15 +266,29 @@ out there and where the gap was.
 
 <Section stage="Ideate" eyebrow="Ideation" title="Shaping the solution" banner />
 
-<Section size="sub" stage="Ideate" title="Picking a layout for the Explore entry" hideFromNav>
-Explore was a new tab in the app with experiences that helped people
-connect in fun, focused ways. Festival Mode would be one of those
-experiences, so we needed to figure out how it should appear on the
-Explore page.
+<Section size="sub" stage="Ideate" title="Revisiting goals as How-Might-Wes" hideFromNav>
+We reframed each stakeholder's goal as a How Might We to focus exploration.
+</Section>
 
-We ran a multivariate layout test against six candidates: a carousel, a
-2x8 grid, a horizontal ticker, a vertical scroll, vertical tiles, and a
-hero tile.
+<Callouts cols={3} wide>
+  <Callout eyebrow="User" tone="outline">
+    How might we help festivalgoers like Jen find others across multiple
+    shared festivals of interest?
+  </Callout>
+  <Callout eyebrow="Business" tone="outline">
+    How might we leverage Explore as an entry point to drive more traffic
+    and engagement?
+  </Callout>
+  <Callout eyebrow="Partners" tone="outline">
+    How might we help each festival stand out while staying true to
+    partner brands?
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Ideate" title="Picking a layout for the Explore entry" hideFromNav>
+With the HMWs as guardrails, we tested six layout candidates for the
+Explore entry: a carousel, a 2x8 grid, a horizontal ticker, a vertical
+scroll, vertical tiles, and a hero tile.
 
 - The **carousel** and **2x8 grid** got cut early. In concept testing, users were overwhelmed with the amount of content.
 - The **horizontal ticker** and **vertical scroll** were tested as part of broader Explore testing and didn't perform.
@@ -275,13 +357,21 @@ The MVP met festivalgoers' needs. Across 12 participants:
 - **Need for catch-all participation.** Due to partnership constraints, some users didn't see their festival listed but still wanted to participate.
 </Section>
 
-<Quote>
-I like to get to know people a bit before meeting up with them. This
-feature helps me to do that.
-</Quote>
+<TwoUp ratio="1:1" gap="lg" wide>
+  <Quote>
+  I like to get to know people a bit before meeting up with them. This
+  feature helps me to do that.
+  </Quote>
+  <Quote>
+  I would 10/10 use this. This would be so helpful in finding people to
+  go with.
+  </Quote>
+</TwoUp>
 
 <Section size="sub" stage="Test" title="The combination flow" hideFromNav>
-The final UX combined what worked from each test condition into one flow.
+Neither flow won outright, so I made the call to combine the strongest
+parts of each: the opt-in pattern from Flow 2, the swiping pattern from
+Flow 1, plus a generic tile to solve the catch-all problem.
 </Section>
 
 <Callouts cols={3} wide>
@@ -312,15 +402,18 @@ The final UX combined what worked from each test condition into one flow.
 
 <Section size="sub" stage="Design" hideFromNav>
 The final experience flowed as Explore entry, opt-in, festival
-cardstack, and toggle festival, with each festival getting its own brand
-treatment inside a shared system.
+cardstack, and toggle festival. Each festival got its own visual
+treatment, branded with the marketing team and built from existing
+design system patterns. Leaning on shared components kept the work on
+schedule for engineering and let each festival feel distinct without a
+custom build per partner.
 </Section>
 
 <TwoUp ratio="1:1" gap="lg" wide>
   <Figure
     src="/projects/festival-mode/phone-explore-entry.png"
     alt="Final design: the Festival Mode tile on the Explore page"
-    caption="Explore entry"
+    caption="Explore entry. Hero tile beats the competing layouts on both swipes sent and tile opens, so Festival Mode anchors the top of Explore."
     width="narrow"
     device="phone"
     background="none"
@@ -328,7 +421,7 @@ treatment inside a shared system.
   <Figure
     src="/projects/festival-mode/phone-opting-in.png"
     alt="Final design: festival picker with multi-select opt-in"
-    caption="Opting in"
+    caption="Opting in. Multi-select up front so users aren't forced into one festival, plus a visible opt-out — fixing the 2019 'hidden exit' problem."
     width="narrow"
     device="phone"
     background="none"
@@ -339,7 +432,7 @@ treatment inside a shared system.
   <Figure
     src="/projects/festival-mode/phone-cardstack.png"
     alt="Final design: festival cardstack with branded EDC Las Vegas treatment"
-    caption="Festival cardstack"
+    caption="Festival cardstack. Each festival gets a branded treatment built from shared design-system components, so partners feel distinct without a custom build per event."
     width="narrow"
     device="phone"
     background="none"
@@ -347,7 +440,7 @@ treatment inside a shared system.
   <Figure
     src="/projects/festival-mode/phone-toggling.png"
     alt="Final design: toggling between festivals with a Lineup overview"
-    caption="Toggling festivals"
+    caption="Toggling festivals. Separated cardstacks per festival eliminate the cross-festival confusion we saw in usability testing."
     width="narrow"
     device="phone"
     background="none"
@@ -384,7 +477,7 @@ the audience without diluting the core experience.
   />
   <Stat
     value="↗"
-    label="Opt-in friction filtered out low-intent users. Despite some drop-off, users who did opt-in were higher intent and more engaged."
+    label="Opt-in friction filtered out low-intent users. Those who did opt in were higher intent and more engaged."
     caption="Intent quality"
   />
 </Stats>
@@ -425,11 +518,10 @@ roadmap.
   background="none"
 />
 
-<AsSeenOn
-  logos={[
-    { src: "/projects/festival-mode/mashable-logo.png", alt: "Mashable" },
-    { src: "/projects/festival-mode/engadget-logo.png", alt: "Engadget" },
-    { src: "/projects/festival-mode/techcrunch-logo.png", alt: "TechCrunch" },
-    { src: "/projects/festival-mode/daily-mail-logo.png", alt: "Daily Mail" },
-  ]}
-/>
+<Section size="sub" stage="Impact" title="What I'd carry forward" hideFromNav>
+The biggest lesson was that opt-in friction is a feature, not a bug, when
+the goal is purposeful connection. The biggest thing I'd do over: kill
+the second opt-in step. We saw the drop-off in the data and I'd push
+harder next time to fold festival selection into the first tap.
+</Section>
+

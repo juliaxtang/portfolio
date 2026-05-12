@@ -29,6 +29,7 @@ interface Props {
   frame?: boolean;
   aspect?: string;
   maxHeight?: string;
+  maxWidth?: string;
   background?: "soft" | "surface" | "none";
   centered?: boolean;
   class?: string;
@@ -43,6 +44,7 @@ const {
   frame = false,
   aspect,
   maxHeight,
+  maxWidth,
   background = "none",
   centered = false,
   class: className = "",
@@ -74,6 +76,8 @@ const cls = [
 const styleParts: string[] = [];
 if (finalAspect) styleParts.push(`aspect-ratio:${finalAspect}`);
 if (maxHeight) styleParts.push(`max-height:${maxHeight}`);
+if (maxWidth) styleParts.push(`max-width:${maxWidth}`);
+if (maxWidth) styleParts.push(`margin-inline:auto`);
 const mediaStyle = styleParts.join(";");
 ---
 

@@ -17,6 +17,11 @@ export interface ShowcaseStat {
   label: string;
 }
 
+export interface PressLogo {
+  src: string;
+  alt: string;
+}
+
 export interface ShowcaseContent {
   companyLogo: string;
   companyName: string;
@@ -26,6 +31,7 @@ export interface ShowcaseContent {
   tagline: string;
   stats: ShowcaseStat[];
   accent: string;
+  press?: PressLogo[];
 }
 
 export const showcaseContent: Record<string, ShowcaseContent> = {
@@ -58,6 +64,12 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       { value: "2 months", label: "From kickoff to launch" },
     ],
     accent: "#FA7255",
+    press: [
+      { src: "/projects/festival-mode/mashable-dark-logo.png", alt: "Mashable" },
+      { src: "/projects/festival-mode/engadget-dark-logo.png", alt: "Engadget" },
+      { src: "/projects/festival-mode/techcrunch-dark-logo.png", alt: "TechCrunch" },
+      { src: "/projects/festival-mode/dailymail-dark-logo.png", alt: "Daily Mail" },
+    ],
   },
   "custom-lists": {
     companyLogo: "/logos/tv time.png",

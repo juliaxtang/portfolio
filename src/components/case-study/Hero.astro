@@ -80,14 +80,6 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
 
       <p class="cs-hero__summary">{summary}</p>
 
-      {tags.length > 0 && (
-        <ul class="cs-hero__tags" aria-label="Skills">
-          {tags.map((t) => (
-            <li class="cs-hero__tag">{t}</li>
-          ))}
-        </ul>
-      )}
-
       {meta.length > 0 && (
         <dl class="cs-hero__meta">
           {meta.map((m) => (
@@ -176,18 +168,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     --text-secondary: rgba(255, 255, 255, 0.8);
     --text-tertiary: rgba(255, 255, 255, 0.55);
   }
-  .cs-hero--light-text .cs-hero__tag {
-    background: rgba(255, 255, 255, 0.18);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-  .cs-hero--light-text .cs-hero__tag:hover {
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--bg-canvas);
-    border-color: rgba(255, 255, 255, 0.9);
-  }
-
-  .cs-hero__overlay {
+.cs-hero__overlay {
     grid-area: stack;
     position: relative;
     z-index: 1;
@@ -322,45 +303,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     max-width: 46ch;
   }
 
-  .cs-hero__tags {
-    list-style: none;
-    margin: var(--s-2) 0 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-  }
-  .cs-hero__tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 14px;
-    border-radius: var(--r-full);
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid color-mix(in srgb, var(--text-primary) 14%, transparent);
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-primary);
-    line-height: 1;
-    backdrop-filter: blur(6px);
-    cursor: default;
-    transition:
-      transform var(--dur-fast) var(--ease-out),
-      background-color var(--dur-fast) var(--ease),
-      color var(--dur-fast) var(--ease),
-      border-color var(--dur-fast) var(--ease),
-      box-shadow var(--dur-fast) var(--ease);
-    will-change: transform;
-  }
-  .cs-hero__tag:hover {
-    transform: scale(1.06);
-    background: var(--text-primary);
-    color: var(--text-inverse);
-    border-color: var(--text-primary);
-    box-shadow: 0 6px 20px -8px color-mix(in srgb, var(--text-primary) 50%, transparent);
-  }
-
-  .cs-hero__meta {
+.cs-hero__meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--s-5) var(--s-8);

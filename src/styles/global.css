@@ -429,9 +429,9 @@ p.cs-bullet-stats__label {
   color: var(--text-secondary);
 }
 
-/* Results Stats: editorial outcome cards. Each card has a colored top
-   accent, a large display value, and a tight label below it. */
-.cs-stats.cs-results-stats { gap: var(--s-4); }
+/* Results Stats: editorial outcome cards with a large display value and
+   a tight label below it. */
+.cs-stats.cs-results-stats { gap: var(--s-4); margin-top: -20px; }
 .cs-stats.cs-results-stats .cs-stat {
   padding: var(--s-6);
   gap: var(--s-3);
@@ -439,20 +439,7 @@ p.cs-bullet-stats__label {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   box-shadow: 0 2px 16px -8px rgba(20, 16, 24, 0.10);
-  /* Colored top accent strip using brand gradient */
-  border-top: 3px solid transparent;
-  background-clip: padding-box;
-  position: relative;
   transition: transform .2s ease, box-shadow .2s ease;
-}
-/* Top accent bar via pseudo-element so it sits above border-radius */
-.cs-stats.cs-results-stats .cs-stat::before {
-  content: "";
-  position: absolute;
-  inset: -1px -1px auto -1px;
-  height: 3px;
-  border-radius: var(--r-xl) var(--r-xl) 0 0;
-  background: var(--brand-gradient);
 }
 .cs-stats.cs-results-stats .cs-stat:hover {
   transform: translateY(-3px);
@@ -478,17 +465,35 @@ p.cs-bullet-stats__label {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--s-8);
-  align-items: start;
+  align-items: end;
   margin: var(--s-6) 0 0;
 }
 .cs-future-item {
   display: grid;
+  grid-template-rows: 1fr auto;
   justify-items: center;
   gap: var(--s-2);
   max-width: 320px;
   margin-inline: auto;
+  height: 100%;
 }
-.cs-future-item :global(.cs-figure) { margin-block: 0; }
+.cs-future-item .cs-future-caption { align-self: end; }
+.cs-future-item .cs-figure { margin: 0 !important; width: 100%; }
+/* Show the full gif at its natural aspect, no letterbox or cropping.
+   The phone-aspect container (9/18) and the flex centering both force
+   padding above the gif; override so the gif sits flush under its caption. */
+.cs-future-item .cs-figure__media {
+  aspect-ratio: auto !important;
+  max-height: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  display: block !important;
+}
+.cs-future-item .cs-figure__media img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
 .cs-future-caption {
   margin: 0;
   text-align: center;

@@ -31,6 +31,15 @@ const { attribution } = Astro.props;
     color: var(--text-primary);
     margin: 0;
   }
+  /* MDX wraps single-paragraph quote body in a <p>; the section's
+     prose p rule otherwise resizes it to 18px. */
+  .cs-quote .cs-quote__body :global(p) {
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    color: inherit;
+    margin: 0;
+  }
   .cs-quote__attr {
     margin-top: var(--s-3);
     font-family: var(--font-mono);

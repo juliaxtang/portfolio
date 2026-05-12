@@ -43,11 +43,13 @@ const resolve = (p: string) =>
      image), and the bullet list below inherits that exact width. */
   .cs-comp {
     text-align: center;
+    min-width: 0;
   }
   .cs-comp__inner {
-    display: inline-block;
+    display: block;
     text-align: left;
-    max-width: 100%;
+    width: 100%;
+    min-width: 0;
   }
   .cs-comp__header {
     display: flex;
@@ -73,16 +75,32 @@ const resolve = (p: string) =>
     color: var(--text-primary);
   }
   .cs-comp__screen {
-    display: block;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
     height: 436px;
     margin-bottom: var(--s-4);
   }
   .cs-comp__screen img {
-    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
     height: 100%;
     object-fit: contain;
-    object-position: center bottom;
     display: block;
+  }
+  /* Radiate asset is two phones side by side. Scale to fill the same 436px
+     height as the single-phone tiles; allow the image to overflow slightly
+     into the grid gap so the phones aren't cropped on the sides. */
+  .cs-comp__screen {
+    overflow: visible;
+  }
+  .cs-comp__screen img[src*="radiate-screens"] {
+    height: 100%;
+    width: auto;
+    max-width: none;
   }
   .cs-comp__points {
     font-size: 15px;

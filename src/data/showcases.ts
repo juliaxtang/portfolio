@@ -42,7 +42,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     companyLogo: "/logos/tinder.png",
     companyName: "Tinder",
     year: 2023,
-    role: "Product Design Lead",
+    role: "Senior Product Designer",
     title: "Tappy Cloud",
     tagline:
       "Turned Tinder's static profile system into a backend-driven, dynamically configurable one. The centralized tool that came out of it, TaCo, has since powered 50+ profile experiments.",
@@ -57,7 +57,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     companyLogo: "/logos/tinder.png",
     companyName: "Tinder",
     year: 2022,
-    role: "Product Design Lead",
+    role: "Senior Product Designer",
     title: "Festival Mode",
     tagline:
       "Designed Festival Mode, a seasonal Tinder Explore experience for festivalgoers to meet others at the same festival. Two months to launch, driving 2× the likes and conversations of the main swipe stack.",

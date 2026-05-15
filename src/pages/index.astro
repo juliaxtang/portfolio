@@ -21,11 +21,7 @@ import FestivalModeShowcase from "../components/showcase/projects/FestivalModeSh
 import CustomListsShowcase from "../components/showcase/projects/CustomListsShowcase.astro";
 import TVTimeOnboardingShowcase from "../components/showcase/projects/TVTimeOnboardingShowcase.astro";
 
-// "delight" rendered letter-by-letter so each can wave on hover. "Julia"
-// gets the same treatment for the greeting hover.
-const delightHtml = ["d", "e", "l", "i", "g", "h", "t"]
-  .map((c, i) => `<span class="wave-letter" style="--i:${i}">${c}</span>`)
-  .join("");
+// "Julia" rendered letter-by-letter so each can bob on greeting hover.
 const juliaHtml = ["J", "u", "l", "i", "a"]
   .map((c, i) => `<span class="julia-letter" style="--i:${i}">${c}</span>`)
   .join("");
@@ -47,33 +43,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
         <FadeIn delay={140}>
           <p class="v2-hero__lede">
-            A Staff Product Designer with 10+ years building and shipping
-            products that
-            <span class="fx fx--delight">
-              <span class="fx-icon fx-icon--tl" aria-hidden="true">✨</span>
-              <span class="wave-text" set:html={delightHtml} />
-              <span class="fx-icon fx-icon--tr" aria-hidden="true">✨</span>
+            Product designer who turns ambiguous
+            <span class="fx fx--launch">
+              <span class="v2-hero__pop">0-to-1</span>
+              <span class="fx-icon fx-icon--up" aria-hidden="true">🚀</span>
             </span>
-            users and
-            <span class="fx fx--biz">
-              move the business
-              <span class="fx-icon fx-icon--brfloat" aria-hidden="true">📈</span>
-            </span>.
+            bets into
+            <span class="fx fx--build">
+              <span class="v2-hero__pop">systems</span>
+              <span class="fx-icon fx-icon--puzzle" aria-hidden="true">🧩</span>
+            </span>
+            that scale.
           </p>
         </FadeIn>
 
         <FadeIn delay={240}>
           <p class="v2-hero__lede">
-            I solve ambiguous problems and ship
-            <span class="fx fx--launch">
-              <span class="v2-hero__pop">0-to-1</span>
-              <span class="fx-icon fx-icon--up" aria-hidden="true">🚀</span>
-            </span>
-            features that scale to
-            <span class="fx fx--reach">
-              <span class="v2-hero__pop">millions</span>
-              <span class="fx-icon fx-icon--brfloat" aria-hidden="true">🌍</span>
-            </span>.
+            Currently building social experiences on <span class="hero-co"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" /><span class="v2-hero__pop">Snapchat</span></span>. Previously, the platform behind <span class="hero-co"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" /><span class="v2-hero__pop">Tinder</span></span>'s profile.
           </p>
         </FadeIn>
 
@@ -334,8 +320,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     border-radius: var(--r-xs);
   }
 
-  /* Re-using the .fx framework from index.astro. Duplicated locally so the
-     file is self-contained until those bits are extracted into a component. */
+  .v2-hero__pop {
+    transition:
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out),
+      transform 220ms var(--ease-out);
+  }
+
+  /* Wrapping span that hosts a floating emoji which arcs out on hover.
+     Pairs with v2-hero__pop on the inner text for the underline → wash
+     highlight. */
   .fx { position: relative; display: inline-block; cursor: default; }
   .fx-icon {
     position: absolute;
@@ -346,78 +340,70 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     opacity: 0;
     transition: opacity 240ms var(--ease-out), transform 540ms var(--ease-out);
   }
-  .fx-icon--tl {
-    top: -0.1em; left: -0.7em;
-    transform: translate(0.4em, 0.3em) scale(0.6) rotate(-25deg);
-  }
-  .fx:hover .fx-icon--tl { opacity: 1; transform: translate(-0.1em, -0.5em) scale(1.05) rotate(-12deg); }
-  .fx-icon--tr {
-    top: -0.1em; right: -0.7em;
-    transform: translate(-0.4em, 0.3em) scale(0.6) rotate(25deg);
-  }
-  .fx:hover .fx-icon--tr { opacity: 1; transform: translate(0.1em, -0.5em) scale(1.05) rotate(12deg); }
-  .fx-icon--brfloat {
-    bottom: -0.1em; right: -1.05em;
-    transform: translateY(0.4em) scale(0.7) rotate(8deg);
-  }
-  .fx:hover .fx-icon--brfloat { opacity: 1; transform: translateY(-0.55em) scale(1.05) rotate(-4deg); }
+  /* Rocket on "0-to-1": tucked below-right at rest, arcs up-left on hover. */
   .fx-icon--up {
     top: -0.05em; right: -1em;
     transform: translateY(0.5em) rotate(40deg) scale(0.6);
   }
-  .fx:hover .fx-icon--up { opacity: 1; transform: translateY(-0.65em) rotate(-25deg) scale(1.05); }
-
-  /* Words with a thin powder underline at rest that grows into a wash on
-     hover. fx--launch and fx--reach are excluded — their inner v2-hero__pop
-     pill already provides the persistent highlight, so adding an outer
-     underline doubles it up. */
-  .fx--delight, .fx--biz {
-    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    background-size: 100% 2px;
-    padding-bottom: 1px;
-    border-radius: var(--r-xs);
-    transition: background-size 280ms var(--ease-out), background-image 280ms var(--ease-out);
+  .fx:hover .fx-icon--up {
+    opacity: 1;
+    transform: translateY(-0.65em) rotate(-25deg) scale(1.05);
   }
-  .fx--delight:hover {
-    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
-    background-size: 100% 100%;
+  /* Puzzle piece on "systems": placed on the LEFT so it doesn't collide
+     with the trailing "that scale" copy. Peeks in from below-left, arcs
+     up-left on hover. */
+  .fx-icon--puzzle {
+    bottom: -0.1em; left: -1.3em;
+    transform: translateY(0.4em) scale(0.7) rotate(-12deg);
   }
-  .fx--biz:hover {
-    background-image: linear-gradient(var(--brand-secondary), var(--brand-secondary));
-    background-size: 100% 0.55em;
+  .fx:hover .fx-icon--puzzle {
+    opacity: 1;
+    transform: translateY(-0.55em) scale(1.05) rotate(8deg);
   }
-
-  /* Pill words ("0-to-1", "millions") have a thin underline at rest;
-     on hover, the underline expands into a soft wash and the pill
-     subtly lifts (matches the .fx--delight treatment). */
-  .v2-hero__pop {
-    transition:
-      background-size 280ms var(--ease-out),
-      background-image 280ms var(--ease-out),
-      transform 220ms var(--ease-out);
-  }
-  .fx--launch:hover .v2-hero__pop,
-  .fx--reach:hover .v2-hero__pop {
+  /* On hover, the inner pop word's underline grows into a wash and the
+     word subtly lifts (matches the prior fx--launch/fx--reach treatment). */
+  .fx:hover .v2-hero__pop {
     background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
     background-size: 100% 100%;
     transform: translateY(-1px) scale(1.04);
   }
 
-  /* Globe on "millions" — arcs up and to the right on hover, settling
-     near where the rocket on "0-to-1" sits. Clockwise tilt (vs the
-     rocket's counter-clockwise) so the motion reads distinct. */
-  .fx--reach .fx-icon--brfloat {
-    bottom: -0.05em;
-    right: -1.35em;
-    transform: translate(-0.2em, 0.45em) scale(0.65) rotate(-20deg);
+  /* Inline brand mark: logo is hidden at rest and slides in on hover.
+     The name carries v2-hero__pop for the same underline → wash highlight
+     as the other pop words, and the wash grows in sync. */
+  .hero-co {
+    display: inline-flex;
+    align-items: baseline;
+    line-height: inherit;
+    white-space: nowrap;
+    cursor: default;
   }
-  .fx--reach:hover .fx-icon--brfloat {
-    transform: translate(0.45em, -0.85em) scale(1.05) rotate(15deg);
+  .hero-co img {
+    height: 0.95em;
+    width: auto;
+    max-width: 0;
+    opacity: 0;
+    margin-right: 0;
+    display: inline-block;
+    object-fit: contain;
+    transition:
+      max-width 320ms var(--ease-out),
+      margin-right 320ms var(--ease-out),
+      opacity 240ms var(--ease-out),
+      transform 320ms var(--ease-out);
+    transform: translateX(-0.2em) scale(0.6) rotate(-8deg);
   }
-  :global(.wave-text) { display: inline-block; }
-  :global(.wave-letter) { display: inline-block; }
+  .hero-co:hover img {
+    max-width: 1.4em;
+    opacity: 1;
+    margin-right: 0.32em;
+    transform: translateX(0) scale(1) rotate(0);
+  }
+  .hero-co:hover .v2-hero__pop {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+    transform: translateY(-1px) scale(1.04);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .v2-hero__wave { animation: none; }

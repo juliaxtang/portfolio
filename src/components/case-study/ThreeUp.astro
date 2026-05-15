@@ -1,0 +1,57 @@
+---
+interface Props {
+  wide?: boolean;
+  gap?: "sm" | "md" | "lg";
+}
+
+const { wide = false, gap = "md" } = Astro.props;
+
+const gapMap: Record<string, string> = {
+  sm: "var(--s-4)",
+  md: "var(--s-6)",
+  lg: "var(--s-10)",
+};
+
+const cls = ["cs-threeup", wide ? "cs-threeup--wide" : ""]
+  .filter(Boolean)
+  .join(" ");
+const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
+---
+
+<div class={cls} style={styleVars}>
+  <slot />
+</div>
+
+<style>
+  .cs-threeup {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--cs-threeup-gap);
+    align-items: start;
+    margin: var(--s-8) auto;
+    max-width: var(--content-narrow);
+  }
+  .cs-threeup--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+
+  /* Scale up more than Figure's default 1.015 so details are readable at
+     small widths. z-index lifts the hovered item above its neighbors. */
+  .cs-threeup :global(.cs-figure) {
+    margin: 0;
+    position: relative;
+    z-index: 0;
+    transition: transform 0.25s var(--ease-out, cubic-bezier(0.2, 0, 0, 1));
+    will-change: transform;
+  }
+  .cs-threeup :global(.cs-figure:hover) {
+    transform: scale(1.18);
+    z-index: 1;
+  }
+
+  @media (max-width: 720px) {
+    .cs-threeup { grid-template-columns: 1fr; }
+  }
+</style>

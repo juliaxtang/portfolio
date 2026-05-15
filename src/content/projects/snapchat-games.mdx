@@ -9,6 +9,8 @@ company: "Snapchat"
 companyLogo: "/logos/snapchat.png"
 team: ["Product Manager", "Engineering", "Data Science", "User Research"]
 accent: "#FFFC00"
+heroVisual:
+  type: "video-stack"
 ---
 
 import Section from "../../components/case-study/Section.astro";
@@ -20,53 +22,112 @@ import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
 import Callout from "../../components/case-study/Callout.astro";
 import Quote from "../../components/case-study/Quote.astro";
-
-<Section size="sub" stage="Overview" title="Snapchat Games at a glance" hideFromNav>
-Snap's bet, going into 2025: games are one of the strongest ways to
-spark conversation between friends, and bi-directional communication is
-what keeps people coming back to Snapchat. I led design for the work
-that took Games from a side feature into a scaled product area with its
-own dedicated squad, presenting the strategy weekly to Evan and the
-exec team.
-</Section>
+import ThreeUp from "../../components/case-study/ThreeUp.astro";
+import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
-<Section size="sub" stage="Background" hideFromNav>
-"Games" on Snapchat was a category of Lenses. They lived inside the
-AR Bar on the camera, behind a Games tab in the carousel, sharing
-real estate with face filters and effects. The catalog was
-hyper-casual: short, single-screen, pick-up-and-play titles like Rock
-Blast, Box Boss, and Pool King, built mostly by a small group of
-partner developers shipping roughly 20 Lenses a month.
+<TwoUp ratio="1:1" align="center" title="What is a Lens?">
+  <Fragment slot="left">
+
+Lenses are AR effects that live in the carousel along the bottom of
+Snapchat's camera - the main screen of the app.
+
+Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.
+
+Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
+
+  </Fragment>
+  <AnnotatedFigure
+    slot="right"
+    src="/projects/snapchat-games/old-lens-carousel.gif"
+    alt="Snapchat camera screen showing the lens carousel at the bottom"
+    caption="The camera screen, circa when I joined."
+    labels={[{ x: 92, y: 80, label: "Lens carousel", side: "right", arm: 48 }]}
+    device="phone"
+    width="narrow"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Background" title="Games were just Lenses in that carousel" hideFromNav>
+Games were a subset of lenses, mixed into the same carousel as face
+filters and world effects. There was no dedicated category for them,
+no search that reliably surfaced them, and most people did not know
+the names of specific games anyway. You found one by stumbling across
+it while browsing. The experiences were hyper-casual: short,
+single-screen, pick-up-and-play, and almost entirely solo.
 </Section>
 
-{/* TODO: drop a "before" artifact — the AR Bar Games tab on the
-    camera, or the carousel screen showing how games sat alongside
-    filters. */}
+<ThreeUp>
+  <Figure
+    src="/projects/snapchat-games/early snapchat game 1.gif"
+    alt="An early hyper-casual game lens on Snapchat"
+  />
+  <Figure
+    src="/projects/snapchat-games/early snapchat games 2.gif"
+    alt="A second early hyper-casual game lens on Snapchat"
+  />
+  <Figure
+    src="/projects/snapchat-games/early snapchat game 3.gif"
+    alt="A third early hyper-casual game lens on Snapchat"
+  />
+</ThreeUp>
 
 <Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
-There was no live multiplayer and no real turn-based system. If you
-wanted to play with a friend, you played a game lens, then sent the
-result as a Snap. Your friend opened the Snap, saw a static image of
-your score, then had to open the same lens themselves and play. It
-was technically turn-based, but it read as "watching a friend's
-result" rather than playing together. The whole loop ran on the
-Snapping framework, which meant you could also discard and retake
-your turn before sending. You could cheat.
+There was an early version of turn-based games, but it was built entirely on the Snapping framework, and it created a confusing wall for most players.
+
+The flow for games where you could go first: you'd stumble on one in the lens carousel, play your turn, and then have to know to snap the result to a friend. That last step tripped a lot of people up. Not everyone made the connection between "playing a game" and "sending a Snap."
+
+For certain games, the wall was even earlier. To prevent cheating, some games were designed so you couldn't take your own turn first at all. You had to send the blank game to a friend, wait for them to play and snap it back, and only then could you go. That was a product decision made before my time, and it made sense logically, but in practice most users just got stuck and dropped off.
 </Section>
 
-{/* TODO: a clip or screen of the old turn-based-via-Snap flow:
-    play → Preview → Send → friend opens → friend plays → repeat. */}
+<TwoUp>
+  <Figure
+    src="/projects/snapchat-games/TODO-tictactoe.gif"
+    alt="Tic tac toe game lens where the user takes a turn and then snaps the result to a friend"
+    caption="Take your turn, then snap it."
+    frame
+  />
+  <Figure
+    src="/projects/snapchat-games/TODO-stuck.gif"
+    alt="A turn-based game where the user cannot take their turn first and hits a dead end"
+    caption="Some games required a friend to go first. Most users just bounced."
+    frame
+  />
+</TwoUp>
 
 <Section size="sub" stage="Background" title="The signal that said it was worth fighting for" hideFromNav>
 Even inside that buried, hyper-casual setup, the engagement data
 pointed at real demand. The top retentive game lenses were hitting
 around 30% D1 retention without any daily mechanism, and roughly 7%
 of Game Lens WAU were playing 5 or more days a week, skewing toward
-users with a weaker social graph. There was a real audience here.
-The product just wasn't built to serve them, and there was no path
-to monetize them.
+users with a weaker social graph. A Lens Games analysis run by the
+data team in early 2025 pulled together three broader signals that
+made the case for investment.
+</Section>
+
+<Stats cols={3} wide>
+  <Stat
+    value="7.8%"
+    label="Virality on Spotlight"
+    caption="Avg. view-to-unlock rate for Game Lenses, vs. a 1.1% benchmark. Direct-snap view-to-unlock was 6.3% vs. 1.4%, and top 100 games hit 23.6% story completion vs. a 10.7% benchmark."
+  />
+  <Stat
+    value="70%"
+    label="Social intent"
+    caption="Of Snapchatters who action with a Game Lens show post or send intent, vs. a 46% benchmark. The top 5% of game lenses by action UU feature time-based challenges, progression, leaderboards, or multiplayer."
+  />
+  <Stat
+    value="55%"
+    label="Top creators making games"
+    caption="Of Snap's top Lens creators had already shipped a Game Lens, including 71% of the highly-engaging creators cohort. Sports, Adventure, Action, Puzzle, and Strategy converted at significantly above-average swipe-to-action rates."
+  />
+</Stats>
+
+<Section size="sub" stage="Background" hideFromNav>
+There was a real audience here, and the creator ecosystem was
+already pointed at it. The product just wasn't built to serve them,
+and there was no path to monetize them.
 </Section>
 
 <Section size="sub" stage="Background" title="Pressure-testing the hypotheses with UXR" hideFromNav>

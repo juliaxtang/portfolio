@@ -319,11 +319,6 @@ const meta = [role].filter(Boolean) as string[];
     grid-row: span 2;
     gap: var(--s-1);
   }
-  /* Games-specific: "30M" is so short that the equal-width grid creates
-     an uneven visual gap. Nudge the middle stat left to optically balance. */
-  #snapchat-games .showcase__stats li:nth-child(2) {
-    transform: translateX(-30px);
-  }
   .showcase__stat-value {
     font-family: var(--font-sans);
     font-weight: 500;

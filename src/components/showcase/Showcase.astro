@@ -250,7 +250,7 @@ const meta = [role].filter(Boolean) as string[];
   }
 
   @media (max-width: 900px) {
-    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-8); padding: 0 var(--s-5); }
+    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-8); padding: 0 var(--s-5); overflow-x: clip; }
     .showcase__text { max-width: 520px; }
     .showcase--reverse .showcase__text { order: 2; }
     .showcase--reverse .showcase__hero { order: 1; }

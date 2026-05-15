@@ -106,6 +106,75 @@ button { font: inherit; cursor: pointer; }
   opacity: 1;
 }
 
+/* Outbound prose links with floating image preview on hover (shared with
+   about.astro — same markup pattern: .prose-out.prose-out--preview > .prose-out__preview + text) */
+.prose-out {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  padding-bottom: 1px;
+  border-radius: var(--r-xs);
+  transition:
+    background-size 280ms var(--ease-out),
+    background-image 280ms var(--ease-out);
+}
+.prose-out:hover {
+  background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+  background-size: 100% 100%;
+}
+.prose-out--preview { position: relative; }
+.prose-out__preview {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  width: 220px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px) rotate(var(--tilt, -3deg)) scale(0.94);
+  transform-origin: 50% 100%;
+  transition:
+    opacity 240ms var(--ease-out),
+    transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
+  background: var(--bg-surface);
+  padding: 10px 10px 40px;
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-subtle);
+}
+.prose-out__preview--bare {
+  background: none;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-xs);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.prose-out__preview--wide { width: 300px; }
+.prose-out__preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.prose-out--preview:hover .prose-out__preview,
+.prose-out--preview:focus-visible .prose-out__preview {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) rotate(var(--tilt, -3deg)) scale(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .prose-out__preview {
+    transition: opacity 200ms ease;
+  }
+  .prose-out--preview:hover .prose-out__preview,
+  .prose-out--preview:focus-visible .prose-out__preview {
+    transform: translateX(-50%) rotate(var(--tilt, -3deg));
+  }
+}
+
 /* ==========================================================
    LAYOUT HELPERS
    ========================================================== */

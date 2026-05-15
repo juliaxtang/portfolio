@@ -107,6 +107,16 @@ const isVideo =
       init();
     }
     function init() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.play().catch(() => {});
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll(".media-parallax video").forEach((v) => observer.observe(v));
+
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
       document.querySelectorAll(".media-parallax").forEach((root) => {

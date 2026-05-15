@@ -107,6 +107,19 @@ const resolve = (p: string) =>
       init();
     }
     function init() {
+      // On mobile, autoplay is suppressed for off-screen videos even with the
+      // autoplay attribute. Use IntersectionObserver to resume playback when
+      // each video scrolls into view.
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.play().catch(() => {});
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll(".video-stack video").forEach((v) => observer.observe(v));
+
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
       document.querySelectorAll(".video-stack").forEach((root) => {

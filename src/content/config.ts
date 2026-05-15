@@ -18,7 +18,7 @@ const projects = defineCollection({
       summary: z.string(),
       order: z.number().default(999),
       tags: z.array(z.string()).default([]),
-      year: z.number().optional(),
+      year: z.union([z.string(), z.number()]).optional(),
       role: z.string().optional(),
       company: z.string().optional(),
       companyLogo: z.string().optional(),
@@ -52,7 +52,6 @@ const projects = defineCollection({
       }).optional(),
       pubDate: z.coerce.date().optional(),
       draft: z.boolean().default(false),
-      password: z.string().optional(),
     }),
 });
 

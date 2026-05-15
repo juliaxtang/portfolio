@@ -16,10 +16,6 @@
 <div class="field-wrap" aria-hidden="true">
   <canvas class="field-canvas"></canvas>
 </div>
-<div class="dots-hint" data-dots-hint aria-hidden="true">
-  <img class="dots-hint__arrow" src="/click-me-arrow.png" alt="arrow pointing to click me" />
-  <span class="dots-hint__label">click me</span>
-</div>
 
 <script is:inline>
   (() => {
@@ -102,32 +98,17 @@
       host.addEventListener("mouseleave", onLeave);
       host.addEventListener("click", onClick);
 
-      // First-visit hint: a tiny curved arrow + "click me" appears the
-      // first time the user mouses over the dots, and dismisses on click.
-      // Persisted in localStorage so it's truly once-per-user.
-      const hint = wrap.parentElement?.querySelector("[data-dots-hint]");
-      const HINT_KEY = "pearl-hint-seen";
-      let hintSeen = false;
-      try { hintSeen = localStorage.getItem(HINT_KEY) === "1"; } catch (_) {}
-      if (hint && !hintSeen && !reduceMotion) {
-        const showHint = () => {
-          hint.classList.add("is-visible");
-          host.removeEventListener("mousemove", showHint);
-        };
-        const dismissHint = () => {
-          hint.classList.remove("is-visible");
-          hint.classList.add("is-dismissed");
-          try { localStorage.setItem(HINT_KEY, "1"); } catch (_) {}
-          host.removeEventListener("mousemove", showHint);
-          host.removeEventListener("click", dismissHint);
-        };
-        host.addEventListener("mousemove", showHint);
-        host.addEventListener("click", dismissHint);
-      }
-
       const ro = new ResizeObserver(build);
       ro.observe(wrap);
       build();
+
+      // Auto-pulse from the visual center of the cloud on load so the
+      // interaction is immediately apparent without a "click me" hint.
+      if (!reduceMotion) {
+        setTimeout(() => {
+          pulses.push({ x: w * 0.68, y: h * 0.48, r: 0, life: 1 });
+        }, 700);
+      }
 
       let visible = true;
       if ("IntersectionObserver" in window) {
@@ -210,20 +191,22 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    /* Soft elliptical cloud anchored to the right side of the hero where
-       the orb used to live. Bleeds off into the page; no hard edges.
-       Mask values:
-         - center 65% across, 50% down (right of text column)
-         - opaque core ~28%, fading to 0 at ~80% radius
-         - additionally fade the bottom 10% so dots don't crowd the work grid */
+    /* Soft elliptical cloud shifted slightly toward center (68%) and
+       widened (70%) for better cursor discoverability.
+       Three intersecting masks:
+         1. Radial cloud shape
+         2. Bottom fade so dots don't crowd the work grid
+         3. Left-side hard cutoff — dots never reach the text column */
     -webkit-mask-image:
-      radial-gradient(ellipse 55% 90% at 78% 50%, #000 0%, #000 18%, transparent 65%),
-      linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
-    -webkit-mask-composite: source-in;
+      radial-gradient(ellipse 70% 90% at 68% 50%, #000 0%, #000 18%, transparent 65%),
+      linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%),
+      linear-gradient(to right, transparent 0%, transparent 38%, #000 52%);
+    -webkit-mask-composite: source-in, source-in;
     mask-image:
-      radial-gradient(ellipse 55% 90% at 78% 50%, #000 0%, #000 18%, transparent 65%),
-      linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
-    mask-composite: intersect;
+      radial-gradient(ellipse 70% 90% at 68% 50%, #000 0%, #000 18%, transparent 65%),
+      linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%),
+      linear-gradient(to right, transparent 0%, transparent 38%, #000 52%);
+    mask-composite: intersect, intersect;
   }
   .field-canvas {
     position: absolute;
@@ -232,43 +215,6 @@
     height: 100%;
     display: block;
   }
-  .dots-hint {
-    position: absolute;
-    right: clamp(24px, 6vw, 72px);
-    bottom: 6%;
-    z-index: 1;
-    display: inline-flex;
-    align-items: flex-end;
-    gap: var(--s-2);
-    pointer-events: none;
-    color: var(--text-secondary, #6b6776);
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: clamp(15px, 1.4vw, 18px);
-    line-height: 1;
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out);
-  }
-  .dots-hint.is-visible { opacity: 0.85; transform: translateY(0); }
-  .dots-hint.is-dismissed {
-    opacity: 0 !important;
-    transform: translateY(-4px);
-    transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
-  }
-  .dots-hint__arrow {
-    width: clamp(56px, 6vw, 80px);
-    height: auto;
-    display: block;
-    margin-bottom: 8px;
-    filter: brightness(0) saturate(100%) invert(38%) sepia(7%) saturate(330%) hue-rotate(199deg) brightness(91%) contrast(90%);
-  }
-  .dots-hint__label { white-space: nowrap; padding-bottom: 2px; }
-
-  @media (max-width: 720px) {
-    .dots-hint { display: none; }
-  }
-
   @media (max-width: 720px) {
     .field-wrap {
       /* Center the cloud on mobile since the layout collapses to a single column. */

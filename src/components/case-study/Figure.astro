@@ -55,6 +55,8 @@ const resolved = src.startsWith("http") || src.startsWith(base)
   ? src
   : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
 
+const isGif = resolved.toLowerCase().endsWith(".gif");
+
 const aspectMap: Record<string, string | undefined> = {
   phone: "9 / 18",
   tablet: "4 / 3",
@@ -83,7 +85,11 @@ const mediaStyle = styleParts.join(";");
 
 <figure class={cls}>
   <div class="cs-figure__media" style={mediaStyle}>
-    <img src={resolved} alt={alt} loading="lazy" />
+    {isGif ? (
+      <video src={resolved} autoplay muted loop playsinline aria-label={alt} />
+    ) : (
+      <img src={resolved} alt={alt} loading="lazy" />
+    )}
   </div>
   {caption && <figcaption class="cs-figure__caption">{caption}</figcaption>}
 </figure>
@@ -166,7 +172,8 @@ const mediaStyle = styleParts.join(";");
     .cs-figure--framed .cs-figure__media { padding: var(--s-4); }
   }
 
-  .cs-figure__media img {
+  .cs-figure__media img,
+  .cs-figure__media video {
     width: 100%;
     height: auto;
     display: block;
@@ -174,7 +181,9 @@ const mediaStyle = styleParts.join(";");
   /* Phone/tablet image fills its container's width and uses its natural
      height — no letterboxing or empty space. */
   .cs-figure--device-phone .cs-figure__media img,
-  .cs-figure--device-tablet .cs-figure__media img {
+  .cs-figure--device-phone .cs-figure__media video,
+  .cs-figure--device-tablet .cs-figure__media img,
+  .cs-figure--device-tablet .cs-figure__media video {
     width: 100%;
     height: auto;
     margin: 0 auto;

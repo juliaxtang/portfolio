@@ -63,7 +63,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       "Turned live events into high-intent social discovery surfaces on Tinder, driving 2× the likes and conversations of the main swipe stack.",
     stats: [
       { value: "2×", label: "More likes sent and convos started vs. main app" },
-      { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
+      { value: "↑ 10%", label: "Tile opens on Explore" },
       { value: "2 months", label: "From kickoff to launch" },
     ],
     accent: "#FA7255",

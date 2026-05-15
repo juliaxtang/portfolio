@@ -106,7 +106,16 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     --cs-hero-min-h: clamp(480px, 56vh, 640px);
     position: relative;
     overflow: hidden;
-    background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
+    /* Vertical wash: full accent through the middle, softens toward the
+       bottom so the hero closes gently into the canvas before the next
+       section banner. Especially load-bearing for high-luminosity accents
+       like Snap yellow that would otherwise slam against the banner. */
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 0%,
+      color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 72%,
+      color-mix(in srgb, var(--cs-accent) 18%, var(--bg-canvas)) 100%
+    );
     min-height: var(--cs-hero-min-h);
     display: grid;
     grid-template-areas: "stack";

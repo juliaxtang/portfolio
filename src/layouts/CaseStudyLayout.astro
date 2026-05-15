@@ -16,6 +16,8 @@ import Hero from "../components/case-study/Hero.astro";
 import HeroTwoPhones from "../components/case-study/HeroTwoPhones.astro";
 import HeroOverlay from "../components/case-study/HeroOverlay.astro";
 import HeroProfileColumns from "../components/case-study/HeroProfileColumns.astro";
+import VideoStack from "../components/showcase/VideoStack.astro";
+import { snapchatGamesStackItems, snapchatGamesStackProps } from "../components/showcase/projects/snapchatGamesStack";
 import MoreWork from "../components/case-study/MoreWork.astro";
 import SectionNav from "../components/case-study/SectionNav.astro";
 import FadeIn from "../components/FadeIn.astro";
@@ -57,6 +59,13 @@ const hv = data.heroVisual;
         )}
         {hv?.type === "columns" && hv.col1 && hv.col2 && hv.col3 && (
           <HeroProfileColumns slot="visual" col1={hv.col1} col2={hv.col2} col3={hv.col3} />
+        )}
+        {hv?.type === "video-stack" && slug === "snapchat-games" && (
+          <VideoStack
+            slot="visual"
+            items={[...snapchatGamesStackItems]}
+            {...snapchatGamesStackProps}
+          />
         )}
       </Hero>
     </FadeIn>

@@ -20,6 +20,9 @@ export interface ShowcaseStat {
 export interface PressLogo {
   src: string;
   alt: string;
+  height?: number;
+  href?: string;
+  nudgeY?: number;
 }
 
 export interface ShowcaseContent {
@@ -65,10 +68,33 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     ],
     accent: "#FA7255",
     press: [
-      { src: "/projects/festival-mode/mashable-dark-logo.png", alt: "Mashable" },
-      { src: "/projects/festival-mode/engadget-dark-logo.png", alt: "Engadget" },
-      { src: "/projects/festival-mode/techcrunch-dark-logo.png", alt: "TechCrunch" },
-      { src: "/projects/festival-mode/dailymail-dark-logo.png", alt: "Daily Mail" },
+      {
+        src: "/projects/festival-mode/mashable-dark-logo.png",
+        alt: "Mashable",
+        height: 14,
+        href: "https://mashable.com/article/tinder-festival-mode",
+      },
+      {
+        src: "/projects/festival-mode/engadget-dark-logo.png",
+        alt: "Engadget",
+        height: 22.66,
+        nudgeY: 3,
+        href: "https://www.engadget.com/tinder-festival-mode-returns-163640137.html",
+      },
+      {
+        src: "/projects/festival-mode/techcrunch-dark-logo.png",
+        alt: "TechCrunch",
+        height: 20.6,
+        nudgeY: 4,
+        href: "https://techcrunch.com/2022/04/14/tinder-adds-a-festival-mode-for-making-connections-ahead-of-concerts-and-events/",
+      },
+      {
+        src: "/projects/festival-mode/dailymail-dark-logo.png",
+        alt: "Daily Mail",
+        height: 20,
+        nudgeY: 5,
+        href: "https://www.dailymail.com/sciencetech/article-10719027/Tinder-launches-FESTIVAL-MODE-lets-singletons-match-fellow-festivalgoers.html",
+      },
     ],
   },
   "custom-lists": {

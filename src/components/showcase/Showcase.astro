@@ -21,6 +21,15 @@ interface StatProps {
 interface PressLogo {
   src: string;
   alt: string;
+  /** Per-logo rendered height in px to optically balance wordmarks of
+   *  different cap-heights / tagline depths. Defaults to the base CSS height. */
+  height?: number;
+  /** External press article URL. When set, the logo links out in a new tab. */
+  href?: string;
+  /** Per-logo vertical nudge (px) to align the visible wordmark baseline
+   *  across logos whose internal composition isn't centered (e.g. logos with
+   *  a crest or icon above the wordmark). Negative = up. */
+  nudgeY?: number;
 }
 interface Props {
   /** Path to a company logo PNG/SVG. Rendered as a height-locked img next
@@ -74,7 +83,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolvedLogo = companyLogo && (companyLogo.startsWith("http") || companyLogo.startsWith(base)
   ? companyLogo
   : `${base}${companyLogo.startsWith("/") ? "" : "/"}${companyLogo}`);
-const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
+const meta = [role].filter(Boolean) as string[];
 ---
 
 <section class={"showcase" + (reverse ? " showcase--reverse" : "")} style={accentStyle} id={id}>
@@ -118,18 +127,6 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
           ))}
         </ul>
       )}
-      {press.length > 0 && (
-        <div class="showcase__press" aria-label="As seen on">
-          <span class="showcase__press-label">As seen on</span>
-          <ul class="showcase__press-logos" role="list">
-            {press.map((logo) => (
-              <li>
-                <img src={`${base}${logo.src.startsWith("/") ? "" : "/"}${logo.src}`} alt={logo.alt} loading="lazy" />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       {comingSoon ? (
         <p class="showcase__coming-soon">
           <button class="showcase__coming-soon-btn" disabled aria-disabled="true">
@@ -149,6 +146,44 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
             <i class="ph ph-arrow-up-right showcase__cta-arrow" aria-hidden="true"></i>
           </a>
         </p>
+      )}
+      {press.length > 0 && (
+        <div class="showcase__press" aria-label="As seen on">
+          <span class="showcase__press-label">As seen on</span>
+          <ul class="showcase__press-logos" role="list">
+            {press.map((logo) => {
+              const imgStyle = [
+                logo.height ? `height:${logo.height}px` : null,
+                logo.nudgeY ? `transform:translateY(${logo.nudgeY}px)` : null,
+              ].filter(Boolean).join(";") || undefined;
+              const img = (
+                <img
+                  src={`${base}${logo.src.startsWith("/") ? "" : "/"}${logo.src}`}
+                  alt={logo.alt}
+                  loading="lazy"
+                  style={imgStyle}
+                />
+              );
+              return (
+                <li>
+                  {logo.href ? (
+                    <a
+                      class="showcase__press-link"
+                      href={logo.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Read ${logo.alt} article`}
+                    >
+                      {img}
+                    </a>
+                  ) : (
+                    img
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
     <div class={"showcase__hero" + (isLinked ? " showcase__hero--linked" : "")}>
@@ -311,7 +346,7 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     align-items: center;
     flex-wrap: wrap;
     gap: var(--s-2) var(--s-4);
-    margin: 0 0 var(--s-3);
+    margin: var(--s-8) 0 0;
   }
   .showcase__press-label {
     font-family: var(--font-mono);
@@ -327,19 +362,39 @@ const meta = [year ? String(year) : null, role].filter(Boolean) as string[];
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    /* Wordmarks in each press logo sit near the bottom of their bounding
+       image (icons / crests live above), so aligning bottoms aligns the
+       visible text baselines across the row. Per-logo nudgeY fine-tunes
+       residual drift from descenders / crest depth. */
+    align-items: flex-end;
     gap: var(--s-3) var(--s-4);
   }
+  .showcase__press-logos li {
+    display: flex;
+    align-items: flex-end;
+  }
   .showcase__press-logos img {
-    height: 16px;
+    height: 18px;
     width: auto;
-    max-width: 96px;
     object-fit: contain;
     display: block;
     opacity: 0.65;
     transition: opacity 200ms var(--ease-out);
   }
   .showcase__press-logos img:hover { opacity: 1; }
+  .showcase__press-link {
+    display: inline-block;
+    line-height: 0;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .showcase__press-link:hover img,
+  .showcase__press-link:focus-visible img {
+    opacity: 1;
+  }
+  .showcase__press-link:hover,
+  .showcase__press-link:focus-visible {
+    transform: translateY(-1px);
+  }
 
   .showcase__cta {
     margin: 0;

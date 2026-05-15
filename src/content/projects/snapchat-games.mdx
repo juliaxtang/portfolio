@@ -7,7 +7,7 @@ year: "2025–Present"
 role: "Staff Product Designer"
 company: "Snapchat"
 companyLogo: "/logos/snapchat.png"
-team: ["Product Manager", "Engineering", "Data Science", "User Research", "Partnerships"]
+team: ["Product Manager", "Engineering", "Data Science", "User Research"]
 accent: "#FFFC00"
 ---
 
@@ -33,18 +33,101 @@ exec team.
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
 <Section size="sub" stage="Background" hideFromNav>
-Coming in, Snapchatters mentally split "filter games" on the camera
-from "Snapchat games" played with friends in chat. Discovery was thin,
-the storefront was buried, and the games surface didn't reflect how
-social the format actually is. There was real signal in the data
-though: retentive game lenses already hit around 30% D1 retention
-without a daily mechanism, and roughly 7% of Game Lens WAU were playing
-5 or more days a week, skewing toward users with a weaker social
-graph. Games could pull two distinct levers at once.
+"Games" on Snapchat was a category of Lenses. They lived inside the
+AR Bar on the camera, behind a Games tab in the carousel, sharing
+real estate with face filters and effects. The catalog was
+hyper-casual: short, single-screen, pick-up-and-play titles like Rock
+Blast, Box Boss, and Pool King, built mostly by a small group of
+partner developers shipping roughly 20 Lenses a month.
 </Section>
 
-{/* TODO: drop a "before" framing artifact, e.g., the old games entry,
-    a research clip, or one of the early strategy slides. */}
+{/* TODO: drop a "before" artifact — the AR Bar Games tab on the
+    camera, or the carousel screen showing how games sat alongside
+    filters. */}
+
+<Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
+There was no live multiplayer and no real turn-based system. If you
+wanted to play with a friend, you played a game lens, then sent the
+result as a Snap. Your friend opened the Snap, saw a static image of
+your score, then had to open the same lens themselves and play. It
+was technically turn-based, but it read as "watching a friend's
+result" rather than playing together. The whole loop ran on the
+Snapping framework, which meant you could also discard and retake
+your turn before sending. You could cheat.
+</Section>
+
+{/* TODO: a clip or screen of the old turn-based-via-Snap flow:
+    play → Preview → Send → friend opens → friend plays → repeat. */}
+
+<Section size="sub" stage="Background" title="A category stuck in hyper-casual" hideFromNav>
+The catalog had a structural problem alongside the UX one. The mobile
+games market is split into three slices, and Snap was sitting in the
+worst one for retention and revenue.
+</Section>
+
+<Callouts cols={3}>
+  <Callout eyebrow="Where we were" title="Hyper-casual" tone="outline">
+    High virality, low retention (one and done), market saturation,
+    and only 0.4% of total US mobile gaming revenue. Easy to make,
+    hard to monetize.
+  </Callout>
+  <Callout eyebrow="The market sweet spot" title="Hybrid-casual" tone="outline">
+    Hyper-casual mechanics plus the meta layers of mid-core:
+    progression, persistence, narrative. Growing 30%+ year-on-year.
+    Where the industry was moving.
+  </Callout>
+  <Callout eyebrow="Out of reach" title="Mid-core / core" tone="outline">
+    Best retention, strong IAP, but expensive to make and dominated
+    by AAA titles. Not where a social app starts.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Background" title="The signal that said it was worth fighting for" hideFromNav>
+Even inside that buried, hyper-casual setup, the engagement data
+pointed at real demand. The top retentive game lenses were hitting
+around 30% D1 retention without any daily mechanism, and roughly 7%
+of Game Lens WAU were playing 5 or more days a week, skewing toward
+users with a weaker social graph. There was a real audience here.
+The product just wasn't built to serve them, and there was no path
+to monetize them.
+</Section>
+
+<Section size="sub" stage="Background" title="Pressure-testing the hypotheses with UXR" hideFromNav>
+Around the time of my first strategy deck, I partnered with our UXR
+team on a foundational gaming study: 1:1 interviews with 11
+Snapchatters ages 13-24, half regular Lens-game players, half not,
+all of them also playing on at least one competitor platform
+(iMessage, Messenger, Roblox, Instagram, TikTok). The study set out
+to validate or kill the bets I was making on the direction.
+</Section>
+
+<Callouts cols={3}>
+  <Callout eyebrow="Finding 1" title="The mental-model split was real" tone="outline">
+    "Users familiar with Lens games did not strongly associate filter
+    games with Snapchat games, because it wasn't clear they could play
+    games with friends in chat like on other platforms."
+  </Callout>
+  <Callout eyebrow="Finding 2" title="Users expected games in chat" tone="outline">
+    "Users had difficulty finding games due to buried entry points...
+    Users expected to start games within the chat." Most participants
+    would initiate a game by asking a friend in chat first.
+  </Callout>
+  <Callout eyebrow="Finding 3" title="Live multiplayer was the top ask" tone="outline">
+    The most-appealing proposed game types: multiplayer live,
+    multiplayer goal-oriented, turn-based, daily challenges,
+    simulation, and party games. Synchronous, social formats over
+    mindless or solo intellectual ones.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Background" hideFromNav>
+The research gave the strategy work qualitative grounding to sit
+alongside the engagement data. It's not "I had a hunch and execs
+trusted it," it's "I built the framing from product instinct and
+data, then pressure-tested it with 11 users before scaling the
+bets." Specific findings show up next to the decisions they
+validated, later in the case study.
+</Section>
 
 <Section size="sub" stage="Background" title="Two jobs to be done" hideFromNav>
 I framed the work for the team around two jobs games could do for
@@ -65,12 +148,14 @@ Snap, and used that framing in exec reviews to scope the year.
 <Section stage="Strategy" eyebrow="Strategy" title="Going Big with Games" banner />
 
 <Section size="sub" stage="Strategy" hideFromNav>
-As the early bets started showing real engagement, I wrote the
-long-term strategy deck for the Games initiative. The goal: align
-execs around a multi-year direction for the area, not just the next
-quarter's roadmap. The deck got buy-in and excitement from Evan and
-the rest of the exec team, and Games was spun out as its own
-dedicated squad off the back of it.
+With the engagement data, the research findings, and the two jobs
+framed, I needed exec investment to take Games from a side feature
+borrowing capacity from Lenses into a dedicated product area with
+its own headcount and roadmap. I wrote the long-term strategy deck
+for the Games initiative. The goal: align execs around a multi-year
+direction, not just the next quarter's roadmap. The deck got buy-in
+and excitement from Evan and the rest of the exec team, and Games
+was spun out as its own dedicated squad off the back of it.
 </Section>
 
 <Section size="sub" stage="Strategy" title="The category bet" hideFromNav>
@@ -183,15 +268,22 @@ home for playable game ads down the line.
 <Section stage="Design" eyebrow="Decision 2" title="Connected Lenses, in chat" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
-Live multiplayer was the most-requested game type in research and the
-most natural fit for how Snapchatters already use chat. I designed
-around three ways to play on the same framework: solo with visual
-indicators of friends' past plays, multiplayer with friends (sessions
-tied to a chat or call so only those people can see and join), and
-online matchmaking against strangers as a fallback. Sessions support
-spectators, replays of the last game, and ghosts of friends if no one
-is live, so the experience degrades gracefully.
+Live multiplayer was the most-requested game type in our foundational
+research and the most natural fit for how Snapchatters already use
+chat. I designed around three ways to play on the same framework:
+solo with visual indicators of friends' past plays, multiplayer with
+friends (sessions tied to a chat or call so only those people can see
+and join), and online matchmaking against strangers as a fallback.
+Sessions support spectators, replays of the last game, and ghosts of
+friends if no one is live, so the experience degrades gracefully.
 </Section>
+
+<Quote attribution="Gaming Foundational Research, Nov 2025">
+Users valued "live" features that allow them to join friends' games
+immediately without waiting. Most prefer playing with friends, but
+some would play live with strangers if no one was around, similar to
+Roblox.
+</Quote>
 
 <Video
   src="/projects/snapchat-games/live-multiplayer.mp4"
@@ -207,12 +299,25 @@ is live, so the experience degrades gracefully.
 <Section size="sub" stage="Design" hideFromNav>
 Turn-based games were a chat thread in disguise, but they were riding
 on the Snapping framework, which let players discard and retake their
-turn. In other words, you could cheat. I pushed to move turn-based
-onto the live multiplayer format instead: turns auto-send when you
-play them, the opponent can watch a replay, and the game flips into a
-live session the moment both players are present. The chat envelope
-became the surface, showing whose turn it is, updating in real time,
-with a Remind CTA to nudge the other player without leaving chat.
+turn. In other words, you could cheat. The format was also confusing
+to users in our foundational research: participants couldn't tell
+that sending a Snap of a game was supposed to initiate a turn-based
+session with a friend.
+</Section>
+
+<Quote attribution="Gaming Foundational Research, Nov 2025">
+Some users did not think games could be tied to Snapping, as it's
+more of a watching experience than playing with friends.
+</Quote>
+
+<Section size="sub" stage="Design" hideFromNav>
+I pushed to move turn-based onto the live multiplayer format
+instead: turns auto-send when you play them, the opponent can watch
+a replay, and the game flips into a live session the moment both
+players are present. The chat envelope became the surface, showing
+whose turn it is, updating in real time, with a Remind CTA to nudge
+the other player without leaving chat. A turn becomes a message, not
+a Snap.
 </Section>
 
 <Video
@@ -275,6 +380,14 @@ surfaces the bitmoji and name of friends currently in a multiplayer
 game, in friends feed and chat, so an empty lobby is the exception,
 not the default.
 </Section>
+
+<Quote attribution="Gaming Foundational Research, Nov 2025">
+Users thought it was appealing to see their friends' Bitmojis
+associated with games in order to know their friends are interested
+in that game and potentially open to playing it together. Make the
+experience feel more like playing together — video recording
+gameplay, showing a live score count in chat.
+</Quote>
 
 {/* TODO: fullscreen vs. shrunk camera before/after, the tap-to-record
     spec from Lens Games '25, and a Games Presence treatment. */}

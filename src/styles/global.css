@@ -91,6 +91,21 @@ button { font: inherit; cursor: pointer; }
 }
 .prose a:hover, .prose-link:hover { text-decoration-color: var(--text-primary); }
 
+/* External links — small diagonal arrow after the text */
+.prose-link--external::after,
+.cs-section__body :global(a[target="_blank"])::after {
+  content: " ↗";
+  font-size: 0.75em;
+  opacity: 0.55;
+  display: inline-block;
+  vertical-align: 0.15em;
+  transition: opacity .25s var(--ease);
+}
+.prose-link--external:hover::after,
+.cs-section__body :global(a[target="_blank"]):hover::after {
+  opacity: 1;
+}
+
 /* ==========================================================
    LAYOUT HELPERS
    ========================================================== */

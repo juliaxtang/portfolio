@@ -99,6 +99,15 @@ const styleVars = `--cs-twoup-cols:${ratioMap[ratio]};--cs-twoup-gap:${gapMap[ga
   }
 
   .cs-twoup__left { display: grid; gap: var(--s-4); }
+
+  /* Prose text in a TwoUp left column: match Section body sizing and
+     strip browser-default <p> margins so grid gap alone controls spacing. */
+  .cs-twoup__left :global(p) {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin: 0;
+  }
   .cs-twoup__head { display: grid; gap: var(--s-2); }
   .cs-twoup__eyebrow { margin: 0; color: var(--text-secondary); }
   .cs-twoup__title {

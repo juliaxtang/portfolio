@@ -22,28 +22,20 @@ import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
 import Callout from "../../components/case-study/Callout.astro";
 import Quote from "../../components/case-study/Quote.astro";
-import ThreeUp from "../../components/case-study/ThreeUp.astro";
 import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
 <TwoUp ratio="1:1" align="center" title="What is a Lens?">
   <Fragment slot="left">
-
-Lenses are AR effects that live in the carousel along the bottom of
-Snapchat's camera - the main screen of the app.
-
-Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.
-
-Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
-
+Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera - the main screen of the app.<br /><br />Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.<br /><br />Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
   </Fragment>
   <AnnotatedFigure
     slot="right"
     src="/projects/snapchat-games/old-lens-carousel.gif"
     alt="Snapchat camera screen showing the lens carousel at the bottom"
     caption="The camera screen, circa when I joined."
-    labels={[{ x: 92, y: 80, label: "Lens carousel", side: "right", arm: 48 }]}
+    labels={[{ type: "bracket", x: 100, yStart: 72, yEnd: 84, label: "Lens carousel", arm: 20 }]}
     device="phone"
     width="narrow"
   />
@@ -51,50 +43,39 @@ Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose
 
 <Section size="sub" stage="Background" title="Games were just Lenses in that carousel" hideFromNav>
 Games were a subset of lenses, mixed into the same carousel as face
-filters and world effects. There was no dedicated category for them,
-no search that reliably surfaced them, and most people did not know
-the names of specific games anyway. You found one by stumbling across
-it while browsing. The experiences were hyper-casual: short,
+filters and world effects. There was no dedicated category for them.
+You would stumble across a game while browsing, or already know the
+name and search. The experiences were hyper-casual: short,
 single-screen, pick-up-and-play, and almost entirely solo.
-</Section>
-
-<ThreeUp>
-  <Figure
-    src="/projects/snapchat-games/early snapchat game 1.gif"
-    alt="An early hyper-casual game lens on Snapchat"
-  />
-  <Figure
-    src="/projects/snapchat-games/early snapchat games 2.gif"
-    alt="A second early hyper-casual game lens on Snapchat"
-  />
-  <Figure
-    src="/projects/snapchat-games/early snapchat game 3.gif"
-    alt="A third early hyper-casual game lens on Snapchat"
-  />
-</ThreeUp>
-
-<Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
-There was an early version of turn-based games, but it was built entirely on the Snapping framework, and it created a confusing wall for most players.
-
-The flow for games where you could go first: you'd stumble on one in the lens carousel, play your turn, and then have to know to snap the result to a friend. That last step tripped a lot of people up. Not everyone made the connection between "playing a game" and "sending a Snap."
-
-For certain games, the wall was even earlier. To prevent cheating, some games were designed so you couldn't take your own turn first at all. You had to send the blank game to a friend, wait for them to play and snap it back, and only then could you go. That was a product decision made before my time, and it made sense logically, but in practice most users just got stuck and dropped off.
 </Section>
 
 <TwoUp>
   <Figure
-    src="/projects/snapchat-games/TODO-tictactoe.gif"
-    alt="Tic tac toe game lens where the user takes a turn and then snaps the result to a friend"
-    caption="Take your turn, then snap it."
-    frame
+    src="/projects/snapchat-games/early snapchat game 1.gif"
+    alt="An early hyper-casual game lens on Snapchat"
+    device="phone"
   />
   <Figure
-    src="/projects/snapchat-games/TODO-stuck.gif"
-    alt="A turn-based game where the user cannot take their turn first and hits a dead end"
-    caption="Some games required a friend to go first. Most users just bounced."
-    frame
+    src="/projects/snapchat-games/early snapchat games 2.gif"
+    alt="Another early hyper-casual game lens on Snapchat"
+    device="phone"
   />
 </TwoUp>
+
+<Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
+There was no live multiplayer and no real turn-based system. If you
+wanted to play with a friend, you played a game lens, then sent the
+result as a Snap. Your friend opened the Snap, saw a static image of
+your score, then had to open the same lens themselves and play. It
+was technically turn-based, but it read as "watching a friend's
+result" rather than playing together.
+
+The whole loop ran on the Snapping framework, which meant you could
+also discard and retake your turn before sending. You could cheat.
+</Section>
+
+{/* TODO: a clip or screen of the old turn-based-via-Snap flow:
+    play -> Preview -> Send -> friend opens -> friend plays -> repeat. */}
 
 <Section size="sub" stage="Background" title="The signal that said it was worth fighting for" hideFromNav>
 Even inside that buried, hyper-casual setup, the engagement data
@@ -198,11 +179,13 @@ walk over and ask, "how can we go big with games?"
 The first bet was on Job 1. Research said users expected to start
 games inside chat. I designed a Games entry in the chat drawer: tap
 an icon while you're in any 1:1 or group chat and a drawer opens
-with games you can play with those specific people. Turn-based
-games waiting on you sit at the top, then suggested games for that
-chat, then a Browse Games entry into the broader catalog. The
-existence of the drawer made games something you do mid-conversation,
-not a separate destination you have to leave chat for.
+with games you can play with those specific people. Turn-based games
+waiting on you sit at the top, then suggested games for that chat,
+then a Browse Games entry into the broader catalog.
+
+The existence of the drawer made games something you do
+mid-conversation, not a separate destination you have to leave
+chat for.
 </Section>
 
 <Quote attribution="Gaming Foundational Research, Nov 2025">
@@ -249,13 +232,14 @@ with every new title in the catalog.
 
 <Section size="sub" stage="Design" hideFromNav>
 The third bet was on the existing turn-based experience, where the
-biggest gap between user expectation and product reality was. A
-full refactor off the Snapping framework would have been the right
+biggest gap between user expectation and product reality was. A full
+refactor off the Snapping framework would have been the right
 long-term move, but it depended on a multiplayer system we hadn't
-built yet. So I scoped this as a set of quick wins inside the
-existing framework: surface turn-based games clearly in chat,
-reduce the cheating, and make a friend's turn feel like an event
-worth opening.
+built yet.
+
+So I scoped this as a set of quick wins inside the existing
+framework: surface turn-based games clearly in chat, reduce the
+cheating, and make a friend's turn feel like an event worth opening.
 </Section>
 
 <Section size="sub" stage="Design" hideFromNav>
@@ -267,7 +251,7 @@ obvious cheating loophole by blocking turn retakes inside the
 Snapping flow, so once you played a turn, the result was the result.
 </Section>
 
-{/* TODO: the chat envelope redesign — before (generic Snap
+{/* TODO: the chat envelope redesign - before (generic Snap
     thumbnail) and after (turn-based game card with state). */}
 
 <Section size="sub" stage="Design" hideFromNav>
@@ -295,11 +279,12 @@ that question, and the dedicated Games squad is what came out of it.
 The strategic insight that anchored the deck: Snap was sitting in
 hyper-casual. The industry's actual sweet spot is hybrid-casual: the
 pick-up-and-play mechanics of hyper-casual plus the meta layers of
-mid-core (progression, upgrades, narrative). Merge Mansion is the
-proof point I anchored the pitch on: 60M downloads, $600M lifetime
-revenue. Hybrid-casual was the part of the market growing at over
-30% year-on-year, and Snap's social graph was a meaningful unfair
-advantage in that lane.
+mid-core (progression, upgrades, narrative).
+
+Merge Mansion is the proof point I anchored the pitch on: 60M
+downloads, $600M lifetime revenue. Hybrid-casual was the part of
+the market growing at over 30% year-on-year, and Snap's social
+graph was a meaningful unfair advantage in that lane.
 </Section>
 
 <Callouts cols={3}>
@@ -410,12 +395,12 @@ system.
 The biggest gap the early bets exposed was synchronous play. The
 research said live multiplayer was the most-wanted game type, and
 there was nothing like it on Snap. With the squad formed and Pillar
-2 of the strategy (enable hybrid-casual mechanics, multiplayer as
-the foundation) green-lit, I designed Connected Lenses for
+2 of the strategy green-lit, I designed Connected Lenses for
 Multiplayer as a single framework with three modes: solo play with
 visual indicators of friends' past runs, multiplayer with friends
-(sessions tied to a chat or call so only those people can see and
-join), and online matchmaking against strangers as a fallback.
+(sessions tied to a chat or call), and online matchmaking against
+strangers as a fallback.
+
 Sessions support spectators, replays of the last game, and ghosts
 of friends if no one is live, so the experience degrades gracefully
 instead of dropping you into an empty lobby.
@@ -458,16 +443,17 @@ in that game and potentially open to playing it together.
 <Section stage="Design" eyebrow="Project 2" title="Pulling turn-based all the way off the Snapping framework" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
-The early-bets turn-based fixes made the existing format less
-broken. With Connected Lenses for Multiplayer now shipped, the full
-rewrite was finally possible. I moved turn-based onto the live
-multiplayer format: turns auto-send when you play them, the
-opponent can watch a replay, and the game flips into a live session
-the moment both players are present. The chat envelope is no longer
-a wrapper around a Snap, it's a real-time surface that shows whose
-turn it is, updates as the game state changes, with a Remind CTA to
-nudge the other player without leaving chat. A turn becomes a
-message, not a Snap.
+The early-bets turn-based fixes made the existing format less broken.
+With Connected Lenses for Multiplayer now shipped, the full rewrite
+was finally possible. I moved turn-based onto the live multiplayer
+format: turns auto-send when you play them, the opponent can watch a
+replay, and the game flips into a live session the moment both
+players are present.
+
+The chat envelope is no longer a wrapper around a Snap: it's a
+real-time surface that shows whose turn it is, updates as the game
+state changes, and has a Remind CTA to nudge the other player
+without leaving chat. A turn becomes a message, not a Snap.
 </Section>
 
 <Quote attribution="Gaming Foundational Research, Nov 2025">
@@ -512,12 +498,13 @@ With retentive game lenses already at around 30% D1, a daily
 mechanism was the obvious next lever for Job 2. The design proposal:
 a Daily Challenges row pinned to the front of the Games carousel, a
 per-game streak, an auto-Snap to Preview the day's result, and
-notifications that fire only on social signal (friends playing the
-puzzle), not on the streak itself. The team pushed back on a few of
-my early proposals, including a per-game permission widget, and we
-landed on a single opt-in modal the first time you enter a game.
-Those calls came out of design review and made the final flow
-noticeably cleaner.
+notifications that fire only on social signal (a friend playing the
+same puzzle), not on the streak itself.
+
+The team pushed back on a few of my early proposals, including a
+per-game permission widget, and we landed on a single opt-in modal
+the first time you enter a game. Those calls came out of design
+review and made the final flow noticeably cleaner.
 </Section>
 
 {/* TODO: the Daily Challenges carousel mock, the post-solve
@@ -532,8 +519,9 @@ games, playable ads, choose-your-own-adventure stories. I drove a
 content strategy realignment with the cross-functional teams: the
 camera should be for creation, and content earns its place in the
 carousel only if it drives a Snap create, send, post, or save.
-Long-play content lives on Discover and Spotlight instead. As a
-follow-on, I scoped a Games Spotlight tab with
+Long-play content lives on Discover and Spotlight instead.
+
+As a follow-on, I scoped a Games Spotlight tab with
 continue-where-you-left-off and a Browse Games entry point from any
 fullscreen game unlock, so a player who arrives via a friend's score
 can pivot into the broader catalog.

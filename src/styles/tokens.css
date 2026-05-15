@@ -18,9 +18,9 @@
 
   --brand-gradient:      linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%);
   --brand-gradient-soft: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%);
-  --brand-aurora:        radial-gradient(60% 80% at 20% 30%, #C5DCEA 0%, transparent 60%),
-                         radial-gradient(60% 70% at 80% 20%, #DCD2E8 0%, transparent 60%),
-                         radial-gradient(70% 80% at 60% 90%, #F4D9CC 0%, transparent 60%),
+  --brand-aurora:        radial-gradient(120% 140% at 15% 25%, rgba(197, 220, 234, 0.85) 0%, rgba(197, 220, 234, 0.4) 35%, transparent 75%),
+                         radial-gradient(130% 130% at 85% 15%, rgba(220, 210, 232, 0.8) 0%, rgba(220, 210, 232, 0.35) 40%, transparent 80%),
+                         radial-gradient(140% 150% at 65% 95%, rgba(244, 217, 204, 0.85) 0%, rgba(244, 217, 204, 0.4) 40%, transparent 80%),
                          #FDFCFA;
 
   --brand-underline:  #C5DCEA;

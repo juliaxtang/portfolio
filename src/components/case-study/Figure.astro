@@ -55,7 +55,6 @@ const resolved = src.startsWith("http") || src.startsWith(base)
   ? src
   : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
 
-const isGif = resolved.toLowerCase().endsWith(".gif");
 
 const aspectMap: Record<string, string | undefined> = {
   phone: "9 / 18",
@@ -85,11 +84,7 @@ const mediaStyle = styleParts.join(";");
 
 <figure class={cls}>
   <div class="cs-figure__media" style={mediaStyle}>
-    {isGif ? (
-      <video src={resolved} autoplay muted loop playsinline aria-label={alt} />
-    ) : (
-      <img src={resolved} alt={alt} loading="lazy" />
-    )}
+    <img src={resolved} alt={alt} loading="lazy" />
   </div>
   {caption && <figcaption class="cs-figure__caption">{caption}</figcaption>}
 </figure>

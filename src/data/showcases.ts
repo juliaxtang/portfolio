@@ -45,7 +45,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Tappy Cloud",
     tagline:
-      "Turned Tinder's static profile system into a backend-driven, dynamically configurable one. The centralized tool that came out of it, TaCo, has since powered 50+ profile experiments.",
+      "Architected Tinder's transition from hardcoded profiles to dynamic profiles via a backend-driven experimentation platform. The design tool that came out of it, TaCo, has since powered 50+ experiments and an attributed $50-110M revenue lift.",
     stats: [
       { value: "↑ 20%", label: "More likes sent across all experiments" },
       { value: "$50–110M", label: "In revenue lift, attributed" },
@@ -60,7 +60,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Festival Mode",
     tagline:
-      "Designed Festival Mode, a seasonal Tinder Explore experience for festivalgoers to meet others at the same festival. Two months to launch, driving 2× the likes and conversations of the main swipe stack.",
+      "Turned live events into high-intent social discovery surfaces on Tinder, driving 2× the likes and conversations of the main swipe stack.",
     stats: [
       { value: "2×", label: "More likes sent and convos started vs. main app" },
       { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
@@ -104,7 +104,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "UX Designer",
     title: "Custom Lists",
     tagline:
-      "Redesigned TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable. Lifted list creation by double digits across new and existing users.",
+      "Rethought how TV Time users curate and share their entertainment identity, redesigning Custom Lists into a more personal and social system. Drove double-digit lifts in list creation across new and existing users.",
     stats: [
       { value: "↑ 14%", label: "More new users created a list" },
       { value: "↑ 15%", label: "More lists created by new users" },

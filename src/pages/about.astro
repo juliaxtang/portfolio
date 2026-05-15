@@ -137,10 +137,7 @@ const hobbies = [
               ><span class="fx-photo" style="--tilt:-5deg" aria-hidden="true"><img
                 src={`${base}/about/film.png`} alt="" loading="lazy" /></span
               >film</span> at USC. I got my start in design working at an
-            agency on major film marketing campaigns, including my <span
-              class="fx fx--clio"
-              ><span class="fx-icon fx-icon--tr" aria-hidden="true">🏆</span
-              >award-winning</span> work on <a
+            agency on major film marketing campaigns, including my award-winning work on <a
               class="prose-out prose-out--preview"
               href="https://www.thetangentagency.com/projects/lego-movie-2"
               target="_blank"
@@ -156,11 +153,24 @@ const hobbies = [
 
         <FadeIn delay={460}>
           <p class="about-body">
-            To me, the best design can be <span class="fx-vanish"
-              ><span class="fx-vanish__text">invisible</span></span>. Bad
-            design often stands out and causes frustration as you're
-            fighting it. Good design just works. It can still be beautiful
-            and satisfying, but it's never something you have to work for.
+            I've always been drawn to technology as a tool to <span class="fx fx--key">connect us</span>. COVID made that visceral: being forced apart showed how much digital products could either bridge that distance or fail to, and it shaped the moves I made after.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={500}>
+          <p class="about-body about-highlight">
+            As AI reshapes how we engage with the world, designing
+            experiences that feel <span class="fx fx--key">genuinely
+            human</span> matters more than ever.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={540}>
+          <p class="about-body">
+            I approach that as a <span class="fx fx--key">systems
+            problem</span>. Each feature is a piece of a whole, and the
+            question is always how the pieces work together toward something
+            greater. That's the space I work in: <span class="fx fx--key"><span class="fx-icon fx-icon--tl" aria-hidden="true">🎯</span>strategic</span> enough to define what to build, <span class="fx fx--key"><span class="fx-icon fx-icon--tr" aria-hidden="true">🕸️</span>systems-minded</span> enough to connect the pieces, and <span class="fx fx--key"><span class="fx-icon fx-icon--tr" aria-hidden="true">✨</span>obsessive about craft</span> to make sure none of it gets lost in execution.
           </p>
         </FadeIn>
       </div>
@@ -253,14 +263,14 @@ const hobbies = [
   .portrait {
     /* polaroid card — natural aspect ratio image, generous bottom matte. */
     background: var(--bg-surface);
-    padding: 12px 12px 56px;
+    padding: 12px 12px 38px;
     border-radius: var(--r-sm);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-subtle);
   }
   .portrait--inline {
     float: left;
-    width: 280px;
+    width: 308px;
     margin: 4px var(--s-6) var(--s-3) 0;
     transform: rotate(-2deg);
     transform-origin: 50% 50%;
@@ -501,6 +511,40 @@ const hobbies = [
   }
   .fx--film:hover,
   .fx--clio:hover {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+  }
+
+  .about-highlight {
+    background: var(--brand-wash-soft);
+    border-radius: var(--r-sm);
+    padding: var(--s-3) var(--s-4);
+  }
+
+  .about-pull {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: var(--s-6) 0;
+  }
+
+  .fx--key {
+    font-weight: 600;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
+    transition:
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out);
+  }
+  .fx--key:hover {
     background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
     background-size: 100% 100%;
   }

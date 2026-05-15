@@ -19,7 +19,6 @@ import MediaParallax from "../components/showcase/MediaParallax.astro";
 import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
 import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
 import CustomListsShowcase from "../components/showcase/projects/CustomListsShowcase.astro";
-import TVTimeOnboardingShowcase from "../components/showcase/projects/TVTimeOnboardingShowcase.astro";
 
 // "Julia" rendered letter-by-letter so each can bob on greeting hover.
 const juliaHtml = ["J", "u", "l", "i", "a"]
@@ -215,9 +214,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <CustomListsShowcase />
   </FadeIn>
 
-  <FadeIn>
-    <TVTimeOnboardingShowcase />
-  </FadeIn>
 </BaseLayout>
 
 <style>

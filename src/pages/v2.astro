@@ -170,33 +170,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </Showcase>
   </FadeIn>
 
-  <FadeIn>
-    <Showcase
-      eyebrow="TV Time · 2020 · UX Designer"
-      title="Onboarding Redesign"
-      tagline="A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop."
-      stats={[
-        { value: "100%", label: "Understood key functions by end of session" },
-        { value: "100%", label: "Understood key benefits by end of session" },
-        { value: "5 days", label: "Sprint kickoff to tested prototype" },
-      ]}
-      ctaHref={`${base}/product-design/tv-time-onboarding`}
-      accent="#DCD2E8"
-      id="tv-time-onboarding"
-    >
-      <PhoneStack
-        items={[
-          { src: "/projects/tv-time-onboarding/flow-tracker.webp",    alt: "Onboarding flow for the Tracker user type",     label: "Tracker flow" },
-          { src: "/projects/tv-time-onboarding/flow-discoverer.webp", alt: "Onboarding flow for the Discoverer user type", label: "Discoverer flow" },
-          { src: "/projects/tv-time-onboarding/flow-watcher.webp",    alt: "Onboarding flow for the Watcher user type",    label: "Watcher flow" },
-        ]}
-        aspect="690 / 610"
-        fit="contain"
-        cardWidth="clamp(280px, 60%, 460px)"
-        frame={false}
-      />
-    </Showcase>
-  </FadeIn>
 </BaseLayout>
 
 <style>

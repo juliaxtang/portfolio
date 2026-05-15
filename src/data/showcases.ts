@@ -112,19 +112,4 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     ],
     accent: "#F4D9CC",
   },
-  "tv-time-onboarding": {
-    companyLogo: "/logos/tv time.png",
-    companyName: "TV Time",
-    year: 2020,
-    role: "UX Designer",
-    title: "Onboarding Redesign",
-    tagline:
-      "Led a week-long Design Sprint at TV Time to rethink onboarding around three user types, ending Friday with a tested prototype that taught key functions, key benefits, and the core habit loop.",
-    stats: [
-      { value: "100%", label: "test participants understood key functions of the app" },
-      { value: "100%", label: "test participants understood how to perform core actions on the app" },
-      { value: "5 days", label: "Sprint kickoff to tested prototype" },
-    ],
-    accent: "#DCD2E8",
-  },
 };

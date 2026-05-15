@@ -22,13 +22,14 @@ import Stat from "../../components/case-study/Stat.astro";
 import Callouts from "../../components/case-study/Callouts.astro";
 import Callout from "../../components/case-study/Callout.astro";
 import Quote from "../../components/case-study/Quote.astro";
+import ThreeUp from "../../components/case-study/ThreeUp.astro";
 import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
 <TwoUp ratio="1:1" align="center" title="What is a Lens?">
   <Fragment slot="left">
-Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera - the main screen of the app.<br /><br />Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.<br /><br />Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-link prose-link--external" target="_blank" rel="noopener noreferrer">Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
+Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera - the main screen of the app.<br /><br />Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:-3deg" aria-hidden="true"><img src="/projects/snapchat-games/lens-studio.png" alt="" loading="lazy" /></span>Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.<br /><br />Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:3deg" aria-hidden="true"><img src="/projects/snapchat-games/lenscreatorrewards.gif" alt="" loading="lazy" /></span>Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
   </Fragment>
   <AnnotatedFigure
     slot="right"
@@ -43,24 +44,27 @@ Lenses are AR effects that live in the carousel along the bottom of Snapchat's c
 
 <Section size="sub" stage="Background" title="Games were just Lenses in that carousel" hideFromNav>
 Games were a subset of lenses, mixed into the same carousel as face
-filters and world effects. There was no dedicated category for them.
-You would stumble across a game while browsing, or already know the
-name and search. The experiences were hyper-casual: short,
+filters and world effects. There was no dedicated category for them,
+no search that reliably surfaced them, and most people did not know
+the names of specific games anyway. You found one by stumbling across
+it while browsing. The experiences were hyper-casual: short,
 single-screen, pick-up-and-play, and almost entirely solo.
 </Section>
 
-<TwoUp>
+<ThreeUp>
   <Figure
     src="/projects/snapchat-games/early snapchat game 1.gif"
     alt="An early hyper-casual game lens on Snapchat"
-    device="phone"
   />
   <Figure
     src="/projects/snapchat-games/early snapchat games 2.gif"
-    alt="Another early hyper-casual game lens on Snapchat"
-    device="phone"
+    alt="A second early hyper-casual game lens on Snapchat"
   />
-</TwoUp>
+  <Figure
+    src="/projects/snapchat-games/early snapchat game 3.gif"
+    alt="A third early hyper-casual game lens on Snapchat"
+  />
+</ThreeUp>
 
 <Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
 There was no live multiplayer and no real turn-based system. If you

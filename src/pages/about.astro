@@ -175,6 +175,19 @@ const hobbies = [
         </FadeIn>
       </div>
 
+      <FadeIn delay={580}>
+        <p class="about-body">Want to see it in practice?</p>
+      </FadeIn>
+
+      <FadeIn delay={620}>
+        <div class="about-cta">
+          <a href={`${base}/`} class="cta-btn">
+            Check out my work!
+            <span class="cta-arrow" aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </FadeIn>
+
     </article>
   </div>
 </BaseLayout>
@@ -770,6 +783,48 @@ const hobbies = [
   .pill:focus-visible .pill-photo {
     opacity: 1;
     transform: translateX(-50%) translateY(0) rotate(var(--tilt, 0deg)) scale(1);
+  }
+
+  .about-cta {
+    margin-top: 0;
+    margin-bottom: var(--s-16);
+  }
+
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: 12px 22px;
+    border-radius: var(--r-full);
+    border: 1.5px solid var(--brand-primary-2);
+    background: var(--brand-wash-soft);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      background var(--dur-normal) var(--ease-out),
+      border-color var(--dur-normal) var(--ease-out),
+      gap var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-out),
+      box-shadow var(--dur-normal) var(--ease-out);
+  }
+  .cta-arrow {
+    font-size: 1.05em;
+    line-height: 0;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .cta-btn:hover,
+  .cta-btn:focus-visible {
+    gap: var(--s-3);
+    background: var(--brand-primary);
+    border-color: var(--brand-primary-2);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -12px var(--brand-wash);
+  }
+  .cta-btn:hover .cta-arrow,
+  .cta-btn:focus-visible .cta-arrow {
+    transform: translate(2px, -2px);
   }
 
   @media (prefers-reduced-motion: reduce) {

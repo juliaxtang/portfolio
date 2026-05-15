@@ -1,0 +1,238 @@
+---
+/**
+ * AnnotatedFigure — image with positioned callout labels.
+ *
+ * Two annotation types:
+ *
+ *   type: "point" (default) — dot + arm + label at a single x/y coordinate.
+ *   type: "bracket" — vertical bracket spanning yStart→yEnd at x, with a
+ *     horizontal arm from the midpoint to the label. Use for indicating a
+ *     range (e.g. the lens carousel strip) rather than a single point.
+ *
+ * Usage:
+ *   <AnnotatedFigure
+ *     src="/projects/foo/bar.gif"
+ *     alt="..."
+ *     labels={[{ type: "bracket", x: 100, yStart: 72, yEnd: 84, label: "Lens carousel" }]}
+ *     device="phone"
+ *   />
+ */
+interface Annotation {
+  type?: "point" | "bracket";
+  x: number;
+  y?: number;       // point: vertical center (% of image height)
+  yStart?: number;  // bracket: top edge (% of image height)
+  yEnd?: number;    // bracket: bottom edge (% of image height)
+  label: string;
+  side?: "left" | "right";
+  arm?: number;
+}
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  labels: Annotation[];
+  width?: "narrow" | "wide";
+  device?: "phone" | "auto";
+  frame?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  labels,
+  width = "narrow",
+  device = "auto",
+  frame = false,
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolved = src.startsWith("http") || src.startsWith(base)
+  ? src
+  : `${base}${src.startsWith("/") ? "" : "/"}${src}`;
+
+const cls = [
+  "cs-annotated-figure",
+  `cs-annotated-figure--${width}`,
+  frame ? "cs-annotated-figure--framed" : "",
+  device !== "auto" ? `cs-annotated-figure--device-${device}` : "",
+].filter(Boolean).join(" ");
+---
+
+<figure class={cls}>
+  <div class="cs-annotated-figure__media">
+    <img src={resolved} alt={alt} loading="lazy" />
+    {labels.map((ann) => {
+      if (ann.type === "bracket") {
+        const yS = ann.yStart ?? 50;
+        const yE = ann.yEnd ?? 60;
+        const armLen = ann.arm ?? 20;
+        return (
+          <div
+            class="cs-annotation cs-annotation--bracket"
+            style={`left:${ann.x}%;top:${yS}%;height:calc(${yE - yS}%);--arm:${armLen}px`}
+          >
+            <span class="cs-annotation__bracket-rail" />
+            <span class="cs-annotation__bracket-stub cs-annotation__bracket-stub--top" />
+            <span class="cs-annotation__bracket-stub cs-annotation__bracket-stub--bot" />
+            <span class="cs-annotation__bracket-mid">
+              <span class="cs-annotation__arm" />
+              <span class="cs-annotation__label">{ann.label}</span>
+            </span>
+          </div>
+        );
+      }
+      return (
+        <div
+          class={`cs-annotation cs-annotation--point cs-annotation--${ann.side ?? "right"}`}
+          style={`left:${ann.x}%;top:${ann.y ?? 50}%;--arm:${ann.arm ?? 36}px`}
+        >
+          <span class="cs-annotation__dot" />
+          <span class="cs-annotation__arm" />
+          <span class="cs-annotation__label">{ann.label}</span>
+        </div>
+      );
+    })}
+  </div>
+  {caption && <figcaption class="cs-annotated-figure__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .cs-annotated-figure {
+    margin: var(--s-8) auto;
+  }
+  .cs-annotated-figure--narrow { max-width: var(--content-narrow); }
+  .cs-annotated-figure--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+
+  .cs-annotated-figure__media {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: visible;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .cs-annotated-figure--framed .cs-annotated-figure__media {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: var(--s-6);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--r-lg);
+    overflow: visible;
+  }
+
+  .cs-annotated-figure--device-phone .cs-annotated-figure__media {
+    max-width: 320px;
+    margin-inline: auto;
+    display: block;
+  }
+
+  .cs-annotated-figure__media img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--r-lg);
+  }
+
+  /* ── Point annotation ───────────────────────────────── */
+  .cs-annotation--point {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .cs-annotation--left {
+    flex-direction: row-reverse;
+    transform: translate(-100%, -50%);
+  }
+
+  .cs-annotation__dot {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    opacity: 0.75;
+  }
+
+  /* ── Bracket annotation ─────────────────────────────── */
+  .cs-annotation--bracket {
+    position: absolute;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* Vertical rail */
+  .cs-annotation__bracket-rail {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+
+  /* Top and bottom stubs */
+  .cs-annotation__bracket-stub {
+    position: absolute;
+    left: 0;
+    width: 7px;
+    height: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+  .cs-annotation__bracket-stub--top { top: 0; }
+  .cs-annotation__bracket-stub--bot { bottom: 0; }
+
+  /* Midpoint arm + label */
+  .cs-annotation__bracket-mid {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+  }
+
+  /* ── Shared arm + label ─────────────────────────────── */
+  .cs-annotation__arm {
+    flex-shrink: 0;
+    width: var(--arm, 36px);
+    height: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+
+  .cs-annotation__label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--bg-page) 92%, transparent);
+    padding: 2px 7px;
+    border-radius: var(--r-sm, 4px);
+    border: 1px solid var(--border-subtle);
+    letter-spacing: 0.01em;
+  }
+
+  .cs-annotated-figure__caption {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: var(--s-3);
+    padding-inline: var(--s-4);
+  }
+</style>

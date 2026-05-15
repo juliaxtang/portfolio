@@ -1,0 +1,313 @@
+---
+title: "Snapchat Games"
+summary: "Defining the long-term Games strategy at Snap, getting exec buy-in for a dedicated squad, and scaling the product area to 30M+ DAU with games designed as a reason friends talk on Snapchat."
+order: 10
+tags: ["Snapchat", "Strategy", "Vision", "Social"]
+year: "2025–Present"
+role: "Staff Product Designer"
+company: "Snapchat"
+companyLogo: "/logos/snapchat.png"
+team: ["Product Manager", "Engineering", "Data Science", "User Research", "Partnerships"]
+accent: "#FFFC00"
+---
+
+import Section from "../../components/case-study/Section.astro";
+import Figure from "../../components/case-study/Figure.astro";
+import Video from "../../components/case-study/Video.astro";
+import TwoUp from "../../components/case-study/TwoUp.astro";
+import Stats from "../../components/case-study/Stats.astro";
+import Stat from "../../components/case-study/Stat.astro";
+import Callouts from "../../components/case-study/Callouts.astro";
+import Callout from "../../components/case-study/Callout.astro";
+import Quote from "../../components/case-study/Quote.astro";
+
+<Section size="sub" stage="Overview" title="Snapchat Games at a glance" hideFromNav>
+Snap's bet, going into 2025: games are one of the strongest ways to
+spark conversation between friends, and bi-directional communication is
+what keeps people coming back to Snapchat. I led design for the work
+that took Games from a side feature into a scaled product area with its
+own dedicated squad, presenting the strategy weekly to Evan and the
+exec team.
+</Section>
+
+<Section stage="Background" eyebrow="Background" title="Where Games started" banner />
+
+<Section size="sub" stage="Background" hideFromNav>
+Coming in, Snapchatters mentally split "filter games" on the camera
+from "Snapchat games" played with friends in chat. Discovery was thin,
+the storefront was buried, and the games surface didn't reflect how
+social the format actually is. There was real signal in the data
+though: retentive game lenses already hit around 30% D1 retention
+without a daily mechanism, and roughly 7% of Game Lens WAU were playing
+5 or more days a week, skewing toward users with a weaker social
+graph. Games could pull two distinct levers at once.
+</Section>
+
+{/* TODO: drop a "before" framing artifact, e.g., the old games entry,
+    a research clip, or one of the early strategy slides. */}
+
+<Section size="sub" stage="Background" title="Two jobs to be done" hideFromNav>
+I framed the work for the team around two jobs games could do for
+Snap, and used that framing in exec reviews to scope the year.
+</Section>
+
+<Callouts cols={2}>
+  <Callout eyebrow="Job 1" title="Connections and Conversations" tone="outline">
+    Get friends to play together inside Snapchat. Games as a reason to
+    open a chat, then to keep that chat going.
+  </Callout>
+  <Callout eyebrow="Job 2" title="Growth and Resurrection" tone="outline">
+    Get more Snapchatters to open the app each day, especially users
+    with a weaker social graph who aren't pulled in by chat alone.
+  </Callout>
+</Callouts>
+
+<Section stage="Strategy" eyebrow="Strategy" title="Going Big with Games" banner />
+
+<Section size="sub" stage="Strategy" hideFromNav>
+As the early bets started showing real engagement, I wrote the
+long-term strategy deck for the Games initiative. The goal: align
+execs around a multi-year direction for the area, not just the next
+quarter's roadmap. The deck got buy-in and excitement from Evan and
+the rest of the exec team, and Games was spun out as its own
+dedicated squad off the back of it.
+</Section>
+
+<Section size="sub" stage="Strategy" title="The category bet" hideFromNav>
+The strategic insight: Snap was sitting in hyper-casual (high
+virality, low retention, hard to monetize). The industry's actual
+sweet spot is hybrid-casual: the pick-up-and-play mechanics of
+hyper-casual plus the meta layers of mid-core (progression, upgrades,
+narrative). Merge Mansion is the proof point that anchored the pitch:
+60M downloads, $600M lifetime revenue. Hybrid-casual was the part of
+the market growing at over 30% year-on-year, and Snap's social graph
+was a meaningful unfair advantage in that lane.
+</Section>
+
+{/* TODO: drop the "Mobile Games Landscape" / "we're here" positioning
+    slide from Going Big with Games. */}
+
+<Section size="sub" stage="Strategy" title="Two guiding principles" hideFromNav>
+I anchored the strategy on two principles, one for each audience the
+work has to serve.
+</Section>
+
+<Callouts cols={2}>
+  <Callout eyebrow="For consumers" title="A social-first gaming destination" tone="outline">
+    "How can Snapchat become THE place people go to for social mobile
+    games?" Snap's massive user base and friend graph is the unfair
+    advantage over standalone game platforms.
+  </Callout>
+  <Callout eyebrow="For developers" title="Handle everything but the game" tone="outline">
+    "Our developers should only have to worry about making a good
+    game. We should handle the rest." Distribution, monetization, and
+    social plumbing become Snap's job.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Strategy" title="The four pillars" hideFromNav>
+From the principles, four pillars to focus the next year of work
+against. The deck assigned a clear design direction to each.
+</Section>
+
+<Callouts cols={2}>
+  <Callout number="1" title="Monetize existing games">
+    Grow Lens+ subscriptions, layer in video and rewarded ads on
+    hyper-casual games using formats we already had, instead of
+    building net-new ad surfaces.
+  </Callout>
+  <Callout number="2" title="Enable hybrid-casual mechanics">
+    Multiplayer as the foundation. Add progression, persistence, and
+    a cross-game identity so a session is worth coming back to.
+  </Callout>
+  <Callout number="3" title="Incentivize the developer ecosystem">
+    Expand the Partner Developer Program with upfront funding for
+    first-time devs and a discovery boost gated on game retention,
+    playtime, and social mechanics.
+  </Callout>
+  <Callout number="4" title="Diversify monetization">
+    Beyond ads: in-app purchases for progression boosters, plus
+    Bitmoji cosmetics that persist across every game on Snapchat.
+  </Callout>
+</Callouts>
+
+{/* TODO: drop the 4-pillars slide and the Snapchat Arcade / Points
+    system concept slide from Going Big with Games. */}
+
+<Section stage="Strategy" eyebrow="Strategy" title="An entry-point system, not a single surface" banner />
+
+<Section size="sub" stage="Strategy" hideFromNav>
+With the long-term direction agreed, the next question was where
+games actually live in the app. The unlock was treating Games as a
+system of entry points matched to the two jobs, rather than fighting
+for one home. Each surface earns its place by serving a different
+player intent.
+</Section>
+
+<Callouts cols={2}>
+  <Callout eyebrow="Play with friends" title="Chat Drawer, Friends Feed, FAB, Calling">
+    Surfaces inside the messaging stack carry live multiplayer,
+    turn-based, and leaderboard games. These are where social games
+    belong, because the social context is already there.
+  </Callout>
+  <Callout eyebrow="Open the app today" title="Discover, Spotlight, Topic Chats">
+    Content surfaces and Topic Chats carry solo and passive-browse
+    games, daily challenges, and chat-relevant games for players whose
+    friends aren't online.
+  </Callout>
+</Callouts>
+
+{/* TODO: drop the entry-point map slide from "Games Entry Points & Strategy".
+    It explains the system in one image better than the body copy can. */}
+
+<Section stage="Design" eyebrow="Decision 1" title="A stationary entry on Discover" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+Discover gave us the traffic, but we had to pick a treatment that
+didn't break the feed. I worked through three options with the team:
+a pinned pill (confusing UX), a pinned tile (too disruptive to the
+page), and a pinned carousel component. We aligned on the carousel:
+it lives inside the existing visual rhythm of the page, gives solo
+players a predictable place to land, and quietly becomes a natural
+home for playable game ads down the line.
+</Section>
+
+<Video
+  src="/projects/snapchat-games/storefront.mp4"
+  width="narrow"
+  caption="The Games storefront on Discover."
+/>
+
+{/* TODO: drop the three-options comparison slide. */}
+
+<Section stage="Design" eyebrow="Decision 2" title="Connected Lenses, in chat" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+Live multiplayer was the most-requested game type in research and the
+most natural fit for how Snapchatters already use chat. I designed
+around three ways to play on the same framework: solo with visual
+indicators of friends' past plays, multiplayer with friends (sessions
+tied to a chat or call so only those people can see and join), and
+online matchmaking against strangers as a fallback. Sessions support
+spectators, replays of the last game, and ghosts of friends if no one
+is live, so the experience degrades gracefully.
+</Section>
+
+<Video
+  src="/projects/snapchat-games/live-multiplayer.mp4"
+  width="narrow"
+  caption="Live multiplayer kicked off from inside a group chat."
+/>
+
+{/* TODO: the 3-ways-to-play slide, the spectator mode flow, and the
+    "play against ghosts" fallback from Going Big with Games. */}
+
+<Section stage="Design" eyebrow="Decision 3" title="Pulling turn-based off the Snapping framework" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+Turn-based games were a chat thread in disguise, but they were riding
+on the Snapping framework, which let players discard and retake their
+turn. In other words, you could cheat. I pushed to move turn-based
+onto the live multiplayer format instead: turns auto-send when you
+play them, the opponent can watch a replay, and the game flips into a
+live session the moment both players are present. The chat envelope
+became the surface, showing whose turn it is, updating in real time,
+with a Remind CTA to nudge the other player without leaving chat.
+</Section>
+
+<Video
+  src="/projects/snapchat-games/turn-based.mov"
+  width="narrow"
+  caption="Turn-based games sit alongside chats as their own conversation."
+/>
+
+{/* TODO: the cheating slide (discard and retake) from Turn-Based
+    Retries, plus the envelope states (your turn / their turn /
+    complete) and the Remind CTA. */}
+
+<Section stage="Design" eyebrow="Decision 4" title="A daily mechanism for solo players" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+With retentive game lenses already at around 30% D1, a daily
+mechanism was the obvious next lever for Job 2. The design proposal: a
+Daily Challenges row pinned to the front of the Games carousel, a
+per-game streak, an auto-Snap to Preview the day's result, and
+notifications that fire only on social signal (friends playing the
+puzzle), not on the streak itself. The team pushed back on a few of
+my early proposals, including a per-game permission widget, and we
+landed on a single opt-in modal the first time you enter a game.
+Those calls came out of design review and made the final flow
+noticeably cleaner.
+</Section>
+
+{/* TODO: the Daily Challenges carousel mock, the post-solve leaderboard
+    screen, and the auto-Snap to Preview moment from Daily Games. */}
+
+<Section stage="Design" eyebrow="Decision 5" title="Defending the camera for creation" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+The Lens carousel kept attracting long-play content: longer-form
+games, playable ads, choose-your-own-adventure stories. I drove a
+content strategy realignment with the cross-functional teams: the
+camera should be for creation, and content earns its place in the
+carousel only if it drives a Snap create, send, post, or save.
+Long-play content lives on Discover and Spotlight instead. As a
+follow-on, I scoped a Games Spotlight tab with
+continue-where-you-left-off and a Browse Games entry point from any
+fullscreen game unlock, so a player who arrives via a friend's score
+can pivot into the broader catalog.
+</Section>
+
+{/* TODO: the "Camera should be for creation" framing slide and the
+    Games Spotlight tab option-comparison from Lens Carousel Vision. */}
+
+<Section stage="Design" eyebrow="Decision 6" title="Fullscreen games and Presence" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+The gameplay had to earn the next session, not just the first tap.
+Fullscreen Games on iOS replaced the camera-shrunk layout with an
+immersive, full-viewport game lens. I designed a unified
+tap-to-record behavior so the same control either starts the game
+silently or starts it with hands-free recording, then auto-progresses
+to Preview when the round ends, so players can clip and send their
+best moments without breaking out of the game. Games Presence UI
+surfaces the bitmoji and name of friends currently in a multiplayer
+game, in friends feed and chat, so an empty lobby is the exception,
+not the default.
+</Section>
+
+{/* TODO: fullscreen vs. shrunk camera before/after, the tap-to-record
+    spec from Lens Games '25, and a Games Presence treatment. */}
+
+<Section stage="Results" eyebrow="Results" title="What it moved" banner />
+
+<Stats cols={3} wide>
+  <Stat
+    value="30M"
+    label="Games DAU. Games are now a scaled product area at Snap, not a side experience."
+  />
+  <Stat
+    value="↑ 0.136%"
+    label="Lift in Direct Snap Send Human, Snap's top-line communication metric, from a single Games entrypoint experiment."
+  />
+  <Stat
+    value="↑ 120%"
+    label="Increase in Game Video Posts on iOS after pulling capture into the moment of play."
+  />
+</Stats>
+
+<Section size="sub" stage="Results" title="And one organizational outcome" hideFromNav>
+The Going Big with Games deck got the long-term direction approved
+and Games was carved out as its own dedicated squad off the back of
+it. Headcount, roadmap ownership, and a bi-weekly review cadence with
+execs all followed.
+</Section>
+
+<Section size="sub" stage="Results" title="What's next" hideFromNav>
+The work going forward is about depth: more partner-built games on
+the live multiplayer framework, sharper discovery in the storefront
+and a top-level Games Spotlight tab, an in-app points and IAP system
+to diversify monetization beyond ads, and tightening the loop between
+playing a game and posting about it. The through-line stays the same:
+games are at their best when they give friends a reason to talk.
+</Section>

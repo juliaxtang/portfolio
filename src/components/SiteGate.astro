@@ -1,26 +1,20 @@
 ---
 /**
- * PasswordGate — soft client-side gate for a case study.
+ * SiteGate — soft client-side gate for the entire site.
  *
- * The page HTML still contains the protected content (this is a static
- * Astro site), so this is "share via password" UX, not real access control.
- * The expected password is embedded in the page; matching is done in JS,
- * and a sessionStorage flag remembers unlock state across navigations.
+ * The site is static, so protected content is still in the HTML. This is
+ * "share via password" UX, not real access control. A sessionStorage flag
+ * remembers unlock state across navigations.
  */
-interface Props {
-  password: string;
-  slug: string;
-  title: string;
-}
-const { password, slug, title } = Astro.props;
+const password = "2026";
 ---
 
-<div class="gate" data-password={password} data-slug={slug}>
+<div class="gate" data-password={password}>
   <div class="gate__card">
-    <div class="gate__eyebrow">Protected case study</div>
-    <h1 class="gate__title">{title}</h1>
+    <div class="gate__eyebrow">Protected portfolio</div>
+    <h1 class="gate__title">Julia Tang</h1>
     <p class="gate__body">
-      This case study is password protected. Enter the password to view it,
+      This portfolio is password protected. Enter the password to view it,
       or reach out if you don't have one.
     </p>
     <form class="gate__form" novalidate>
@@ -142,12 +136,11 @@ const { password, slug, title } = Astro.props;
 </style>
 
 <script>
-  function initGate() {
+  function initSiteGate() {
     const gate = document.querySelector<HTMLElement>(".gate");
     if (!gate) return;
-    const slug = gate.dataset.slug || "";
     const expected = gate.dataset.password || "";
-    const key = `cs-unlocked:${slug}`;
+    const key = "site-unlocked";
 
     if (sessionStorage.getItem(key) === "1") {
       gate.remove();
@@ -174,6 +167,6 @@ const { password, slug, title } = Astro.props;
       }
     });
   }
-  initGate();
-  document.addEventListener("astro:page-load", initGate);
+  initSiteGate();
+  document.addEventListener("astro:page-load", initSiteGate);
 </script>

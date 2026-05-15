@@ -17,7 +17,6 @@ import HeroTwoPhones from "../components/case-study/HeroTwoPhones.astro";
 import HeroOverlay from "../components/case-study/HeroOverlay.astro";
 import HeroProfileColumns from "../components/case-study/HeroProfileColumns.astro";
 import MoreWork from "../components/case-study/MoreWork.astro";
-import PasswordGate from "../components/case-study/PasswordGate.astro";
 import SectionNav from "../components/case-study/SectionNav.astro";
 import FadeIn from "../components/FadeIn.astro";
 import type { CollectionEntry } from "astro:content";
@@ -71,10 +70,6 @@ const hv = data.heroVisual;
   </article>
 
   <MoreWork currentSlug={slug} />
-
-  {data.password && (
-    <PasswordGate password={data.password} slug={slug} title={data.title} accent={data.accent} />
-  )}
 </BaseLayout>
 
 <style>

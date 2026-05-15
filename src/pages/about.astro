@@ -16,20 +16,26 @@ const greetings = [
 
 const hobbies = [
   {
+    emoji: "🐈‍⬛",
+    label: "Cat mom",
+    photo: `${base}/about/cat-mom.JPG`,
+    tilt: 5,
+  },
+  {
     emoji: "🤿",
-    label: "Scuba diving",
+    label: "Scuba diver",
     photo: `${base}/about/scuba-diving.JPG`,
     tilt: -5,
   },
   {
     emoji: "🏂",
-    label: "Snowboarding",
+    label: "Snowboarder",
     photo: `${base}/about/snowboarding.JPG`,
     tilt: 4,
   },
   {
     emoji: "🌐",
-    label: "Language learning",
+    label: "Language learner",
     captionList: ["Mandarin", "French", "Spanish", "Japanese", "English"],
   },
 ];
@@ -51,6 +57,33 @@ const hobbies = [
             ))}
           </span><span class="title-rest">, I'm Julia.</span>
         </h1>
+      </FadeIn>
+
+      <FadeIn delay={200}>
+        <ul class="pill-row" aria-label="Outside of work">
+          {hobbies.map((h) => (
+            <li>
+              <span class="pill" tabindex="0">
+                {h.photo && (
+                  <span
+                    class="pill-photo"
+                    style={`--tilt:${h.tilt}deg`}
+                    aria-hidden="true"
+                  >
+                    <img src={h.photo} alt="" loading="lazy" />
+                  </span>
+                )}
+                {h.captionList && (
+                  <ul class="pill-caption" aria-hidden="true">
+                    {h.captionList.map((item) => <li>{item}</li>)}
+                  </ul>
+                )}
+                <span class="pill-emoji" aria-hidden="true">{h.emoji}</span>
+                <span class="pill-label">{h.label}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
       </FadeIn>
 
       <div class="about-body-stack">
@@ -132,35 +165,6 @@ const hobbies = [
         </FadeIn>
       </div>
 
-      <FadeIn delay={320}>
-        <section class="hobbies" aria-label="Outside of work">
-          <p class="t-eyebrow">Outside of work</p>
-          <ul class="pill-row">
-            {hobbies.map((h) => (
-              <li>
-                <span class="pill" tabindex="0">
-                  {h.photo && (
-                    <span
-                      class="pill-photo"
-                      style={`--tilt:${h.tilt}deg`}
-                      aria-hidden="true"
-                    >
-                      <img src={h.photo} alt="" loading="lazy" />
-                    </span>
-                  )}
-                  {h.captionList && (
-                    <ul class="pill-caption" aria-hidden="true">
-                      {h.captionList.map((item) => <li>{item}</li>)}
-                    </ul>
-                  )}
-                  <span class="pill-emoji" aria-hidden="true">{h.emoji}</span>
-                  <span class="pill-label">{h.label}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </FadeIn>
     </article>
   </div>
 </BaseLayout>
@@ -612,12 +616,9 @@ const hobbies = [
   }
 
   /* === Hobby pills === */
-  .hobbies { margin-top: var(--s-4); }
-  .hobbies .t-eyebrow { margin: 0 0 var(--s-5); }
-
   .pill-row {
     list-style: none;
-    margin: 0;
+    margin: 0 0 var(--s-8);
     padding: 0;
     display: flex;
     flex-wrap: nowrap;

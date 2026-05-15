@@ -96,7 +96,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       companyName="Snapchat"
       role="Staff Product Designer"
       title="Snapchat Games"
-      tagline="Growing games from an early-stage opportunity to a scaled product area driving bi-directional communication and DAU."
+      tagline="Led design across Snapchat Games, taking it from an early-stage opportunity to a scaled product area that drives bi-directional communication and DAU."
       stats={[
         { value: "30M", label: "Games DAU" },
         { value: "↑ 0.136%", label: "Snap Send Human" },
@@ -154,7 +154,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       companyName="Snapchat"
       role="Staff Product Designer"
       title="Topic Chats"
-      tagline="Topic Chats are Snapchat’s bet on real-time community, allowing Snapchatters 18+ a way to connect over shared interests and cultural moments."
+      tagline="Led design on Topic Chats as the feature found product-market fit in live sports and cultural moments. Shipped game support, scoreboards, and profile pills, with growth driven by AI notification summaries and a redesigned top of funnel."
       stats={[
         { value: "↑ DAU", label: "Particularly during live events" },
         { value: "40k", label: "Simultaneously active in chat during peak times" },
@@ -175,13 +175,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </FadeIn>
 
   <FadeIn>
+    <TappyCloudShowcase reverse />
+  </FadeIn>
+
+  <FadeIn>
+    <FestivalModeShowcase />
+  </FadeIn>
+
+  <FadeIn>
     <Showcase
       companyLogo="/logos/tinder.png"
       companyName="Tinder"
       year={2022}
       role="Product Design Lead"
       title="App Redesign"
-      tagline="A globally launched UI refresh with richer profile content and delightful new interactions, rolled out to every Tinder user worldwide."
+      tagline="Shipped a global UI refresh for Tinder with richer profile content and new interactions, rolled out to every user worldwide."
       features={[
         "Dark Mode",
         "Profile Prompts",
@@ -192,6 +200,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       ctaLabel="Read about it"
       accent="#FD297C"
       id="app-redesign"
+      reverse
     >
       <PhoneVideoParallax
         videoSrc="/projects/tinder-app-redesign/sparks-recording.mp4"
@@ -204,15 +213,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </FadeIn>
 
   <FadeIn>
-    <TappyCloudShowcase reverse />
-  </FadeIn>
-
-  <FadeIn>
-    <FestivalModeShowcase />
-  </FadeIn>
-
-  <FadeIn>
-    <CustomListsShowcase reverse />
+    <CustomListsShowcase />
   </FadeIn>
 
   <FadeIn>

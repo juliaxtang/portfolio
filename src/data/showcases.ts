@@ -57,7 +57,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Product Design Lead",
     title: "Festival Mode",
     tagline:
-      "A seasonal experience on Tinder Explore that lets festivalgoers meet others going to the same festival. Two months from kickoff to launch, with engagement that doubled the main Tinder swipe deck.",
+      "Designed Festival Mode, a seasonal Tinder Explore experience for festivalgoers to meet others at the same festival. Two months to launch, driving 2× the likes and conversations of the main swipe stack.",
     stats: [
       { value: "2×", label: "More likes sent and convos started vs. main app" },
       { value: "↑ 10%", label: "Tile opens on Explore from the catch-all tile" },
@@ -93,7 +93,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "UX Designer",
     title: "Onboarding Redesign",
     tagline:
-      "A week-long Design Sprint at TV Time to rethink onboarding around three user types. Ended Friday with a tested prototype that taught key functions, key benefits, and the core habit loop.",
+      "Led a week-long Design Sprint at TV Time to rethink onboarding around three user types, ending Friday with a tested prototype that taught key functions, key benefits, and the core habit loop.",
     stats: [
       { value: "100%", label: "test participants understood key functions of the app" },
       { value: "100%", label: "test participants understood how to perform core actions on the app" },

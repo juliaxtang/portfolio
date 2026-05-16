@@ -194,10 +194,10 @@ Snap, and used that framing in exec reviews to scope the year.
   </Callout>
 </Callouts>
 
-<Section stage="Design" eyebrow="Initial improvements" title="Three projects that got execs excited" banner />
+<Section stage="Initial improvements" eyebrow="Initial improvements" title="Three projects that got execs excited" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
-With the data, the research, and the JBTDs lined up, I picked three
+<Section size="sub" stage="Initial improvements" hideFromNav>
+With the data, the research, and the jobs to be done lined up, I picked three
 projects to ship first. Not because they were the full answer, but
 because they were the highest-leverage, relatively lower-effort
 bets I could make to test the core question: with a few meaningful
@@ -205,9 +205,9 @@ investments, would games actually become a viable engagement driver
 on Snapchat?
 </Section>
 
-<Section stage="Design" eyebrow="Project 1" title="A dedicated entry point for Games" />
+<Section stage="Initial improvements" eyebrow="Project 1" title="A dedicated entry point for Games" />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
   <Callout eyebrow="Problem" tone="outline">
     There was no dedicated entry point to games, and especially no way to surface games you could play with friends. You had to stumble across them in the lens carousel.
   </Callout>
@@ -219,12 +219,11 @@ Most users mentioned they would initiate a game with a friend by
 asking them first via chat if they are free to play.
 </Quote>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 I designed a Games entry in the chat drawer: tap an icon while
-you're in any 1:1 or group chat and a drawer opens with games you
-can play with those specific people. Turn-based games waiting on
-you sit at the top, then suggested games for that chat, then a
-Browse Games entry into the broader catalog.
+you're in any 1:1 or group chat and a drawer opens with all the
+turn-based games available to play with friends, giving users an
+easy way to find and start a game mid-conversation.
 </Section>
 
 <BeforeAfter beforeLabel="Before: no dedicated games entry in chat." afterLabel="After: games surface directly inside the conversation.">
@@ -244,7 +243,7 @@ Browse Games entry into the broader catalog.
   />
 </BeforeAfter>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 The existence of the drawer made games something you do
 mid-conversation, not a separate destination you have to leave
 chat for.
@@ -278,19 +277,19 @@ The results were strong enough that we ran a second experiment: what if games we
   <Stat value="+0.06%" label="North America DAU" />
 </Stats>
 
-<Section stage="Design" eyebrow="Project 2" title="Fullscreen game UX" />
+<Section stage="Initial improvements" eyebrow="Project 2" title="Fullscreen game UX" />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
   <Callout eyebrow="Problem" tone="outline">
     Games were built on the Lens framework, which meant they ran on top of the camera UI. For simple tap-to-play games that wasn't a problem, but for anything with moderate gameplay mechanics, the camera controls got in the way. The UI said "AR filter" when the experience was trying to say "game."
   </Callout>
 </Section>
 
-<Section size="sub" stage="Design" hideFromNav>
-Because games were UGC, any given lens could use any mechanics, gestures, or on-screen content in any position. The solution couldn't be bespoke: it had to work universally, without per-game configuration.
+<Section size="sub" stage="Initial improvements" hideFromNav>
+Because games were user-generated content, any given lens could use any mechanics, gestures, or on-screen content in any position. The solution couldn't be bespoke: it had to work universally, without per-game configuration.
 </Section>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 I redesigned the game lens experience to open fullscreen on start
 and unified the capture control: a single tap starts the game
 silently, a long-press starts the game and starts hands-free
@@ -318,15 +317,15 @@ so the clip is ready to send without leaving the game flow.
   <Stat value="+19%" label="Engagement rate on the tested lens" />
 </Stats>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 The shipped behavior also became the foundation for how every new
 game onboards into the system, so the gains compound with each new
 title added to the catalog.
 </Section>
 
-<Section stage="Design" eyebrow="Project 3" title="Turn-based games, made less broken" />
+<Section stage="Initial improvements" eyebrow="Project 3" title="Turn-based games, made less broken" />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
   <Callout eyebrow="Problem" tone="outline">
     The turn-based flow was built on Snapchat's record-and-send framework with no dedicated UI, no invitation mechanic, and no in-product explanation of how it worked. Most users who stumbled on a game had no idea how to start a game.
   </Callout>
@@ -349,7 +348,7 @@ step explicit instead of invisible.
   </div>
 </TwoUp>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 **Snap envelope updates.** In a busy chat, turn-based game snaps blended
 in with regular snaps and disappeared. I redesigned the chat envelope
 so a game turn reads as a game at a glance: the lens artwork in a card
@@ -386,7 +385,7 @@ losing it in the scroll.
   <Stat value="+0.045%" label="Days with chats sent (Android)" />
 </Stats>
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Initial improvements" hideFromNav>
 These changes proved that small UX improvements to turn based games had outsize impact to not only game engagement, but chat itself!
 </Section>
 
@@ -504,18 +503,18 @@ player intent.
 {/* TODO: drop the entry-point map slide from "Games Entry Points & Strategy".
     It explains the system in one image better than the body copy can. */}
 
-<Section stage="Design" eyebrow="Post-strategy work" title="What followed from the squad" banner />
+<Section stage="Post-strategy work" eyebrow="Post-strategy work" title="What followed from the squad" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 With the squad formed and the strategy approved, the work shifted
 from proving the area to scaling it. Each of the projects below
 maps to a pillar from the deck and to a surface from the entry-point
 system.
 </Section>
 
-<Section stage="Design" eyebrow="Project 1" title="Live multiplayer, on Connected Lenses" banner />
+<Section stage="Post-strategy work" eyebrow="Project 1" title="Live multiplayer, on Connected Lenses" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 The biggest gap the early bets exposed was synchronous play. The
 research said live multiplayer was the most-wanted game type, and
 there was nothing like it on Snap. With the squad formed and Pillar
@@ -546,7 +545,7 @@ Roblox.
 {/* TODO: the 3-ways-to-play slide, the spectator mode flow, and
     the "play against ghosts" fallback from Going Big with Games. */}
 
-<Section size="sub" stage="Design" title="Games Presence, so an empty lobby is the exception" hideFromNav>
+<Section size="sub" stage="Post-strategy work" title="Games Presence, so an empty lobby is the exception" hideFromNav>
 Live multiplayer only works if you can find a friend playing. I
 designed Games Presence UI to surface the bitmoji and name of
 friends currently in a multiplayer game, in friends feed and in
@@ -564,9 +563,9 @@ in that game and potentially open to playing it together.
 {/* TODO: the Games Presence chip in friends feed, plus the spectator
     drop-in moment. */}
 
-<Section stage="Design" eyebrow="Project 2" title="Pulling turn-based all the way off the Snapping framework" banner />
+<Section stage="Post-strategy work" eyebrow="Project 2" title="Pulling turn-based all the way off the Snapping framework" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 The early-bets turn-based fixes made the existing format less broken.
 With Connected Lenses for Multiplayer now shipped, the full rewrite
 was finally possible. I moved turn-based onto the live multiplayer
@@ -595,9 +594,9 @@ more of a watching experience than playing with friends.
     Retries, plus the envelope states (your turn / their turn /
     complete) and the Remind CTA. */}
 
-<Section stage="Design" eyebrow="Project 3" title="A stationary entry on Discover" banner />
+<Section stage="Post-strategy work" eyebrow="Project 3" title="A stationary entry on Discover" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 Discover gave us the traffic for Job 2, but we had to pick a
 treatment that didn't break the feed. I worked through three options
 with the team: a pinned pill (confusing UX), a pinned tile (too
@@ -615,9 +614,9 @@ becomes a natural home for playable game ads down the line.
 
 {/* TODO: drop the three-options comparison slide. */}
 
-<Section stage="Design" eyebrow="Project 4" title="A daily mechanism for solo players" banner />
+<Section stage="Post-strategy work" eyebrow="Project 4" title="A daily mechanism for solo players" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 With retentive game lenses already at around 30% D1, a daily
 mechanism was the obvious next lever for Job 2. The design proposal:
 a Daily Challenges row pinned to the front of the Games carousel, a
@@ -635,9 +634,9 @@ review and made the final flow noticeably cleaner.
     leaderboard screen, and the auto-Snap to Preview moment from
     Daily Games. */}
 
-<Section stage="Design" eyebrow="Project 5" title="Defending the camera for creation" banner />
+<Section stage="Post-strategy work" eyebrow="Project 5" title="Defending the camera for creation" banner />
 
-<Section size="sub" stage="Design" hideFromNav>
+<Section size="sub" stage="Post-strategy work" hideFromNav>
 The Lens carousel kept attracting long-play content: longer-form
 games, playable ads, choose-your-own-adventure stories. I drove a
 content strategy realignment with the cross-functional teams: the

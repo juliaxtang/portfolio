@@ -26,6 +26,9 @@ interface Annotation {
   label: string;
   side?: "left" | "right";
   arm?: number;
+  armStyle?: string;   // inline style override for the arm span (e.g. gradient)
+  dotStyle?: string;   // inline style override for the point dot
+  labelWidth?: number; // px; enables text wrapping when set
 }
 
 interface Props {
@@ -36,6 +39,7 @@ interface Props {
   width?: "narrow" | "wide";
   device?: "phone" | "auto";
   frame?: boolean;
+  mediaMaxWidth?: number; // px; overrides default device max-width
 }
 
 const {
@@ -46,6 +50,7 @@ const {
   width = "narrow",
   device = "auto",
   frame = false,
+  mediaMaxWidth,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -62,7 +67,7 @@ const cls = [
 ---
 
 <figure class={cls}>
-  <div class="cs-annotated-figure__media">
+  <div class="cs-annotated-figure__media" style={mediaMaxWidth ? `max-width:${mediaMaxWidth}px` : ""}>
     <img src={resolved} alt={alt} loading="lazy" />
     {labels.map((ann) => {
       if (ann.type === "bracket") {
@@ -82,8 +87,8 @@ const cls = [
             <span class="cs-annotation__bracket-stub cs-annotation__bracket-stub--top" />
             <span class="cs-annotation__bracket-stub cs-annotation__bracket-stub--bot" />
             <span class="cs-annotation__bracket-mid">
-              <span class="cs-annotation__arm" />
-              <span class="cs-annotation__label">{ann.label}</span>
+              <span class="cs-annotation__arm" style={ann.armStyle ?? ""} />
+              <span class="cs-annotation__label" style={ann.labelWidth ? `width:${ann.labelWidth}px;white-space:normal` : ""}>{ann.label}</span>
             </span>
           </div>
         );
@@ -93,9 +98,9 @@ const cls = [
           class={`cs-annotation cs-annotation--point cs-annotation--${ann.side ?? "right"}`}
           style={`left:${ann.x}%;top:${ann.y ?? 50}%;--arm:${ann.arm ?? 36}px`}
         >
-          <span class="cs-annotation__dot" />
-          <span class="cs-annotation__arm" />
-          <span class="cs-annotation__label">{ann.label}</span>
+          <span class="cs-annotation__dot" style={ann.dotStyle ?? ""} />
+          <span class="cs-annotation__arm" style={ann.armStyle ?? ""} />
+          <span class="cs-annotation__label" style={ann.labelWidth ? `width:${ann.labelWidth}px;white-space:normal` : ""}>{ann.label}</span>
         </div>
       );
     })}
@@ -239,11 +244,11 @@ const cls = [
 
   .cs-annotation__label {
     font-family: var(--font-sans);
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: 12px;
+    line-height: 1.5;
     color: var(--text-primary);
     background: color-mix(in srgb, var(--bg-canvas) 92%, transparent);
-    padding: 2px 7px;
+    padding: 4px 10px;
     border-radius: var(--r-sm, 4px);
     border: 1px solid var(--border-subtle);
     letter-spacing: 0.01em;

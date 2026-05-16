@@ -24,6 +24,7 @@ import Callout from "../../components/case-study/Callout.astro";
 import Quote from "../../components/case-study/Quote.astro";
 import ThreeUp from "../../components/case-study/ThreeUp.astro";
 import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
+import BeforeAfter from "../../components/case-study/BeforeAfter.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
@@ -66,7 +67,7 @@ single-screen, pick-up-and-play, and almost entirely solo.
   />
 </ThreeUp>
 
-<Section size="sub" stage="Background" title="A barebones turn-based system existed, but almost no one could figure it out" hideFromNav>
+<Section size="sub" stage="Background" title="Social games existed, but were limited" hideFromNav>
 There was technically a way to play with friends: open a game lens,
 play your turn, Snap the result, send it to someone. Your friend
 opened the Snap, saw your static score, then found and opened the
@@ -79,24 +80,29 @@ looked like a game, but had no way to know multiplayer was possible,
 let alone how to start it.
 </Section>
 
-<AnnotatedFigure
-  src="/projects/snapchat-games/turn-based-problem-2.png"
-  alt="Bitmoji Pong game lens open in Snapchat's camera"
-  labels={[
-    { type: "bracket", x: 100, yStart: 12, yEnd: 82, arm: 24, label: "Tapping the game area does nothing." },
-    { type: "point", x: 100, y: 88, arm: 24, label: "You have to Snap a result to a friend to start the game. There is no in-product guidance for this step." }
-  ]}
-  device="phone"
-/>
-
-<AnnotatedFigure
-  src="/projects/snapchat-games/turn-based-problem-1.gif"
-  alt="Tic Tac Toe game lens open in Snapchat's camera"
-  labels={[
-    { type: "bracket", x: 0, yStart: 27, yEnd: 78, side: "left", arm: 24, label: "I can tap to play, but nothing indicates the next step is to Snap my turn to a friend." }
-  ]}
-  device="phone"
-/>
+<div style="max-width:610px;margin-inline:auto">
+<TwoUp gap="sm">
+  <AnnotatedFigure
+    src="/projects/snapchat-games/turn-based-problem-1.gif"
+    alt="Tic Tac Toe game lens open in Snapchat's camera"
+    labels={[
+      { type: "bracket", x: 0, yStart: 23, yEnd: 74, side: "left", arm: 24, label: "I can tap to play, but nothing indicates the next step is to Snap my turn to a friend.", labelWidth: 150 }
+    ]}
+    device="phone"
+    mediaMaxWidth={256}
+  />
+  <AnnotatedFigure
+    src="/projects/snapchat-games/turn-based-problem-2.png"
+    alt="Bitmoji Pong game lens open in Snapchat's camera"
+    labels={[
+      { type: "bracket", x: 100, yStart: 12, yEnd: 82, arm: 24, label: "Tapping the game area does nothing.", labelWidth: 120 },
+      { type: "point", x: 50, y: 77, arm: 170, label: "You have to Snap a result to a friend to start the game. There is no in-product guidance for this step.", labelWidth: 120, armStyle: "background:linear-gradient(to right,rgba(255,255,255,0.85) 75%,rgba(0,0,0,0.65) 75%);opacity:1", dotStyle: "background:white;opacity:1" }
+    ]}
+    device="phone"
+    mediaMaxWidth={256}
+  />
+</TwoUp>
+</div>
 
 <Section size="sub" stage="Background" title="The signal that said it was worth fighting for" hideFromNav>
 Even inside that buried, hyper-casual setup, the engagement data
@@ -188,7 +194,7 @@ Snap, and used that framing in exec reviews to scope the year.
   </Callout>
 </Callouts>
 
-<Section stage="Design" eyebrow="Early bets" title="Three projects that got execs excited" banner />
+<Section stage="Design" eyebrow="Initial improvements" title="Three projects that got execs excited" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
 With the data, the research, and the JBTDs lined up, I picked three
@@ -199,23 +205,12 @@ investments, would games actually become a viable engagement driver
 on Snapchat?
 </Section>
 
-<Section stage="Design" eyebrow="Project 1" title="Games in the chat drawer" banner />
+<Section stage="Design" eyebrow="Project 1" title="A dedicated entry point for Games" />
 
 <Section size="sub" stage="Design" hideFromNav>
-**Problem:** There was no dedicated entry point to games, and especially
-no way to surface games you could play with friends. You had to
-stumble across them in the lens carousel. Research confirmed users
-expected games to live inside chat, not in a separate destination.
-
-I designed a Games entry in the chat drawer: tap an icon while
-you're in any 1:1 or group chat and a drawer opens with games you
-can play with those specific people. Turn-based games waiting on
-you sit at the top, then suggested games for that chat, then a
-Browse Games entry into the broader catalog.
-
-The existence of the drawer made games something you do
-mid-conversation, not a separate destination you have to leave
-chat for.
+  <Callout eyebrow="Problem" tone="outline">
+    There was no dedicated entry point to games, and especially no way to surface games you could play with friends. You had to stumble across them in the lens carousel.
+  </Callout>
 </Section>
 
 <Quote attribution="Gaming Foundational Research, Nov 2025">
@@ -224,26 +219,79 @@ Most users mentioned they would initiate a game with a friend by
 asking them first via chat if they are free to play.
 </Quote>
 
-{/* TODO: drop the chat-drawer entry screen (icon in chat input bar
-    + drawer open), and the turn-based-waiting / suggested-games /
-    browse states. */}
-
 <Section size="sub" stage="Design" hideFromNav>
-A single experiment on the Games entry point in chat moved Direct
-Snap Send Human by +0.136%. That's Snap's top-line communication
-metric, and a lift on it from a placement experiment is a
-load-bearing data point: it proved Job 1 wasn't a hunch.
+I designed a Games entry in the chat drawer: tap an icon while
+you're in any 1:1 or group chat and a drawer opens with games you
+can play with those specific people. Turn-based games waiting on
+you sit at the top, then suggested games for that chat, then a
+Browse Games entry into the broader catalog.
 </Section>
 
-<Section stage="Design" eyebrow="Project 2" title="Fullscreen game UX" banner />
+<BeforeAfter>
+  <Figure
+    slot="before"
+    src="/projects/snapchat-games/Chat drawer - Before.png"
+    alt="Snapchat chat input bar before the Games drawer, showing standard attachment options"
+    caption="Before: no dedicated games entry in chat."
+    device="phone"
+    class="cs-figure--rounder"
+  />
+  <Figure
+    slot="after"
+    src="/projects/snapchat-games/chat drawer - after.gif"
+    alt="Snapchat chat input bar after, with a Games icon that opens a drawer of playable games"
+    caption="After: games surface directly inside the conversation."
+    device="phone"
+    class="cs-figure--roundest cs-figure--crop-top"
+  />
+</BeforeAfter>
 
 <Section size="sub" stage="Design" hideFromNav>
-**Problem:** Games were built on the Lens framework, which meant they
-ran on top of the camera UI. For simple tap-to-play games that wasn't
-a problem, but for anything with moderate gameplay mechanics, the
-camera controls got in the way. The UI said "AR filter" when the
-experience was trying to say "game."
+The existence of the drawer made games something you do
+mid-conversation, not a separate destination you have to leave
+chat for.
+</Section>
 
+<Stats cols={4} bare>
+  <Stat value="~4.8M" label="Drawer opens from the new Games entry" />
+  <Stat value="~2.9M" label="Game sends, estimated rollout impact" />
+  <Stat value="+0.15%" label="More snaps sent using games (Android)" />
+  <Stat value="+0.05%" label="More active back-and-forth friendships" />
+</Stats>
+
+<TwoUp ratio="2:1" align="center">
+  <Fragment slot="left">
+
+### A bonus follow up
+
+The results were strong enough that we ran a second experiment: what if games weren't tucked inside a sub-drawer but surfaced at the top level of the chat input bar, alongside stickers, location, and polls? I expanded the attachment drawer to accommodate interactive content types like games, and ran the test.
+  </Fragment>
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/games chat drawer - after 2.gif"
+    alt="Expanded Snapchat chat input drawer with games surfaced at the top level alongside stickers and polls"
+    caption="Games surfaced at the top level of the chat input bar."
+    device="phone"
+    class="cs-figure--roundest cs-figure--crop-top"
+  />
+</TwoUp>
+
+<Stats cols={4} bare>
+  <Stat value="+2.9M" label="Estimated additional snaps sent between friends" />
+  <Stat value="+1.35M" label="Active back-and-forth friendships" />
+  <Stat value="+51K" label="Socially active user days" />
+  <Stat value="+0.06%" label="North America DAU" />
+</Stats>
+
+<Section stage="Design" eyebrow="Project 2" title="Fullscreen game UX" />
+
+<Section size="sub" stage="Design" hideFromNav>
+  <Callout eyebrow="Problem" tone="outline">
+    Games were built on the Lens framework, which meant they ran on top of the camera UI. For simple tap-to-play games that wasn't a problem, but for anything with moderate gameplay mechanics, the camera controls got in the way. The UI said "AR filter" when the experience was trying to say "game."
+  </Callout>
+</Section>
+
+<Section size="sub" stage="Design" hideFromNav>
 I redesigned the game lens experience to open fullscreen on start
 and unified the capture control: a single tap starts the game
 silently, a long-press starts the game and starts hands-free
@@ -251,26 +299,25 @@ recording, and the round auto-progresses to Preview when it ends
 so the clip is ready to send without leaving the game flow.
 </Section>
 
-{/* TODO: fullscreen vs. camera-shrunk before/after, the
-    tap-to-record state diagram from Lens Games '25. */}
+<Stats cols={4} bare>
+  <Stat value="+120%" label="Game Lens Posts on iOS" />
+  <Stat value="+56.6%" label="Game Lens Posts on Android" />
+  <Stat value="+130%" label="Video post count across game lenses" />
+  <Stat value="+19%" label="Engagement rate on the tested lens" />
+</Stats>
 
 <Section size="sub" stage="Design" hideFromNav>
-After pulling capture into the moment of play, Game Video Posts on
-iOS were up 120%. The shipped behavior also became the basis for how
-every new game lens onboards into the system, so the gain compounds
-with every new title in the catalog.
+The shipped behavior also became the foundation for how every new
+game onboards into the system, so the gains compound with each new
+title added to the catalog.
 </Section>
 
-<Section stage="Design" eyebrow="Project 3" title="Turn-based games, made less broken" banner />
+<Section stage="Design" eyebrow="Project 3" title="Turn-based games, made less broken" />
 
 <Section size="sub" stage="Design" hideFromNav>
-**Problem:** The turn-based flow was built on Snapchat's record-and-send
-framework with no dedicated UI, no invitation mechanic, and no
-in-product explanation of how it worked. Most users who stumbled on
-a game had no idea multiplayer was even possible. A full refactor
-off the Snapping framework would have been the right long-term move,
-but it depended on a multiplayer system we hadn't built yet. So I
-scoped this as targeted fixes inside the existing framework.
+  <Callout eyebrow="Problem" tone="outline">
+    The turn-based flow was built on Snapchat's record-and-send framework with no dedicated UI, no invitation mechanic, and no in-product explanation of how it worked. Most users who stumbled on a game had no idea multiplayer was even possible. A full refactor off the Snapping framework would have been the right long-term move, but it depended on a multiplayer system we hadn't built yet. So I scoped this as targeted fixes inside the existing framework.
+  </Callout>
 </Section>
 
 <Section size="sub" stage="Design" hideFromNav>
@@ -290,17 +337,12 @@ the Friends feed also made it easier to track game progress without
 losing it in the scroll.
 </Section>
 
-{/* TODO: the chat envelope redesign - before (generic Snap
-    thumbnail) and after (turn-based game card with state). */}
-
-<Section size="sub" stage="Design" hideFromNav>
-The point wasn't to fix turn-based once and for all. It was to
-prove the format had legs if we made it less broken, and to buy
-time for the bigger framework rewrite that would land after
-strategy. Engagement on turn-based games picked up across the
-board after these shipped, which became one of the data points
-that justified the bigger investment.
-</Section>
+<Stats cols={4} bare>
+  <Stat value="+178%+" label="Games engagement, year over year" />
+  <Stat value="+18%" label="Game shares, quarter over quarter" />
+  <Stat value="+20%" label="Long game sessions (30s+), QoQ" />
+  <Stat value="+0.045%" label="Days with chats sent (Android)" caption="Making games more legible in chat made chat itself more active" />
+</Stats>
 
 <Section stage="Strategy" eyebrow="Strategy" title="The exec ask: how do we go big with games?" banner />
 

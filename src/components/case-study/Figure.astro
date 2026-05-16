@@ -33,6 +33,7 @@ interface Props {
   background?: "soft" | "surface" | "none";
   centered?: boolean;
   crop?: boolean;
+  cropFrom?: string;
   class?: string;
 }
 
@@ -49,6 +50,7 @@ const {
   background = "none",
   centered = false,
   crop = false,
+  cropFrom = "left top",
   class: className = "",
 } = Astro.props;
 
@@ -87,7 +89,7 @@ const mediaStyle = styleParts.join(";");
 
 <figure class={cls}>
   <div class="cs-figure__media" style={mediaStyle}>
-    <img src={resolved} alt={alt} loading="lazy" />
+    <img src={resolved} alt={alt} loading="lazy" style={crop ? `object-position:${cropFrom}` : undefined} />
   </div>
   {caption && <figcaption class="cs-figure__caption">{caption}</figcaption>}
 </figure>

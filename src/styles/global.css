@@ -184,7 +184,6 @@ button { font: inherit; cursor: pointer; }
   gap: var(--s-4);
 }
 .cs-stat-stack > * {
-  flex: 1;
   min-height: 0;
 }
 

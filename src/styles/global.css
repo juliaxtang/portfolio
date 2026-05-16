@@ -687,3 +687,12 @@ p.cs-bullet-stats__label {
   .cs-pair { grid-template-columns: 1fr; }
   .cs-pair__media { height: 220px; }
 }
+
+/* Tighten gap between a header-only section and the sub-section that follows */
+.cs-section:not(.cs-section--banner):not(.cs-section--sub):not(:has(.cs-section__body)) {
+  padding-bottom: var(--s-4);
+}
+.cs-section:not(.cs-section--banner):not(.cs-section--sub):not(:has(.cs-section__body)) + .cs-section--sub {
+  padding-top: var(--s-2);
+}
+

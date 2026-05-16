@@ -227,12 +227,11 @@ you sit at the top, then suggested games for that chat, then a
 Browse Games entry into the broader catalog.
 </Section>
 
-<BeforeAfter>
+<BeforeAfter beforeLabel="Before: no dedicated games entry in chat." afterLabel="After: games surface directly inside the conversation.">
   <Figure
     slot="before"
     src="/projects/snapchat-games/Chat drawer - Before.png"
     alt="Snapchat chat input bar before the Games drawer, showing standard attachment options"
-    caption="Before: no dedicated games entry in chat."
     device="phone"
     class="cs-figure--rounder"
   />
@@ -240,9 +239,8 @@ Browse Games entry into the broader catalog.
     slot="after"
     src="/projects/snapchat-games/chat drawer - after.gif"
     alt="Snapchat chat input bar after, with a Games icon that opens a drawer of playable games"
-    caption="After: games surface directly inside the conversation."
     device="phone"
-    class="cs-figure--roundest cs-figure--crop-top"
+    class="cs-figure--roundest"
   />
 </BeforeAfter>
 
@@ -259,20 +257,17 @@ chat for.
   <Stat value="+0.05%" label="More active back-and-forth friendships" />
 </Stats>
 
-<TwoUp ratio="2:1" align="center">
+<TwoUp ratio="2:1" align="center" title="A bonus follow up">
   <Fragment slot="left">
-
-### A bonus follow up
-
 The results were strong enough that we ran a second experiment: what if games weren't tucked inside a sub-drawer but surfaced at the top level of the chat input bar, alongside stickers, location, and polls? I expanded the attachment drawer to accommodate interactive content types like games, and ran the test.
   </Fragment>
   <Figure
     slot="right"
-    src="/projects/snapchat-games/games chat drawer - after 2.gif"
+    src="/projects/snapchat-games/chat drawer - after 2.gif"
     alt="Expanded Snapchat chat input drawer with games surfaced at the top level alongside stickers and polls"
     caption="Games surfaced at the top level of the chat input bar."
     device="phone"
-    class="cs-figure--roundest cs-figure--crop-top"
+    class="cs-figure--roundest"
   />
 </TwoUp>
 
@@ -292,12 +287,29 @@ The results were strong enough that we ran a second experiment: what if games we
 </Section>
 
 <Section size="sub" stage="Design" hideFromNav>
+Because games were UGC, any given lens could use any mechanics, gestures, or on-screen content in any position. The solution couldn't be bespoke: it had to work universally, without per-game configuration.
+</Section>
+
+<Section size="sub" stage="Design" hideFromNav>
 I redesigned the game lens experience to open fullscreen on start
 and unified the capture control: a single tap starts the game
 silently, a long-press starts the game and starts hands-free
 recording, and the round auto-progresses to Preview when it ends
 so the clip is ready to send without leaving the game flow.
 </Section>
+
+<p style="font-family:var(--font-mono);font-size:12px;line-height:1.5;color:var(--text-tertiary);text-align:center;padding-inline:var(--s-4);max-width:var(--content-narrow);margin-inline:auto;margin-bottom:calc(-1 * var(--s-8) - var(--s-6));">Fading out the camera UI after gameplay starts enabled unobstructed play without fear of accidentally tapping camera controls, making complicated gameplay mechanics fully playable.</p>
+
+<TwoUp gap="lg">
+  <Video
+    src="/projects/snapchat-games/fullscreen ux 1.MP4"
+    device="phone"
+  />
+  <Video
+    src="/projects/snapchat-games/fullscreen ux 2.mov"
+    device="phone"
+  />
+</TwoUp>
 
 <Stats cols={4} bare>
   <Stat value="+120%" label="Game Lens Posts on iOS" />
@@ -316,17 +328,26 @@ title added to the catalog.
 
 <Section size="sub" stage="Design" hideFromNav>
   <Callout eyebrow="Problem" tone="outline">
-    The turn-based flow was built on Snapchat's record-and-send framework with no dedicated UI, no invitation mechanic, and no in-product explanation of how it worked. Most users who stumbled on a game had no idea multiplayer was even possible. A full refactor off the Snapping framework would have been the right long-term move, but it depended on a multiplayer system we hadn't built yet. So I scoped this as targeted fixes inside the existing framework.
+    The turn-based flow was built on Snapchat's record-and-send framework with no dedicated UI, no invitation mechanic, and no in-product explanation of how it worked. Most users who stumbled on a game had no idea how to start a game.
   </Callout>
 </Section>
 
-<Section size="sub" stage="Design" hideFromNav>
+<TwoUp ratio="1:1" align="center">
+  <Fragment slot="left">
 **Auto-capture at the end of your turn.** The biggest reason turn-based
 games never got off the ground was that nothing told you to send your
 turn to a friend. I added auto-capture: when your turn ends, we
 capture it automatically and prompt you to send it, making the send
 step explicit instead of invisible.
-</Section>
+  </Fragment>
+  <div slot="right" style="max-width:90%;margin-inline:auto;">
+    <Video
+      src="/projects/snapchat-games/auto-capture.MP4"
+      device="phone"
+      caption="Turn ends, auto-capture prompts you to send it."
+    />
+  </div>
+</TwoUp>
 
 <Section size="sub" stage="Design" hideFromNav>
 **Snap envelope updates.** In a busy chat, turn-based game snaps blended
@@ -337,12 +358,37 @@ the Friends feed also made it easier to track game progress without
 losing it in the scroll.
 </Section>
 
+<BeforeAfter>
+  <Figure
+    slot="before"
+    src="/projects/snapchat-games/snap-envelopes - before.png"
+    alt="Chat thread showing game snaps blending in as generic envelopes"
+    caption="Before: Which one is a Game snap?"
+    class="cs-figure--rounder"
+    maxWidth="90%"
+    captionTop
+  />
+  <Figure
+    slot="after"
+    src="/projects/snapchat-games/snap-envelopes - after.png"
+    alt="Chat thread showing redesigned game envelopes with lens artwork and turn status"
+    caption="After: Clearer Game envelopes make it easier to track game status in chat."
+    class="cs-figure--rounder"
+    maxWidth="90%"
+    captionTop
+  />
+</BeforeAfter>
+
 <Stats cols={4} bare>
   <Stat value="+178%+" label="Games engagement, year over year" />
   <Stat value="+18%" label="Game shares, quarter over quarter" />
   <Stat value="+20%" label="Long game sessions (30s+), QoQ" />
-  <Stat value="+0.045%" label="Days with chats sent (Android)" caption="Making games more legible in chat made chat itself more active" />
+  <Stat value="+0.045%" label="Days with chats sent (Android)" />
 </Stats>
+
+<Section size="sub" stage="Design" hideFromNav>
+These changes proved that small UX improvements to turn based games had outsize impact to not only game engagement, but chat itself!
+</Section>
 
 <Section stage="Strategy" eyebrow="Strategy" title="The exec ask: how do we go big with games?" banner />
 

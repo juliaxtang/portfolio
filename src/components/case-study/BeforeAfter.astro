@@ -1,0 +1,81 @@
+---
+/**
+ * BeforeAfter — two-column before/after comparison with a directional arrow.
+ *
+ * Use named slots <slot name="before" /> and <slot name="after" />.
+ * Pass `beforeLabel` / `afterLabel` to render captions in a shared top row
+ * so the images always sit on the same baseline regardless of caption length.
+ * Stacks vertically on mobile with the arrow rotating to point down.
+ */
+interface Props {
+  wide?: boolean;
+  beforeLabel?: string;
+  afterLabel?: string;
+}
+const { wide = false, beforeLabel, afterLabel } = Astro.props;
+const hasLabels = beforeLabel || afterLabel;
+const cls = ["cs-beforeafter", wide ? "cs-beforeafter--wide" : "", hasLabels ? "cs-beforeafter--labeled" : ""].filter(Boolean).join(" ");
+---
+
+<div class={cls}>
+  {hasLabels && <p class="cs-beforeafter__label">{beforeLabel}</p>}
+  {hasLabels && <span class="cs-beforeafter__label-gap" aria-hidden="true" />}
+  {hasLabels && <p class="cs-beforeafter__label">{afterLabel}</p>}
+  <div class="cs-beforeafter__side"><slot name="before" /></div>
+  <div class="cs-beforeafter__arrow" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="cs-beforeafter__side"><slot name="after" /></div>
+</div>
+
+<style>
+  .cs-beforeafter {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: var(--s-6);
+    align-items: center;
+    max-width: var(--content-narrow);
+    margin: var(--s-8) auto;
+  }
+  .cs-beforeafter--labeled {
+    align-items: end;
+    row-gap: var(--s-3);
+  }
+  .cs-beforeafter--wide {
+    max-width: var(--content-max);
+    margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
+    margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
+  }
+  .cs-beforeafter__label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin: 0;
+    align-self: end;
+  }
+  .cs-beforeafter__label-gap { display: block; }
+  .cs-beforeafter__side :global(.cs-figure) { margin: 0; }
+  .cs-beforeafter__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    color: var(--text-primary);
+    padding: 0 var(--s-3);
+  }
+  .cs-beforeafter__arrow svg {
+    width: 29px;
+    height: 29px;
+    flex-shrink: 0;
+  }
+  @media (max-width: 720px) {
+    .cs-beforeafter { grid-template-columns: 1fr; }
+    .cs-beforeafter--labeled .cs-beforeafter__label-gap,
+    .cs-beforeafter--labeled .cs-beforeafter__label + .cs-beforeafter__label { display: none; }
+    .cs-beforeafter__arrow { transform: rotate(90deg); }
+  }
+</style>

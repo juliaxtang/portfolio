@@ -5,10 +5,11 @@
 interface Props {
   cols?: 2 | 3 | 4;
   wide?: boolean;
+  bare?: boolean;
   class?: string;
 }
-const { cols = 3, wide = false, class: className = "" } = Astro.props;
-const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", className]
+const { cols = 3, wide = false, bare = false, class: className = "" } = Astro.props;
+const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare ? "cs-stats--bare" : "", className]
   .filter(Boolean)
   .join(" ");
 ---
@@ -33,5 +34,17 @@ const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", clas
   }
   @media (max-width: 480px) {
     .cs-stats { grid-template-columns: 1fr; }
+  }
+
+  /* Bare variant: strip card chrome, match homepage metric style */
+  .cs-stats--bare {
+    --cs-stat-bg: transparent;
+    --cs-stat-border-color: transparent;
+    --cs-stat-padding: 0;
+    --cs-stat-radius: 0;
+    --cs-stat-value-size: clamp(28px, 3vw, 40px);
+    --cs-stat-label-size: 13px;
+    --cs-stat-label-color: var(--text-secondary);
+    gap: var(--s-8);
   }
 </style>

@@ -69,10 +69,14 @@ const cls = [
         const yS = ann.yStart ?? 50;
         const yE = ann.yEnd ?? 60;
         const armLen = ann.arm ?? 20;
+        const side = ann.side ?? "right";
+        const posStyle = side === "left"
+          ? `right:${100 - ann.x}%;top:${yS}%;height:calc(${yE - yS}%);--arm:${armLen}px`
+          : `left:${ann.x}%;top:${yS}%;height:calc(${yE - yS}%);--arm:${armLen}px`;
         return (
           <div
-            class="cs-annotation cs-annotation--bracket"
-            style={`left:${ann.x}%;top:${yS}%;height:calc(${yE - yS}%);--arm:${armLen}px`}
+            class={`cs-annotation cs-annotation--bracket${side === "left" ? " cs-annotation--bracket-left" : ""}`}
+            style={posStyle}
           >
             <span class="cs-annotation__bracket-rail" />
             <span class="cs-annotation__bracket-stub cs-annotation__bracket-stub--top" />
@@ -170,7 +174,12 @@ const cls = [
     position: absolute;
     pointer-events: none;
     white-space: nowrap;
-    transform: translateX(16px);
+    transform: translateX(16px); /* default: right bracket */
+  }
+
+  /* Left bracket — mirrors the rail, stubs, and arm direction */
+  .cs-annotation--bracket-left {
+    transform: translateX(-16px);
   }
 
   /* Vertical rail */
@@ -183,15 +192,23 @@ const cls = [
     background: var(--text-primary);
     opacity: 0.35;
   }
+  .cs-annotation--bracket-left .cs-annotation__bracket-rail {
+    right: 0;
+    left: auto;
+  }
 
-  /* Top and bottom stubs — point left (toward the image) */
+  /* Top and bottom stubs */
   .cs-annotation__bracket-stub {
     position: absolute;
-    left: -7px;
+    left: -7px; /* default: point left toward image */
     width: 7px;
     height: 1px;
     background: var(--text-primary);
     opacity: 0.35;
+  }
+  .cs-annotation--bracket-left .cs-annotation__bracket-stub {
+    right: -7px; /* point right toward image */
+    left: auto;
   }
   .cs-annotation__bracket-stub--top { top: 0; }
   .cs-annotation__bracket-stub--bot { bottom: 0; }
@@ -204,6 +221,11 @@ const cls = [
     transform: translateY(-50%);
     display: flex;
     align-items: center;
+  }
+  .cs-annotation--bracket-left .cs-annotation__bracket-mid {
+    right: 0;
+    left: auto;
+    flex-direction: row-reverse;
   }
 
   /* ── Shared arm + label ─────────────────────────────── */

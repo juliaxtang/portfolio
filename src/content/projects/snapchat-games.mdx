@@ -66,20 +66,38 @@ single-screen, pick-up-and-play, and almost entirely solo.
   />
 </ThreeUp>
 
-<Section size="sub" stage="Background" title="Playing with friends meant Snapping a result" hideFromNav>
-There was no live multiplayer and no real turn-based system. If you
-wanted to play with a friend, you played a game lens, then sent the
-result as a Snap. Your friend opened the Snap, saw a static image of
-your score, then had to open the same lens themselves and play. It
-was technically turn-based, but it read as "watching a friend's
-result" rather than playing together.
+<Section size="sub" stage="Background" title="A barebones turn-based system existed, but almost no one could figure it out" hideFromNav>
+There was technically a way to play with friends: open a game lens,
+play your turn, Snap the result, send it to someone. Your friend
+opened the Snap, saw your static score, then found and opened the
+same lens to take their turn.
 
-The whole loop ran on the Snapping framework, which meant you could
-also discard and retake your turn before sending. You could cheat.
+The whole flow ran on Snapchat's record-and-send framework with no
+dedicated invitation UI and no in-product explanation of the loop.
+Users who stumbled on a game in the lens carousel saw something that
+looked like a game, but had no way to know multiplayer was possible,
+let alone how to start it.
 </Section>
 
-{/* TODO: a clip or screen of the old turn-based-via-Snap flow:
-    play -> Preview -> Send -> friend opens -> friend plays -> repeat. */}
+<TwoUp wide>
+  <AnnotatedFigure
+    src="/projects/snapchat-games/turn-based-problem-2.png"
+    alt="Bitmoji Pong game lens open in Snapchat's camera"
+    labels={[
+      { type: "bracket", x: 100, yStart: 12, yEnd: 82, arm: 24, label: "Tapping the game area does nothing." },
+      { type: "point", x: 100, y: 88, arm: 24, label: "You have to Snap a result to a friend to start the game. There is no in-product guidance for this step." }
+    ]}
+    device="phone"
+  />
+  <AnnotatedFigure
+    src="/projects/snapchat-games/turn-based-problem-1.gif"
+    alt="Tic Tac Toe game lens open in Snapchat's camera"
+    labels={[
+      { type: "bracket", x: 0, yStart: 27, yEnd: 78, side: "left", arm: 24, label: "I can tap to play, but nothing indicates the next step is to Snap my turn to a friend." }
+    ]}
+    device="phone"
+  />
+</TwoUp>
 
 <Section size="sub" stage="Background" title="The signal that said it was worth fighting for" hideFromNav>
 Even inside that buried, hyper-casual setup, the engagement data
@@ -88,31 +106,28 @@ in early 2025 surfaced three signals that made the case for
 investment.
 </Section>
 
-<Stats cols={2} wide>
-  <Stat
-    value="30%"
-    label="D1 retention on top game lenses"
-    caption="No daily mechanism in place. The retention was coming from the gameplay itself."
-  />
-  <Stat
-    value="7%"
-    label="WAU playing 5+ days a week"
-    caption="Skewing toward users with a weaker social graph who weren't pulled in by chat alone."
-  />
-</Stats>
-
-<TwoUp ratio="1:1" align="center" title="And Game Lenses were already going viral on Spotlight" titleId="virality-on-spotlight">
-  <Stat
-    slot="left"
-    value="7.8%"
-    label="View-to-unlock rate for Game Lenses on Spotlight"
-    caption="vs. a 1.1% benchmark. Direct-snap view-to-unlock came in at 6.3% vs. 1.4%, and the top 100 game lenses hit 23.6% story completion vs. a 10.7% benchmark."
-  />
+<TwoUp wide align="stretch">
+  <div class="cs-stat-stack">
+    <Stat
+      value="30%"
+      label="D1 retention on top game lenses"
+      caption="No daily mechanism in place. The retention was coming from the gameplay itself."
+    />
+    <Stat
+      value="7%"
+      label="WAU playing 5+ days a week"
+      caption="Skewing toward users with a weaker social graph who weren't pulled in by chat alone."
+    />
+    <Stat
+      value="7.8%"
+      label="View-to-unlock rate for Game Lenses on Spotlight"
+      caption="vs. a 1.1% benchmark. Direct-snap view-to-unlock was 6.3% vs. 1.4%, and the top 100 game lenses hit 23.6% story completion vs. a 10.7% benchmark."
+    />
+  </div>
   <Figure
-    slot="right"
     src="/projects/snapchat-games/viral-game1.gif"
     alt="A Snapchat Game Lens going viral on Spotlight"
-    device="phone"
+    maxWidth="360px"
   />
 </TwoUp>
 
@@ -179,11 +194,11 @@ three shipped projects to test whether the framing actually played
 out in product. Each one targeted a different leg of the thesis: a
 new social entry point, a gameplay UX upgrade, and a set of
 short-horizon fixes to the broken turn-based experience. The
-combined engagement signal off of these three is what got Evan to
-walk over and ask, "how can we go big with games?"
+combined engagement signal off of these three is what got Evan, the CEO, to
+walk over and ask, **"how can we go big with games?"**
 </Section>
 
-<Section stage="Design" eyebrow="Bet 1" title="Games in the chat drawer" banner />
+<Section stage="Design" eyebrow="Project 1" title="Games in the chat drawer" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
 The first bet was on Job 1. Research said users expected to start
@@ -215,7 +230,7 @@ metric, and a lift on it from a placement experiment is a
 load-bearing data point: it proved Job 1 wasn't a hunch.
 </Section>
 
-<Section stage="Design" eyebrow="Bet 2" title="Fullscreen game UX" banner />
+<Section stage="Design" eyebrow="Project 2" title="Fullscreen game UX" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
 The second bet was on the gameplay layer itself. A game lens that
@@ -238,7 +253,7 @@ every new game lens onboards into the system, so the gain compounds
 with every new title in the catalog.
 </Section>
 
-<Section stage="Design" eyebrow="Bet 3" title="Turn-based games, made less broken" banner />
+<Section stage="Design" eyebrow="Project 3" title="Turn-based games, made less broken" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
 The third bet was on the existing turn-based experience, where the
@@ -279,9 +294,9 @@ that justified the bigger investment.
 The three early bets shipped and the engagement signal was strong
 across all of them: +120% Game Video Posts on iOS, +0.136% on the
 top-line Direct Snap Send Human metric, and live multiplayer sessions
-spinning up across group chats. That combination got Evan to come
-back with the prompt that defined the next phase of the work: "how
-can we go big with games?" The strategy deck below is my answer to
+spinning up across group chats. That combination got Evan, the CEO, to come
+back with the prompt that defined the next phase of the work: **"how
+can we go big with games?"** The strategy deck below is my answer to
 that question, and the dedicated Games squad is what came out of it.
 </Section>
 

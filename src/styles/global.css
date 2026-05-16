@@ -175,6 +175,19 @@ button { font: inherit; cursor: pointer; }
   }
 }
 
+/* Equal-height stat tiles stacked vertically — use as a wrapper inside a
+   TwoUp default slot so the tiles share the grid row height with adjacent
+   media. Each direct child gets flex: 1 for equal height distribution. */
+.cs-stat-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.cs-stat-stack > * {
+  flex: 1;
+  min-height: 0;
+}
+
 /* ==========================================================
    LAYOUT HELPERS
    ========================================================== */

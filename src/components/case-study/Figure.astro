@@ -32,6 +32,7 @@ interface Props {
   maxWidth?: string;
   background?: "soft" | "surface" | "none";
   centered?: boolean;
+  crop?: boolean;
   class?: string;
 }
 
@@ -47,6 +48,7 @@ const {
   maxWidth,
   background = "none",
   centered = false,
+  crop = false,
   class: className = "",
 } = Astro.props;
 
@@ -70,6 +72,7 @@ const cls = [
   device !== "auto" ? `cs-figure--device-${device}` : "",
   `cs-figure--bg-${background}`,
   centered ? "cs-figure--centered" : "",
+  crop ? "cs-figure--crop" : "",
   className,
 ].filter(Boolean).join(" ");
 
@@ -172,6 +175,14 @@ const mediaStyle = styleParts.join(";");
     width: 100%;
     height: auto;
     display: block;
+  }
+  /* crop: fill the aspect-ratio container and anchor top-left so
+     black edges on right/bottom are clipped by overflow:hidden */
+  .cs-figure--crop .cs-figure__media img,
+  .cs-figure--crop .cs-figure__media video {
+    height: 100%;
+    object-fit: cover;
+    object-position: left top;
   }
   /* Phone/tablet image fills its container's width and uses its natural
      height — no letterboxing or empty space. */

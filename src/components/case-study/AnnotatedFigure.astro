@@ -170,7 +170,7 @@ const cls = [
     position: absolute;
     pointer-events: none;
     white-space: nowrap;
-    transform: translateX(8px);
+    transform: translateX(16px);
   }
 
   /* Vertical rail */
@@ -184,10 +184,10 @@ const cls = [
     opacity: 0.35;
   }
 
-  /* Top and bottom stubs */
+  /* Top and bottom stubs — point left (toward the image) */
   .cs-annotation__bracket-stub {
     position: absolute;
-    left: 0;
+    left: -7px;
     width: 7px;
     height: 1px;
     background: var(--text-primary);
@@ -216,11 +216,11 @@ const cls = [
   }
 
   .cs-annotation__label {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 11px;
     line-height: 1.4;
     color: var(--text-primary);
-    background: color-mix(in srgb, var(--bg-page) 92%, transparent);
+    background: color-mix(in srgb, var(--bg-canvas) 92%, transparent);
     padding: 2px 7px;
     border-radius: var(--r-sm, 4px);
     border: 1px solid var(--border-subtle);

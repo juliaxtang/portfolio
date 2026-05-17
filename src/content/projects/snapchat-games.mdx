@@ -690,12 +690,12 @@ player intent.
   </div>
 </JobsLanes>
 
-<Section stage="The pivot" eyebrow="The pivot" title="From pitching the strategy to leading the squad" banner />
+<Section stage="Executing the vision" eyebrow="Executing the vision" title="Squad up: Leading the newly formed Games Squad" banner />
 
-<Section size="sub" stage="The pivot" hideFromNav>
+<Section size="sub" stage="Executing the vision" hideFromNav>
 The deck landed. Evan diverted engineering from Lenses to spin up a dedicated Games squad against the four pillars. I went from designer making the case to design lead with a squad executing against it.
 
-With a squad in place, the next year of work ran in parallel across Pillars 2 and 3. Each project below tags back to a pillar from the deck.
+With a squad in place, the next year of work ran in parallel across Pillars 2 and 3, deliberately not Pillar 1. The ads team had told us games didn't have enough inventory yet to start monetizing, so we needed to grow engagement first. Evan backed the call: hold on truly monetizing games until Pillars 2 and 3 were strongly in place. Each project below tags back to a pillar from the deck.
 </Section>
 
 {/* TODO: drop a single visual that signals the chapter break, e.g. the deck cover, an org sketch, or a hero shot from the kickoff. */}
@@ -826,7 +826,7 @@ A live scoreboard tracks who's up, who's played, and who's still to go, so a tur
 The same session shows up in chat as a single live envelope that updates as friends take their turns, with a Remind CTA when the round stalls on whoever's left.
 </Section>
 
-<ThreeUp wide centered>
+<ThreeUp wide centered gap="xs">
   <Figure
     src="/projects/snapchat-games/Turn-based-live-framework (what my friends see) 1.png"
     alt="Chat envelope for a Sync Golf session showing two friends currently playing their turns and a Play Your Turn CTA"
@@ -850,15 +850,21 @@ The same session shows up in chat as a single live envelope that updates as frie
   />
 </ThreeUp>
 
-<Section size="sub" stage="Post-strategy work" hideFromNav>
+<Section size="sub" stage="Post-strategy work" eyebrow="Platform handoff" title="Where the framework went after launch" hideFromNav>
 Live multiplayer was an early platform bet, not a growth feature. Content supply was the constraint, so the work was scoped around making the surface ready for partner-built games. Success was framed as game retention and shared sessions with friends, not raw opens.
 </Section>
 
-<Stats cols={3} bare>
-  <Stat value="↗" label="Second live title in test" caption="A second multiplayer game on the framework" />
-  <Stat value="↗" label="Framework opened to partners" caption="Released to 2nd-party developer partners" />
-  <Stat value="↗" label="Public matchmaking in flight" caption="Primitives scoped, ready for a public lobby" />
-</Stats>
+<Callouts cols={3}>
+  <Callout eyebrow="Second title" title="A second live multiplayer game in test" tone="outline">
+    Built on the same framework, validating it beyond the launch title.
+  </Callout>
+  <Callout eyebrow="Partner surface" title="Framework opened to 2nd-party developers" tone="outline">
+    External studios can now ship live multiplayer without rebuilding the stack.
+  </Callout>
+  <Callout eyebrow="In flight at handoff" title="Public matchmaking primitives scoped" tone="outline">
+    Lobby and session APIs ready for a public matchmaking layer.
+  </Callout>
+</Callouts>
 
 <Section stage="Post-strategy work" eyebrow="Project 2 · Pillar 2" title="Daily games and player progression" />
 

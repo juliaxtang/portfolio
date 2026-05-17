@@ -1,0 +1,105 @@
+---
+/**
+ * BracketAside: a left-facing vertical bracket ( "}" shape ) paired with
+ * slotted content. Designed to live in the right column of a <TwoUp> so the
+ * bracket visually points back at the media in the left column.
+ *
+ * The rail spans the full height of the aside, with small inward stubs at
+ * top and bottom and a midpoint notch, matching the AnnotatedFigure bracket
+ * aesthetic (1px lines at --text-primary @ 0.35 opacity).
+ */
+---
+
+<aside class="cs-bracket-aside">
+  <span class="cs-bracket-aside__rail" aria-hidden="true">
+    <span class="cs-bracket-aside__stub cs-bracket-aside__stub--top" />
+    <span class="cs-bracket-aside__stub cs-bracket-aside__stub--bot" />
+    <span class="cs-bracket-aside__notch" />
+  </span>
+  <div class="cs-bracket-aside__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .cs-bracket-aside {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s-5);
+    align-items: stretch;
+    min-height: 100%;
+  }
+
+  .cs-bracket-aside__rail {
+    position: relative;
+    width: 10px;
+    align-self: stretch;
+  }
+
+  .cs-bracket-aside__rail::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+
+  .cs-bracket-aside__stub {
+    position: absolute;
+    right: 0;
+    width: 10px;
+    height: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+  .cs-bracket-aside__stub--top { top: 0; }
+  .cs-bracket-aside__stub--bot { bottom: 0; }
+
+  .cs-bracket-aside__notch {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 1px;
+    background: var(--text-primary);
+    opacity: 0.35;
+  }
+
+  .cs-bracket-aside__body {
+    display: grid;
+    gap: var(--s-4);
+    align-content: center;
+  }
+
+  .cs-bracket-aside__body :global(p) {
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .cs-bracket-aside__body :global(ul) {
+    margin: 0;
+    padding-left: var(--s-5);
+    display: grid;
+    gap: var(--s-2);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .cs-bracket-aside__body :global(li) {
+    margin: 0;
+  }
+
+  @media (max-width: 720px) {
+    .cs-bracket-aside {
+      grid-template-columns: auto 1fr;
+      gap: var(--s-4);
+    }
+  }
+</style>

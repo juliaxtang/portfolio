@@ -1,0 +1,161 @@
+---
+/**
+ * HeroPhoneCluster — three phones arranged as an overlapping cluster for
+ * a case-study hero band. Center phone reads as the focal point with
+ * the flanking phones tucked slightly lower on either side.
+ *
+ * Scroll parallax (each phone drifts independently) and per-phone hover
+ * scale + lift, matching HeroTwoPhones / PhonePair so the motion
+ * vocabulary stays consistent across the site.
+ */
+interface Props {
+  phone1: string;
+  phone2: string;
+  phone3: string;
+  alt1?: string;
+  alt2?: string;
+  alt3?: string;
+}
+const { phone1, phone2, phone3, alt1 = "", alt2 = "", alt3 = "" } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base) ? p : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+/* Three phones, all sharing the same vertical center axis. The middle
+   phone is 1.1x the size of the flanking phones (0.33 vs 0.30 of the
+   container width). Outers tilt ±4° and sit slightly behind the middle
+   phone, just overlapping its edges. Each phone is anchored to the
+   container's vertical center via `top: 50%` + `translateY(-50%)` so
+   the centers stay aligned regardless of phone height differences.
+   Drifts alternate so the row breathes on scroll. */
+const phones = [
+  { src: resolve(phone1), alt: alt1, left: 0.06, width: 0.30, drift: 52, hoverLift: 8, z: 2, tilt: -4, baseScale: 1 },
+  { src: resolve(phone2), alt: alt2, left: 0.335, width: 0.33, drift: -32, hoverLift: 10, z: 3, tilt: 0, baseScale: 1.1 },
+  { src: resolve(phone3), alt: alt3, left: 0.64, width: 0.30, drift: 44, hoverLift: 8, z: 2, tilt: 4, baseScale: 1 },
+];
+const aspect = "1373 / 2836";
+---
+
+<div class="hpc" aria-hidden="true">
+  {phones.map((p) => (
+    <div
+      class="hpc__phone"
+      style={`
+        --x:${(p.left * 100).toFixed(2)}%;
+        --w:${(p.width * 100).toFixed(2)}%;
+        --aspect:${aspect};
+        --drift:${p.drift}px;
+        --hover-lift:${p.hoverLift}px;
+        --tilt:${p.tilt}deg;
+        --base-scale:${p.baseScale};
+        z-index:${p.z};
+      `}
+      data-drift={p.drift}
+    >
+      <img src={p.src} alt={p.alt} draggable="false" loading="eager" />
+    </div>
+  ))}
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    function init() {
+      document.querySelectorAll(".hpc").forEach(function (root) {
+        const phones = Array.from(root.querySelectorAll(".hpc__phone"));
+        let raf = 0;
+        function update() {
+          raf = 0;
+          const rect = root.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const total = vh + rect.height;
+          if (total <= 0) return;
+          const traveled = vh - rect.top;
+          const progress = Math.min(Math.max(traveled / total, 0), 1);
+          const centered = progress - 0.5;
+          phones.forEach(function (phone) {
+            const drift = parseFloat(phone.dataset.drift || "30");
+            const y = -centered * drift;
+            phone.style.setProperty("--scroll-y", y.toFixed(1) + "px");
+          });
+        }
+        function onScroll() {
+          if (!raf) raf = requestAnimationFrame(update);
+        }
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        update();
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>
+
+<style>
+  /* Absolutely positioned cluster, sized to match the visual column.
+     Wider aspect than HeroTwoPhones since four phones span horizontally. */
+  .hpc {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    aspect-ratio: 16 / 12;
+    isolation: isolate;
+    pointer-events: none;
+  }
+
+  .hpc__phone {
+    position: absolute;
+    left: var(--x);
+    top: 50%;
+    width: var(--w);
+    aspect-ratio: var(--aspect);
+    --scroll-y: 0px;
+    --hover-y: 0px;
+    --hover-scale: 1;
+    --tilt: 0deg;
+    --base-scale: 1;
+    will-change: transform, filter;
+    /* translateY(-50%) anchors the phone's vertical center to the
+       container's vertical center, so all three phones (different
+       heights) share the same midline. Scroll + hover offsets compose
+       on top via additive translate. */
+    transform: translate(0, calc(-50% + var(--scroll-y) + var(--hover-y)))
+               rotate(var(--tilt))
+               scale(var(--base-scale))
+               scale(var(--hover-scale));
+    transition: transform 520ms var(--ease-out),
+                filter 320ms var(--ease-out);
+    pointer-events: auto;
+  }
+  /* Hover straightens the phone (rotation goes to 0) while it scales up,
+     so the focused phone reads as the foreground. */
+  .hpc__phone:hover {
+    --hover-y: calc(-1 * var(--hover-lift));
+    --hover-scale: 1.05;
+    --tilt: 0deg;
+    z-index: 50;
+  }
+  .hpc__phone:hover img {
+    filter: drop-shadow(0 30px 48px rgba(40, 30, 80, 0.30));
+  }
+  .hpc__phone img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 20px 36px rgba(40, 30, 80, 0.20));
+    pointer-events: none;
+    transition: filter 320ms var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hpc__phone { transition: none !important; transform: none !important; }
+  }
+</style>

@@ -57,6 +57,11 @@ interface Props {
    *  title/hero are not clickable. Hovering anywhere on the showcase swaps
    *  the button label to "Ask me about it!" (still in disabled style). */
   comingSoon?: boolean;
+  /** Optional full-bleed decorative background image (e.g. a wave) that
+   *  spans the full width of the showcase band behind everything else.
+   *  Used to give a single card a stronger brand backdrop without changing
+   *  the rest of the page rhythm. */
+  bgImage?: string;
 }
 const {
   companyLogo,
@@ -74,7 +79,11 @@ const {
   reverse = false,
   id,
   comingSoon = false,
+  bgImage,
 } = Astro.props;
+const resolvedBgImage = bgImage && (bgImage.startsWith("http")
+  ? bgImage
+  : `${import.meta.env.BASE_URL.replace(/\/$/, "")}${bgImage.startsWith("/") ? "" : "/"}${bgImage}`);
 const isLinked = !!ctaHref && !comingSoon;
 const isExternal = !!ctaHref && /^https?:\/\//.test(ctaHref);
 
@@ -86,7 +95,12 @@ const resolvedLogo = companyLogo && (companyLogo.startsWith("http") || companyLo
 const meta = [role].filter(Boolean) as string[];
 ---
 
-<section class={"showcase" + (reverse ? " showcase--reverse" : "")} style={accentStyle} id={id}>
+<section class={"showcase" + (reverse ? " showcase--reverse" : "") + (resolvedBgImage ? " showcase--has-bg-image" : "")} style={accentStyle} id={id}>
+  {resolvedBgImage && (
+    <div class="showcase__bg" aria-hidden="true">
+      <img src={resolvedBgImage} alt="" loading="lazy" />
+    </div>
+  )}
   <div class="showcase__inner">
     <div class="showcase__text">
       {(resolvedLogo || companyName) && (
@@ -224,6 +238,28 @@ const meta = [role].filter(Boolean) as string[];
   }
   @media (max-width: 720px) {
     .showcase { padding-block: var(--s-12); }
+  }
+
+  /* Optional full-bleed decorative background (e.g. wave). Sits behind
+     the radial cloud and any content. The image fills width edge-to-edge
+     and is vertically anchored to the bottom so the wave reads as a
+     ground plane the phones float over. */
+  .showcase--has-bg-image::before { display: none; }
+  .showcase__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .showcase__bg img {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    display: block;
   }
 
   /* Both columns are equal-width so the two halves carry the same

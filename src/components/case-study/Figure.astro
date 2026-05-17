@@ -235,6 +235,13 @@ const mediaStyle = styleParts.join(";");
   :global(.cs-figure--r-24).cs-figure--capped .cs-figure__media video {
     border-radius: 24px;
   }
+  :global(.cs-figure--r-12).cs-figure--capped .cs-figure__media img,
+  :global(.cs-figure--r-12).cs-figure--capped .cs-figure__media video {
+    border-radius: 12px;
+  }
+  :global(.cs-figure--r-12):not(.cs-figure--capped) .cs-figure__media {
+    border-radius: 12px;
+  }
   .cs-figure--capped .cs-figure__media img,
   .cs-figure--capped .cs-figure__media video {
     width: auto;

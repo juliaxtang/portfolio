@@ -1,0 +1,119 @@
+---
+/**
+ * TopicChatsLiveMoments: full-bleed final-result block for the Topic
+ * Chats case study. Four hero phone mockups sit over a yellow wave
+ * background that breaks past the prose column edge to edge, with each
+ * phone drifting independently on scroll (festival-mode style) and
+ * lifting on hover.
+ *
+ * Single-purpose component for now. If another case study needs the
+ * same pattern, generalize the phones[] and bgImage into props.
+ */
+import PhonePair from "../showcase/PhonePair.astro";
+---
+
+<div class="cs-livemoments" aria-label="Topic Chats hero mockups">
+  <div class="cs-livemoments__bg" aria-hidden="true">
+    <img src="/projects/topic-chats/wave-bg.png" alt="" loading="lazy" />
+  </div>
+  <div class="cs-livemoments__inner">
+    <PhonePair
+      phones={[
+        {
+          src: "/projects/topic-chats/hero-phone-mockup01.png",
+          alt: "Topic Chats list with live badging on trending chats",
+          left: 0.02,
+          top: 0.14,
+          width: 0.22,
+          aspect: "1373 / 2836",
+          drift: 56,
+          hoverLift: 10,
+          z: 2,
+        },
+        {
+          src: "/projects/topic-chats/hero-phone-mockup02.png",
+          alt: "March Madness Topic Chat with live scoreboard",
+          left: 0.26,
+          top: 0.02,
+          width: 0.22,
+          aspect: "1373 / 2836",
+          drift: -36,
+          hoverLift: 10,
+          z: 3,
+        },
+        {
+          src: "/projects/topic-chats/hero-phone-mockup03.png",
+          alt: "NBA Topic Chat with Spotlight post pinned",
+          left: 0.50,
+          top: 0.14,
+          width: 0.22,
+          aspect: "1373 / 2836",
+          drift: 44,
+          hoverLift: 8,
+          z: 1,
+        },
+        {
+          src: "/projects/topic-chats/hero-phone-mockup04.png",
+          alt: "Dodgers Topic Chat with poll and live reactions",
+          left: 0.74,
+          top: 0.02,
+          width: 0.22,
+          aspect: "1373 / 2836",
+          drift: -28,
+          hoverLift: 8,
+          z: 2,
+        },
+      ]}
+      maxWidth="1200px"
+      aspect="16 / 10"
+    />
+  </div>
+</div>
+
+<style>
+  /* Full-bleed band: breaks past the constrained prose column out to the
+     viewport edges so the wave can carry the composition. The phones'
+     own PhonePair container then constrains them to a sensible max
+     width inside the bleed. */
+  .cs-livemoments {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-block: var(--s-12);
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  /* Wave vertically centered on the phones so it cuts through the
+     middle of the composition (phones float over it on top, peek
+     below on the bottom) instead of acting as a ground plane. */
+  .cs-livemoments__bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .cs-livemoments__bg img {
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Aligns the wave's vertical center with the phones' vertical
+       center mass (not the band's center). The band has more empty
+       space below the phones than above, so 50% lands below them. */
+    top: 45%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .cs-livemoments__inner {
+    max-width: var(--content-max);
+    margin: 0 auto;
+    padding: var(--s-10) var(--s-5);
+  }
+
+  @media (max-width: 720px) {
+    .cs-livemoments__inner { padding: var(--s-6) var(--s-4); }
+  }
+</style>

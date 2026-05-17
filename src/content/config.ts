@@ -40,9 +40,11 @@ const projects = defineCollection({
       coverAlt: z.string().optional(),
       accent: z.string().optional(),
       heroVisual: z.object({
-        type: z.enum(["two-phones", "overlay", "columns", "video-stack"]),
+        type: z.enum(["two-phones", "overlay", "columns", "video-stack", "phone-cluster"]),
         phone1: z.string().optional(),
         phone2: z.string().optional(),
+        phone3: z.string().optional(),
+        phone4: z.string().optional(),
         src: z.string().optional(),
         col1: z.string().optional(),
         col2: z.string().optional(),

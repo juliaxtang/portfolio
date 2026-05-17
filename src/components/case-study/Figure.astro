@@ -172,8 +172,27 @@ const mediaStyle = styleParts.join(";");
   /* Height-capped figures: the image is constrained by max-height with
      auto width and is centered horizontally inside its column. Use for
      rows of images (TwoUp/ThreeUp) so each tile shares a vertical budget
-     instead of growing to fill the column width. The 36px corner radius
+     instead of growing to fill the column width. The 24px corner radius
      matches the device frame radius used elsewhere for mobile mockups. */
+  /* Capped figures shrink to the rendered image width so the figcaption
+     sits directly under the phone instead of spanning a wider grid cell.
+     `width: max-content` + `max-width: 100%` clamps to the image content;
+     figcaption uses width:0 / min-width:100% so caption text length does
+     not contribute to the figure's intrinsic width. */
+  .cs-figure--capped {
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
+    /* justify-self: center keeps the figure centered inside a grid
+       column. ThreeUp resets `margin: 0` on figures (which kills the
+       auto inline margin), so we rely on justify-self for centering. */
+    justify-self: center;
+  }
+  .cs-figure--capped > .cs-figure__caption {
+    width: 0;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
   .cs-figure--capped .cs-figure__media {
     display: flex;
     justify-content: center;
@@ -182,9 +201,35 @@ const mediaStyle = styleParts.join(";");
     overflow: visible;
     background: transparent;
   }
+  /* Horizontal clip utilities: trim a small margin off one side of a
+     capped image. The image is shifted with a negative margin so its
+     bounding box shrinks while the visible content stays the same.
+     Default trim is 12px; override via --cs-figure-clip-l / -r. */
+  :global(.cs-figure--clip-left).cs-figure--capped .cs-figure__media,
+  :global(.cs-figure--clip-right).cs-figure--capped .cs-figure__media {
+    overflow: hidden;
+  }
+  :global(.cs-figure--clip-left).cs-figure--capped .cs-figure__media img {
+    margin-left: calc(-1 * var(--cs-figure-clip-l, 12px)) !important;
+  }
+  :global(.cs-figure--clip-right).cs-figure--capped .cs-figure__media img {
+    margin-right: calc(-1 * var(--cs-figure-clip-r, 12px)) !important;
+  }
+  /* Slight bottom-right crop: trims a small margin off the right and
+     bottom edges of a capped image. Used when an asset has extra padding
+     or a stray UI element on the trailing edge that distracts from the
+     content. Defaults clip ~4% from each axis; override via vars. */
+  :global(.cs-figure--clip-br).cs-figure--capped .cs-figure__media {
+    overflow: hidden;
+    border-radius: 24px;
+  }
+  :global(.cs-figure--clip-br).cs-figure--capped .cs-figure__media img {
+    margin-right: calc(-1 * var(--cs-figure-clip-r, 4px)) !important;
+    margin-bottom: calc(-1 * var(--cs-figure-clip-b, 4px)) !important;
+  }
   .cs-figure--capped .cs-figure__media img,
   .cs-figure--capped .cs-figure__media video {
-    border-radius: 36px;
+    border-radius: 24px;
   }
   :global(.cs-figure--r-24).cs-figure--capped .cs-figure__media img,
   :global(.cs-figure--r-24).cs-figure--capped .cs-figure__media video {

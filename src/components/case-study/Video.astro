@@ -30,6 +30,20 @@ const {
 
 const finalAspect = aspect ?? (device === "phone" ? "9 / 19.5" : undefined);
 
+// Numeric aspect (W/H) for computing the figure width when maxHeight is
+// set. Without this, the figure's max-content would be the video's
+// intrinsic resolution, which is much wider than the rendered media.
+const numAspect = finalAspect?.includes("/")
+  ? (() => {
+      const [w, h] = finalAspect.split("/").map((v) => parseFloat(v));
+      return Number.isFinite(w) && Number.isFinite(h) && h > 0 ? w / h : undefined;
+    })()
+  : undefined;
+const figStyle =
+  maxHeight && numAspect
+    ? `width: calc(${maxHeight} * ${numAspect}); max-width: 100%;`
+    : undefined;
+
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p: string) =>
   p.startsWith("http") || p.startsWith(base)
@@ -46,7 +60,7 @@ const cls = [
 ].filter(Boolean).join(" ");
 ---
 
-<figure class={cls}>
+<figure class={cls} style={figStyle}>
   <div
     class="cs-video__media"
     style={[
@@ -83,17 +97,26 @@ const cls = [
     overflow: hidden;
     background: var(--bg-sunken);
   }
-  /* Capped video: maxHeight set, render with 36px radius to match the
+  /* Capped video: maxHeight set, render with 24px radius to match the
      Figure capped treatment used elsewhere for mobile mockups. The video
      element inherits the corner so the rendered media doesn't bleed past
      the radius. */
   .cs-video--capped .cs-video__media,
   .cs-video--capped .cs-video__media video {
-    border-radius: 36px;
+    border-radius: 24px;
   }
   .cs-video--capped .cs-video__media {
     width: auto;
     margin-inline: auto;
+  }
+  /* Capped video shrinks to its media so it sits centered in a grid
+     column the same way capped Figures do. Without this, a Video in a
+     row with Figures stretches its column and creates uneven gaps. */
+  .cs-video--capped {
+    width: max-content;
+    max-width: 100%;
+    margin-inline: auto;
+    justify-self: center;
   }
   /* Phone-shaped videos cap their width like Figure does for phone screens. */
   .cs-video--device-phone .cs-video__media { max-width: 320px; margin-inline: auto; }

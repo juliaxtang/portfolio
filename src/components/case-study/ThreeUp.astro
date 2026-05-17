@@ -5,9 +5,10 @@ interface Props {
   centered?: boolean;
   steps?: boolean;
   align?: "start" | "center" | "end";
+  pack?: boolean;
 }
 
-const { wide = false, gap = "md", centered = false, steps = false, align = "start" } = Astro.props;
+const { wide = false, gap = "md", centered = false, steps = false, align = "start", pack = false } = Astro.props;
 
 const gapMap: Record<string, string> = {
   xs: "var(--s-2)",
@@ -21,6 +22,7 @@ const cls = [
   wide ? "cs-threeup--wide" : "",
   centered ? "cs-threeup--centered" : "",
   steps ? "cs-threeup--steps" : "",
+  pack ? "cs-threeup--pack" : "",
 ].filter(Boolean).join(" ");
 const styleVars = `--cs-threeup-gap:${gapMap[gap]};--cs-threeup-align:${align};`;
 ---
@@ -37,6 +39,14 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};--cs-threeup-align:${align};`
     align-items: var(--cs-threeup-align, start);
     margin: var(--s-8) auto;
     max-width: var(--content-narrow);
+  }
+  /* Pack mode: columns size to content and the row centers as a group,
+     so `gap` becomes the actual visual spacing between items. Use for
+     rows of shrink-wrapped (capped) Figures or Videos where the default
+     1fr columns leave large empty whitespace around each item. */
+  .cs-threeup--pack {
+    grid-template-columns: repeat(3, auto);
+    justify-content: center;
   }
   .cs-threeup--wide {
     max-width: var(--content-max);
@@ -71,13 +81,14 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};--cs-threeup-align:${align};`
   .cs-threeup--steps { counter-reset: cs-step; }
   .cs-threeup--steps :global(.cs-figure) { counter-increment: cs-step; }
   .cs-threeup--steps :global(.cs-figure)::before {
-    content: "Step 0" counter(cs-step);
+    content: "0" counter(cs-step);
     display: block;
     font-family: var(--font-mono);
     font-size: 11px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     text-align: center;
     margin-bottom: var(--s-3);
   }

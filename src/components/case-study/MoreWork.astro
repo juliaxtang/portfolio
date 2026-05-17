@@ -15,6 +15,11 @@ import { showcaseContent } from "../../data/showcases";
 import HeroTwoPhones from "./HeroTwoPhones.astro";
 import HeroOverlay from "./HeroOverlay.astro";
 import HeroProfileColumns from "./HeroProfileColumns.astro";
+import VideoStack from "../showcase/VideoStack.astro";
+import {
+  snapchatGamesStackItems,
+  snapchatGamesStackProps,
+} from "../showcase/projects/snapchatGamesStack";
 
 interface Props {
   currentSlug: string;
@@ -28,10 +33,16 @@ const ordered = all.sort(
 const currentIdx = ordered.findIndex(
   (p) => p.id === currentSlug || (p as any).slug === currentSlug
 );
+const currentEntry = currentIdx >= 0 ? ordered[currentIdx] : undefined;
+const overrideSlug = currentEntry?.data.nextSlug;
+const overrideEntry = overrideSlug
+  ? ordered.find((p) => p.id === overrideSlug || (p as any).slug === overrideSlug)
+  : undefined;
 const nextEntry =
-  ordered.length > 1
+  overrideEntry ??
+  (ordered.length > 1
     ? ordered[(Math.max(currentIdx, 0) + 1) % ordered.length]
-    : undefined;
+    : undefined);
 const nextSlug = nextEntry
   ? ((nextEntry as any).slug ?? nextEntry.id)
   : undefined;
@@ -103,6 +114,12 @@ const meta = content
             )}
             {hv.type === "columns" && hv.col1 && hv.col2 && hv.col3 && (
               <HeroProfileColumns col1={hv.col1} col2={hv.col2} col3={hv.col3} />
+            )}
+            {hv.type === "video-stack" && nextSlug === "snapchat-games" && (
+              <VideoStack
+                items={[...snapchatGamesStackItems]}
+                {...snapchatGamesStackProps}
+              />
             )}
           </div>
         )}

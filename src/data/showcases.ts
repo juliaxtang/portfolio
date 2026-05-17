@@ -38,6 +38,21 @@ export interface ShowcaseContent {
 }
 
 export const showcaseContent: Record<string, ShowcaseContent> = {
+  "snapchat-games": {
+    companyLogo: "/logos/snapchat.png",
+    companyName: "Snapchat",
+    year: 2025,
+    role: "Staff Product Designer",
+    title: "Snapchat Games",
+    tagline:
+      "Defined and pitched Games strategy directly to Snap's CEO, securing a dedicated squad and scaling the product from an early-stage bet to a 30M+ DAU platform.",
+    stats: [
+      { value: "30M", label: "Games DAU" },
+      { value: "↑ 2.9M", label: "Estimated Snap sends daily" },
+      { value: "↑ 120%", label: "Game Video Posts on iOS" },
+    ],
+    accent: "#FFFC00",
+  },
   "tappy-cloud": {
     companyLogo: "/logos/tinder.png",
     companyName: "Tinder",

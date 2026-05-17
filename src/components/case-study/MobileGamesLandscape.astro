@@ -76,9 +76,9 @@ const zones: Zone[] = [
     game: "Genshin Impact · Call of Duty Mobile",
     meta: "Top-grossing AAA mobile titles",
     traits: [
-      { label: "Retention", value: "Highest, but only among a dedicated core" },
-      { label: "Monetization", value: "Strong IAP, offset by huge UA costs" },
-      { label: "Build cost", value: "AAA-scale builds and marketing, beyond Snap's scope" },
+      { label: "Retention", value: "Highest, narrow audience" },
+      { label: "Monetization", value: "Strong IAP, high UA cost" },
+      { label: "Build cost", value: "AAA-scale builds, beyond Snap's scope" },
     ],
   },
 ];
@@ -180,13 +180,17 @@ const zones: Zone[] = [
     border-radius: 2px;
     position: relative;
   }
+  /* Arrow color matches the axis line gradient at its respective end. Both
+     ends of the line use the same 12% text-primary mix, so both arrows
+     pull the same value: the arrowhead and the line literally share a
+     stroke color where they meet. */
   .mgl__axis-arrow {
     position: absolute;
     top: 50%;
     width: 10px;
     height: 10px;
-    border-top: 1.75px solid color-mix(in srgb, var(--text-primary) 55%, transparent);
-    border-right: 1.75px solid color-mix(in srgb, var(--text-primary) 55%, transparent);
+    border-top: 1.75px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
+    border-right: 1.75px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
   }
   .mgl__axis-arrow--left {
     left: 0;
@@ -238,7 +242,6 @@ const zones: Zone[] = [
     color: var(--text-primary);
     margin-top: 2px;
   }
-  .mgl__axis-pin--out .mgl__axis-pin-name { color: var(--text-tertiary); }
   .mgl__axis-pin--out .mgl__axis-pin-position { color: var(--text-tertiary); }
 
   /* Three equal-width cards floating on the page background, no outer

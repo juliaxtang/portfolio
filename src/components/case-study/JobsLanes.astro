@@ -107,6 +107,8 @@ const { lanes } = Astro.props;
     display: grid;
     gap: var(--s-2);
     max-width: var(--content-narrow);
+    margin-inline: auto;
+    width: 100%;
   }
   .cs-jobs-lane__eyebrow {
     display: inline-flex;
@@ -135,17 +137,17 @@ const { lanes } = Astro.props;
   }
   .cs-jobs-lane__body {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
-    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1.65;
+    color: var(--text-primary);
   }
 
   .cs-jobs-lane__tiles {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: flex-end;
-    gap: var(--s-6);
+    gap: var(--s-5);
   }
 
   /* Tile is rendered inline in MDX as <div class="cs-jobs-lane__tile">.

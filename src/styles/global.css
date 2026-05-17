@@ -251,6 +251,17 @@ a.prose-out:hover {
   outline: 0.5px solid var(--text-tertiary);
   outline-offset: -0.5px;
 }
+/* Non-capped Figure: corner radius lives on .cs-figure__media (overflow:hidden),
+   not on the <img>, so the img's outline would corner-clip and disappear. Move
+   the outline to the rounded element. */
+.has-hairline.cs-figure:not(.cs-figure--capped) .cs-figure__media {
+  outline: 0.5px solid var(--text-tertiary);
+  outline-offset: -0.5px;
+}
+.has-hairline.cs-figure:not(.cs-figure--capped) img,
+.has-hairline.cs-figure:not(.cs-figure--capped) video {
+  outline: none;
+}
 
 /* ==========================================================
    FOCUS — visible, brand-aware

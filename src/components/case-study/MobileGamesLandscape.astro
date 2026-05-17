@@ -18,10 +18,8 @@
  *   3. Per-card trait micro-grid: same three dimensions in the same order
  *      across all cards (Retention / Monetization / Build cost).
  *
- * Interactivity: click a card to focus it. The other two cards dim, the
- * focused one lifts and gains a tinted ring. Click again or click another
- * card to switch. Mirrors how the original deck revealed the categories
- * progressively, one at a time, rather than as a static side-by-side.
+ * Interactivity: hover any card to lift it and gently zoom its media. The
+ * diagram's job is side-by-side comparison, so no click-to-focus dimming.
  *
  * No props: the diagram IS the content for this case study. If a future
  * case study needs a similar spectrum, fork this file.
@@ -76,11 +74,11 @@ const zones: Zone[] = [
     position: "Out of reach",
     positionStyle: "eyebrow",
     game: "Genshin Impact · Call of Duty Mobile",
-    meta: "Dominated by AAA studios",
+    meta: "Top-grossing AAA mobile titles",
     traits: [
-      { label: "Retention", value: "Best in market" },
-      { label: "Monetization", value: "Strong IAP" },
-      { label: "Build cost", value: "Expensive, AAA only" },
+      { label: "Retention", value: "Highest, but only among a dedicated core" },
+      { label: "Monetization", value: "Strong IAP, offset by huge UA costs" },
+      { label: "Build cost", value: "AAA-scale builds and marketing, beyond Snap's scope" },
     ],
   },
 ];
@@ -106,16 +104,9 @@ const zones: Zone[] = [
     </div>
   </div>
 
-  <div class="mgl__zones" data-zones>
+  <div class="mgl__zones">
     {zones.map((z, i) => (
-      <div
-        class={`mgl__zone mgl__zone--${z.variant}`}
-        data-zone-idx={i}
-        role="button"
-        tabindex="0"
-        aria-pressed="false"
-        aria-label={`Focus the ${z.name} card`}
-      >
+      <div class={`mgl__zone mgl__zone--${z.variant}`} data-zone-idx={i}>
         <div class="mgl__media">
           {z.variant === "current" && (
             <img
@@ -164,7 +155,10 @@ const zones: Zone[] = [
 <style>
   .mgl {
     margin: var(--s-10) auto;
-    width: min(100%, var(--content-max, 1200px));
+    /* Slightly narrower than the case study's full content max so all three
+       cards fit on the page at a glance without needing to scan side to
+       side. */
+    width: min(100%, 1040px);
     display: grid;
     gap: var(--s-8);
   }
@@ -247,32 +241,27 @@ const zones: Zone[] = [
   .mgl__axis-pin--out .mgl__axis-pin-name { color: var(--text-tertiary); }
   .mgl__axis-pin--out .mgl__axis-pin-position { color: var(--text-tertiary); }
 
-  /* Three equal cards. Floating on the page background, no outer panel. */
+  /* Three equal-width cards floating on the page background, no outer
+     panel. Cards align to the top: if one card's traits wrap to more
+     lines than another's, the cards naturally end at different heights
+     rather than introducing a gap between meta and traits to fake parity. */
   .mgl__zones {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--s-5);
-    align-items: stretch;
+    align-items: start;
   }
   .mgl__zone {
     display: grid;
     gap: var(--s-3);
-    grid-template-rows: auto auto auto 1fr;
     padding: var(--s-5);
     border-radius: var(--r-md);
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     position: relative;
-    cursor: pointer;
     transition:
       transform var(--dur-normal, 240ms) var(--ease-out, ease),
-      box-shadow var(--dur-normal, 240ms) var(--ease-out, ease),
-      opacity var(--dur-normal, 240ms) var(--ease-out, ease),
-      border-color var(--dur-normal, 240ms) var(--ease-out, ease);
-  }
-  .mgl__zone:focus-visible {
-    outline: 2px solid var(--brand-primary-2);
-    outline-offset: 3px;
+      box-shadow var(--dur-normal, 240ms) var(--ease-out, ease);
   }
   .mgl__zone--current {
     border-color: color-mix(in srgb, var(--brand-primary) 65%, var(--border-default));
@@ -296,33 +285,10 @@ const zones: Zone[] = [
     box-shadow: var(--shadow-lg);
   }
 
-  /* Focused state (click): the focused card scales up + gains a stronger
-     shadow + a ring. Sibling cards drop in opacity so the eye locks. */
-  .mgl__zones.has-focus .mgl__zone:not(.is-focused) {
-    opacity: 0.45;
-    transform: none;
-    box-shadow: none;
-  }
-  .mgl__zone.is-focused {
-    transform: translateY(-4px) scale(1.012);
-    box-shadow: var(--shadow-lg);
-    opacity: 1;
-  }
-  .mgl__zone.is-focused.mgl__zone--current {
-    border-color: color-mix(in srgb, var(--brand-primary) 95%, transparent);
-  }
-  .mgl__zone.is-focused.mgl__zone--target {
-    border-color: color-mix(in srgb, var(--brand-secondary-2) 95%, transparent);
-  }
-  .mgl__zone.is-focused.mgl__zone--out {
-    border-color: color-mix(in srgb, var(--text-primary) 35%, transparent);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .mgl__zone,
-    .mgl__zone:hover,
-    .mgl__zone.is-focused {
-      transition: opacity var(--dur-normal, 240ms) var(--ease-out, ease);
+    .mgl__zone:hover {
+      transition: none;
       transform: none;
     }
   }
@@ -332,12 +298,13 @@ const zones: Zone[] = [
      Aspect-ratio still locks heights across the row. */
   .mgl__media {
     aspect-ratio: 3 / 4;
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--r-sm);
   }
+  /* Single-image cells (hyper-casual, hybrid-casual): the rounding lives on
+     the image itself so the corners are visible against the card surface,
+     not on a container that the contained image doesn't reach. */
   .mgl__media > img {
     max-width: 100%;
     max-height: 100%;
@@ -345,30 +312,36 @@ const zones: Zone[] = [
     height: auto;
     display: block;
     object-fit: contain;
+    border-radius: 24px;
     transition: transform var(--dur-slow, 360ms) var(--ease-out, ease);
   }
-  .mgl__zone:hover .mgl__media > img,
-  .mgl__zone.is-focused .mgl__media > img {
+  .mgl__zone:hover .mgl__media > img {
     transform: scale(1.03);
   }
   /* Diptych: two landscape screenshots stacked 50/50 in the same well so
-     the mid-core card still shows Genshin and Call of Duty Mobile. */
+     the mid-core card still shows Genshin and Call of Duty Mobile. Each
+     image gets its own 24px rounding, the container has no rounding. */
   .mgl__media-diptych {
     display: grid;
     grid-template-rows: 1fr 1fr;
-    gap: 2px;
+    gap: var(--s-2);
     width: 100%;
     height: 100%;
   }
+  /* Cover (not contain) so each landscape screenshot fills its half of the
+     diptych and the 24px corners actually meet image content. With contain
+     these letterbox horizontally inside a portrait slot, and the rounded
+     corners end up wrapping empty space. */
   .mgl__media-diptych img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center;
     display: block;
+    border-radius: 24px;
     transition: transform var(--dur-slow, 360ms) var(--ease-out, ease);
   }
-  .mgl__zone:hover .mgl__media-diptych img,
-  .mgl__zone.is-focused .mgl__media-diptych img {
+  .mgl__zone:hover .mgl__media-diptych img {
     transform: scale(1.03);
   }
 
@@ -389,6 +362,11 @@ const zones: Zone[] = [
     margin: 0;
     line-height: 1.4;
     letter-spacing: 0;
+    /* Reserve two lines of vertical space so single-line metas (cells 1, 2)
+       sit at the same height as the wrapping meta in cell 3. Without this,
+       cards are equal height via the 1fr trait row, which collapses the
+       gap on cell 3 only and creates uneven whitespace across the row. */
+    min-height: 2.8em;
   }
 
   /* Per-card trait grid: dimension label left, value right. Same three
@@ -399,7 +377,6 @@ const zones: Zone[] = [
     border-top: 1px solid color-mix(in srgb, var(--text-primary) 8%, transparent);
     display: grid;
     gap: var(--s-2);
-    align-self: end;
   }
   .mgl__trait {
     display: grid;
@@ -442,42 +419,5 @@ const zones: Zone[] = [
     .mgl__trait { grid-template-columns: 96px 1fr; }
     /* On mobile, focus state without scale (avoid layout shift inside a
        narrow column). */
-    .mgl__zone.is-focused { transform: none; }
   }
 </style>
-
-<script>
-  const root = document.querySelector<HTMLElement>('[data-zones]');
-  if (root) {
-    const zones = Array.from(root.querySelectorAll<HTMLElement>('.mgl__zone'));
-    const focus = (target: HTMLElement | null) => {
-      zones.forEach((z) => {
-        const on = z === target;
-        z.classList.toggle('is-focused', on);
-        z.setAttribute('aria-pressed', on ? 'true' : 'false');
-      });
-      root.classList.toggle('has-focus', !!target);
-    };
-    zones.forEach((z) => {
-      z.addEventListener('click', (e) => {
-        e.stopPropagation();
-        focus(z.classList.contains('is-focused') ? null : z);
-      });
-      z.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          focus(z.classList.contains('is-focused') ? null : z);
-        } else if (e.key === 'Escape' && z.classList.contains('is-focused')) {
-          e.preventDefault();
-          focus(null);
-        }
-      });
-    });
-    /* Click outside the cards to release focus. */
-    document.addEventListener('click', (e) => {
-      if (!root.classList.contains('has-focus')) return;
-      const t = e.target as Node;
-      if (!root.contains(t)) focus(null);
-    });
-  }
-</script>

@@ -26,7 +26,12 @@ const { lanes } = Astro.props;
   {lanes[0] && (
     <div class={`cs-jobs-lane cs-jobs-lane--${lanes[0].tint ?? "lavender"}`}>
       <div class="cs-jobs-lane__rail">
-        {lanes[0].eyebrow && <p class="cs-jobs-lane__eyebrow t-eyebrow">{lanes[0].eyebrow}</p>}
+        {lanes[0].eyebrow && (
+          <p class="cs-jobs-lane__eyebrow t-eyebrow">
+            <span class="cs-jobs-lane__dot" aria-hidden="true"></span>
+            {lanes[0].eyebrow}
+          </p>
+        )}
         <h3 class="cs-jobs-lane__title">{lanes[0].title}</h3>
         {lanes[0].body && <p class="cs-jobs-lane__body">{lanes[0].body}</p>}
       </div>
@@ -38,7 +43,12 @@ const { lanes } = Astro.props;
   {lanes[1] && (
     <div class={`cs-jobs-lane cs-jobs-lane--${lanes[1].tint ?? "peach"}`}>
       <div class="cs-jobs-lane__rail">
-        {lanes[1].eyebrow && <p class="cs-jobs-lane__eyebrow t-eyebrow">{lanes[1].eyebrow}</p>}
+        {lanes[1].eyebrow && (
+          <p class="cs-jobs-lane__eyebrow t-eyebrow">
+            <span class="cs-jobs-lane__dot" aria-hidden="true"></span>
+            {lanes[1].eyebrow}
+          </p>
+        )}
         <h3 class="cs-jobs-lane__title">{lanes[1].title}</h3>
         {lanes[1].body && <p class="cs-jobs-lane__body">{lanes[1].body}</p>}
       </div>
@@ -50,7 +60,12 @@ const { lanes } = Astro.props;
   {lanes[2] && (
     <div class={`cs-jobs-lane cs-jobs-lane--${lanes[2].tint ?? "blue"}`}>
       <div class="cs-jobs-lane__rail">
-        {lanes[2].eyebrow && <p class="cs-jobs-lane__eyebrow t-eyebrow">{lanes[2].eyebrow}</p>}
+        {lanes[2].eyebrow && (
+          <p class="cs-jobs-lane__eyebrow t-eyebrow">
+            <span class="cs-jobs-lane__dot" aria-hidden="true"></span>
+            {lanes[2].eyebrow}
+          </p>
+        )}
         <h3 class="cs-jobs-lane__title">{lanes[2].title}</h3>
         {lanes[2].body && <p class="cs-jobs-lane__body">{lanes[2].body}</p>}
       </div>
@@ -63,61 +78,51 @@ const { lanes } = Astro.props;
 
 <style>
   .cs-jobs-lanes {
-    max-width: var(--content-max);
+    max-width: 920px;
     margin: var(--s-8) auto;
     display: grid;
-    gap: var(--s-5);
+    gap: var(--s-16);
     padding-inline: var(--s-5);
   }
 
   .cs-jobs-lane {
-    --lane-bg: var(--brand-wash-soft);
-    --lane-bg-hover: var(--brand-wash);
+    --lane-accent: var(--brand-accent);
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) minmax(0, 3fr);
-    gap: var(--s-8);
-    align-items: center;
-    padding: var(--s-8) var(--s-8);
-    border-radius: var(--r-lg);
-    background: var(--lane-bg);
-    border: 1px solid var(--border-subtle);
-    transition: background 0.35s var(--ease-out, cubic-bezier(0.2, 0, 0, 1));
+    gap: var(--s-6);
   }
 
-  .cs-jobs-lane--lavender {
-    --lane-bg: rgba(220, 210, 232, 0.30);
-    --lane-bg-hover: rgba(220, 210, 232, 0.55);
-  }
-  .cs-jobs-lane--peach {
-    --lane-bg: rgba(244, 217, 204, 0.30);
-    --lane-bg-hover: rgba(244, 217, 204, 0.55);
-  }
-  .cs-jobs-lane--blue {
-    --lane-bg: rgba(197, 220, 234, 0.30);
-    --lane-bg-hover: rgba(197, 220, 234, 0.55);
-  }
+  .cs-jobs-lane--lavender { --lane-accent: var(--brand-accent); }
+  .cs-jobs-lane--peach    { --lane-accent: var(--brand-secondary); }
+  .cs-jobs-lane--blue     { --lane-accent: var(--brand-primary); }
 
-  /* When the user is hovering a tile inside the lanes wrapper, deepen the
-     parent lane's tint and dim the non-hovered tiles in both lanes. */
+  /* Hovering a tile dims the others in both lanes. */
   .cs-jobs-lanes:has(.cs-jobs-lane__tile:hover) .cs-jobs-lane__tile {
     opacity: 0.55;
   }
   .cs-jobs-lanes:has(.cs-jobs-lane__tile:hover) .cs-jobs-lane__tile:hover {
     opacity: 1;
   }
-  .cs-jobs-lane:has(.cs-jobs-lane__tile:hover) {
-    background: var(--lane-bg-hover);
-  }
 
   .cs-jobs-lane__rail {
     display: grid;
-    gap: var(--s-3);
-    align-content: center;
+    gap: var(--s-2);
+    max-width: var(--content-narrow);
   }
   .cs-jobs-lane__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
     margin: 0;
     font-size: 12px;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
+  }
+  .cs-jobs-lane__dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--r-full);
+    background: var(--lane-accent);
+    flex-shrink: 0;
   }
   .cs-jobs-lane__title {
     margin: 0;
@@ -150,8 +155,8 @@ const { lanes } = Astro.props;
     flex-direction: column;
     align-items: center;
     gap: var(--s-3);
-    flex: 0 1 auto;
-    max-width: 200px;
+    flex: 0 0 260px;
+    width: 260px;
     transition: opacity 0.3s var(--ease-out, cubic-bezier(0.2, 0, 0, 1)),
                 transform 0.3s var(--ease-out, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform, opacity;
@@ -181,17 +186,12 @@ const { lanes } = Astro.props;
   }
 
   @media (max-width: 860px) {
-    .cs-jobs-lane {
-      grid-template-columns: 1fr;
-      gap: var(--s-5);
-      padding: var(--s-6);
-    }
     .cs-jobs-lane__tiles {
-      justify-content: center;
       gap: var(--s-4);
     }
     :global(.cs-jobs-lane__tile) {
-      max-width: 140px;
+      flex-basis: 140px;
+      width: 140px;
     }
   }
 </style>

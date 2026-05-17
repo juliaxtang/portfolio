@@ -27,6 +27,8 @@ import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 import BeforeAfter from "../../components/case-study/BeforeAfter.astro";
 import MobileGamesLandscape from "../../components/case-study/MobileGamesLandscape.astro";
 import SlideCycle from "../../components/case-study/SlideCycle.astro";
+import JobsLanes from "../../components/case-study/JobsLanes.astro";
+import HybridCasualGrowth from "../../components/case-study/HybridCasualGrowth.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
@@ -468,9 +470,16 @@ up across the top-grossing examples on both sides.
   src="/projects/snapchat-games/hybrid-casual-revenue.png"
   alt="Revenue mix comparison: hyper-casual is almost entirely ad-supported (Helix Jump, Fireballs 3D, Hole.io). Hybrid-casual unlocks a substantial IAP share (Survivor.io, Mob Control, Dreamdale)."
   caption="Revenue mix on top-grossing titles: hyper-casual is almost entirely ad-supported. Hybrid-casual unlocks a substantial IAP share, which is where the LTV is."
-  width="wide"
+  width="narrow"
   background="surface"
+  class="cs-figure--roundest"
 />
+
+<Section size="sub" stage="Strategy" hideFromNav>
+And the category isn't just bigger, it's the only one growing. Mid-core revenue is shrinking and casual is flat. Hybrid-casual is the lever.
+</Section>
+
+<HybridCasualGrowth />
 
 <Section size="sub" stage="Strategy" title="Two guiding principles" hideFromNav>
 I anchored the strategy on two principles, one for each audience the
@@ -644,21 +653,44 @@ for one home. Each surface earns its place by serving a different
 player intent.
 </Section>
 
-<Callouts cols={2}>
-  <Callout eyebrow="Play with friends" title="Chat Drawer, Friends Feed, FAB, Calling">
-    Surfaces inside the messaging stack carry live multiplayer,
-    turn-based, and leaderboard games. These are where social games
-    belong, because the social context is already there.
-  </Callout>
-  <Callout eyebrow="Open the app today" title="Discover, Spotlight, Topic Chats">
-    Content surfaces and Topic Chats carry solo and passive-browse
-    games, daily challenges, and chat-relevant games for players whose
-    friends aren't online.
-  </Callout>
-</Callouts>
+<JobsLanes
+  lanes={[
+    {
+      eyebrow: "Job 1 · Connections and conversations",
+      title: "Social games on social surfaces",
+      body: "Live multiplayer and turn-based games belong inside the messaging stack, where the social context is already there.",
+      tint: "lavender",
+    },
+    {
+      eyebrow: "Job 2 · Growth and resurrection",
+      title: "Retentive solo games on passive-browse surfaces",
+      body: "Daily, solo, pick-up-and-play games belong on Discover and Spotlight, where players already browse and need a reason to come back tomorrow.",
+      tint: "peach",
+    },
+  ]}
+>
+  <div slot="lane-1" class="cs-jobs-lane__tile">
+    <img src="/projects/snapchat-games/chat drawer - after 2.gif" alt="Snapchat chat input drawer with games surfaced at the top level alongside stickers and polls" loading="lazy" />
+    <span class="cs-jobs-lane__tile-label">Chat Drawer</span>
+  </div>
+  <div slot="lane-1" class="cs-jobs-lane__tile">
+    <img src="/projects/snapchat-games/games-entrypoint-friendsfeed.png" alt="Friends feed showing a Games entry point" loading="lazy" />
+    <span class="cs-jobs-lane__tile-label">Friends Feed</span>
+  </div>
+  <div slot="lane-1" class="cs-jobs-lane__tile">
+    <img src="/projects/snapchat-games/pillar2-live-multiplayer-oncall.gif" alt="Live multiplayer session running during a Snapchat call" loading="lazy" />
+    <span class="cs-jobs-lane__tile-label">Calling</span>
+  </div>
 
-{/* TODO: drop the entry-point map slide from "Games Entry Points & Strategy".
-    It explains the system in one image better than the body copy can. */}
+  <div slot="lane-2" class="cs-jobs-lane__tile">
+    <img src="/projects/snapchat-games/pillar3-promotionboost-discover.gif" alt="Promotion boost surfacing a hybrid-casual game on Discover" loading="lazy" />
+    <span class="cs-jobs-lane__tile-label">Discover</span>
+  </div>
+  <div slot="lane-2" class="cs-jobs-lane__tile">
+    <img src="/projects/snapchat-games/pillar1-1spotlighttab.gif" alt="Concept of a Spotlight Games tab inside Snapchat" loading="lazy" />
+    <span class="cs-jobs-lane__tile-label">Spotlight</span>
+  </div>
+</JobsLanes>
 
 <Section stage="The pivot" eyebrow="The pivot" title="From pitching the strategy to leading the squad" banner />
 

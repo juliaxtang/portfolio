@@ -1,0 +1,202 @@
+---
+/**
+ * HybridCasualGrowth: case-study-specific chart visualizing the 2024 mobile
+ * gaming revenue growth rate by product category, paired with the
+ * hybrid-casual revenue mix Figure earlier in the strategy section.
+ * Recreated from the deck source rather than dropped in as a screenshot so
+ * the type, color, and rhythm align with the rest of the case study.
+ *
+ * No props: the data IS the content. If a future case study needs a similar
+ * bar comparison, fork this file.
+ */
+
+interface Row {
+  label: string;
+  value: number; // percentage points
+  display: string; // pre-formatted value label rendered on the bar
+  highlight?: boolean;
+  negative?: boolean;
+}
+
+const rows: Row[] = [
+  { label: "Mid-core",     value: -9,  display: "-9%",      negative: true },
+  { label: "Casual",       value: 8,   display: "8%" },
+  { label: "Hybrid-casual", value: 30, display: "+30% YoY", highlight: true },
+  { label: "Hyper-casual", value: 8,   display: "8%" },
+];
+
+// Total chart range from -10 to +30 percentage points.
+const MIN = -10;
+const MAX = 30;
+const SPAN = MAX - MIN; // 40
+const zeroPct = ((0 - MIN) / SPAN) * 100; // 25%
+
+const barStyle = (r: Row) => {
+  if (r.negative) {
+    const startPct = ((r.value - MIN) / SPAN) * 100;
+    const width = zeroPct - startPct;
+    return `left:${startPct}%;width:${width}%;`;
+  }
+  const width = (r.value / SPAN) * 100;
+  return `left:${zeroPct}%;width:${width}%;`;
+};
+
+const ticks = [0, 10, 20, 30];
+---
+
+<figure class="hcg" aria-label="2024 mobile game revenue growth rate by category">
+  <header class="hcg__head">
+    <p class="hcg__eyebrow t-eyebrow">2024 Mobile Gaming Market Insights</p>
+    <h3 class="hcg__title">Mobile game revenue growth rate by product model</h3>
+  </header>
+
+  <div class="hcg__chart">
+    {rows.map((r) => (
+      <div class={`hcg__row${r.highlight ? " hcg__row--highlight" : ""}`}>
+        <span class="hcg__label">{r.label}</span>
+        <div class="hcg__track">
+          <span class="hcg__zero" style={`left:${zeroPct}%;`} aria-hidden="true" />
+          <span
+            class={`hcg__bar${r.highlight ? " hcg__bar--highlight" : ""}${r.negative ? " hcg__bar--neg" : ""}`}
+            style={barStyle(r)}
+          >
+            <span class="hcg__value">{r.display}</span>
+          </span>
+        </div>
+      </div>
+    ))}
+
+    <div class="hcg__axis" aria-hidden="true">
+      <span class="hcg__axis-spacer" />
+      <div class="hcg__axis-ticks">
+        {ticks.map((t) => (
+          <span
+            class="hcg__tick"
+            style={`left:${((t - MIN) / SPAN) * 100}%;`}
+          >{t}%</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .hcg {
+    margin: 0 auto var(--s-8);
+    max-width: 880px;
+    padding: var(--s-8) var(--s-8) var(--s-6);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hcg__head { margin-bottom: var(--s-6); text-align: left; }
+  .hcg__eyebrow { margin: 0 0 var(--s-2); color: var(--text-tertiary); }
+  .hcg__title {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .hcg__chart {
+    display: grid;
+    gap: var(--s-3);
+  }
+
+  .hcg__row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    gap: var(--s-5);
+  }
+
+  .hcg__label {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+  }
+  .hcg__row--highlight .hcg__label { color: var(--text-primary); }
+
+  .hcg__track {
+    position: relative;
+    height: 40px;
+    border-radius: var(--r-sm);
+  }
+  .hcg__zero {
+    position: absolute;
+    top: -4px;
+    bottom: -4px;
+    width: 1px;
+    background: var(--border-default);
+  }
+
+  .hcg__bar {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    background: var(--brand-primary-2);
+    border-radius: var(--r-xs);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--s-3);
+  }
+  .hcg__bar--neg {
+    background: var(--brand-secondary-2);
+    justify-content: flex-end;
+  }
+  .hcg__bar--highlight {
+    top: -2px;
+    bottom: -2px;
+    background: var(--brand-wash);
+    border: 1.5px solid var(--brand-primary-2);
+  }
+
+  .hcg__value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+  }
+  .hcg__bar--highlight .hcg__value {
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+
+  .hcg__axis {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--s-5);
+    margin-top: var(--s-2);
+  }
+  .hcg__axis-ticks {
+    position: relative;
+    height: 18px;
+  }
+  .hcg__tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 720px) {
+    .hcg { padding: var(--s-6); }
+    .hcg__row,
+    .hcg__axis {
+      grid-template-columns: 96px 1fr;
+      gap: var(--s-3);
+    }
+    .hcg__label { font-size: 13px; }
+    .hcg__track { height: 32px; }
+  }
+</style>

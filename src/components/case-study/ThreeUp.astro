@@ -1,14 +1,16 @@
 ---
 interface Props {
   wide?: boolean;
-  gap?: "sm" | "md" | "lg";
+  gap?: "xs" | "sm" | "md" | "lg";
   centered?: boolean;
   steps?: boolean;
+  align?: "start" | "center" | "end";
 }
 
-const { wide = false, gap = "md", centered = false, steps = false } = Astro.props;
+const { wide = false, gap = "md", centered = false, steps = false, align = "start" } = Astro.props;
 
 const gapMap: Record<string, string> = {
+  xs: "var(--s-2)",
   sm: "var(--s-4)",
   md: "var(--s-6)",
   lg: "var(--s-10)",
@@ -20,7 +22,7 @@ const cls = [
   centered ? "cs-threeup--centered" : "",
   steps ? "cs-threeup--steps" : "",
 ].filter(Boolean).join(" ");
-const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
+const styleVars = `--cs-threeup-gap:${gapMap[gap]};--cs-threeup-align:${align};`;
 ---
 
 <div class={cls} style={styleVars}>
@@ -32,7 +34,7 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--cs-threeup-gap);
-    align-items: start;
+    align-items: var(--cs-threeup-align, start);
     margin: var(--s-8) auto;
     max-width: var(--content-narrow);
   }

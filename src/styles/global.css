@@ -108,7 +108,7 @@ button { font: inherit; cursor: pointer; }
 
 /* Outbound prose links with floating image preview on hover (shared with
    about.astro — same markup pattern: .prose-out.prose-out--preview > .prose-out__preview + text) */
-.prose-out {
+a.prose-out {
   font-weight: 600;
   color: var(--text-primary);
   text-decoration: none;
@@ -122,7 +122,8 @@ button { font: inherit; cursor: pointer; }
     background-size 280ms var(--ease-out),
     background-image 280ms var(--ease-out);
 }
-.prose-out:hover {
+a.prose-out:hover {
+  text-decoration: none;
   background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
   background-size: 100% 100%;
 }

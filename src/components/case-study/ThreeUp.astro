@@ -3,9 +3,10 @@ interface Props {
   wide?: boolean;
   gap?: "sm" | "md" | "lg";
   centered?: boolean;
+  steps?: boolean;
 }
 
-const { wide = false, gap = "md", centered = false } = Astro.props;
+const { wide = false, gap = "md", centered = false, steps = false } = Astro.props;
 
 const gapMap: Record<string, string> = {
   sm: "var(--s-4)",
@@ -17,6 +18,7 @@ const cls = [
   "cs-threeup",
   wide ? "cs-threeup--wide" : "",
   centered ? "cs-threeup--centered" : "",
+  steps ? "cs-threeup--steps" : "",
 ].filter(Boolean).join(" ");
 const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
 ---
@@ -62,7 +64,40 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
     z-index: 1;
   }
 
+  /* Steps mode: number each tile and connect them with arrows so the row
+     reads as a sequential flow instead of three parallel exhibits. */
+  .cs-threeup--steps { counter-reset: cs-step; }
+  .cs-threeup--steps :global(.cs-figure) { counter-increment: cs-step; }
+  .cs-threeup--steps :global(.cs-figure)::before {
+    content: "Step 0" counter(cs-step);
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-bottom: var(--s-3);
+  }
+  .cs-threeup--steps :global(.cs-figure):not(:first-child)::after {
+    content: "→";
+    position: absolute;
+    left: calc(var(--cs-threeup-gap) / -2);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-mono);
+    font-size: 22px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+  }
+
   @media (max-width: 720px) {
     .cs-threeup { grid-template-columns: 1fr; }
+    .cs-threeup--steps :global(.cs-figure):not(:first-child)::after {
+      content: "↓";
+      left: 50%;
+      top: calc(var(--cs-threeup-gap) / -2);
+      transform: translate(-50%, -50%);
+    }
   }
 </style>

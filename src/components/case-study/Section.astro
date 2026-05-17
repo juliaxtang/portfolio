@@ -287,6 +287,13 @@ const hasBody = await Astro.slots.has("default");
   }
   .cs-section__body :global(a:hover) { text-decoration-color: var(--text-primary); }
 
+  /* Opt out of the section link treatment for prose-out links: they bring
+     their own underline-to-highlight hover via .prose-out in global.css. */
+  .cs-section__body :global(a.prose-out),
+  .cs-section__body :global(a.prose-out:hover) {
+    text-decoration: none;
+  }
+
   .cs-section__body :global(strong) {
     font-weight: 600;
     color: var(--text-primary);

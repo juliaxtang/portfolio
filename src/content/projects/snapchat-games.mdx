@@ -410,12 +410,7 @@ dedicated Games squad that came out of it.
 <Section stage="Strategy" title="First pitch: an arcade economy" />
 
 <Section size="sub" stage="Strategy" hideFromNav>
-The first answer I tried to give was that Snap needed its own
-arcade economy: one loop that monetized the games library and
-pulled people deeper into Snap itself. Score points by playing
-games. Spend those points on items in a global Snap storefront.
-Run out, and you top up with cash or keep playing to earn more.
-Rinse, repeat.
+I started from what we already had: a library of hyper-casual games. The most leveraged answer I could build on top of that library was an arcade economy. One loop that monetized the existing catalog and pulled people deeper into Snap itself. Score points by playing games. Spend those points on items in a global Snap storefront. Run out, and you top up with cash or keep playing to earn more. Rinse, repeat.
 </Section>
 
 <ThreeUp steps align="center">
@@ -504,64 +499,7 @@ Two leaders, two different bets on what Snap Games should become. The strategy h
 </Callouts>
 
 <Section size="sub" stage="Strategy" title="The four pillars" hideFromNav>
-From the principles, four pillars to focus the next year of work
-against. The deck assigned a clear design direction to each.
-</Section>
-
-<Callouts cols={2}>
-  <Callout number="1" title="Monetize existing games">
-    Layer video and rewarded ads onto hyper-casual games using formats we already had, instead of building net-new ad surfaces. Sequenced after Pillars 2 and 3, once there was real inventory to monetize.
-  </Callout>
-  <Callout number="2" title="Enable hybrid-casual mechanics">
-    Multiplayer as the foundation. Add progression, persistence, and
-    a cross-game identity so a session is worth coming back to.
-  </Callout>
-  <Callout number="3" title="Incentivize the developer ecosystem">
-    Expand the Partner Developer Program with upfront funding for
-    first-time devs and a discovery boost gated on game retention,
-    playtime, and social mechanics.
-  </Callout>
-  <Callout number="4" title="Diversify monetization">
-    Beyond ads: in-app purchases for progression boosters, plus
-    Bitmoji cosmetics that persist across every game on Snapchat.
-  </Callout>
-</Callouts>
-
-<Section size="sub" stage="Strategy" title="Pillar 1 in the deck: monetizing what we already had" hideFromNav>
-Three formats against games we'd already shipped. No net-new ad infrastructure.
-</Section>
-
-<ThreeUp pack gap="md" align="center">
-  <Figure
-    src="/projects/snapchat-games/pillar1-1spotlighttab.gif"
-    alt="Concept of a Spotlight Games tab inside Snapchat"
-    caption="A dedicated Games tab in Spotlight"
-    captionTop
-    width="narrow"
-    maxHeight="640px"
-  />
-  <Figure
-    src="/projects/snapchat-games/pillar1-2interstitialads.gif"
-    alt="Interstitial ad shown between game sessions"
-    caption="Interstitials between game sessions"
-    captionTop
-    width="narrow"
-    maxHeight="640px"
-  />
-  <Figure
-    src="/projects/snapchat-games/pillar1-3rewardedvideoads.gif"
-    alt="Rewarded video ad offering in-game boosts"
-    caption="Rewarded video ads for in-game boosts"
-    captionTop
-    width="narrow"
-    maxHeight="640px"
-  />
-</ThreeUp>
-
-<Section size="sub" stage="Strategy" title="Pillar 2 in the deck: stacking meta on top of hyper-casual" hideFromNav>
-Pillar 2 turned hyper-casual into hybrid-casual by layering meta
-systems on top of the pick-up-and-play mechanic. The deck called out
-three of these directly.
+From the principles, four pillars to focus the next year of work against. The deck assigned a clear design direction to each.
 </Section>
 
 <SlideCycle
@@ -570,82 +508,35 @@ three of these directly.
   aspect="9 / 16"
   frames={[
     {
+      src: "/projects/snapchat-games/pillar1-1spotlighttab.gif",
+      label: "Monetize existing games",
+      sublabel: "A dedicated Games tab in Spotlight, which already had ad inventory we could lean on",
+      alt: "Concept of a dedicated Games tab in Spotlight",
+    },
+    {
       src: "/projects/snapchat-games/pillar2-linear-level-progression.png",
-      label: "Linear level progression",
-      sublabel: "Each session builds on the last instead of resetting to zero. Every run leaves a marker that's still there next time.",
-      alt: "Concept for linear level progression layered onto a hyper-casual game",
+      label: "Enable hybrid-casual mechanics",
+      sublabel: "Multiplayer, in-game progression, and regular content drops that keep you coming back",
+      alt: "Concept for in-game level progression layered onto a hyper-casual game",
     },
     {
-      src: "/projects/snapchat-games/pillar2-playerlevelprogression.gif",
-      label: "A cross-game player level",
-      sublabel: "Identity persists across every game on Snap, so playing more games compounds instead of fragmenting",
-      alt: "Cross-game player level that persists across every game on Snap",
+      src: "/projects/snapchat-games/pillar3-promotionboost-discover.gif",
+      label: "Incentivize the developer ecosystem",
+      sublabel: "Promotion slots earned through retention and social signal, plus upfront funding for first-time devs",
+      alt: "Promotion boost surfacing a hybrid-casual game on Discover",
     },
     {
-      src: "/projects/snapchat-games/pillar2-regular-content-drops.png",
-      label: "Regular content drops",
-      sublabel: "New levels, themes, and seasonal hooks on a cadence the player can rely on",
-      alt: "Concept for regular content drops keeping a game fresh over time",
+      src: "/projects/snapchat-games/pillar4-progressionboostersinsnap.gif",
+      label: "Diversify monetization",
+      sublabel: "In-app purchases on Snap's existing payments rails, beyond ads",
+      alt: "Progression booster offered as an in-app purchase inside a session",
     },
   ]}
 />
 
 <Section size="sub" stage="Strategy" hideFromNav>
-Multiplayer was the fourth and biggest meta layer, and earned its
-own pilot. See <a class="prose-out" href="#live-multiplayer-built-as-a-framework">Live multiplayer, built as a framework</a> later in this case study.
+Multiplayer was the fourth and biggest meta layer under Pillar 2, and earned its own pilot. See <a class="prose-out" href="#live-multiplayer-built-as-a-framework">Live multiplayer, built as a framework</a> later in this case study.
 </Section>
-
-<Section size="sub" stage="Strategy" title="Pillar 3 in the deck: a flywheel for developers" hideFromNav>
-Build a hybrid-casual game on Snap, get two things back.
-
-- **Distribution.** Promotion slots on Discover and Spotlight, earned through retention, playtime, and social mechanics. Not bought.
-- **Revenue.** A share of the Pillar 1 ad formats, layered on upfront funding for first-time devs through an expanded Partner Developer Program.
-</Section>
-
-<TwoUp ratio="1:1">
-  <Figure
-    slot="left"
-    src="/projects/snapchat-games/pillar3-promotionboost-discover.gif"
-    alt="Promotion boost surfacing a hybrid-casual game on Discover"
-    caption="Promotion boost on Discover, earned through retention and social signal"
-    width="narrow"
-    maxHeight="640px"
-    class="has-hairline"
-  />
-  <Figure
-    slot="right"
-    src="/projects/snapchat-games/pillar3-promotionboost-spotlight.gif"
-    alt="Promotion boost surfacing a hybrid-casual game on Spotlight"
-    caption="The same boost on Spotlight, where players already browse"
-    width="narrow"
-    maxHeight="640px"
-  />
-</TwoUp>
-
-<Section size="sub" stage="Strategy" title="Pillar 4 in the deck: new monetization beyond ads" hideFromNav>
-Pillar 4 introduced two non-ad monetization products that ran on
-Snap's existing payments rails.
-</Section>
-
-<SlideCycle
-  transition="slide-y"
-  side="left"
-  aspect="9 / 16"
-  frames={[
-    {
-      src: "/projects/snapchat-games/pillar4-cosmeticsinsnap.png",
-      label: "Bitmoji cosmetics",
-      sublabel: "Unlock once, carry across every game on Snap. Long-term identity stakes in playing here.",
-      alt: "Bitmoji cosmetics shown applied inside a Snapchat game",
-    },
-    {
-      src: "/projects/snapchat-games/pillar4-progressionboostersinsnap.gif",
-      label: "Progression boosters",
-      sublabel: "Low-stakes IAPs that smooth friction inside a session. A per-session reason to spend.",
-      alt: "Progression booster offered as an in-app purchase inside a session",
-    },
-  ]}
-/>
 
 <Section stage="Strategy" eyebrow="Strategy" title="An entry-point system, not a single surface" banner />
 
@@ -757,7 +648,7 @@ Blockbuster was the test harness: an in-house co-op title designed to stress eve
 </ThreeUp>
 
 <Section size="sub" stage="Executing the vision" title="Three ways into a session" hideFromNav>
-The flagship doubled as the proving ground for Games Presence. Friends' bitmojis surface anywhere a friend already looks, with one tap to drop in as a player or spectator, so an empty lobby is the exception.
+The flagship doubled as the proving ground for entry points into a live session. Friends' bitmojis surface anywhere a friend already looks, with one tap to drop in as a player or spectator, so joining a friend mid-game is the default path in.
 </Section>
 
 <ThreeUp pack gap="md" align="center">

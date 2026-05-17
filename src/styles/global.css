@@ -239,6 +239,20 @@ a.prose-out:hover {
 }
 
 /* ==========================================================
+   HAIRLINE — 0.5px tertiary-color outline on phone-screen assets
+   so app-UI screenshots have a defined edge against the page bg.
+   Targets the rendered <img>/<video> via descendant selector so it
+   sits flush with the corner radius (outline follows border-radius).
+   Apply by adding class="has-hairline" on a <Figure>, raw wrapper,
+   or any element that contains a single asset.
+   ========================================================== */
+.has-hairline img,
+.has-hairline video {
+  outline: 0.5px solid var(--text-tertiary);
+  outline-offset: -0.5px;
+}
+
+/* ==========================================================
    FOCUS — visible, brand-aware
    ========================================================== */
 :focus-visible {

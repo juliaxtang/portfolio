@@ -50,9 +50,18 @@ interface Props {
    *  matches the original composited screenshots. Pass "1200/2415" (or
    *  similar) when using device+overlay assets that are full phone shots. */
   aspect?: string;
+  /** Transition between frames.
+   *  - "instant" (default): hard swap. Use when frames share a device frame
+   *    and only the screen content changes.
+   *  - "fade": cross-fade opacity. Use when frames are visually distinct
+   *    screens floating on the page background.
+   *  - "slide-y": frames stack vertically and the column translates between
+   *    them. Use when the cells read as an ordered sequence the reader steps
+   *    through. */
+  transition?: "instant" | "fade" | "slide-y";
 }
 
-const { frames, caption, side = "left", aspect = "1000 / 1387" } = Astro.props;
+const { frames, caption, side = "left", aspect = "1000 / 1387", transition = "instant" } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (src: string) =>
   src.startsWith("http") || src.startsWith(base)
@@ -63,11 +72,12 @@ const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
 ---
 
 <figure
-  class={`slide-cycle slide-cycle--${side}`}
+  class={`slide-cycle slide-cycle--${side} slide-cycle--${transition}`}
   data-slide-cycle={instanceId}
   data-count={frames.length}
 >
   <div class="slide-cycle__media" style={`--sc-aspect: ${aspect};`}>
+    <div class="slide-cycle__track">
     {frames.map((f, i) => {
       const isLayered = !!f.device;
       const overlayStyle = isLayered && f.overlay
@@ -117,6 +127,7 @@ const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
         </div>
       );
     })}
+    </div>
   </div>
 
   <div class="slide-cycle__tabs">
@@ -188,6 +199,41 @@ const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
   }
   .slide-cycle__frame.is-active {
     opacity: 1;
+  }
+  /* Track wraps all frames. In instant/fade modes it's a transparent
+     positioning context; in slide-y mode it becomes a translating column. */
+  .slide-cycle__track {
+    position: absolute;
+    inset: 0;
+  }
+  .slide-cycle--fade .slide-cycle__frame {
+    transition: opacity 0.5s var(--ease-out);
+  }
+  /* Slide-y mode: all frames are stacked vertically inside a flex column.
+     The track translates to bring each frame into view. */
+  .slide-cycle--slide-y .slide-cycle__media {
+    overflow: hidden;
+  }
+  .slide-cycle--slide-y .slide-cycle__track {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition-property: transform;
+    transition-duration: 0.65s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .slide-cycle--slide-y .slide-cycle__frame {
+    position: relative;
+    inset: auto;
+    opacity: 1;
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide-cycle--fade .slide-cycle__frame,
+    .slide-cycle--slide-y .slide-cycle__track { transition: none; }
   }
   /* Base device layer fills the frame. */
   .slide-cycle__layer--device,
@@ -337,7 +383,19 @@ const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
     const frames = root.querySelectorAll(".slide-cycle__frame");
     const tabs = root.querySelectorAll(".slide-cycle__tab");
 
+    const track = root.querySelector(".slide-cycle__track");
+    const media = root.querySelector(".slide-cycle__media");
+    const isSlideY = root.classList.contains("slide-cycle--slide-y");
+    let activeIdx = 0;
+
     const activate = (idx) => {
+      activeIdx = idx;
+      if (isSlideY && track && media) {
+        // Resolve the offset in pixels. Percentage translateY doesn't
+        // reliably resolve on an absolutely-positioned track with inset:0.
+        const h = media.getBoundingClientRect().height;
+        track.style.transform = `translateY(${-idx * h}px)`;
+      }
       frames.forEach((im, i) => im.classList.toggle("is-active", i === idx));
       tabs.forEach((tt, i) => {
         const on = i === idx;
@@ -345,6 +403,16 @@ const instanceId = "sc-" + Math.random().toString(36).slice(2, 9);
         tt.setAttribute("aria-pressed", String(on));
       });
     };
+
+    if (isSlideY && track && media) {
+      window.addEventListener("resize", () => {
+        const h = media.getBoundingClientRect().height;
+        track.style.transition = "none";
+        track.style.transform = `translateY(${-activeIdx * h}px)`;
+        void track.offsetHeight;
+        track.style.transition = "";
+      });
+    }
 
     tabs.forEach((t, i) => {
       t.addEventListener("click", () => activate(i));

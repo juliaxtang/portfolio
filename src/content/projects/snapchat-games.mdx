@@ -26,6 +26,7 @@ import ThreeUp from "../../components/case-study/ThreeUp.astro";
 import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 import BeforeAfter from "../../components/case-study/BeforeAfter.astro";
 import MobileGamesLandscape from "../../components/case-study/MobileGamesLandscape.astro";
+import SlideCycle from "../../components/case-study/SlideCycle.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
@@ -535,31 +536,41 @@ None of them required net-new ad infrastructure.
 <Section size="sub" stage="Strategy" title="Pillar 2 in the deck: stacking meta on top of hyper-casual" hideFromNav>
 Pillar 2 turned hyper-casual into hybrid-casual by layering meta
 systems on top of the pick-up-and-play mechanic. The deck called out
-two of these directly: linear level progression so each session
-builds on the last, and regular content drops so the game keeps
-giving players a reason to return. Multiplayer was the third and
-biggest meta layer, and earned its own pilot (see Project 1 in
-post-strategy work).
+three of these directly.
 </Section>
 
-<TwoUp ratio="1:1">
-  <Figure
-    slot="left"
-    src="/projects/snapchat-games/pillar2-linear-level-progression.png"
-    alt="Concept for linear level progression layered onto a hyper-casual game"
-    caption="Linear progression, so each session builds on the last."
-    width="narrow"
-    maxHeight="640px"
-  />
-  <Figure
-    slot="right"
-    src="/projects/snapchat-games/pillar2-regular-content-drops.png"
-    alt="Concept for regular content drops keeping a game fresh over time"
-    caption="Regular content drops, so the game keeps earning a return visit."
-    width="narrow"
-    maxHeight="640px"
-  />
-</TwoUp>
+<SlideCycle
+  transition="slide-y"
+  side="right"
+  aspect="9 / 16"
+  frames={[
+    {
+      src: "/projects/snapchat-games/pillar2-linear-level-progression.png",
+      label: "Linear level progression",
+      sublabel: "Each session builds on the last instead of resetting to zero. Every run leaves a marker that's still there next time.",
+      alt: "Concept for linear level progression layered onto a hyper-casual game",
+    },
+    {
+      src: "/projects/snapchat-games/pillar2-playerlevelprogression.gif",
+      label: "A cross-game player level",
+      sublabel: "Identity persists across every game on Snap, so playing more games compounds instead of fragmenting.",
+      alt: "Cross-game player level that persists across every game on Snap",
+    },
+    {
+      src: "/projects/snapchat-games/pillar2-regular-content-drops.png",
+      label: "Regular content drops",
+      sublabel: "New levels, themes, and seasonal hooks on a cadence the player can rely on.",
+      alt: "Concept for regular content drops keeping a game fresh over time",
+    },
+  ]}
+/>
+
+<Section size="sub" stage="Strategy" hideFromNav>
+Multiplayer was the fourth and biggest meta layer, and earned its
+own pilot. See
+[Live multiplayer, on Connected Lenses](#live-multiplayer-on-connected-lenses)
+in post-strategy work.
+</Section>
 
 <Section size="sub" stage="Strategy" title="Pillar 3 in the deck: a flywheel for developers" hideFromNav>
 Pillar 3 was the developer side of the bet. Build a hybrid-casual

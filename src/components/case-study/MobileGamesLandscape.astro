@@ -365,11 +365,6 @@ const zones: Zone[] = [
     margin: 0;
     line-height: 1.4;
     letter-spacing: 0;
-    /* Reserve two lines of vertical space so single-line metas (cells 1, 2)
-       sit at the same height as the wrapping meta in cell 3. Without this,
-       cards are equal height via the 1fr trait row, which collapses the
-       gap on cell 3 only and creates uneven whitespace across the row. */
-    min-height: 2.8em;
   }
 
   /* Per-card trait grid: dimension label left, value right. Same three

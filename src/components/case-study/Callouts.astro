@@ -9,7 +9,7 @@
  *   - Project goals (business / user / product)
  */
 interface Props {
-  cols?: 2 | 3 | 4;
+  cols?: 1 | 2 | 3 | 4;
   wide?: boolean;
 }
 const { cols = 3, wide = false } = Astro.props;
@@ -34,10 +34,11 @@ const cls = ["cs-callouts", `cs-callouts--${cols}`, wide ? "cs-callouts--wide" :
   /* Strict grids: cols={N} renders exactly N columns at desktop widths.
      This keeps groups of 4 as 2×2, groups of 3 as a single row, etc.
      Wrap to a single column on very narrow viewports. */
+  .cs-callouts--1 { grid-template-columns: 1fr; }
   .cs-callouts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cs-callouts--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cs-callouts--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   @media (max-width: 540px) {
-    .cs-callouts--2, .cs-callouts--3, .cs-callouts--4 { grid-template-columns: 1fr; }
+    .cs-callouts--1, .cs-callouts--2, .cs-callouts--3, .cs-callouts--4 { grid-template-columns: 1fr; }
   }
 </style>

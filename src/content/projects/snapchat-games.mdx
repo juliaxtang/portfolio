@@ -404,7 +404,7 @@ big with games?"** What follows is the answer I arrived at, and the
 dedicated Games squad that came out of it.
 </Section>
 
-<Section stage="Strategy" eyebrow="Strategy" title="First pitch: an arcade economy" />
+<Section stage="Strategy" title="First pitch: an arcade economy" />
 
 <Section size="sub" stage="Strategy" hideFromNav>
 The first answer I tried to give was that Snap needed its own
@@ -445,7 +445,7 @@ market. So I stopped pitching and went to study how the
 established mobile gaming companies actually make money.
 </Section>
 
-<Section stage="Strategy" eyebrow="Strategy" title="The category bet" />
+<Section stage="Strategy" title="The category bet" />
 
 <Section size="sub" stage="Strategy" hideFromNav>
 The study surfaced the insight that anchored the deck: Snap was
@@ -482,19 +482,15 @@ And the category isn't just bigger, it's the only one growing. Mid-core revenue 
 <HybridCasualGrowth />
 
 <Section size="sub" stage="Strategy" title="Two guiding principles" hideFromNav>
-I anchored the strategy on two principles, one for each audience the
-work has to serve.
+Two leaders, two different bets on what Snap Games should become. The strategy had to answer both.
 </Section>
 
-<Callouts cols={2}>
-  <Callout eyebrow="For consumers · Evan Spiegel, CEO" logo="/projects/snapchat-games/evan-spiegel.png" logoAlt="Evan Spiegel" logoMode="avatar" title={`"How can Snapchat become THE place people go to for social mobile games?"`} tone="outline">
-    A social-first gaming destination. Snap's massive user base and
-    friend graph is the unfair advantage over standalone game
-    platforms.
+<Callouts cols={1}>
+  <Callout eyebrow="Evan Spiegel, CEO" logo="/projects/snapchat-games/evan-spiegel.png" logoAlt="Evan Spiegel" logoMode="avatar" title={`"How can Snapchat become THE place people go to for social mobile games?"`} tone="outline">
+    A social-first gaming destination. Snap's massive user base and friend graph is the unfair advantage over standalone game platforms.
   </Callout>
-  <Callout eyebrow="For developers · Bobby Murphy, CTO" logo="/projects/snapchat-games/bobby-murphy.png" logoAlt="Bobby Murphy" logoMode="avatar" title={`"Our developers should only have to worry about making a good game. We should handle the rest."`} tone="outline">
-    Handle everything but the game. Distribution, monetization, and
-    social plumbing become Snap's job.
+  <Callout eyebrow="Bobby Murphy, CTO" logo="/projects/snapchat-games/bobby-murphy.png" logoAlt="Bobby Murphy" logoMode="avatar" title={`"Our developers should only have to worry about making a good game. We should handle the rest."`} tone="outline">
+    Handle everything but the game. Distribution, monetization, and social plumbing become Snap's job.
   </Callout>
 </Callouts>
 
@@ -505,9 +501,7 @@ against. The deck assigned a clear design direction to each.
 
 <Callouts cols={2}>
   <Callout number="1" title="Monetize existing games">
-    Grow Lens+ subscriptions, layer in video and rewarded ads on
-    hyper-casual games using formats we already had, instead of
-    building net-new ad surfaces.
+    Layer video and rewarded ads onto hyper-casual games using formats we already had, instead of building net-new ad surfaces.
   </Callout>
   <Callout number="2" title="Enable hybrid-casual mechanics">
     Multiplayer as the foundation. Add progression, persistence, and
@@ -528,7 +522,7 @@ against. The deck assigned a clear design direction to each.
 Three formats against games we'd already shipped. No net-new ad infrastructure.
 </Section>
 
-<ThreeUp wide centered>
+<ThreeUp gap="sm">
   <Figure
     src="/projects/snapchat-games/pillar1-1spotlighttab.gif"
     alt="Concept of a Spotlight Games tab inside Snapchat"
@@ -684,7 +678,7 @@ player intent.
 
   <div slot="lane-2" class="cs-jobs-lane__tile">
     <video src="/projects/snapchat-games/games-category-oncamera.mov" autoplay muted loop playsinline preload="metadata" aria-label="Games category on the Snapchat camera"></video>
-    <span class="cs-jobs-lane__tile-label">Camera</span>
+    <span class="cs-jobs-lane__tile-label">Camera, new Games category</span>
   </div>
   <div slot="lane-2" class="cs-jobs-lane__tile">
     <img src="/projects/snapchat-games/pillar3-promotionboost-discover.gif" alt="Promotion boost surfacing a hybrid-casual game on Discover" loading="lazy" />
@@ -718,69 +712,153 @@ With a squad in place, the next year of work ran in parallel across Pillars 2 an
 Users valued "live" features that allow them to join friends' games immediately without waiting. Most prefer playing with friends, but some would play live with strangers if no one was around, similar to Roblox.
 </Quote>
 
-<Section size="sub" stage="Post-strategy work" title="Three modes, one framework" hideFromNav>
-Connected Lenses for Multiplayer: solo play with visual indicators of friends' past runs, multiplayer with friends (sessions tied to a chat or call), and matchmaking against strangers as a fallback. Sessions support spectators, replays, and ghosts of friends so the experience degrades gracefully instead of dropping you into an empty lobby.
+<Section size="sub" stage="Post-strategy work" title="Three rules that shaped the framework" hideFromNav>
+Waiting on someone else's turn is the surest way to kill a session. I designed the framework around three rules that kept turn-based games feeling live, even when the friends in the lobby weren't.
 </Section>
 
-<TwoUp ratio="1:1">
+<Callouts cols={3}>
+  <Callout eyebrow="Rule 1" title="Drop in, play your turn now" tone="outline">
+    Anyone can drop in and play their turn immediately. The session tracks who's still pending and surfaces them in chat, so friends can nudge the holdouts instead of waiting in silence.
+  </Callout>
+  <Callout eyebrow="Rule 2" title="Sync when you can, async when you can't" tone="outline">
+    The same session runs live when friends are online, and falls back to async play when they're not. One framework, two rhythms, no separate codepath.
+  </Callout>
+  <Callout eyebrow="Rule 3" title="More than two players in the lobby" tone="outline">
+    Traditional turn-based was capped at 2. Live Lenses support up to 48, so we opened games to 4 to 6 active players with the rest dropping in as spectators.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Post-strategy work" title="Blockbuster, the in-house flagship" hideFromNav>
+Blockbuster was the test harness: an in-house co-op title designed to stress every part of the multiplayer framework before partner studios touched it. If Blockbuster worked, the framework was ready to publish.
+</Section>
+
+<ThreeUp wide centered gap="xs" align="center">
   <Figure
-    slot="left"
-    src="/projects/snapchat-games/pillar2-live-multiplayer-inchat.gif"
-    alt="Live multiplayer session kicked off from inside a group chat"
-    caption="From a chat: tap to drop into a live session with whoever's online"
-    width="narrow"
+    src="/projects/snapchat-games/flagship-multiplayer-2.gif"
+    alt="Blockbuster gameplay"
+    maxHeight="560px"
+  />
+  <Figure
+    src="/projects/snapchat-games/flagship-multiplayer-1.gif"
+    alt="Blockbuster gameplay"
     maxHeight="640px"
   />
   <Figure
-    slot="right"
-    src="/projects/snapchat-games/pillar2-live-multiplayer-oncall.gif"
-    alt="Live multiplayer session running during a Snapchat call"
-    caption="On a call: the same framework, surfaced inside calling"
-    width="narrow"
+    src="/projects/snapchat-games/flagship-multiplayer-3.gif"
+    alt="Blockbuster gameplay"
+    maxHeight="560px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Post-strategy work" title="Three ways into a session" hideFromNav>
+The flagship doubled as the proving ground for Games Presence. Friends' bitmojis surface anywhere a friend already looks, with one tap to drop in as a player or spectator, so an empty lobby is the exception.
+</Section>
+
+<ThreeUp wide centered gap="xs">
+  <Figure
+    src="/projects/snapchat-games/flagship-multiplayer-friendsfeed.png"
+    alt="Friends feed showing a Blockbuster Presence chip with friends' bitmojis"
+    caption="Friends feed placement, who's playing right now"
+    captionTop
     maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/flagship-multiplayer-inchat.png"
+    alt="Chat thread with a Blockbuster envelope inviting drop-in"
+    caption="Chat envelope, tap to drop in"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/flagship-multiplayer-notification.png"
+    alt="Push notification driven by a friend starting a Blockbuster session"
+    caption="Push notification, fires on social signal"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<TwoUp ratio="1:1" align="center" title="In-game chat, shipped as the first fast-follow">
+  <Fragment slot="left">
+In-game chat was a wishlist feature for v1. I cut it from the MVP so the framework could ship before the window closed, then shipped it as the first fast-follow once developers were on the platform. A session-scoped chat lives inside the game, so the conversation that started the round keeps going while it plays.
+  </Fragment>
+  <Video
+    slot="right"
+    src="/projects/snapchat-games/live-multiplayer.mp4"
+    caption="In-game chat threads inside the live session"
+    device="phone"
   />
 </TwoUp>
-
-<Section size="sub" stage="Post-strategy work" title="Games Presence, so an empty lobby is the exception" hideFromNav>
-The smallest piece of UI that made the framework feel alive. Friends' bitmojis surface in friends feed and in chat when they're in a multiplayer game. Tap the chip, drop in as a spectator.
-</Section>
-
-<TwoUp ratio="1:1">
-  <Figure
-    slot="left"
-    src="/projects/snapchat-games/pillar2-live-multiplayer-notification.png"
-    alt="Friends feed showing a Games Presence chip with a friend's bitmoji and current game"
-    caption="In friends feed: who's playing what, right now"
-    width="narrow"
-    maxHeight="640px"
-  />
-  <Figure
-    slot="right"
-    src="/projects/snapchat-games/pillar2-live-multiplayer-chat-notification.png"
-    alt="Chat thread with a Games Presence chip inviting drop-in spectatorship"
-    caption="In chat: tap the chip to drop in as a spectator"
-    width="narrow"
-    maxHeight="640px"
-  />
-</TwoUp>
-
-<Section size="sub" stage="Post-strategy work" title="Scoped the MVP to ship the framework" hideFromNav>
-In-game chat was a wishlist feature for v1. I cut it from the MVP so the framework could ship before the window closed, and shipped it as a fast-follow once developers were on the platform.
-</Section>
-
-{/* TODO: a single visual for the scoped-MVP beat, e.g. a v1 vs fast-follow split, or the in-game chat fast-follow shot. */}
 
 <Section size="sub" stage="Post-strategy work" title="What the framework unlocked downstream" hideFromNav>
 With live multiplayer in place, turn-based games could finally come off the legacy Snapping framework. A turn became a message instead of a Snap. The chat envelope turned into a real-time surface that shows whose turn it is and has a Remind CTA without leaving chat. Turn-based games broke their historical 2-player ceiling, gained a more native game feel, and could flip into a live session the moment both players were present.
 </Section>
 
-<Video
-  src="/projects/snapchat-games/turn-based.mov"
-  width="narrow"
-  caption="Turn-based games sit alongside chats as their own conversation"
-/>
+<Section size="sub" stage="Post-strategy work" title="In game: your turn, then everyone else's" hideFromNav>
+A live scoreboard tracks who's up, who's played, and who's still to go, so a turn-based round feels like a shared session instead of a stack of one-off Snaps.
+</Section>
 
-{/* TODO: the cheating slide (discard and retake) from Turn-Based Retries, plus envelope states (your turn / their turn / complete) and the Remind CTA. */}
+<ThreeUp wide centered gap="xs">
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework1.png"
+    alt="Round 1 in a turn-based golf game, prompting the player to take their turn while two friends are mid-turn and two are still waiting"
+    caption="Round 1, you're up, with friends mid-turn alongside you"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework2.png"
+    alt="Mid-round view showing one player's turn played, another currently playing, and two still waiting"
+    caption="Watch friends take their turns live as the scoreboard updates"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework3.png"
+    alt="End-of-round state with two turns played and the round waiting on the remaining players"
+    caption="Round wraps once everyone in the lobby has played"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Post-strategy work" title="In chat: the envelope as a live surface" hideFromNav>
+The same session shows up in chat as a single live envelope that updates as friends take their turns, with a Remind CTA when the round stalls on whoever's left.
+</Section>
+
+<ThreeUp wide centered>
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework (what my friends see) 1.png"
+    alt="Chat envelope for a Sync Golf session showing two friends currently playing their turns and a Play Your Turn CTA"
+    caption="A live envelope surfaces the active session with a Play Your Turn CTA"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework (what my friends see) 2.png"
+    alt="Chat envelope updated to show one friend currently playing their turn and a Waiting on 2 others state"
+    caption="The envelope updates in place as each friend takes their turn"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/Turn-based-live-framework (what my friends see) 3.png"
+    alt="Chat envelope showing two friends have played their turns with a Remind CTA to nudge the remaining players"
+    caption="Round stalled? A Remind CTA nudges whoever's still up"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Post-strategy work" hideFromNav>
+Live multiplayer was an early platform bet, not a growth feature. Content supply was the constraint, so the work was scoped around making the surface ready for partner-built games. Success was framed as game retention and shared sessions with friends, not raw opens.
+</Section>
+
+<Stats cols={3} bare>
+  <Stat value="↗" label="Second live title in test" caption="A second multiplayer game on the framework" />
+  <Stat value="↗" label="Framework opened to partners" caption="Released to 2nd-party developer partners" />
+  <Stat value="↗" label="Public matchmaking in flight" caption="Primitives scoped, ready for a public lobby" />
+</Stats>
 
 <Section stage="Post-strategy work" eyebrow="Project 2 · Pillar 2" title="Daily games and player progression" />
 
@@ -794,7 +872,35 @@ With live multiplayer in place, turn-based games could finally come off the lega
 A Daily Challenges row pinned to the front of the Games carousel. Per-game streaks. Auto-Snap to Preview so the day's result is one tap away from a friend. Notifications fire only on social signal, a friend playing the same puzzle, not on the streak itself.
 </Section>
 
-{/* TODO: drop the Daily Challenges carousel mock, the post-solve leaderboard screen, and the auto-Snap to Preview moment from Daily Games. Ideally a TwoUp or ThreeUp here. */}
+<ThreeUp wide centered>
+  <Figure
+    src="/projects/snapchat-games/daily-games-drawer.gif"
+    alt="Daily Challenges row pinned to the front of the Games drawer"
+    caption="Daily Challenges, pinned to the top"
+    maxHeight="640px"
+  />
+  <Video
+    src="/projects/snapchat-games/daily-game-example.MOV"
+    caption="A daily session, one tap to share the result"
+    device="phone"
+  />
+  <Figure
+    src="/projects/snapchat-games/daily-games-notifications.png"
+    alt="Notification driven by a friend playing the same daily puzzle"
+    caption="Notifications fire on social signal, not on the streak itself"
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Post-strategy work" hideFromNav>
+A daily return loop designed to convert one-shot players into a habit and to route play through friendships. The fast-follow shipped measurable lifts in group activity and, unusually for a games feature, moved the friend graph itself.
+</Section>
+
+<Stats cols={3} bare>
+  <Stat value="+1.8%" label="Group sends" caption="Snap's primary social-send metric, against control" />
+  <Stat value="+1.0%" label="Group views" caption="Downstream of more group sends landing" />
+  <Stat value="+3.89M" label="Reciprocal friendships" caption="+0.13% lift on Snap's core friend-graph metric" />
+</Stats>
 
 <Section stage="Post-strategy work" eyebrow="Project 3 · Pillar 3" title="Games in Discover and Spotlight" />
 
@@ -804,17 +910,72 @@ A Daily Challenges row pinned to the front of the Games carousel. Per-game strea
   </Callout>
 </Section>
 
-<Section size="sub" stage="Post-strategy work" hideFromNav>
-On Discover we worked through three treatments (pill, tile, carousel) and landed on the carousel: it sits inside the existing visual rhythm of the page and gives solo players a predictable place to land.
+<Section size="sub" stage="Post-strategy work" eyebrow="The carousel call" title="Where should Games live in Discover?" hideFromNav>
+Three stationary entry points, each with a different bet on how much real estate Games deserves in a feed people already come to for Stories.
 </Section>
 
-<Video
-  src="/projects/snapchat-games/storefront.mp4"
-  width="narrow"
-  caption="The Games storefront on Discover"
-/>
+<ThreeUp wide centered gap="sm">
+  <Figure
+    src="/projects/snapchat-games/games-in-discover-option1 (pill).gif"
+    alt="Pill option: a small Games chip pinned in Discover's hashtag carousel"
+    caption="Pill: cheapest to ship, but reads as a hashtag and buries the storefront one layer deeper"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/games-in-discover-option2 (carousel).gif"
+    alt="Carousel option: a dedicated row of game tiles inline in the Discover feed"
+    caption="Carousel, recommended: content-first, shows multiple games at once, lets the catalog do the selling"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/games-in-discover-option3 (tile).gif"
+    alt="Tile option: a single hero block pinned in the Discover feed"
+    caption="Tile: highest visibility, but a single pinned hero crowds Stories and competes for editorial space"
+    maxHeight="640px"
+  />
+</ThreeUp>
 
-{/* TODO: drop the Games Spotlight tab mock alongside the Discover carousel so the distribution story shows both surfaces. */}
+<Callouts cols={3}>
+  <Callout eyebrow="Discoverability" title="Multiple games on screen" tone="outline">
+    A single tile sells one game. A pill sells none. The carousel lets the catalog do the merchandising.
+  </Callout>
+  <Callout eyebrow="Feed citizenship" title="Sits next to Stories, not on top of them" tone="outline">
+    Discover's contract is editorial. The carousel borrows the row pattern users already scan, instead of fighting it for hero space.
+  </Callout>
+  <Callout eyebrow="Storefront equity" title="Every tile is an entry point" tone="outline">
+    Pill and tile both funnel through one tap to the storefront. The carousel turns the entry point into the storefront's front row.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Post-strategy work" hideFromNav>
+The pill was the safe ship and the tile was the loud one. The carousel was the call that respected the feed and the catalog at the same time. On Spotlight, where players already browse content full-screen, we shipped a dedicated Games tab built around game-native content instead of generic lens posts.
+</Section>
+
+<TwoUp ratio="1:1">
+  <Video
+    slot="left"
+    src="/projects/snapchat-games/storefront.mp4"
+    caption="The Games storefront on Discover"
+    device="phone"
+  />
+  <Video
+    slot="right"
+    src="/projects/snapchat-games/games-tab-in-spotlight-built.mov"
+    caption="The Games tab in Spotlight, content-first by design"
+    device="phone"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Post-strategy work" hideFromNav>
+A content-first surface for Games in Spotlight, designed to convert watching into playing. Against Snap's existing feeds, the Games feed unlocked play at a fundamentally different rate, with stronger session depth and share behavior. Core content metrics held neutral, and the surface was recommended for launch on game-specific signal.
+</Section>
+
+<Stats cols={4} bare>
+  <Stat value="10.0%" label="View to unlock" caption="Vs 0.6% on For You and 0.3% on Following" />
+  <Stat value="7.6x" label="Shares vs Following" caption="Per-session share rate against the closest analogous feed" />
+  <Stat value="2x" label="Lens unlocks vs Following" caption="Same audience, games-native surface" />
+  <Stat value="+12%" label="Session depth" caption="36.5s average, against Following as the control" />
+</Stats>
 
 <Section stage="Results" eyebrow="Results" title="What it moved" banner />
 

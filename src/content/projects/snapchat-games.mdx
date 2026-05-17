@@ -701,7 +701,7 @@ With the squad stood up, I pressure-tested Pillar 1 with the ads team before com
 
 {/* TODO: drop a single visual that signals the chapter break, e.g. the deck cover, an org sketch, or a hero shot from the kickoff. */}
 
-<Section stage="Executing the vision" eyebrow="Project 1 · Pillar 2" title="Live multiplayer, built as a framework" />
+<Section stage="Executing the vision" eyebrow="Project 1" title="Live multiplayer, built as a framework" />
 
 <Quote attribution="Gaming Foundational Research, Nov 2025">
 Users valued "live" features that allow them to join friends' games immediately without waiting. Most prefer playing with friends, but some would play live with strangers if no one was around, similar to Roblox.
@@ -796,21 +796,9 @@ In-game chat was a wishlist feature for v1. I cut it from the MVP so the framewo
   />
 </TwoUp>
 
-<Section size="sub" stage="Executing the vision" title="What the framework unlocked downstream" hideFromNav>
-With live multiplayer in place, turn-based games could finally come off the legacy Snapping framework. A turn became a message instead of a Snap. The chat envelope turned into a real-time surface that shows whose turn it is and has a Remind CTA without leaving chat. Turn-based games broke their historical 2-player ceiling, gained a more native game feel, and could flip into a live session the moment both players were present.
+<Section size="sub" stage="Executing the vision" title="Moving turn-based games onto the framework" hideFromNav>
+Turns became messages, the chat envelope became a live surface, and the 2-player ceiling came off.
 </Section>
-
-<Callouts cols={3}>
-  <Callout eyebrow="Waiting" title="Play your turn now" tone="outline">
-    Waiting on someone else's turn kills a session. Anyone can play their turn the moment they open the game, and pending players are visible so friends can nudge instead of guess.
-  </Callout>
-  <Callout eyebrow="Cadence" title="Live or async, same session" tone="outline">
-    The same session runs live when friends are on, and quietly falls back to turn-by-turn when they're not. Players never pick a mode, the session adapts.
-  </Callout>
-  <Callout eyebrow="Capacity" title="Past the two-player ceiling" tone="outline">
-    Turn-based was historically capped at two. The framework opened it to four to six active players, with the rest dropping in as the round allows.
-  </Callout>
-</Callouts>
 
 <Section size="sub" stage="Executing the vision" title="In game: your turn, then everyone else's" hideFromNav>
 A live scoreboard tracks who's up, who's played, and who's still to go, so a turn-based round feels like a shared session instead of a stack of one-off Snaps.
@@ -823,6 +811,7 @@ A live scoreboard tracks who's up, who's played, and who's still to go, so a tur
     caption="Round 1: your turn, friends play alongside"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
   <Figure
     src="/projects/snapchat-games/turn-based-live-framework-2.png"
@@ -830,6 +819,7 @@ A live scoreboard tracks who's up, who's played, and who's still to go, so a tur
     caption="Watch friends play live as the scoreboard updates"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
   <Figure
     src="/projects/snapchat-games/turn-based-live-framework-3.png"
@@ -837,6 +827,7 @@ A live scoreboard tracks who's up, who's played, and who's still to go, so a tur
     caption="Round wraps once everyone in the lobby has played"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
 </ThreeUp>
 
@@ -851,6 +842,7 @@ The same session shows up in chat as a single live envelope that updates as frie
     caption="A live envelope surfaces the active session with a Play Your Turn CTA"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
   <Figure
     src="/projects/snapchat-games/turn-based-live-framework-friends-2.png"
@@ -858,6 +850,7 @@ The same session shows up in chat as a single live envelope that updates as frie
     caption="The envelope updates in place as each friend takes their turn"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
   <Figure
     src="/projects/snapchat-games/turn-based-live-framework-friends-3.png"
@@ -865,26 +858,21 @@ The same session shows up in chat as a single live envelope that updates as frie
     caption="Round stalled? A Remind CTA nudges whoever's still up"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-24"
   />
 </ThreeUp>
 
-<Section size="sub" stage="Executing the vision" title="Where the framework went after launch" hideFromNav>
+<Section size="sub" stage="Executing the vision" hideFromNav>
 Live multiplayer was an early platform bet, not a growth feature. Content supply was the constraint, so the work was scoped around making the surface ready for partner-built games. Success was framed as game retention and shared sessions with friends, not raw opens.
 </Section>
 
-<Callouts cols={3}>
-  <Callout eyebrow="Second title" title="A second live multiplayer game in test" tone="outline">
-    Built on the same framework, validating it beyond the launch title.
-  </Callout>
-  <Callout eyebrow="Partner surface" title="Framework opened to 2nd-party developers" tone="outline">
-    External studios can now ship live multiplayer without rebuilding the stack.
-  </Callout>
-  <Callout eyebrow="In flight at handoff" title="Public matchmaking primitives scoped" tone="outline">
-    Lobby and session APIs ready for a public matchmaking layer.
-  </Callout>
-</Callouts>
+<Section size="sub" stage="Executing the vision" title="What's next" hideFromNav>
+- **A second multiplayer title in test,** built on the same framework as the launch game.
+- **The framework opened to 2nd-party studios,** so external teams can ship live multiplayer without rebuilding the stack.
+- **Public matchmaking primitives scoped,** with lobby and session APIs ready for a matchmaking layer.
+</Section>
 
-<Section stage="Executing the vision" eyebrow="Project 2 · Pillar 2" title="Daily games and player progression" />
+<Section stage="Executing the vision" eyebrow="Project 2" title="Daily games and player progression" />
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
 Solo play was the missing loop. Without a reason to come back on the days a friend wasn't online, Games leaked the casual audience back to dedicated puzzle apps. A daily mechanism gives solo sessions a hook, and a cross-game player level makes every game played on Snap compound into one identity instead of fragmenting across titles.
@@ -925,7 +913,7 @@ A Daily Challenges row pinned to the front of the Games carousel. Per-game strea
 The lifts to groups are why leaderboards became the next bet. Daily Challenges was scoped as a solo habit loop, but **the win landed in group sends, not solo returns**. Players were using single-player puzzles as a reason to talk to each other. Leaderboards make that the product instead of the side effect.
 </Section>
 
-<Section stage="Executing the vision" eyebrow="Project 3 · Pillar 3" title="Games in Discover and Spotlight" />
+<Section stage="Executing the vision" eyebrow="Project 3" title="Games in Discover and Spotlight" />
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
 Games needed distribution outside the chat drawer, but Discover and Spotlight are editorial surfaces with their own contracts. The work was finding entry points that earn their pixels: a pinned carousel on Discover that sits next to Stories instead of crowding them, and a dedicated Games tab on Spotlight where players already browse full-screen content.
@@ -982,20 +970,12 @@ Three stationary entry points, each with a different bet on how much real estate
 The pill was the safe ship and the tile was the loud one. The carousel was the call that respected the feed and the catalog at the same time, for four reasons.
 </Section>
 
-<Callouts cols={4}>
-  <Callout eyebrow="Reason 1 · Discoverability" title="Multiple games on screen" tone="outline">
-    A single tile sells one game. A pill sells none. The carousel lets the catalog do the merchandising.
-  </Callout>
-  <Callout eyebrow="Reason 2 · Feed citizenship" title="Sits next to Stories, not on top of them" tone="outline">
-    Discover's contract is editorial. The carousel borrows the row pattern users already scan, instead of fighting it for hero space.
-  </Callout>
-  <Callout eyebrow="Reason 3 · Storefront equity" title="Every tile is an entry point" tone="outline">
-    Pill and tile both funnel through one tap to the storefront. The carousel turns the entry point into the storefront's front row.
-  </Callout>
-  <Callout eyebrow="Reason 4 · Ad inventory" title="A native slot for playable game ads" tone="outline">
-    The carousel is the only option with room to inject third-party playable game ads natively, opening a revenue lane without breaking the feed.
-  </Callout>
-</Callouts>
+<Section size="sub" stage="Executing the vision" hideFromNav>
+1. **Discoverability, multiple games on screen.** A single tile sells one game. A pill sells none. The carousel lets the catalog do the merchandising.
+2. **Feed citizenship, sits next to Stories instead of on top of them.** Discover's contract is editorial. The carousel borrows the row pattern users already scan, instead of fighting it for hero space.
+3. **Storefront equity, every tile is an entry point.** Pill and tile both funnel through one tap to the storefront. The carousel turns the entry point into the storefront's front row.
+4. **Ad inventory, a native slot for playable game ads.** The carousel is the only option with room to inject third-party playable game ads natively, opening a revenue lane without breaking the feed.
+</Section>
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
 On Spotlight, where players already browse content full-screen, we shipped a dedicated Games tab built around game-native content instead of generic lens posts.
@@ -1009,6 +989,7 @@ On Spotlight, where players already browse content full-screen, we shipped a ded
     caption="The Games carousel on Discover"
     device="phone"
     maxHeight="600px"
+    class="cs-figure--clip-br"
   />
   <Video
     slot="right"

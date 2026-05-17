@@ -1,0 +1,321 @@
+---
+/**
+ * MobileGamesLandscape:case-study-specific diagram visualizing where Snap
+ * sat in the mobile games market when the Going Big with Games strategy
+ * work started, and where the industry was actually moving. Recreated from
+ * the deck slide rather than dropped in as a screenshot so the type, color,
+ * and rhythm align with the rest of the case study.
+ *
+ * Three zones on a horizontal spectrum:
+ *   Hyper-casual (Snap is here)  →  Hybrid-casual (sweet spot)  →  Mid-core
+ *
+ * The middle zone gets the visual weight (warm peach wash, raised shadow,
+ * brand-secondary border). The two side zones are dimmed slightly so the
+ * eye lands on the answer first. An italic display-serif tag inside each
+ * card names the strategic position; the horizontal axis below repeats the
+ * category names so the diagram reads on its own without the body copy.
+ *
+ * No props:the diagram IS the content for this case study. If a future
+ * case study needs a similar spectrum, this is the file to fork from.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const img = (p: string) => `${base}${p}`;
+---
+
+<figure class="mgl">
+  <div class="mgl__zones">
+    {/* Hyper-casual: where Snap was when the strategy work started. */}
+    <div class="mgl__zone mgl__zone--current">
+      <span class="mgl__tag mgl__tag--current">We're here</span>
+      <div class="mgl__media mgl__media--single">
+        <img
+          src={img("/projects/snapchat-games/helix-jump.gif")}
+          alt="Helix Jump, a representative hyper-casual mobile game"
+          loading="lazy"
+        />
+      </div>
+      <p class="mgl__game">Helix Jump · 800M downloads</p>
+      <ul class="mgl__traits">
+        <li>High virality</li>
+        <li>Low retention</li>
+        <li>Hard to monetize</li>
+      </ul>
+    </div>
+
+    {/* Hybrid-casual: the strategic answer. */}
+    <div class="mgl__zone mgl__zone--target">
+      <span class="mgl__tag mgl__tag--target"><em>Sweet spot</em></span>
+      <div class="mgl__media mgl__media--pair">
+        <img
+          src={img("/projects/snapchat-games/merge-mansion1.png")}
+          alt="Merge Mansion merge puzzle screen"
+          loading="lazy"
+        />
+        <img
+          src={img("/projects/snapchat-games/merge-mansion2.png")}
+          alt="Merge Mansion mansion renovation screen"
+          loading="lazy"
+        />
+      </div>
+      <p class="mgl__game">Merge Mansion · 60M downloads · $600M lifetime revenue</p>
+      <ul class="mgl__traits mgl__traits--pos">
+        <li>Hyper-casual mechanics</li>
+        <li>Progression, persistence, narrative</li>
+        <li>Growing 30%+ year-on-year</li>
+      </ul>
+    </div>
+
+    {/* Mid-core / core: the part of the market Snap can't credibly chase.
+        Uses the stack variant because Genshin and CoD screenshots are wide
+        landscape; side-by-side at half width crushes them. */}
+    <div class="mgl__zone mgl__zone--out">
+      <span class="mgl__tag mgl__tag--out">Out of reach</span>
+      <div class="mgl__media mgl__media--stack">
+        <img
+          src={img("/projects/snapchat-games/genshin-impact.png")}
+          alt="Genshin Impact gameplay"
+          loading="lazy"
+        />
+        <img
+          src={img("/projects/snapchat-games/callofduty-mobile.png")}
+          alt="Call of Duty Mobile gameplay"
+          loading="lazy"
+        />
+      </div>
+      <p class="mgl__game">Genshin Impact, Call of Duty Mobile</p>
+      <ul class="mgl__traits">
+        <li>Best retention, strong IAP</li>
+        <li>Expensive to build</li>
+        <li>Dominated by AAA studios</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mgl__axis" aria-hidden="true">
+    <div class="mgl__axis-line"></div>
+    <div class="mgl__axis-labels">
+      <span class="mgl__axis-label">Hyper-casual</span>
+      <span class="mgl__axis-label mgl__axis-label--target">
+        <em>Hybrid-casual</em>
+        <span class="mgl__axis-sub">where the industry is moving</span>
+      </span>
+      <span class="mgl__axis-label">Mid-core / core</span>
+    </div>
+  </div>
+
+  <figcaption class="mgl__caption">
+    The mobile games market, and where Snap was sitting when the strategy
+    work started. Recreated from the Going Big with Games deck.
+  </figcaption>
+</figure>
+
+<style>
+  .mgl {
+    margin: var(--s-10) auto;
+    width: min(100%, var(--content-max, 1200px));
+    padding: clamp(var(--s-6), 3vw, var(--s-10));
+    background: var(--bg-sunken);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .mgl__zones {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: var(--s-5);
+    align-items: stretch;
+  }
+
+  .mgl__zone {
+    display: grid;
+    gap: var(--s-4);
+    grid-template-rows: auto auto auto 1fr;
+    padding: var(--s-5);
+    border-radius: var(--r-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+    transition: transform var(--dur-normal, 240ms) var(--ease-out, ease);
+  }
+  .mgl__zone--current {
+    border-color: color-mix(in srgb, var(--brand-primary) 65%, var(--border-default));
+    background: color-mix(in srgb, var(--brand-primary) 14%, var(--bg-surface));
+  }
+  .mgl__zone--target {
+    background: color-mix(in srgb, var(--brand-secondary) 26%, var(--bg-surface));
+    border-color: color-mix(in srgb, var(--brand-secondary-2) 70%, var(--border-default));
+    box-shadow: var(--shadow-md);
+  }
+  .mgl__zone--out {
+    opacity: 0.78;
+  }
+
+  /* Italic-serif strategic-position tag. Plain text-primary; differentiation
+     comes from the card chrome, not the tag color. Out-of-reach is dimmed. */
+  .mgl__tag {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(20px, 2.1vw, 28px);
+    line-height: 1;
+    color: var(--text-primary);
+    align-self: start;
+    letter-spacing: -0.005em;
+  }
+  .mgl__tag--out { color: var(--text-tertiary); }
+  .mgl__tag em { font-style: italic; }
+
+  .mgl__media {
+    display: grid;
+    gap: var(--s-2);
+    align-items: start;
+  }
+  .mgl__media--single { grid-template-columns: 1fr; }
+  /* Side-by-side: phone screens or anything portrait that reads at half width. */
+  .mgl__media--pair   { grid-template-columns: 1fr 1fr; }
+  /* Stacked: wide-landscape images that get crushed at half width. */
+  .mgl__media--stack  { grid-template-columns: 1fr; grid-auto-rows: auto; }
+  /* Natural aspect, no cropping. Images render at full size within their
+     column; card heights equalize via the parent grid's align-items: stretch. */
+  .mgl__media img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--r-sm);
+    display: block;
+    background: var(--bg-canvas);
+    border: 1px solid color-mix(in srgb, var(--text-primary) 6%, transparent);
+  }
+
+  .mgl__game {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+  }
+
+  .mgl__traits {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-1);
+    align-self: end;
+  }
+  .mgl__traits li {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    padding-left: var(--s-4);
+    position: relative;
+  }
+  .mgl__traits li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--text-primary) 35%, transparent);
+  }
+  /* Positive traits in the sweet spot get a brand-tinted dot so the eye
+     reads them as "what we want", not "what's true". */
+  .mgl__traits--pos li::before {
+    background: color-mix(in srgb, var(--brand-secondary-2) 90%, var(--text-primary));
+  }
+
+  /* Spectrum axis below the cards. The axis is decorative reinforcement,
+     not a separate piece of content: it hides on narrow viewports where
+     the cards stack vertically. */
+  .mgl__axis {
+    margin-top: var(--s-8);
+    display: grid;
+    gap: var(--s-3);
+  }
+  .mgl__axis-line {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      color-mix(in srgb, var(--text-primary) 28%, transparent) 6%,
+      color-mix(in srgb, var(--text-primary) 28%, transparent) 94%,
+      transparent 100%
+    );
+    position: relative;
+  }
+  .mgl__axis-line::before,
+  .mgl__axis-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-top: 1.5px solid color-mix(in srgb, var(--text-primary) 35%, transparent);
+    border-right: 1.5px solid color-mix(in srgb, var(--text-primary) 35%, transparent);
+  }
+  .mgl__axis-line::before {
+    left: 8%;
+    transform: translateY(-50%) rotate(-135deg);
+  }
+  .mgl__axis-line::after {
+    right: 8%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+
+  .mgl__axis-labels {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: var(--s-5);
+  }
+  .mgl__axis-label {
+    text-align: center;
+    font-family: var(--font-sans);
+    font-size: clamp(13px, 1.1vw, 15px);
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: -0.005em;
+    display: grid;
+    gap: var(--s-1);
+    justify-items: center;
+  }
+  .mgl__axis-label--target { color: var(--text-primary); font-weight: 600; }
+  .mgl__axis-label--target em {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.35em;
+    line-height: 1;
+  }
+  .mgl__axis-sub {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-tertiary);
+    letter-spacing: 0;
+  }
+
+  .mgl__caption {
+    margin-top: var(--s-6);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 860px) {
+    .mgl { padding: var(--s-5); }
+    .mgl__zones,
+    .mgl__axis-labels {
+      grid-template-columns: 1fr;
+      gap: var(--s-4);
+    }
+    .mgl__zone--target { order: -1; } /* lead with the answer on mobile */
+    .mgl__axis-line { display: none; }
+    .mgl__axis-labels { text-align: left; }
+    .mgl__axis-label { text-align: left; justify-items: start; }
+  }
+</style>

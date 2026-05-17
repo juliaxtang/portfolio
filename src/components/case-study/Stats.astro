@@ -6,10 +6,11 @@ interface Props {
   cols?: 2 | 3 | 4;
   wide?: boolean;
   bare?: boolean;
+  serif?: boolean;
   class?: string;
 }
-const { cols = 3, wide = false, bare = false, class: className = "" } = Astro.props;
-const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare ? "cs-stats--bare" : "", className]
+const { cols = 3, wide = false, bare = false, serif = false, class: className = "" } = Astro.props;
+const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare ? "cs-stats--bare" : "", serif ? "cs-stats--serif" : "", className]
   .filter(Boolean)
   .join(" ");
 ---
@@ -46,5 +47,13 @@ const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare
     --cs-stat-label-size: 13px;
     --cs-stat-label-color: var(--text-secondary);
     gap: var(--s-8);
+  }
+
+  /* Serif variant: display serif for stat values, larger size for closing-beat impact */
+  .cs-stats--serif {
+    --cs-stat-value-font: var(--font-display);
+    --cs-stat-value-weight: 400;
+    --cs-stat-value-size: clamp(40px, 4.5vw, 64px);
+    --cs-stat-value-tracking: -0.015em;
   }
 </style>

@@ -32,11 +32,11 @@ const { value, label, caption } = Astro.props;
     border: 1px solid var(--cs-stat-border-color, var(--border-default));
   }
   .cs-stat__value {
-    font-family: var(--font-sans);
-    font-weight: 500;
+    font-family: var(--cs-stat-value-font, var(--font-sans));
+    font-weight: var(--cs-stat-value-weight, 500);
     font-size: var(--cs-stat-value-size, clamp(28px, 3.2vw, 42px));
     line-height: 1.1;
-    letter-spacing: -0.025em;
+    letter-spacing: var(--cs-stat-value-tracking, -0.025em);
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
     margin: 0;

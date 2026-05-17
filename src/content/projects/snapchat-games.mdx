@@ -25,6 +25,7 @@ import Quote from "../../components/case-study/Quote.astro";
 import ThreeUp from "../../components/case-study/ThreeUp.astro";
 import AnnotatedFigure from "../../components/case-study/AnnotatedFigure.astro";
 import BeforeAfter from "../../components/case-study/BeforeAfter.astro";
+import MobileGamesLandscape from "../../components/case-study/MobileGamesLandscape.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
@@ -396,41 +397,64 @@ These changes proved that small UX improvements to turn based games had outsize 
 <Section size="sub" stage="Strategy" hideFromNav>
 The outstanding engagement signals we saw from just three projects
 were enough. Evan, the CEO, walked over and asked: **"how can we go
-big with games?"** The strategy deck below is my answer to that
-question, and the dedicated Games squad is what came out of it.
+big with games?"** What follows is the answer I arrived at, and the
+dedicated Games squad that came out of it.
 </Section>
 
-<Section size="sub" stage="Strategy" title="The category bet" hideFromNav>
-The strategic insight that anchored the deck: Snap was sitting in
-hyper-casual. The industry's actual sweet spot is hybrid-casual: the
-pick-up-and-play mechanics of hyper-casual plus the meta layers of
-mid-core (progression, upgrades, narrative).
+<Section stage="Strategy" eyebrow="Strategy" title="First pitch: an arcade economy" />
 
-Merge Mansion is the proof point I anchored the pitch on: 60M
-downloads, $600M lifetime revenue. Hybrid-casual was the part of
-the market growing at over 30% year-on-year, and Snap's social
-graph was a meaningful unfair advantage in that lane.
+<Section size="sub" stage="Strategy" hideFromNav>
+The first answer I tried to give was that Snap needed its own
+arcade economy: pay to play, earn points proportional to
+performance, redeem points for items in a global Snap storefront,
+top up with cash if you came up short. One flywheel doing two
+jobs at once, monetize the games library and pull people deeper
+into Snap itself.
 </Section>
 
-<Callouts cols={3}>
-  <Callout eyebrow="Where we were" title="Hyper-casual" tone="outline">
-    High virality, low retention (one and done), market saturation,
-    and only 0.4% of total US mobile gaming revenue. Easy to make,
-    hard to monetize.
-  </Callout>
-  <Callout eyebrow="The market sweet spot" title="Hybrid-casual" tone="outline">
-    Hyper-casual mechanics plus the meta layers of mid-core:
-    progression, persistence, narrative. Growing 30%+ year-on-year.
-    Where the industry was moving.
-  </Callout>
-  <Callout eyebrow="Out of reach" title="Mid-core / core" tone="outline">
-    Best retention, strong IAP, but expensive to make and dominated
-    by AAA titles. Not where a social app starts.
-  </Callout>
-</Callouts>
+<ThreeUp>
+  <Figure
+    src="/projects/snapchat-games/snapchat-arcade-1scorepoints.gif"
+    alt="Snapchat Arcade concept: a game-over screen showing points earned and a leaderboard of friends' scores"
+    caption="Score points by playing games."
+  />
+  <Figure
+    src="/projects/snapchat-games/snapchat-arcade-2redeempointsforinappitems.gif"
+    alt="Snapchat Store concept: a tab of in-app gifts like balloons, teddy, flowers, each priced in points"
+    caption="Redeem points for items in a global Snap storefront."
+  />
+  <Figure
+    src="/projects/snapchat-games/snapchat-arcade-3notenoughpoints.gif"
+    alt="Snapchat Store concept: an SC+ tab showing premium items like Streak Restores, with the option to pay cash when you do not have enough points"
+    caption="Not enough points? Top up with cash, or keep playing."
+  />
+</ThreeUp>
 
-{/* TODO: drop the "Mobile Games Landscape" / "we're here" positioning
-    slide from Going Big with Games. */}
+<Section size="sub" stage="Strategy" hideFromNav>
+The exec read came back fast: the path to monetization was murky,
+and the pitch wasn't grounded in any industry data. Evan's gut
+was that the current hyper-casual library wasn't the right base
+to monetize this way long term, that pay-to-play on top of
+pickup-and-drop games isn't where the money in mobile gaming is.
+
+He was right. I'd designed an answer before I understood the
+market. So I stopped pitching and went to study how the
+established mobile gaming companies actually make money.
+</Section>
+
+<Section stage="Strategy" eyebrow="Strategy" title="The category bet" />
+
+<Section size="sub" stage="Strategy" hideFromNav>
+The study surfaced the insight that anchored the deck: Snap was
+sitting in hyper-casual, but the industry's actual sweet spot is
+hybrid-casual, the pick-up-and-play mechanics of hyper-casual
+layered with the meta systems of mid-core (progression, persistence,
+narrative). It was the part of the market growing 30%+ year-on-year,
+and Snap's social graph was the unfair advantage that would make it
+ours to win.
+</Section>
+
+<MobileGamesLandscape />
 
 <Section size="sub" stage="Strategy" title="Two guiding principles" hideFromNav>
 I anchored the strategy on two principles, one for each audience the
@@ -476,8 +500,124 @@ against. The deck assigned a clear design direction to each.
   </Callout>
 </Callouts>
 
-{/* TODO: drop the 4-pillars slide and the Snapchat Arcade / Points
-    system concept slide from Going Big with Games. */}
+<Section size="sub" stage="Strategy" title="Pillar 1 in the deck: monetizing what we already had" hideFromNav>
+The first pillar leaned on existing surfaces. Three formats the deck
+proposed against the games we'd already shipped: a Spotlight Games
+tab to consolidate discovery, interstitial ads between sessions,
+and rewarded video ads players could opt into for in-game boosts.
+None of them required net-new ad infrastructure.
+</Section>
+
+<ThreeUp wide centered>
+  <Figure
+    src="/projects/snapchat-games/pillar1-1spotlightgamestab.gif"
+    alt="Concept of a Spotlight Games tab inside Snapchat"
+    caption="A dedicated Games tab in Spotlight."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/pillar1-2interstitialads.gif"
+    alt="Interstitial ad shown between game sessions"
+    caption="Interstitials between game sessions."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/snapchat-games/pillar1-3rewardedvideoads.gif"
+    alt="Rewarded video ad offering in-game boosts"
+    caption="Rewarded video ads for in-game boosts."
+    width="narrow"
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Strategy" title="Pillar 2 in the deck: stacking meta on top of hyper-casual" hideFromNav>
+Pillar 2 turned hyper-casual into hybrid-casual by layering meta
+systems on top of the pick-up-and-play mechanic. The deck called out
+two of these directly: linear level progression so each session
+builds on the last, and regular content drops so the game keeps
+giving players a reason to return. Multiplayer was the third and
+biggest meta layer, and earned its own pilot (see Project 1 in
+post-strategy work).
+</Section>
+
+<TwoUp ratio="1:1">
+  <Figure
+    slot="left"
+    src="/projects/snapchat-games/pillar2-linear-level-progression.png"
+    alt="Concept for linear level progression layered onto a hyper-casual game"
+    caption="Linear progression, so each session builds on the last."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/pillar2-regular-content-drops.png"
+    alt="Concept for regular content drops keeping a game fresh over time"
+    caption="Regular content drops, so the game keeps earning a return visit."
+    width="narrow"
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Strategy" title="Pillar 3 in the deck: a flywheel for developers" hideFromNav>
+Pillar 3 was the developer side of the bet. Build a hybrid-casual
+game on Snap, get two things back. Distribution: promotion slots on
+Discover and Spotlight, earned through retention, playtime, and
+social mechanics, not bought. Revenue: a share of the ad formats
+from Pillar 1, layered on top of upfront funding for first-time devs
+through an expanded Partner Developer Program. Pillar 1 wasn't only
+a monetization lever for Snap, it was the engine of the rev share
+that made Pillar 3 work.
+</Section>
+
+<TwoUp ratio="1:1">
+  <Figure
+    slot="left"
+    src="/projects/snapchat-games/pillar3-promotionboost-discover.gif"
+    alt="Promotion boost surfacing a hybrid-casual game on Discover"
+    caption="Promotion boost on Discover, earned through retention and social signal."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/pillar3-promotionboost-spotlight.gif"
+    alt="Promotion boost surfacing a hybrid-casual game on Spotlight"
+    caption="The same boost on Spotlight, where players already browse."
+    width="narrow"
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Strategy" title="Pillar 4 in the deck: new monetization beyond ads" hideFromNav>
+Pillar 4 introduced two non-ad monetization products that ran on
+Snap's existing payments rails. Bitmoji cosmetics: skins, accessories,
+and items players unlock once and carry across every game on Snap.
+Progression boosters: low-stakes in-app purchases that smooth out
+friction inside a session. Cosmetics give long-term identity stakes
+to playing on Snap. Boosters give a per-session reason to spend.
+</Section>
+
+<TwoUp ratio="1:1">
+  <Figure
+    slot="left"
+    src="/projects/snapchat-games/pillar4-cosmeticsinsnap.png"
+    alt="Bitmoji cosmetics shown applied inside a Snapchat game"
+    caption="Bitmoji cosmetics, persistent across every game on Snap."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/pillar4-progressionboostersinsnap.gif"
+    alt="Progression booster offered as an in-app purchase inside a session"
+    caption="Progression boosters, bought inside the session."
+    width="narrow"
+    maxHeight="640px"
+  />
+</TwoUp>
 
 <Section stage="Strategy" eyebrow="Strategy" title="An entry-point system, not a single surface" banner />
 
@@ -538,14 +678,24 @@ some would play live with strangers if no one was around, similar to
 Roblox.
 </Quote>
 
-<Video
-  src="/projects/snapchat-games/live-multiplayer.mp4"
-  width="narrow"
-  caption="Live multiplayer kicked off from inside a group chat."
-/>
-
-{/* TODO: the 3-ways-to-play slide, the spectator mode flow, and
-    the "play against ghosts" fallback from Going Big with Games. */}
+<TwoUp ratio="1:1">
+  <Figure
+    slot="left"
+    src="/projects/snapchat-games/pillar2-live-multiplayer-inchat.gif"
+    alt="Live multiplayer session kicked off from inside a group chat"
+    caption="From a chat: tap to drop into a live session with whoever's online."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/pillar2-live-multiplayer-oncall.gif"
+    alt="Live multiplayer session running during a Snapchat call"
+    caption="On a call: the same framework, surfaced inside calling."
+    width="narrow"
+    maxHeight="640px"
+  />
+</TwoUp>
 
 <Section size="sub" stage="Post-strategy work" title="Games Presence, so an empty lobby is the exception" hideFromNav>
 Live multiplayer only works if you can find a friend playing. I
@@ -562,8 +712,24 @@ associated with games in order to know their friends are interested
 in that game and potentially open to playing it together.
 </Quote>
 
-{/* TODO: the Games Presence chip in friends feed, plus the spectator
-    drop-in moment. */}
+<TwoUp ratio="1:1">
+  <Figure
+    slot="left"
+    src="/projects/snapchat-games/pillar2-live-multiplayer-notification.png"
+    alt="Friends feed showing a Games Presence chip with a friend's bitmoji and current game"
+    caption="In friends feed: who's playing what, right now."
+    width="narrow"
+    maxHeight="640px"
+  />
+  <Figure
+    slot="right"
+    src="/projects/snapchat-games/pillar2-live-multiplayer-chat-notification.png"
+    alt="Chat thread with a Games Presence chip inviting drop-in spectatorship"
+    caption="In chat: tap the chip to drop in as a spectator."
+    width="narrow"
+    maxHeight="640px"
+  />
+</TwoUp>
 
 <Section stage="Post-strategy work" eyebrow="Project 2" title="Pulling turn-based all the way off the Snapping framework" banner />
 
@@ -657,24 +823,32 @@ can pivot into the broader catalog.
 
 <Section stage="Results" eyebrow="Results" title="What it moved" banner />
 
-<Stats cols={4} wide>
+<Stats cols={2} wide serif>
   <Stat
     value="30M"
-    label="Games DAU. Games are now a scaled product area at Snap, not a side experience."
+    label="Games DAU"
+    caption="Scaled product area at Snap"
   />
   <Stat
-    value="↑ 0.136%"
-    label="Lift in Direct Snap Send Human, Snap's top-line communication metric, from a single Games entrypoint experiment."
+    value="↑&nbsp;0.136%"
+    label="Lift in Direct Snap Send Human"
+    caption="On Snap's top-line comms metric"
   />
   <Stat
-    value="↑ 120%"
-    label="Increase in Game Video Posts on iOS after pulling capture into the moment of play."
+    value="↑&nbsp;120%"
+    label="Game Video Posts on iOS"
+    caption="After moving capture into play"
   />
   <Stat
     value="New squad"
-    label="The Going Big with Games strategy deck got exec buy-in from the CEO and carved Games out as its own dedicated squad, with headcount, roadmap ownership, and a bi-weekly exec review cadence."
+    label="Dedicated Games org, CEO-sponsored"
+    caption="With headcount and roadmap ownership"
   />
 </Stats>
+
+<Section size="sub" hideFromNav>
+Games are now a scaled product area at Snap, not a side experience. A single Games entrypoint experiment moved Direct Snap Send Human, Snap's top-line communication metric, by 0.136%, a meaningful lift at that scale. Pulling capture into the moment of play more than doubled Game Video Posts on iOS. The Going Big with Games strategy deck earned exec buy-in from the CEO and carved Games out as its own dedicated squad, with headcount, roadmap ownership, and a bi-weekly exec review cadence.
+</Section>
 
 <Section size="sub" stage="Results" title="What's next" hideFromNav>
 The work going forward is about depth: more partner-built games on

@@ -38,13 +38,15 @@ import AutoStrip from "../../components/case-study/AutoStrip.astro";
 <div class="cs-inline-figure__body">
 
 <p class="cs-inline-figure__eyebrow">Overview</p>
-<h2 class="cs-inline-figure__title">Tappy, but smarter</h2>
+<h2 class="cs-inline-figure__title">The platform that made Tinder's profiles dynamic</h2>
 
 On Tinder, you tap left or right on a profile to flip through profile
-"pages," each combining a photo with profile content. Internally, we call
-those tappable photo+content pages **Tappy**. Tappy was static, hardcoded,
-and hard to scale, so I led a six-month effort to turn it into a
-backend-driven, dynamically configurable system, with the tooling to match.
+"pages" of photo and content. Internally, we call those pages **Tappy**,
+and until 2022 they were static and hardcoded, a one-size-fits-all layout
+for every user. I led the six-month effort to build **Tappy Cloud**: the
+backend-driven, dynamically configurable system, plus the internal tooling,
+that made Tappy personalizable per user. The platform has since powered
+50+ experiments and an attributed $50–110M in revenue lift.
 
 </div>
 <Figure
@@ -92,7 +94,7 @@ see the kind of profile each problem produced in the wild.
 
 <Section size="sub" stage="Define" title="Three goals, one system" hideFromNav>
 The redesign had to move three things forward at once. Each goal mapped
-cleanly to one of the structural problems above, which is how we knew the
+cleanly to one of the structural problems above, which is how I knew the
 solution had to be a system, not a feature.
 </Section>
 
@@ -187,7 +189,7 @@ impact.
 <Section stage="Plan" eyebrow="Planning" title="Principles and milestones" banner />
 
 <Section size="sub" stage="Plan" title="Four design principles" hideFromNav>
-Before we shaped the solution, the team aligned on four principles to
+Before shaping the solution, I aligned the team on four principles to
 steer every design decision.
 </Section>
 
@@ -208,7 +210,7 @@ steer every design decision.
 </Callouts>
 
 <Section size="sub" stage="Plan" title="Four milestones, sequenced for value" hideFromNav>
-We sequenced the work into four milestones so the team could start
+I sequenced the work into four milestones so the team could start
 unlocking value early without waiting for the full system.
 </Section>
 
@@ -336,11 +338,11 @@ real profile.
 />
 
 <Section size="sub" stage="Design" title="Content maximums on Tappy" hideFromNav>
-We needed guardrails so a Tappy page could be configured freely without
+I needed guardrails so a Tappy page could be configured freely without
 becoming overwhelming. Each profile element got a "line height" from 1 to 5
-based on its actual rendered height, and we capped a Tappy page at **5
+based on its actual rendered height, and I capped a Tappy page at **5
 lines**. Test participants found a single mixed stack confusing and made
-incorrect swipes, so we kept stacking rules clear and let the system
+incorrect swipes, so I kept stacking rules clear and let the system
 enforce them automatically.
 </Section>
 
@@ -374,7 +376,7 @@ internal team could use to configure Tappy.
 />
 
 <Section size="sub" stage="Design" title="Testing TaCo with the people who'd use it" hideFromNav>
-Target users were PMs, engineers, designers, and data scientists. We
+Target users were PMs, engineers, designers, and data scientists. I
 measured time on task, success rate, and the System Usability Scale.
 </Section>
 

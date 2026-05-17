@@ -717,12 +717,10 @@ Users valued "live" features that allow them to join friends' games immediately 
 </Quote>
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
-Sync multiplayer is not one mechanic. It is turn-based, real-time, tap-to-bid, co-op drawing, every shape a partner studio might bring. Solving for one game would have shipped one game. So I scoped the work as a contract every live game on Snap would inherit: how a session starts, how friends drop in, how a round ends, how state survives someone closing the app. The in-house flagship existed to stress that contract before partner studios touched it, not the other way around.
+Sync multiplayer is many mechanics: turn-based, real-time, tap-to-bid, co-op drawing. Solving for one game would have shipped one game. So I scoped the work as a contract every live game on Snap would inherit: how a session starts, how friends drop in, how a round ends, how state survives someone closing the app.
 </Section>
 
-<Section size="sub" stage="Executing the vision" title="Three rules that shaped the framework" hideFromNav>
-Sync multiplayer normally gates you on whether friends are online right now. I designed the framework around three rules so a session is always playable, and stays warm as friends come and go.
-</Section>
+<Section size="sub" stage="Executing the vision" title="Three rules that shaped the framework" hideFromNav />
 
 <Callouts cols={3}>
   <Callout eyebrow="Entry" title="Always start solo" tone="outline">
@@ -735,10 +733,6 @@ Sync multiplayer normally gates you on whether friends are online right now. I d
     One player is enough to keep a session alive. Friends come and go, the lobby stays warm, and play ends only when the last person leaves.
   </Callout>
 </Callouts>
-
-<Section size="sub" stage="Executing the vision" hideFromNav>
-The framework treats a multiplayer session less like a match and more like a room friends wander into.
-</Section>
 
 <Section size="sub" stage="Executing the vision" title="Blockbuster, the in-house flagship" hideFromNav>
 Blockbuster was the test harness: an in-house co-op title designed to stress every part of the multiplayer framework before partner studios touched it. If Blockbuster worked, the framework was ready to publish.
@@ -893,7 +887,7 @@ A Daily Challenges row pinned to the front of the Games carousel. Per-game strea
     alt="Daily Challenges row pinned to the front of the Games drawer"
     caption="A Daily Challenges section pinned to the top of the Games section"
     maxHeight="540px"
-    class="has-hairline cs-figure--roundest"
+    class="has-hairline"
   />
   <Video
     src="/projects/snapchat-games/daily-game-example.mp4"

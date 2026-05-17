@@ -29,6 +29,7 @@ import MobileGamesLandscape from "../../components/case-study/MobileGamesLandsca
 import SlideCycle from "../../components/case-study/SlideCycle.astro";
 import JobsLanes from "../../components/case-study/JobsLanes.astro";
 import HybridCasualGrowth from "../../components/case-study/HybridCasualGrowth.astro";
+import TradeoffSet from "../../components/case-study/TradeoffSet.astro";
 
 <Section stage="Background" eyebrow="Background" title="Where Games started" banner />
 
@@ -744,7 +745,7 @@ Blockbuster was the test harness: an in-house co-op title designed to stress eve
   <Figure
     src="/projects/snapchat-games/flagship-multiplayer-1.gif"
     alt="Blockbuster gameplay"
-    maxHeight="720px"
+    maxHeight="576px"
     class="cs-figure--r-24"
   />
   <Figure
@@ -867,7 +868,7 @@ The same session shows up in chat as a single live envelope that updates as frie
   />
 </ThreeUp>
 
-<Section size="sub" stage="Executing the vision" eyebrow="Platform handoff" title="Where the framework went after launch" hideFromNav>
+<Section size="sub" stage="Executing the vision" title="Where the framework went after launch" hideFromNav>
 Live multiplayer was an early platform bet, not a growth feature. Content supply was the constraint, so the work was scoped around making the surface ready for partner-built games. Success was framed as game retention and shared sessions with friends, not raw opens.
 </Section>
 
@@ -893,23 +894,24 @@ Solo play was the missing loop. Without a reason to come back on the days a frie
 A Daily Challenges row pinned to the front of the Games carousel. Per-game streaks. Auto-Snap to Preview so the day's result is one tap away from a friend. Notifications fire only on social signal, a friend playing the same puzzle, not on the streak itself.
 </Section>
 
-<ThreeUp gap="sm">
+<ThreeUp gap="sm" align="center" wide centered>
   <Figure
     src="/projects/snapchat-games/daily-games-drawer.gif"
     alt="Daily Challenges row pinned to the front of the Games drawer"
     caption="A Daily Challenges section pinned to the top of the Games section"
-    maxHeight="640px"
+    maxHeight="540px"
   />
   <Video
     src="/projects/snapchat-games/daily-game-example.mp4"
     caption="A daily session, one tap to share the result"
     device="phone"
+    maxHeight="540px"
   />
   <Figure
     src="/projects/snapchat-games/daily-games-notifications.png"
     alt="Notification driven by a friend playing the same daily puzzle"
     caption="Notifications fire on social signal, not on the streak itself"
-    maxHeight="640px"
+    maxHeight="540px"
   />
 </ThreeUp>
 
@@ -929,59 +931,91 @@ A daily return loop designed to convert one-shot players into a habit and to rou
 Games needed distribution outside the chat drawer, but Discover and Spotlight are editorial surfaces with their own contracts. The work was finding entry points that earn their pixels: a pinned carousel on Discover that sits next to Stories instead of crowding them, and a dedicated Games tab on Spotlight where players already browse full-screen content.
 </Section>
 
-<Section size="sub" stage="Executing the vision" eyebrow="The carousel call" title="Where should Games live in Discover?" hideFromNav>
+<Section size="sub" stage="Executing the vision" title="Where should Games live in Discover?" hideFromNav>
 Three stationary entry points, each with a different bet on how much real estate Games deserves in a feed people already come to for Stories.
 </Section>
 
-<ThreeUp gap="sm">
-  <Figure
-    src="/projects/snapchat-games/games-in-discover-option1-pill.gif"
-    alt="Pill option: a small Games chip pinned in Discover's hashtag carousel"
-    caption="Pill: cheapest to ship, but reads as a hashtag and buries the storefront one layer deeper"
-    maxHeight="640px"
-  />
-  <Figure
-    src="/projects/snapchat-games/games-in-discover-option2-carousel.gif"
-    alt="Carousel option: a dedicated row of game tiles inline in the Discover feed"
-    caption="Carousel, recommended: content-first, shows multiple games at once, lets the catalog do the selling"
-    maxHeight="640px"
-  />
-  <Figure
-    src="/projects/snapchat-games/games-in-discover-option3-tile.gif"
-    alt="Tile option: a single hero block pinned in the Discover feed"
-    caption="Tile: highest visibility, but a single pinned hero crowds Stories and competes for editorial space"
-    maxHeight="640px"
-  />
-</ThreeUp>
+<TradeoffSet
+  options={[
+    {
+      name: "Tile",
+      image: "/projects/snapchat-games/games-in-discover-option1-tile.png",
+      alt: "Tile option, a single hero block pinned in the Discover feed",
+      pros: ["Maximum visibility for one featured game"],
+      cons: [
+        "Competes with Stories for editorial hero space",
+        "Sells one game; the rest of the catalog gets nothing",
+      ],
+      labels: [
+        { type: "bracket", side: "left", x: 2, yStart: 47, yEnd: 86, arm: 0 },
+      ],
+    },
+    {
+      name: "Carousel",
+      image: "/projects/snapchat-games/games-in-discover-option2-carousel.png",
+      alt: "Carousel option, a dedicated row of game tiles inline in the Discover feed",
+      winner: true,
+      pros: [
+        "Shows multiple games at once, lets the catalog do the merchandising",
+        "Borrows the row pattern users already scan in Discover",
+        "Every tile is an entry point into the storefront",
+        "Opens the door for ad inventory: third-party playable game ads can slot directly into the carousel",
+      ],
+    },
+    {
+      name: "Pill",
+      image: "/projects/snapchat-games/games-in-discover-option3-pill.png",
+      alt: "Pill option, a small Games chip pinned in Discover's hashtag carousel",
+      pros: ["Cheapest to ship, lowest risk to the feed"],
+      cons: [
+        "Reads as a hashtag chip and gets overlooked",
+        "Sells zero games on the surface itself",
+      ],
+      labels: [
+        { type: "ring", x: 34, y: 36.5, width: 64, height: 24 },
+      ],
+    },
+  ]}
+/>
 
-<Callouts cols={3}>
-  <Callout eyebrow="Discoverability" title="Multiple games on screen" tone="outline">
+<Section size="sub" stage="Executing the vision" title="Why the carousel won" hideFromNav>
+The pill was the safe ship and the tile was the loud one. The carousel was the call that respected the feed and the catalog at the same time, for four reasons.
+</Section>
+
+<Callouts cols={4}>
+  <Callout eyebrow="Reason 1 · Discoverability" title="Multiple games on screen" tone="outline">
     A single tile sells one game. A pill sells none. The carousel lets the catalog do the merchandising.
   </Callout>
-  <Callout eyebrow="Feed citizenship" title="Sits next to Stories, not on top of them" tone="outline">
+  <Callout eyebrow="Reason 2 · Feed citizenship" title="Sits next to Stories, not on top of them" tone="outline">
     Discover's contract is editorial. The carousel borrows the row pattern users already scan, instead of fighting it for hero space.
   </Callout>
-  <Callout eyebrow="Storefront equity" title="Every tile is an entry point" tone="outline">
+  <Callout eyebrow="Reason 3 · Storefront equity" title="Every tile is an entry point" tone="outline">
     Pill and tile both funnel through one tap to the storefront. The carousel turns the entry point into the storefront's front row.
+  </Callout>
+  <Callout eyebrow="Reason 4 · Ad inventory" title="A native slot for playable game ads" tone="outline">
+    The carousel is the only option with room to inject third-party playable game ads natively, opening a revenue lane without breaking the feed.
   </Callout>
 </Callouts>
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
-The pill was the safe ship and the tile was the loud one. The carousel was the call that respected the feed and the catalog at the same time. On Spotlight, where players already browse content full-screen, we shipped a dedicated Games tab built around game-native content instead of generic lens posts.
+On Spotlight, where players already browse content full-screen, we shipped a dedicated Games tab built around game-native content instead of generic lens posts.
 </Section>
 
-<TwoUp ratio="1:1">
-  <Video
+<TwoUp ratio="1:1" align="center">
+  <Figure
     slot="left"
-    src="/projects/snapchat-games/storefront.mp4"
-    caption="The Games storefront on Discover"
+    src="/projects/snapchat-games/games-in-discover-option2-carousel.gif"
+    alt="Games carousel pinned in Discover, showing a row of game tiles inline with Stories"
+    caption="The Games carousel on Discover"
     device="phone"
+    maxHeight="600px"
   />
   <Video
     slot="right"
     src="/projects/snapchat-games/games-tab-in-spotlight-built.mp4"
     caption="The Games tab in Spotlight, content-first by design"
     device="phone"
+    maxHeight="600px"
   />
 </TwoUp>
 
@@ -996,7 +1030,7 @@ A content-first surface for Games in Spotlight, designed to convert watching int
   <Stat value="+12%" label="Session depth" caption="36.5s average, against Following as the control" />
 </Stats>
 
-<Section stage="Results" eyebrow="Results" title="What it moved" banner />
+<Section stage="Results" eyebrow="Results" title="One year in, what changed" banner />
 
 <Stats cols={2} wide serif>
   <Stat

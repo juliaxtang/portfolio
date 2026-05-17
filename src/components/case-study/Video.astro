@@ -13,6 +13,7 @@ interface Props {
   device?: "phone" | "auto";
   loop?: boolean;
   controls?: boolean;
+  maxHeight?: string;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
   device = "auto",
   loop = true,
   controls = false,
+  maxHeight,
 } = Astro.props;
 
 const finalAspect = aspect ?? (device === "phone" ? "9 / 19.5" : undefined);
@@ -40,11 +42,18 @@ const cls = [
   "cs-video",
   `cs-figure--${width}`,
   device === "phone" ? "cs-video--device-phone" : "",
+  maxHeight ? "cs-video--capped" : "",
 ].filter(Boolean).join(" ");
 ---
 
 <figure class={cls}>
-  <div class="cs-video__media" style={finalAspect ? `aspect-ratio:${finalAspect}` : undefined}>
+  <div
+    class="cs-video__media"
+    style={[
+      finalAspect ? `aspect-ratio:${finalAspect}` : "",
+      maxHeight ? `max-height:${maxHeight};height:${maxHeight}` : "",
+    ].filter(Boolean).join(";") || undefined}
+  >
     <video
       src={resolvedSrc}
       poster={resolvedPoster}
@@ -73,6 +82,18 @@ const cls = [
     border-radius: var(--r-lg);
     overflow: hidden;
     background: var(--bg-sunken);
+  }
+  /* Capped video: maxHeight set, render with 36px radius to match the
+     Figure capped treatment used elsewhere for mobile mockups. The video
+     element inherits the corner so the rendered media doesn't bleed past
+     the radius. */
+  .cs-video--capped .cs-video__media,
+  .cs-video--capped .cs-video__media video {
+    border-radius: 36px;
+  }
+  .cs-video--capped .cs-video__media {
+    width: auto;
+    margin-inline: auto;
   }
   /* Phone-shaped videos cap their width like Figure does for phone screens. */
   .cs-video--device-phone .cs-video__media { max-width: 320px; margin-inline: auto; }

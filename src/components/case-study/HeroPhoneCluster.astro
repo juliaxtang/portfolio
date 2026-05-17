@@ -29,9 +29,9 @@ const resolve = (p: string) =>
    the centers stay aligned regardless of phone height differences.
    Drifts alternate so the row breathes on scroll. */
 const phones = [
-  { src: resolve(phone1), alt: alt1, left: 0.06, width: 0.30, drift: 52, hoverLift: 8, z: 2, tilt: -4, baseScale: 1.1 },
-  { src: resolve(phone2), alt: alt2, left: 0.335, width: 0.33, drift: -32, hoverLift: 10, z: 3, tilt: 0, baseScale: 1.17 },
-  { src: resolve(phone3), alt: alt3, left: 0.64, width: 0.30, drift: 44, hoverLift: 8, z: 2, tilt: 4, baseScale: 1.1 },
+  { src: resolve(phone1), alt: alt1, left: 0.06, width: 0.30, drift: 52, hoverLift: 8, z: 2, tilt: -4, baseScale: 1.12 },
+  { src: resolve(phone2), alt: alt2, left: 0.335, width: 0.33, drift: -32, hoverLift: 10, z: 3, tilt: 0, baseScale: 1.15 },
+  { src: resolve(phone3), alt: alt3, left: 0.64, width: 0.30, drift: 44, hoverLift: 8, z: 2, tilt: 4, baseScale: 1.12 },
 ];
 const aspect = "1373 / 2836";
 ---
@@ -135,12 +135,14 @@ const aspect = "1373 / 2836";
     pointer-events: auto;
   }
   /* Hover straightens the phone (rotation goes to 0) while it scales up,
-     so the focused phone reads as the foreground. */
+     so the focused phone reads as the foreground. `!important` on
+     z-index beats the inline z-index set per-phone for the resting
+     stacking order. */
   .hpc__phone:hover {
     --hover-y: calc(-1 * var(--hover-lift));
     --hover-scale: 1.05;
     --tilt: 0deg;
-    z-index: 50;
+    z-index: 50 !important;
   }
   .hpc__phone:hover img {
     filter: drop-shadow(0 30px 48px rgba(40, 30, 80, 0.30));

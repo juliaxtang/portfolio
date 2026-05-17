@@ -1,0 +1,517 @@
+---
+title: "Topic Chats"
+summary: "Reshaping a half-finished public-chat MVP into a live-events product anchored in sports, with the discovery, notification, and sharing loops that made it a meaningful new engagement surface for Snapchat."
+order: 15
+tags: ["Snapchat", "Strategy", "Live", "Social"]
+year: "2025"
+role: "Staff Product Designer"
+company: "Snapchat"
+companyLogo: "/logos/snapchat.png"
+team: ["Product Manager", "Engineering", "Data Science", "User Research"]
+accent: "#FFFC00"
+heroVisual:
+  type: "phone-cluster"
+  phone1: "/projects/topic-chats/hero-phone-mockup01.png"
+  phone2: "/projects/topic-chats/hero-phone-mockup02.png"
+  phone3: "/projects/topic-chats/hero-phone-mockup04.png"
+---
+
+import Section from "../../components/case-study/Section.astro";
+import Figure from "../../components/case-study/Figure.astro";
+import Video from "../../components/case-study/Video.astro";
+import TwoUp from "../../components/case-study/TwoUp.astro";
+import ThreeUp from "../../components/case-study/ThreeUp.astro";
+import Stats from "../../components/case-study/Stats.astro";
+import Stat from "../../components/case-study/Stat.astro";
+import Callouts from "../../components/case-study/Callouts.astro";
+import Callout from "../../components/case-study/Callout.astro";
+import Quote from "../../components/case-study/Quote.astro";
+import NotificationTaxonomy from "../../components/case-study/NotificationTaxonomy.astro";
+import TopicChatsLiveMoments from "../../components/case-study/TopicChatsLiveMoments.astro";
+import BracketAside from "../../components/case-study/BracketAside.astro";
+
+<Section stage="Background" eyebrow="Background" title="What I inherited" banner />
+
+<Section size="sub" stage="Background" hideFromNav>
+Topic Chats existed when I took it over: a public-conversation MVP for
+Snapchatters to talk about anything trending. The surface worked. The
+product did not. Most chats opened with a wave of "hi" posts and went
+quiet.
+</Section>
+
+<Stats cols={2} bare>
+  <Stat value="94%" label="Of messages came from first-time joiners" caption="Most people said 'hi,' got no response, and left" />
+  <Stat value="73%" label="Of users posted once and never returned" caption="The chats drifted off-topic the moment there was no shared reason to stay" />
+</Stats>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/inherited-state.png"
+    alt="A Topic Chat in its inherited state with sparse, low-quality first-time posts"
+    maxHeight="640px"
+    class="cs-figure--r-12"
+  />
+  <Figure
+    src="/projects/topic-chats/inherited-state2.png"
+    alt="Another Topic Chat where conversation drifts off-topic with no shared reason to stay"
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Background" hideFromNav>
+The "hi" posts looked like a content problem until I pulled the
+timestamps. They clustered inside ten-minute windows: people dropped
+in, scanned for a live conversation, and left when they did not find
+one. The product did not have a discovery problem. It had a
+concurrency problem. We needed enough people in the same chat at the
+same time for it to feel alive.
+</Section>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/topic-chats-hi-problem-timestamps.png"
+    alt="Chat log showing first-time 'hi' posts all clustered within a ten-minute window with no follow-up conversation"
+    maxHeight="640px"
+    class="has-hairline"
+  />
+  <BracketAside>
+    If we dig deeper, these messages are sent at least 10 minutes apart,
+    making maintaining meaningful conversations tough.
+    <ul>
+      <li>I drop in, say hi</li>
+      <li>No one responds</li>
+      <li>I leave</li>
+      <li>Someone responds and says "hi" 10+ mins later</li>
+      <li>There's no way for me to know this happened</li>
+    </ul>
+  </BracketAside>
+</TwoUp>
+
+<Section stage="Inflection" eyebrow="Inflection" title="Betting the product on live moments" banner />
+
+<Section size="sub" stage="Inflection" hideFromNav>
+I cut the data by category to find where the product was already
+working. Generic interest chats were the worst offenders on the
+hi-and-leave pattern: people did not know what to talk about. Sports
+were the opposite. On-topic, time-bound, and naturally concurrent.
+That was the wedge.
+</Section>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/case-for-sports-and-live-events1.png"
+    alt="Analysis showing sports Topic Chats stayed dramatically more on-topic than generic interest chats"
+    caption="Sports chats stayed on-topic"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/case-for-sports-and-live-events2.png"
+    alt="Sports Topic Chats showed the highest concurrent participation and lowest hi-and-leave rate of any category"
+    caption="And drew the highest concurrent audiences"
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Inflection" hideFromNav>
+I reframed the roadmap around a specific wedge: live events first,
+sports as the proving ground. That narrowed what the product had to
+be good at: real-time relevance, repeat participation, and the loops
+that move users from one session to the next.
+</Section>
+
+<Callouts cols={3}>
+  <Callout eyebrow="Wedge" title="Live events first" tone="outline">
+    Sports as the proving ground. Inherently time-bound, naturally
+    on-topic, and the format most likely to produce concurrent
+    participation.
+  </Callout>
+  <Callout eyebrow="Loops" title="Utility, not chatter" tone="outline">
+    Anchor each chat in something useful during the event itself, so
+    users have a reason to open it, reply, and return.
+  </Callout>
+  <Callout eyebrow="Re-entry" title="Bring people back live" tone="outline">
+    Treat notifications and ambient surfaces as the second product, not
+    afterthoughts. The chat dies if users do not know it came alive.
+  </Callout>
+</Callouts>
+
+<Section size="sub" stage="Inflection" hideFromNav>
+A look at what the live-events bet adds up to in product.
+</Section>
+
+<TopicChatsLiveMoments />
+
+<Section stage="Design" eyebrow="Design" title="Designing for a live signal" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+Once live events were the wedge, the most leveraged work was making
+the chat feel unmistakably live. Two interventions carried most of
+that weight: a real-time scoreboard inside the chat itself, and live
+state visible from outside the chat so users could find their way back.
+</Section>
+
+<TwoUp ratio="2:1" align="center" title="A scoreboard, not a decoration">
+  <Fragment slot="left">
+    The obvious move was a banner: score on top, chat below. I rejected
+    it. A banner makes the game the headline and the chat the comments.
+    I wanted the inverse, so I built the scoreboard as a message in the
+    stream that the chat is reacting to, not a header it lives under.
+    That reframe is what made the scoreboard the first proof the
+    live-events bet worked inside the surface.
+  </Fragment>
+  <Figure
+    slot="right"
+    src="/projects/topic-chats/topic-chat-scoreboard.gif"
+    alt="A live Topic Chat with a real-time sports scoreboard pinned at the top, score and clock updating as messages stream below"
+    caption="Score, clock, and key moments anchor the chat in real time"
+    device="phone"
+    aspect="442 / 960"
+    class="cs-figure--rounder"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Design" title="Live state, visible from outside the chat" hideFromNav>
+The scoreboard solved the inside. The harder problem was that
+Snapchat had no shared language for "live." A chat could be on fire
+and nothing in the rest of the app would tell you. I treated live as
+a property the app needed to carry, not a state buried inside one
+surface, and designed a single live signal the Friends feed, Discover,
+Search, the Map, and iOS Live Activity could all speak. The goal was
+one glance, anywhere in the app, to know something is happening now.
+</Section>
+
+<ThreeUp pack gap="md" align="center">
+  <Figure
+    src="/projects/topic-chats/live-badge-friends-feed.png"
+    alt="Live badge surfacing an active Topic Chat in the Friends feed"
+    caption="Friends feed"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/live-badge-discover.png"
+    alt="Live badge surfacing an active Topic Chat on Discover"
+    caption="Discover"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/live-badge-search-results.png"
+    alt="Live badge surfacing an active Topic Chat in search results"
+    caption="Search results"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Design" hideFromNav>
+Beyond the in-app surfaces, two ambient entry points: a map view that
+plots live moments by location, and a Live Activity on iOS that pins
+score and clock to the lock screen and Dynamic Island.
+</Section>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/live-events-on-map.png"
+    alt="Snap Map view showing live Topic Chats around active events by location"
+    caption="Live events on the Map"
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/live-activity-widget.png"
+    alt="iOS Live Activity for a Topic Chat showing live score on the lock screen and Dynamic Island"
+    caption="iOS Live Activity"
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Section stage="Design" eyebrow="Design" title="Notifications, reframed as utility" banner />
+
+<Section size="sub" stage="Design" hideFromNav>
+The hardest problem in public chat is response timing. If users do not
+know a chat has come alive after they leave, the conversation dies.
+The inherited notification model was generic and repetitive: a ping
+for any direct reply, nothing about momentum.
+
+The reframe was changing what a notification is about. The inherited
+model notified you about a person (someone replied). I designed
+around the moment (something is happening worth being part of). That
+swap is why the four categories exist: each one answers a different
+version of "is there a reason to come back right now," and the
+chat-momentum category only became possible once I pushed for AI
+summaries instead of templated copy.
+</Section>
+
+<NotificationTaxonomy
+  items={[
+    {
+      label: "Activity about me",
+      description: "Direct replies, mentions, and reactions to my posts.",
+      images: [
+        {
+          src: "/projects/topic-chats/notifications-activity-about-me-1.png",
+          alt: "Lock-screen notification about activity directed at the user",
+        },
+        {
+          src: "/projects/topic-chats/notifications-activity-about-me-2.png",
+          alt: "Second example of a notification about activity directed at the user",
+        },
+      ],
+    },
+    {
+      label: "Activity about my friends",
+      description: "Friends posting, reacting, or joining a chat I'm in.",
+      images: [
+        {
+          src: "/projects/topic-chats/notifications-activity-about-friends-1.png",
+          alt: "Lock-screen notification about friends becoming active in a Topic Chat",
+        },
+        {
+          src: "/projects/topic-chats/notifications-activity-about-friends-2.png",
+          alt: "Second example of a notification about friends becoming active in a Topic Chat",
+        },
+      ],
+    },
+    {
+      label: "Activity about the chat",
+      description: "AI-summarized momentum: what the chat is actually talking about right now.",
+      images: [
+        {
+          src: "/projects/topic-chats/notifications-activity-about-the-chat-1.png",
+          alt: "Lock-screen notification with an AI-generated summary of what the chat is currently talking about",
+        },
+        {
+          src: "/projects/topic-chats/notifications-activity-about-the-chat-2.png",
+          alt: "Second example of a notification with an AI-generated chat summary",
+        },
+      ],
+    },
+    {
+      label: "Activity around chats I'm not in, but might like",
+      description: "Recommendations to join a chat that's gaining momentum among people like me.",
+      images: [
+        {
+          src: "/projects/topic-chats/notifications-new-chat-recommendation-1.png",
+          alt: "Lock-screen notification recommending a new Topic Chat the user might want to join",
+        },
+        {
+          src: "/projects/topic-chats/notifications-new-chat-recommendation-2.png",
+          alt: "Second example of a notification recommending a new Topic Chat",
+        },
+      ],
+    },
+  ]}
+/>
+
+<Quote attribution="Design principle for the notification system">
+A notification should answer the question, "is something happening in
+this chat right now that I would want to be part of?" Anything that
+does not is noise.
+</Quote>
+
+<Section size="sub" stage="Design" hideFromNav>
+When the AB results came back, notifications turned out to be the
+lever, not a polish layer. Without them firing, Topic Chats was
+DAU-neutral. With them on, the product moved Snap's core metric.
+</Section>
+
+<Stats cols={2} bare>
+  <Stat
+    value="DAU-neutral"
+    label="Without notifications"
+    caption="Topic Chats did not move DAU on its own. Re-entry signals were the product, not a polish layer"
+  />
+  <Stat
+    value="+32K"
+    label="U.S. Android DAU with notifications on"
+    caption="Stat-sig lift in the JOIN_THE_CHAT notification AB, 7-day trailing window. The biggest engagement days were notification blast days"
+  />
+</Stats>
+
+<Section stage="Supporting" eyebrow="Supporting moves" title="Smaller bets that held the system together" banner />
+
+<Section size="sub" stage="Supporting" hideFromNav>
+Three more pieces rounded out the system. None carried the strategy
+on their own, but each one was necessary for the live-events bet to
+compound.
+</Section>
+
+<Section size="sub" stage="Supporting" title="Send limits, to break the hi-and-leave pattern" hideFromNav>
+The original chat had no rate limit, which is part of why first-time
+joiners could post a "hi" and vanish before anyone replied. A flat
+cap would have punished the regulars who were actually carrying the
+conversation, and a join-gate would have killed the top of the funnel.
+I designed a rate limit that treats first-time posters differently
+from regulars: you earn the ability to keep posting by engaging with
+the chat, not by waiting your turn. The gate is on participation,
+not posting.
+</Section>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/before-send-limit.png"
+    alt="A Topic Chat before send limits, full of low-effort one-line posts"
+    caption="Before: anyone can post anything, anytime"
+    captionTop
+    maxHeight="640px"
+    class="cs-figure--r-12"
+  />
+  <Figure
+    src="/projects/topic-chats/after-send-limit.png"
+    alt="A Topic Chat after send limits, with participation gating that rewards engagement"
+    caption="After: posting earns more posting, by way of engagement"
+    captionTop
+    maxHeight="640px"
+    class="cs-figure--r-12"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Supporting" title="Sharing and invite loops" hideFromNav>
+The old share dead-ended at a screenshot. I redesigned around three
+jobs: send a live moment that's worth opening, land the receiver
+inside the live context, and keep the link alive when it leaves the
+app. The point was to turn conversation into distribution instead of
+dead-ending chats inside Snapchat.
+</Section>
+
+<ThreeUp pack gap="md" align="center">
+  <Figure
+    src="/projects/topic-chats/sharing-topic-chats-sender.gif"
+    alt="The share flow from inside a Topic Chat, surfacing the live moment to send to a friend"
+    caption="Sender: share a live moment from the chat"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/sharing-topic-chats-receiver.png"
+    alt="A shared Topic Chat landing in a friend's inbox with live context preserved"
+    caption="Receiver: lands in the live context"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/off-platform-shares.png"
+    alt="An off-platform share of a Topic Chat preserving live state outside Snapchat"
+    caption="Off platform: deep link back into the chat"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>
+
+<Section size="sub" stage="Supporting" title="Mark as Off Topic" hideFromNav>
+The default ask was a reporting queue with human review. I pushed
+against it. At live-event concurrency, a queue would either drown
+the moderators or slow the signal to useless. Letting the room
+decide, with a threshold and a temporary ban for repeat offenders,
+made moderation a property of the chat instead of a backlog behind
+it. Any user can hide a spammy or irrelevant message for themselves,
+and once enough users do, the message is hidden for everyone.
+</Section>
+
+<TwoUp ratio="1:1" align="center">
+  <Figure
+    src="/projects/topic-chats/mark-as-off-topic.gif"
+    alt="A user tapping Mark as Off Topic on an irrelevant message in a Topic Chat"
+    caption="One tap to hide noise for yourself"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/chat-hidden-due-to-community-feedback.png"
+    alt="A message hidden across the chat once enough users marked it off topic"
+    caption="At threshold, hidden for everyone"
+    captionTop
+    maxHeight="640px"
+  />
+</TwoUp>
+
+<Stats cols={1} bare>
+  <Stat
+    value="3x"
+    label="Proactive moderation volume during March Madness"
+    caption="~6K/day sustained across the tournament, still up 70% after. The community signal absorbed the spike without escalating to heavier reporting flows"
+  />
+</Stats>
+
+<Section stage="Results" eyebrow="Results" title="What the wedge unlocked" banner />
+
+<Stats cols={3} wide serif>
+  <Stat
+    value="~71K"
+    label="Incremental U.S. DAU"
+    caption="A meaningful new engagement surface for Snapchat, driven by live-event participation, discovery, and sharing loops"
+  />
+  <Stat
+    value="~40K"
+    label="Peak concurrent users in chat"
+    caption="Active in the same chats at the same time during live moments, the concurrency the inherited product never reached"
+  />
+  <Stat
+    value="~208K"
+    label="Messages sent per week"
+    caption="Repeat participation across the live-event slate, sustained beyond launch novelty"
+  />
+</Stats>
+
+<Section size="sub" stage="Results" eyebrow="March Madness, the proving ground" hideFromNav>
+March Madness was the slate that stress-tested the system. One
+bracket, three weeks, every loop firing at once: scoreboard, live
+badging, notifications, shares.
+</Section>
+
+<Stats cols={2} bare>
+  <Stat
+    value="~52K"
+    label="Peak concurrent members in a single chat"
+    caption="The concurrency floor the inherited product needed and never hit, cleared inside one game"
+  />
+  <Stat
+    value="25-45K"
+    label="Chat sends per day"
+    caption="Sustained across the tournament, not a single-day spike"
+  />
+</Stats>
+
+<Section size="sub" stage="Results" hideFromNav>
+Topic Chats became a stronger product once it stopped trying to be
+everything at once. Narrowing to live sports and events gave the team
+a wedge they could actually optimize against, and the loops that
+followed, the scoreboard, the live-state surfaces, the smarter
+notifications, the moderation, and the share mechanics, were the
+system that made that wedge compound into a real engagement surface
+for Snapchat.
+</Section>
+
+<Section stage="Results" eyebrow="What's next" title="The next chapter of the strategy" banner />
+
+<Section size="sub" stage="Results" hideFromNav>
+Sharing was the weakest loop in the system: roughly 30 shares per
+week on the old surface. The rework shipped late, so the next chapter
+is proving the growth loop, alongside three in-progress bets that
+extend the live-events thesis into discovery, content supply, and
+interaction.
+</Section>
+
+<ThreeUp pack gap="md" align="center">
+  <Figure
+    src="/projects/topic-chats/associated-topic-chats-nba01.png"
+    alt="An NBA team profile linked to its associated Topic Chat as a discovery flywheel"
+    caption="Profiles and teams link to their chats"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/cross-posting-content.png"
+    alt="Spotlight and Story content cross-posted into a relevant Topic Chat to keep conversation grounded"
+    caption="Spotlight and Story content seeds chats"
+    captionTop
+    maxHeight="640px"
+  />
+  <Figure
+    src="/projects/topic-chats/topic-chats-polls-voting.gif"
+    alt="A live, time-bound poll inside a Topic Chat with users voting in real time"
+    caption="Time-bound polls structure live moments"
+    captionTop
+    maxHeight="640px"
+  />
+</ThreeUp>

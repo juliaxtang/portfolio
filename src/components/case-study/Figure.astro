@@ -77,13 +77,14 @@ const cls = [
   `cs-figure--bg-${background}`,
   centered ? "cs-figure--centered" : "",
   crop ? "cs-figure--crop" : "",
+  maxHeight ? "cs-figure--capped" : "",
   className,
 ].filter(Boolean).join(" ");
 
 // Inline style only when necessary so cascade order stays predictable.
 const styleParts: string[] = [];
-if (finalAspect) styleParts.push(`aspect-ratio:${finalAspect}`);
-if (maxHeight) styleParts.push(`max-height:${maxHeight}`);
+if (finalAspect && !maxHeight) styleParts.push(`aspect-ratio:${finalAspect}`);
+if (maxHeight) styleParts.push(`--cs-figure-max-h:${maxHeight}`);
 if (maxWidth) styleParts.push(`max-width:${maxWidth}`);
 if (maxWidth) styleParts.push(`margin-inline:auto`);
 const mediaStyle = styleParts.join(";");
@@ -167,6 +168,32 @@ const mediaStyle = styleParts.join(";");
   }
 
   .cs-figure--bleed .cs-figure__media { border-radius: 0; }
+
+  /* Height-capped figures: the image is constrained by max-height with
+     auto width and is centered horizontally inside its column. Use for
+     rows of images (TwoUp/ThreeUp) so each tile shares a vertical budget
+     instead of growing to fill the column width. The 36px corner radius
+     matches the device frame radius used elsewhere for mobile mockups. */
+  .cs-figure--capped .cs-figure__media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: auto;
+    overflow: visible;
+    background: transparent;
+  }
+  .cs-figure--capped .cs-figure__media img,
+  .cs-figure--capped .cs-figure__media video {
+    border-radius: 36px;
+  }
+  .cs-figure--capped .cs-figure__media img,
+  .cs-figure--capped .cs-figure__media video {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: var(--cs-figure-max-h);
+    margin: 0 auto;
+  }
 
   .cs-figure--framed .cs-figure__media {
     background: var(--bg-surface);

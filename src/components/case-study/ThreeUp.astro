@@ -2,9 +2,10 @@
 interface Props {
   wide?: boolean;
   gap?: "sm" | "md" | "lg";
+  centered?: boolean;
 }
 
-const { wide = false, gap = "md" } = Astro.props;
+const { wide = false, gap = "md", centered = false } = Astro.props;
 
 const gapMap: Record<string, string> = {
   sm: "var(--s-4)",
@@ -12,9 +13,11 @@ const gapMap: Record<string, string> = {
   lg: "var(--s-10)",
 };
 
-const cls = ["cs-threeup", wide ? "cs-threeup--wide" : ""]
-  .filter(Boolean)
-  .join(" ");
+const cls = [
+  "cs-threeup",
+  wide ? "cs-threeup--wide" : "",
+  centered ? "cs-threeup--centered" : "",
+].filter(Boolean).join(" ");
 const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
 ---
 
@@ -36,6 +39,14 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
     margin-left: max(var(--s-5), calc((100% - var(--content-narrow)) / 2));
     margin-right: max(var(--s-5), calc((100% - var(--content-max)) / 2));
   }
+  /* Centered wide ThreeUp: same max-width as wide, auto-centered on page
+     instead of left-aligning with the narrow prose column. Use for rows of
+     media that aren't paired with adjacent prose. */
+  .cs-threeup--centered.cs-threeup--wide,
+  .cs-threeup--centered {
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   /* Scale up more than Figure's default 1.015 so details are readable at
      small widths. z-index lifts the hovered item above its neighbors. */
@@ -47,7 +58,7 @@ const styleVars = `--cs-threeup-gap:${gapMap[gap]};`;
     will-change: transform;
   }
   .cs-threeup :global(.cs-figure:hover) {
-    transform: scale(1.18);
+    transform: scale(1.02);
     z-index: 1;
   }
 

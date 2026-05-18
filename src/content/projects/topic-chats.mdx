@@ -62,9 +62,13 @@ quiet.
 The "hi" posts looked like a content problem until I pulled the
 timestamps. They clustered inside ten-minute windows: people dropped
 in, scanned for a live conversation, and left when they did not find
-one. The product did not have a discovery problem. It had a
-concurrency problem. We needed enough people in the same chat at the
-same time for it to feel alive.
+one. This was not a discovery problem. It was a concurrency problem.
+To get a conversation going, we did not need better content or
+smarter matching. We needed enough people in the same chat at the
+same time. That reframe set the rest of the work: where to bet
+(naturally concurrent moments), how to design the chat (anchor it in
+something live), and how to keep it alive (bring people back the
+moment it is).
 </Section>
 
 <TwoUp ratio="1:1" align="center">
@@ -90,11 +94,11 @@ same time for it to feel alive.
 <Section stage="Inflection" eyebrow="Inflection" title="Betting the product on live moments" banner />
 
 <Section size="sub" stage="Inflection" hideFromNav>
-I cut the data by category to find where the product was already
-working. Generic interest chats were the worst offenders on the
-hi-and-leave pattern: people did not know what to talk about. Sports
-were the opposite. On-topic, time-bound, and naturally concurrent.
-That was the wedge.
+If concurrency was the problem, the question was where it already
+existed. I cut the data by category. Generic interest chats were the
+worst offenders: people did not know what to talk about. Sports were
+the opposite. On-topic, time-bound, naturally concurrent. That was
+the wedge.
 </Section>
 
 <TwoUp ratio="1:1" align="center">
@@ -120,22 +124,6 @@ sports as the proving ground. That narrowed what the product had to
 be good at: real-time relevance, repeat participation, and the loops
 that move users from one session to the next.
 </Section>
-
-<Callouts cols={3}>
-  <Callout eyebrow="Wedge" title="Live events first" tone="outline">
-    Sports as the proving ground. Inherently time-bound, naturally
-    on-topic, and the format most likely to produce concurrent
-    participation.
-  </Callout>
-  <Callout eyebrow="Loops" title="Utility, not chatter" tone="outline">
-    Anchor each chat in something useful during the event itself, so
-    users have a reason to open it, reply, and return.
-  </Callout>
-  <Callout eyebrow="Re-entry" title="Bring people back live" tone="outline">
-    Treat notifications and ambient surfaces as the second product, not
-    afterthoughts. The chat dies if users do not know it came alive.
-  </Callout>
-</Callouts>
 
 <Section size="sub" stage="Inflection" hideFromNav>
 A look at what the live-events bet adds up to in product.
@@ -230,18 +218,22 @@ score and clock to the lock screen and Dynamic Island.
   />
 </TwoUp>
 
-<Section stage="Design" eyebrow="Design" title="Notifications, reframed as utility" banner />
+<Section stage="Design" eyebrow="Design" title="Notifications, designed as utility" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
 The hardest problem in public chat is response timing. If users do
 not know a chat has come alive after they leave, the conversation
-dies. The inherited model pinged you about a person (someone
-replied). I redesigned it to ping you about a moment (something is
-happening worth being part of), and split that into four categories
-ordered by how relevant each one is to any given user, most to least.
+dies. Topic Chats had no notification system yet, so I designed the
+first one from scratch. The core choice was what a notification
+should be about: not a person (someone replied) but a moment
+(something is happening worth being part of). I split that into four
+categories ordered by how relevant each one is to any given user,
+most to least.
 </Section>
 
 <NotificationTaxonomy
+  axisTopLabel="More relevant, sent more often"
+  axisBottomLabel="Less relevant, sent less often"
   items={[
     {
       label: "Activity about me",
@@ -303,33 +295,38 @@ ordered by how relevant each one is to any given user, most to least.
 />
 
 <Section size="sub" stage="Design" hideFromNav>
-The taxonomy was the design. Notifications firing was the test, and
-when the AB results came back they were the lever, not a polish
-layer.
+The instinct on the team was to blast all four categories at the
+same cadence and let growth metrics sort it out. I pushed back: if
+every ping carries the same weight, the system trains users to mute
+us, and the growth-oriented recommendations poison the trust we need
+for the relevant ones to land. So frequency follows relevance.
+Activity about me fires most often, Chats you might like fires
+least, and the ordering above is also the send budget.
 </Section>
 
-<Stats cols={2} bare>
-  <Stat
-    value="DAU-neutral"
-    label="Without notifications"
-    caption="Topic Chats did not move DAU on its own. Re-entry signals were the product, not a polish layer"
-  />
+<Section size="sub" stage="Design" hideFromNav>
+The taxonomy was the design. The AB proved it: the surface alone was
+flat, and the new notification system, taxonomy plus send cadence,
+was what actually moved DAU, with the biggest lifts on blast days.
+</Section>
+
+<Stats cols={1} bare>
   <Stat
     value="+32K"
-    label="U.S. Android DAU with notifications on"
-    caption="Stat-sig lift in the JOIN_THE_CHAT notification AB, 7-day trailing window. The biggest engagement days were notification blast days"
+    label="DAU lift from the new notification system"
+    caption="U.S. Android, 7-day trailing, vs. notifications-off control"
   />
 </Stats>
 
 <Section stage="Supporting" eyebrow="Supporting moves" title="Smaller bets that held the system together" banner />
 
 <Section size="sub" stage="Supporting" hideFromNav>
-Three more pieces rounded out the system. None carried the strategy
-on their own, but each one was necessary for the live-events bet to
-compound.
+Three more pieces rounded out the system. Two aimed at lifting
+content quality inside the chat. Once quality held up, the third
+turned the chat into distribution.
 </Section>
 
-<Section size="sub" stage="Supporting" title="Send limits, to break the hi-and-leave pattern" hideFromNav>
+<Section size="sub" stage="Supporting" title="Send limits, to break the spammy pattern" hideFromNav>
 The original chat had no rate limit, which is part of why first-time
 joiners could post a "hi" and vanish before anyone replied. A flat
 cap would have punished the regulars who were actually carrying the
@@ -359,11 +356,71 @@ not posting.
   />
 </TwoUp>
 
+<TwoUp ratio="1:1" align="center" title="Mark as Off Topic">
+  <Fragment slot="left">
+    Reporting already existed, but it felt too serious for what most
+    users were actually hitting: not abuse, just noise. Random,
+    low-quality, spammy but harmless. My hunch was that most users
+    weren't going to file a formal report on a bad joke.
+  </Fragment>
+  <Figure
+    slot="right"
+    src="/projects/topic-chats/reporting-flow.png"
+    alt="The existing reporting flow: a multi-step modal designed for abuse, not noise"
+    caption="The existing reporting flow: multi-step, designed for abuse"
+    maxHeight="704px"
+    class="cs-figure--r-12"
+  />
+</TwoUp>
+
+<Section size="sub" stage="Supporting" hideFromNav>
+Mark as Off Topic was the lower-stakes version: one tap, no
+formality, no queue. If enough users marked the same message, it
+was removed for everyone, and repeat senders of off-topic content
+were temporarily blocked from posting. Lowering the friction
+surfaced moderation signal the report flow never saw: during March
+Madness, proactive moderation volume tripled to ~6K/day, and held
+at +70% after the tournament.
+</Section>
+
+<TwoUp ratio="1:1" align="end">
+  <Figure
+    src="/projects/topic-chats/mark-as-off-topic.gif"
+    alt="A user tapping Mark as Off Topic on an irrelevant message in a Topic Chat"
+    caption="One tap, no modal"
+    captionTop
+    maxHeight="640px"
+    class="has-hairline cs-figure--r-12"
+  />
+  <Figure
+    src="/projects/topic-chats/chat-hidden-due-to-community-feedback.png"
+    alt="A message hidden across the chat once enough users marked it off topic"
+    caption="Cross a threshold, hides for everyone"
+    captionTop
+    maxHeight="640px"
+    class="cs-figure--r-12 cs-figure--clip-all has-hairline"
+  />
+</TwoUp>
+
+<Stats cols={2} bare>
+  <Stat
+    value="3x"
+    label="Adoption of Mark as Off Topic during March Madness"
+    caption="~6K user actions/day at peak"
+  />
+  <Stat
+    value="+70%"
+    label="Sustained after the tournament"
+    caption="vs. pre-launch baseline"
+  />
+</Stats>
+
 <Section size="sub" stage="Supporting" title="Sharing and invite loops" hideFromNav>
-The old share dead-ended at a screenshot. I redesigned around three
-jobs: send a live moment that's worth opening, land the receiver
-inside the live context, and keep the link alive when it leaves the
-app. The point was to turn conversation into distribution instead of
+With content quality lifting, the next lever was distribution. The
+old share dead-ended at a screenshot. I redesigned around three jobs:
+send a live moment that's worth opening, land the receiver inside
+the live context, and keep the link alive when it leaves the app.
+The point was to turn conversation into distribution instead of
 dead-ending chats inside Snapchat.
 </Section>
 
@@ -394,42 +451,6 @@ dead-ending chats inside Snapchat.
   />
 </ThreeUp>
 
-<Section size="sub" stage="Supporting" title="Mark as Off Topic" hideFromNav>
-The default ask was a reporting queue with human review. I pushed
-against it. At live-event concurrency, a queue would either drown
-the moderators or slow the signal to useless. Letting the room
-decide, with a threshold and a temporary ban for repeat offenders,
-made moderation a property of the chat instead of a backlog behind
-it. Any user can hide a spammy or irrelevant message for themselves,
-and once enough users do, the message is hidden for everyone.
-</Section>
-
-<TwoUp ratio="1:1" align="end">
-  <Figure
-    src="/projects/topic-chats/mark-as-off-topic.gif"
-    alt="A user tapping Mark as Off Topic on an irrelevant message in a Topic Chat"
-    caption="One tap to hide noise for yourself"
-    captionTop
-    maxHeight="640px"
-    class="has-hairline cs-figure--r-12"
-  />
-  <Figure
-    src="/projects/topic-chats/chat-hidden-due-to-community-feedback.png"
-    alt="A message hidden across the chat once enough users marked it off topic"
-    caption="If enough people mark something as off topic, it's hidden for everyone"
-    captionTop
-    maxHeight="640px"
-    class="cs-figure--r-12 cs-figure--clip-all has-hairline"
-  />
-</TwoUp>
-
-<Stats cols={1} bare>
-  <Stat
-    value="3x"
-    label="Proactive moderation volume during March Madness, sustained at ~6K/day and still up 70% after"
-  />
-</Stats>
-
 <Section stage="Results" eyebrow="Results" title="What the wedge unlocked" banner />
 
 <Stats cols={3} wide serif>
@@ -439,10 +460,8 @@ and once enough users do, the message is hidden for everyone.
 </Stats>
 
 <Section size="sub" stage="Results" hideFromNav>
-A new engagement surface for Snapchat, driven by live-event
-participation, sharing, and discovery. The same-time concurrency
-inside chats is the floor the inherited product never reached, and
-weekly volume held beyond launch novelty.
+The chats now sustain tens of thousands of concurrent members
+through a live game, the floor the inherited product never reached.
 </Section>
 
 <Section size="sub" stage="Results" title="March Madness, the proving ground" hideFromNav>
@@ -469,11 +488,11 @@ for Snapchat.
 <Section stage="Results" eyebrow="What's next" title="The next chapter of the strategy" banner />
 
 <Section size="sub" stage="Results" hideFromNav>
-Sharing was the weakest loop in the system: roughly 30 shares per
-week on the old surface. The rework shipped late, so the next chapter
-is proving the growth loop, alongside three in-progress bets that
-extend the live-events thesis into discovery, content supply, and
-interaction.
+With sports as the proven wedge, the next chapter is building on
+that fandom. Three in-progress bets, all aimed at growing fandom and
+deepening engagement inside Topic Chats: a discovery flywheel
+between teams and their chats, content supply that seeds the
+conversation, and time-bound polls that structure the live moment.
 </Section>
 
 <ThreeUp pack gap="md" align="center">

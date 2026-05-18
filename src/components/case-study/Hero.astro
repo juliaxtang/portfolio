@@ -47,7 +47,7 @@ const meta: Meta[] = [
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
 ---
 
-<section class:list={["cs-hero", flipped && "cs-hero--flipped", hasVisual && "cs-hero--has-visual", lightText && "cs-hero--light-text", heroBg === "aurora" && "cs-hero--aurora"]} style={accentStyle}>
+<section class:list={["cs-hero", flipped && "cs-hero--flipped", hasVisual && "cs-hero--has-visual", lightText && "cs-hero--light-text", heroBg === "aurora" && "cs-hero--aurora", heroVisual?.type === "phone-cluster" && "cs-hero--phone-cluster"]} style={accentStyle}>
   {hero && heroSrc && (
     <div class={"cs-hero__bleed" + (hero.noFade ? " cs-hero__bleed--no-fade" : "")} aria-hidden="true">
       {hero.isVideo ? (
@@ -103,7 +103,6 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
 <style>
   .cs-hero {
     --cs-accent: var(--brand-primary);
-    --cs-hero-min-h: clamp(480px, 56vh, 640px);
     position: relative;
     overflow: hidden;
     /* Vertical wash: full accent through the middle, softens toward the
@@ -116,7 +115,7 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
       color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas)) 72%,
       color-mix(in srgb, var(--cs-accent) 18%, var(--bg-canvas)) 100%
     );
-    min-height: var(--cs-hero-min-h);
+    min-height: var(--cs-hero-min-h, clamp(565px, 56vh, 640px));
     display: grid;
     grid-template-areas: "stack";
   }
@@ -196,6 +195,13 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
   /* Flipped: panel left, visual right */
   .cs-hero--flipped .cs-hero__overlay {
     grid-template-columns: minmax(360px, 0.85fr) 1fr;
+  }
+
+  /* Phone-cluster hero: widen the visual column so the scaled cluster has
+     more horizontal room before pressing into the panel, and shift the
+     panel right to accommodate. */
+  .cs-hero--phone-cluster .cs-hero__overlay {
+    grid-template-columns: 1.25fr minmax(360px, 0.75fr);
   }
 
   /* Visual area — fills the available column height. `position: relative`

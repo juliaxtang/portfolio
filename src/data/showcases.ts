@@ -112,19 +112,4 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       },
     ],
   },
-  "custom-lists": {
-    companyLogo: "/logos/tv time.png",
-    companyName: "TV Time",
-    year: 2020,
-    role: "UX Designer",
-    title: "Custom Lists",
-    tagline:
-      "Rethought how TV Time users curate and share their entertainment identity, redesigning Custom Lists into a more personal and social system. Drove double-digit lifts in list creation across new and existing users.",
-    stats: [
-      { value: "↑ 14%", label: "More new users created a list" },
-      { value: "↑ 15%", label: "More lists created by new users" },
-      { value: "↑ 10%", label: "More lists created by existing users" },
-    ],
-    accent: "#F4D9CC",
-  },
 };

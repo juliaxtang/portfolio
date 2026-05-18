@@ -136,40 +136,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </Showcase>
   </FadeIn>
 
-  <FadeIn>
-    <Showcase
-      eyebrow="TV Time · 2020 · UX Designer"
-      title="Custom Lists"
-      tagline="Redesigned TV Time's Custom Lists feature to be more intuitive, more personal, and more shareable. Lifted list creation by double digits across new and existing users."
-      stats={[
-        { value: "↑ 14%", label: "More new users created a list" },
-        { value: "↑ 15%", label: "More lists created by new users" },
-        { value: "↑ 10%", label: "More lists created by existing users" },
-      ]}
-      ctaHref={`${base}/product-design/custom-lists`}
-      accent="#F4D9CC"
-      reverse
-      id="custom-lists"
-    >
-      <div class="v2-gif-wrap">
-        <div class="v2-gif-wrap__device">
-          <img
-            src={`${base}/projects/custom-lists/creating-list.gif`}
-            alt="Animated walkthrough of creating a new Custom List with personalization options"
-            loading="lazy"
-          />
-        </div>
-        <div class="v2-gif-wrap__device v2-gif-wrap__device--secondary">
-          <img
-            src={`${base}/projects/custom-lists/editing-flow.gif`}
-            alt="Animated walkthrough of editing a Custom List's contents"
-            loading="lazy"
-          />
-        </div>
-      </div>
-    </Showcase>
-  </FadeIn>
-
 </BaseLayout>
 
 <style>

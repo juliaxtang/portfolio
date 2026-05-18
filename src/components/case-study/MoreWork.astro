@@ -16,6 +16,7 @@ import HeroTwoPhones from "./HeroTwoPhones.astro";
 import HeroOverlay from "./HeroOverlay.astro";
 import HeroProfileColumns from "./HeroProfileColumns.astro";
 import VideoStack from "../showcase/VideoStack.astro";
+import MediaParallax from "../showcase/MediaParallax.astro";
 import {
   snapchatGamesStackItems,
   snapchatGamesStackProps,
@@ -119,6 +120,14 @@ const meta = content
               <VideoStack
                 items={[...snapchatGamesStackItems]}
                 {...snapchatGamesStackProps}
+              />
+            )}
+            {nextSlug === "topic-chats" && (
+              <MediaParallax
+                src="/projects/topic-chats/topic-chat-sizzle.mp4"
+                aspect="9 / 16"
+                maxWidth="276px"
+                label="Topic Chats feature sizzle reel"
               />
             )}
           </div>
@@ -292,6 +301,18 @@ const meta = content
     bottom: 50%;
     left: 50%;
     transform: translate(-50%, calc(50% + var(--scroll-y, 0px)));
+  }
+  /* MediaParallax inside the next-project band: drop the badge-reserved
+     padding (no badge here) so the sizzle reel sits centered inside the
+     fixed-height band instead of getting clipped at the bottom. */
+  .cs-more__visual :global(.media-parallax) {
+    padding-top: 0;
+    padding-right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    margin-top: calc(-0.5 * clamp(var(--s-6), 2.8vw, var(--s-10)) + 8px);
   }
   .cs-more__band--flipped .cs-more__visual {
     grid-column: 2;

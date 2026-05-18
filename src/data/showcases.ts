@@ -53,6 +53,21 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     ],
     accent: "#FFFC00",
   },
+  "topic-chats": {
+    companyLogo: "/logos/snapchat.png",
+    companyName: "Snapchat",
+    year: 2025,
+    role: "Staff Product Designer",
+    title: "Topic Chats",
+    tagline:
+      "Scaled Topic Chats into a meaningful new engagement surface for Snapchat, driving roughly 71K incremental US DAU through live-event conversation, discovery, notifications, and sharing loops.",
+    stats: [
+      { value: "~71K", label: "Incremental U.S. DAU" },
+      { value: "~40K", label: "Peak concurrent users in chat" },
+      { value: "~208K", label: "Messages sent per week" },
+    ],
+    accent: "#FFFC00",
+  },
   "tappy-cloud": {
     companyLogo: "/logos/tinder.png",
     companyName: "Tinder",

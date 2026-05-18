@@ -262,6 +262,19 @@ a.prose-out:hover {
 .has-hairline.cs-figure:not(.cs-figure--capped) video {
   outline: none;
 }
+/* Clipped capped Figure: the img overflows its container (negative margins
+   + overflow:hidden on the media wrapper), so an outline on the img would
+   be clipped. Move the outline to the visible clipping box and match its
+   radius to the img's radius. */
+.has-hairline.cs-figure--capped.cs-figure--clip-all .cs-figure__media {
+  outline: 0.5px solid var(--text-tertiary);
+  outline-offset: -0.5px;
+  border-radius: inherit;
+}
+.has-hairline.cs-figure--capped.cs-figure--clip-all img,
+.has-hairline.cs-figure--capped.cs-figure--clip-all video {
+  outline: none;
+}
 
 /* ==========================================================
    FOCUS — visible, brand-aware

@@ -227,6 +227,30 @@ const mediaStyle = styleParts.join(";");
     margin-right: calc(-1 * var(--cs-figure-clip-r, 4px)) !important;
     margin-bottom: calc(-1 * var(--cs-figure-clip-b, 4px)) !important;
   }
+  /* Crop all four edges of a capped image by the same amount. Defaults
+     to 4px per side; override via --cs-figure-clip. The radius lives
+     on the media wrapper here (not the img) so a hairline outline on
+     the visible box still follows the corners. */
+  :global(.cs-figure--clip-all).cs-figure--capped .cs-figure__media {
+    overflow: hidden;
+    border-radius: 24px;
+  }
+  :global(.cs-figure--clip-all.cs-figure--r-12).cs-figure--capped .cs-figure__media {
+    border-radius: 12px;
+  }
+  :global(.cs-figure--clip-all.cs-figure--r-20).cs-figure--capped .cs-figure__media {
+    border-radius: 20px;
+  }
+  :global(.cs-figure--clip-all.cs-figure--rounder).cs-figure--capped .cs-figure__media {
+    border-radius: 28px;
+  }
+  :global(.cs-figure--clip-all.cs-figure--roundest).cs-figure--capped .cs-figure__media {
+    border-radius: 36px;
+  }
+  :global(.cs-figure--clip-all).cs-figure--capped .cs-figure__media img {
+    margin: calc(-1 * var(--cs-figure-clip, 4px)) !important;
+    max-width: calc(100% + (2 * var(--cs-figure-clip, 4px))) !important;
+  }
   .cs-figure--capped .cs-figure__media img,
   .cs-figure--capped .cs-figure__media video {
     border-radius: 24px;
@@ -241,6 +265,13 @@ const mediaStyle = styleParts.join(";");
   }
   :global(.cs-figure--r-12):not(.cs-figure--capped) .cs-figure__media {
     border-radius: 12px;
+  }
+  :global(.cs-figure--r-20).cs-figure--capped .cs-figure__media img,
+  :global(.cs-figure--r-20).cs-figure--capped .cs-figure__media video {
+    border-radius: 20px;
+  }
+  :global(.cs-figure--r-20):not(.cs-figure--capped) .cs-figure__media {
+    border-radius: 20px;
   }
   .cs-figure--capped .cs-figure__media img,
   .cs-figure--capped .cs-figure__media video {

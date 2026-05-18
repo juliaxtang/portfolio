@@ -233,18 +233,12 @@ score and clock to the lock screen and Dynamic Island.
 <Section stage="Design" eyebrow="Design" title="Notifications, reframed as utility" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
-The hardest problem in public chat is response timing. If users do not
-know a chat has come alive after they leave, the conversation dies.
-The inherited notification model was generic and repetitive: a ping
-for any direct reply, nothing about momentum.
-
-The reframe was changing what a notification is about. The inherited
-model notified you about a person (someone replied). I designed
-around the moment (something is happening worth being part of). That
-swap is why the four categories exist: each one answers a different
-version of "is there a reason to come back right now," and the
-chat-momentum category only became possible once I pushed for AI
-summaries instead of templated copy.
+The hardest problem in public chat is response timing. If users do
+not know a chat has come alive after they leave, the conversation
+dies. The inherited model pinged you about a person (someone
+replied). I redesigned it to ping you about a moment (something is
+happening worth being part of), and split that into four categories
+ordered by how relevant each one is to any given user, most to least.
 </Section>
 
 <NotificationTaxonomy
@@ -278,8 +272,8 @@ summaries instead of templated copy.
       ],
     },
     {
-      label: "Activity about the chat",
-      description: "AI-summarized momentum: what the chat is actually talking about right now.",
+      label: "Chat momentum",
+      description: "AI-summarized signal that the chat is heating up, and what it's actually talking about right now.",
       images: [
         {
           src: "/projects/topic-chats/notifications-activity-about-the-chat-1.png",
@@ -292,8 +286,8 @@ summaries instead of templated copy.
       ],
     },
     {
-      label: "Activity around chats I'm not in, but might like",
-      description: "Recommendations to join a chat that's gaining momentum among people like me.",
+      label: "Chats you might like",
+      description: "Recommendations to join a new chat gaining momentum among people like me.",
       images: [
         {
           src: "/projects/topic-chats/notifications-new-chat-recommendation-1.png",
@@ -308,16 +302,10 @@ summaries instead of templated copy.
   ]}
 />
 
-<Quote attribution="Design principle for the notification system">
-A notification should answer the question, "is something happening in
-this chat right now that I would want to be part of?" Anything that
-does not is noise.
-</Quote>
-
 <Section size="sub" stage="Design" hideFromNav>
-When the AB results came back, notifications turned out to be the
-lever, not a polish layer. Without them firing, Topic Chats was
-DAU-neutral. With them on, the product moved Snap's core metric.
+The taxonomy was the design. Notifications firing was the test, and
+when the AB results came back they were the lever, not a polish
+layer.
 </Section>
 
 <Stats cols={2} bare>
@@ -359,6 +347,7 @@ not posting.
     caption="Before: anyone can post anything, anytime"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-20"
   />
   <Figure
     src="/projects/topic-chats/after-send-limit.png"
@@ -366,6 +355,7 @@ not posting.
     caption="After: posting earns more posting, by way of engagement"
     captionTop
     maxHeight="640px"
+    class="cs-figure--r-20"
   />
 </TwoUp>
 
@@ -414,14 +404,14 @@ it. Any user can hide a spammy or irrelevant message for themselves,
 and once enough users do, the message is hidden for everyone.
 </Section>
 
-<TwoUp ratio="1:1" align="center">
+<TwoUp ratio="1:1" align="end">
   <Figure
     src="/projects/topic-chats/mark-as-off-topic.gif"
     alt="A user tapping Mark as Off Topic on an irrelevant message in a Topic Chat"
     caption="One tap to hide noise for yourself"
     captionTop
     maxHeight="640px"
-    class="has-hairline"
+    class="has-hairline cs-figure--r-12"
   />
   <Figure
     src="/projects/topic-chats/chat-hidden-due-to-community-feedback.png"
@@ -429,37 +419,31 @@ and once enough users do, the message is hidden for everyone.
     caption="If enough people mark something as off topic, it's hidden for everyone"
     captionTop
     maxHeight="640px"
-    class="cs-figure--r-12"
+    class="cs-figure--r-12 cs-figure--clip-all has-hairline"
   />
 </TwoUp>
 
 <Stats cols={1} bare>
   <Stat
     value="3x"
-    label="Proactive moderation volume during March Madness"
-    caption="~6K/day sustained across the tournament, still up 70% after. The community signal absorbed the spike without escalating to heavier reporting flows"
+    label="Proactive moderation volume during March Madness, sustained at ~6K/day and still up 70% after"
   />
 </Stats>
 
 <Section stage="Results" eyebrow="Results" title="What the wedge unlocked" banner />
 
 <Stats cols={3} wide serif>
-  <Stat
-    value="~71K"
-    label="Incremental U.S. DAU"
-    caption="A meaningful new engagement surface for Snapchat, driven by live-event participation, discovery, and sharing loops"
-  />
-  <Stat
-    value="~40K"
-    label="Peak concurrent users in chat"
-    caption="Active in the same chats at the same time during live moments, the concurrency the inherited product never reached"
-  />
-  <Stat
-    value="~208K"
-    label="Messages sent per week"
-    caption="Repeat participation across the live-event slate, sustained beyond launch novelty"
-  />
+  <Stat value="~71K" label="Incremental U.S. DAU" />
+  <Stat value="~40K" label="Peak concurrent users in chat" />
+  <Stat value="~208K" label="Messages sent per week" />
 </Stats>
+
+<Section size="sub" stage="Results" hideFromNav>
+A new engagement surface for Snapchat, driven by live-event
+participation, sharing, and discovery. The same-time concurrency
+inside chats is the floor the inherited product never reached, and
+weekly volume held beyond launch novelty.
+</Section>
 
 <Section size="sub" stage="Results" title="March Madness, the proving ground" hideFromNav>
 March Madness was the slate that stress-tested the system. One
@@ -468,16 +452,8 @@ badging, notifications, shares.
 </Section>
 
 <Stats cols={2} bare>
-  <Stat
-    value="~52K"
-    label="Peak concurrent members in a single chat"
-    caption="The concurrency floor the inherited product needed and never hit, cleared inside one game"
-  />
-  <Stat
-    value="25-45K"
-    label="Chat sends per day"
-    caption="Sustained across the tournament, not a single-day spike"
-  />
+  <Stat value="~52K" label="Peak concurrent members in a single chat, cleared inside one game" />
+  <Stat value="25-45K" label="Chat sends per day, sustained across the tournament" />
 </Stats>
 
 <Section size="sub" stage="Results" hideFromNav>
@@ -521,5 +497,6 @@ interaction.
     caption="Time-bound polls structure live moments"
     captionTop
     maxHeight="640px"
+    class="cs-figure--roundest has-hairline"
   />
 </ThreeUp>

@@ -1,16 +1,17 @@
 ---
 /**
- * Stats — grid container for a row of <Stat> tiles. 1/2/3 columns adaptive.
+ * Stats: grid container for a row of <Stat> tiles. 1/2/3 columns adaptive.
  */
 interface Props {
-  cols?: 2 | 3 | 4;
+  cols?: 1 | 2 | 3 | 4;
   wide?: boolean;
   bare?: boolean;
   serif?: boolean;
+  center?: boolean;
   class?: string;
 }
-const { cols = 3, wide = false, bare = false, serif = false, class: className = "" } = Astro.props;
-const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare ? "cs-stats--bare" : "", serif ? "cs-stats--serif" : "", className]
+const { cols = 3, wide = false, bare = false, serif = false, center = false, class: className = "" } = Astro.props;
+const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare ? "cs-stats--bare" : "", serif ? "cs-stats--serif" : "", center ? "cs-stats--center" : "", className]
   .filter(Boolean)
   .join(" ");
 ---
@@ -27,9 +28,23 @@ const cls = ["cs-stats", `cs-stats--${cols}`, wide ? "cs-stats--wide" : "", bare
     max-width: var(--content-narrow);
   }
   .cs-stats--wide { max-width: var(--content-narrow); }
+  .cs-stats--1 { grid-template-columns: minmax(0, 1fr); }
   .cs-stats--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cs-stats--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cs-stats--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  /* Center variant: center-aligns the stat content (use for a single hero metric) */
+  .cs-stats--center :global(.cs-stat) {
+    justify-items: center;
+    text-align: center;
+  }
+  .cs-stats--center.cs-stats--1 {
+    --cs-stat-value-size: clamp(56px, 7vw, 96px);
+    --cs-stat-label-size: 18px;
+  }
+  .cs-stats--center.cs-stats--1.cs-stats--serif {
+    --cs-stat-value-size: clamp(64px, 8vw, 112px);
+  }
   @media (max-width: 720px) {
     .cs-stats--3, .cs-stats--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }

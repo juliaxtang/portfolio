@@ -221,14 +221,21 @@ score and clock to the lock screen and Dynamic Island.
 <Section stage="Design" eyebrow="Design" title="Notifications, designed as utility" banner />
 
 <Section size="sub" stage="Design" hideFromNav>
-The hardest problem in public chat is response timing. If users do
-not know a chat has come alive after they leave, the conversation
-dies. Topic Chats had no notification system yet, so I designed the
-first one from scratch. The core choice was what a notification
-should be about: not a person (someone replied) but a moment
-(something is happening worth being part of). I split that into four
-categories ordered by how relevant each one is to any given user,
-most to least.
+Topic Chats had no notification system yet, so I designed the first
+one from scratch. Every notification had to earn the interruption by
+answering the same question:
+</Section>
+
+<Quote>
+Is something happening in this chat right now that I would want to
+be part of?
+</Quote>
+
+<Section size="sub" stage="Design" hideFromNav>
+I split the system into four categories ordered by how relevant
+each one is to any given user, and tied send frequency to that
+ordering, so notifications felt warranted and relevant, not
+annoying.
 </Section>
 
 <NotificationTaxonomy
@@ -295,25 +302,15 @@ most to least.
 />
 
 <Section size="sub" stage="Design" hideFromNav>
-The instinct on the team was to blast all four categories at the
-same cadence and let growth metrics sort it out. I pushed back: if
-every ping carries the same weight, the system trains users to mute
-us, and the growth-oriented recommendations poison the trust we need
-for the relevant ones to land. So frequency follows relevance.
-Activity about me fires most often, Chats you might like fires
-least, and the ordering above is also the send budget.
-</Section>
-
-<Section size="sub" stage="Design" hideFromNav>
 The taxonomy was the design. The AB proved it: the surface alone was
 flat, and the new notification system, taxonomy plus send cadence,
 was what actually moved DAU, with the biggest lifts on blast days.
 </Section>
 
-<Stats cols={1} bare>
+<Stats cols={1} bare serif center>
   <Stat
     value="+32K"
-    label="DAU lift from the new notification system"
+    label="DAU lift, driven by the new notification system"
     caption="U.S. Android, 7-day trailing, vs. notifications-off control"
   />
 </Stats>
@@ -327,21 +324,21 @@ turned the chat into distribution.
 </Section>
 
 <Section size="sub" stage="Supporting" title="Send limits, to break the spammy pattern" hideFromNav>
-The original chat had no rate limit, which is part of why first-time
-joiners could post a "hi" and vanish before anyone replied. A flat
-cap would have punished the regulars who were actually carrying the
-conversation, and a join-gate would have killed the top of the funnel.
-I designed a rate limit that treats first-time posters differently
-from regulars: you earn the ability to keep posting by engaging with
-the chat, not by waiting your turn. The gate is on participation,
-not posting.
+The original chat had no rate limit, so users could fire off a burst
+of messages back to back and flood the room before anyone else got a
+word in. A flat cap would have punished the regulars who were actually
+carrying the conversation. I designed a rate limit that kicks in when
+someone sends too many messages in a short window: post past the
+threshold and you're temporarily blocked from sending more, until the
+window resets. Regulars who paced their messages with the room never
+hit it; spammers did.
 </Section>
 
 <TwoUp ratio="1:1" align="center">
   <Figure
     src="/projects/topic-chats/before-send-limit.png"
     alt="A Topic Chat before send limits, full of low-effort one-line posts"
-    caption="Before: anyone can post anything, anytime"
+    caption="Before: no rate limit, so a single user could flood the chat in seconds"
     captionTop
     maxHeight="640px"
     class="cs-figure--r-20"
@@ -349,7 +346,7 @@ not posting.
   <Figure
     src="/projects/topic-chats/after-send-limit.png"
     alt="A Topic Chat after send limits, with participation gating that rewards engagement"
-    caption="After: posting earns more posting, by way of engagement"
+    caption="After: too many messages too fast triggers a cooldown before you can send again"
     captionTop
     maxHeight="640px"
     class="cs-figure--r-20"
@@ -410,7 +407,7 @@ at +70% after the tournament.
   />
   <Stat
     value="+70%"
-    label="Sustained after the tournament"
+    label="Moderation volume held above baseline after the tournament"
     caption="vs. pre-launch baseline"
   />
 </Stats>

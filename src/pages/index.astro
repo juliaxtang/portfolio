@@ -128,8 +128,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         { value: "40k", label: "Simultaneously active in chat during peak times" },
         { value: "208k", label: "Messages sent a week and counting" },
       ]}
-      ctaHref="https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/"
-      ctaLabel="See press coverage"
+      ctaHref="/product-design/topic-chats"
+      ctaLabel="Read the case study"
+      press={[
+        {
+          src: "/projects/festival-mode/techcrunch-dark-logo.png",
+          alt: "TechCrunch",
+          height: 20.6,
+          href: "https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/",
+        },
+        {
+          src: "/projects/topic-chats/Snap_Inc.-Logo-trim.png",
+          alt: "Snap, Inc.",
+          height: 15,
+          nudgeY: 2,
+          wrapNudgeY: -2,
+          suffix: "Newsroom",
+          href: "https://newsroom.snap.com/topic-chats-internets-most-active-group-chats",
+        },
+      ]}
       accent="#FFFC00"
       id="topic-chats"
     >

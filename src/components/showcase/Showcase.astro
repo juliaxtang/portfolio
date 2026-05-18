@@ -30,6 +30,14 @@ interface PressLogo {
    *  across logos whose internal composition isn't centered (e.g. logos with
    *  a crest or icon above the wordmark). Negative = up. */
   nudgeY?: number;
+  /** Optional text rendered to the right of the logo as part of the same
+   *  clickable unit (e.g. "Newsroom" next to the Snap Inc. logo so the
+   *  pair reads as "Snap, Inc. Newsroom"). */
+  suffix?: string;
+  /** Vertical nudge (px) applied to the whole logo+suffix unit (the <li>).
+   *  Use this to optically lift or drop the entire item relative to its row
+   *  siblings. Negative = up. */
+  wrapNudgeY?: number;
 }
 interface Props {
   /** Path to a company logo PNG/SVG. Rendered as a height-locked img next
@@ -178,20 +186,27 @@ const meta = [role].filter(Boolean) as string[];
                   style={imgStyle}
                 />
               );
+              const liStyle = logo.wrapNudgeY
+                ? `transform:translateY(${logo.wrapNudgeY}px)`
+                : undefined;
               return (
-                <li>
+                <li style={liStyle}>
                   {logo.href ? (
                     <a
                       class="showcase__press-link"
                       href={logo.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={`Read ${logo.alt} article`}
+                      aria-label={`Read ${logo.alt}${logo.suffix ? " " + logo.suffix : ""} article`}
                     >
                       {img}
+                      {logo.suffix && <span class="showcase__press-suffix">{logo.suffix}</span>}
                     </a>
                   ) : (
-                    img
+                    <>
+                      {img}
+                      {logo.suffix && <span class="showcase__press-suffix">{logo.suffix}</span>}
+                    </>
                   )}
                 </li>
               );
@@ -374,9 +389,9 @@ const meta = [role].filter(Boolean) as string[];
 
   .showcase__press {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--s-2) var(--s-4);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-3);
     margin: var(--s-8) 0 0;
   }
   .showcase__press-label {
@@ -404,6 +419,21 @@ const meta = [role].filter(Boolean) as string[];
     display: flex;
     align-items: flex-end;
   }
+  .showcase__press-suffix {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    line-height: 1;
+    margin-left: 4px;
+    opacity: 0.65;
+    transform: translateY(-2px);
+    transition: opacity 200ms var(--ease-out);
+  }
+  .showcase__press-link:hover .showcase__press-suffix,
+  .showcase__press-link:focus-visible .showcase__press-suffix {
+    opacity: 1;
+  }
   .showcase__press-logos img {
     height: 18px;
     width: auto;
@@ -414,7 +444,8 @@ const meta = [role].filter(Boolean) as string[];
   }
   .showcase__press-logos img:hover { opacity: 1; }
   .showcase__press-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: baseline;
     line-height: 0;
     transition: transform var(--dur-normal) var(--ease-out);
   }

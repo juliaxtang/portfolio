@@ -35,3 +35,7 @@ Thumbs.db
 
 # stray local files
 Untitled
+
+# interview-prep tool — private job-search data
+interview-prep/roles/
+!interview-prep/roles/.gitkeep

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { api, followUpDue, pendingCount, STATUSES, type Role, type Status } from "./api";
+import { api, followUpDue, pendingCount, STATUSES, STATUS_ORDER, type Role, type Status } from "./api";
+import SyncIndicator from "./SyncIndicator";
 
 function fmtDate(iso: string) {
   if (!iso) return "";
@@ -34,6 +35,31 @@ export default function Dashboard() {
     [roles],
   );
 
+  const sortedRoles = useMemo(() => {
+    return [...(roles ?? [])].sort((a, b) => {
+      const ra = STATUS_ORDER[a.status] ?? 99;
+      const rb = STATUS_ORDER[b.status] ?? 99;
+      if (ra !== rb) return ra - rb;
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+  }, [roles]);
+
+  async function updateStatus(slug: string, status: Status) {
+    setRoles((prev) =>
+      prev
+        ? prev.map((r) =>
+            r.slug === slug ? { ...r, status, updatedAt: new Date().toISOString() } : r,
+          )
+        : prev,
+    );
+    try {
+      await api.patch(slug, { status });
+      reload();
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
   const totalPending = useMemo(
     () => (roles ?? []).reduce((acc, r) => acc + pendingCount(r), 0),
     [roles],
@@ -61,9 +87,12 @@ export default function Dashboard() {
           <div className="ip-eyebrow">Interview prep</div>
           <h1 className="ip-title">Roles</h1>
         </div>
-        <button className="ip-btn ip-btn--primary" onClick={() => setShowAdd(true)}>
-          + Add role
-        </button>
+        <div className="ip-dash__actions">
+          <SyncIndicator />
+          <button className="ip-btn ip-btn--primary" onClick={() => setShowAdd(true)}>
+            + Add role
+          </button>
+        </div>
       </header>
 
       {totalPending > 0 && (
@@ -100,26 +129,41 @@ export default function Dashboard() {
         <table className="ip-table">
           <thead>
             <tr>
-              <th>Role</th>
               <th>Company</th>
               <th>Status</th>
               <th>Last update</th>
+              <th>Role</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {roles.map((r) => {
+            {sortedRoles.map((r) => {
               const fu = followUpDue(r);
               return (
                 <tr key={r.slug}>
+                  <td>{r.company}</td>
+                  <td>
+                    <span className={`ip-status ip-status--${r.status}`}>
+                      <span className="ip-status__label">{statusLabel(r.status)}</span>
+                      <span className="ip-status__caret" aria-hidden>▾</span>
+                      <select
+                        className="ip-status__select"
+                        value={r.status}
+                        onChange={(e) => updateStatus(r.slug, e.target.value as Status)}
+                        aria-label={`Status for ${r.company}`}
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s.value} value={s.value}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </select>
+                    </span>
+                  </td>
+                  <td className="ip-muted">{fmtDate(r.updatedAt)}</td>
                   <td>
                     <a href={`/interview-prep/role?slug=${r.slug}`}>{r.title || "(untitled)"}</a>
                   </td>
-                  <td>{r.company}</td>
-                  <td>
-                    <span className={`ip-pill ip-pill--${r.status}`}>{statusLabel(r.status)}</span>
-                  </td>
-                  <td className="ip-muted">{fmtDate(r.updatedAt)}</td>
                   <td>
                     {pendingCount(r) > 0 && (
                       <span className="ip-flag ip-flag--queued">{pendingCount(r)} queued</span>

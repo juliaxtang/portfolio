@@ -40,6 +40,62 @@
   gap: var(--s-6);
 }
 
+.ip-dash__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+
+/* ---------- Sync indicator ---------- */
+
+.ip-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-full);
+  font-family: var(--font-mono);
+}
+.ip-sync__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ip-sync__dot--clean    { background: #5BAA7A; }
+.ip-sync__dot--pending  { background: #E8B547; }
+.ip-sync__dot--syncing  {
+  background: var(--brand-primary-2);
+  animation: ip-pulse 1.2s ease-in-out infinite;
+}
+.ip-sync__dot--error    { background: #B23B3B; }
+@keyframes ip-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+.ip-sync__label {
+  letter-spacing: 0.02em;
+}
+.ip-sync__btn {
+  margin-left: var(--s-2);
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--text-tertiary);
+  text-underline-offset: 3px;
+}
+.ip-sync__btn:hover { text-decoration-color: var(--text-primary); }
+.ip-sync__btn:disabled { opacity: 0.4; cursor: not-allowed; text-decoration: none; }
+
 .ip-nudge {
   background: var(--brand-wash);
   border-radius: var(--r-md);
@@ -94,6 +150,53 @@
 }
 .ip-pill--offer { background: rgba(244, 217, 204, 0.5); color: var(--text-primary); }
 .ip-pill--rejected { background: #F2EEE8; color: var(--text-tertiary); }
+
+/* Inline editable status pill (table). */
+.ip-status {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 22px 3px var(--s-3);
+  border-radius: var(--r-full);
+  font-size: 12px;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: filter 120ms ease, box-shadow 120ms ease;
+}
+.ip-status:hover { filter: brightness(0.97); }
+.ip-status:focus-within {
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+.ip-status__select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  font: inherit;
+}
+.ip-status__caret {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+.ip-status__label { position: relative; z-index: 1; }
+.ip-status--offer { background: #DDEFD8; color: #2E5230; }
+.ip-status--panel { background: #E7DFF5; color: #3F2F66; }
+.ip-status--hiring-manager { background: #EAE0F0; color: #4A2F5E; }
+.ip-status--initial-screen { background: #F3E4EA; color: #5B2F40; }
+.ip-status--applied { background: #DCE7F4; color: #2C3E5C; }
+.ip-status--saved { background: #F1ECE3; color: #5A4F38; }
+.ip-status--rejected { background: #ECE9E3; color: var(--text-tertiary); }
+.ip-status--rejected .ip-status__caret { color: var(--text-tertiary); }
 
 .ip-flag {
   display: inline-block;

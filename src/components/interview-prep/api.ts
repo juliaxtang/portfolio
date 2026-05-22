@@ -67,7 +67,18 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ questionId, extraDetails }),
     }),
+  syncStatus: () => req<SyncStatus>("/sync"),
+  syncNow: () =>
+    req<SyncStatus>("/sync", { method: "POST" }),
 };
+
+export interface SyncStatus {
+  lastSyncAt: string | null;
+  lastError: string | null;
+  inProgress?: boolean;
+  pendingChanges: boolean;
+  debounced?: boolean;
+}
 
 // Stage-based follow-up cadence (days).
 const CADENCE: Record<Status, number | null> = {
@@ -96,11 +107,22 @@ export function pendingCount(role: Role): number {
 }
 
 export const STATUSES: { value: Status; label: string }[] = [
-  { value: "saved", label: "Saved" },
-  { value: "applied", label: "Applied" },
-  { value: "initial-screen", label: "Initial screen" },
-  { value: "hiring-manager", label: "Hiring manager call" },
-  { value: "panel", label: "Panel interview" },
   { value: "offer", label: "Offer" },
+  { value: "panel", label: "Panel interview" },
+  { value: "hiring-manager", label: "Hiring manager call" },
+  { value: "initial-screen", label: "Initial screen" },
+  { value: "applied", label: "Applied" },
+  { value: "saved", label: "Saved" },
   { value: "rejected", label: "Rejected / archived" },
 ];
+
+// Sort rank: lower = further along in the funnel, archived last.
+export const STATUS_ORDER: Record<Status, number> = {
+  offer: 1,
+  panel: 2,
+  "hiring-manager": 3,
+  "initial-screen": 4,
+  applied: 5,
+  saved: 6,
+  rejected: 7,
+};

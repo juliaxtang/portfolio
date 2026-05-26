@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api, STATUSES, type Role, type Status } from "./api";
 
 const NOTE_STAGES: { key: keyof Role["notes"]; label: string }[] = [
@@ -10,17 +10,28 @@ const NOTE_STAGES: { key: keyof Role["notes"]; label: string }[] = [
 
 function useDebouncedSave(slug: string, role: Role | null, setRole: (r: Role) => void) {
   const [saving, setSaving] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingRef = useRef<Partial<Role>>({});
   function patch(partial: Partial<Role>) {
     if (!role) return;
     const next = { ...role, ...partial };
     if (partial.notes) next.notes = { ...role.notes, ...partial.notes };
     setRole(next);
     setSaving(true);
-    clearTimeout((patch as any)._t);
-    (patch as any)._t = setTimeout(async () => {
+    pendingRef.current = {
+      ...pendingRef.current,
+      ...partial,
+      notes: { ...(pendingRef.current.notes || {}), ...(partial.notes || {}) },
+    };
+    if (!pendingRef.current.notes || Object.keys(pendingRef.current.notes).length === 0) {
+      delete pendingRef.current.notes;
+    }
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(async () => {
+      const toSend = pendingRef.current;
+      pendingRef.current = {};
       try {
-        const fresh = await api.patch(slug, partial);
-        setRole(fresh);
+        await api.patch(slug, toSend);
       } finally {
         setSaving(false);
       }

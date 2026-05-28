@@ -1,6 +1,6 @@
 ---
 title: "Snapchat Games"
-summary: "Defining the long-term Games strategy at Snap, getting exec buy-in for a dedicated squad, and scaling the product area to 30M+ DAU with games designed as a reason friends talk on Snapchat."
+summary: "Spotting an engagement anomaly in a buried surface, commissioning research before any exec ask, killing my own first pitch, and reframing Games as a category bet that earned a CEO sponsored squad and 30M DAU."
 order: 10
 tags: ["Snapchat", "Strategy", "Vision", "Social"]
 year: "2025–Present"
@@ -35,7 +35,11 @@ import TradeoffSet from "../../components/case-study/TradeoffSet.astro";
 
 <TwoUp ratio="1:1" align="center" title="What is a Lens?">
   <Fragment slot="left">
-Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera - the main screen of the app.<br /><br />Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:-3deg" aria-hidden="true"><img src="/projects/snapchat-games/lens-studio.png" alt="" loading="lazy" /></span>Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.<br /><br />Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:3deg" aria-hidden="true"><img src="/projects/snapchat-games/lenscreatorrewards.gif" alt="" loading="lazy" /></span>Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.
+<p>Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera, the main screen of the app.</p>
+
+<p>Most are built by the Snapchat community using <a href="https://ar.snap.com/lens-studio" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:-3deg" aria-hidden="true"><img src="/projects/snapchat-games/lens-studio.png" alt="" loading="lazy" /></span>Lens Studio</a>, Snap's free AR creation tool. Anyone can make and publish a lens.</p>
+
+<p>Snap also runs a <a href="https://ar.snap.com/lens-creator-rewards" class="prose-out prose-out--preview" target="_blank" rel="noopener noreferrer"><span class="prose-out__preview prose-out__preview--bare prose-out__preview--wide" style="--tilt:3deg" aria-hidden="true"><img src="/projects/snapchat-games/lenscreatorrewards.gif" alt="" loading="lazy" /></span>Lens Creator Rewards</a> program: a paid tier of creators who build and publish lenses directly on the platform, from face filters and world effects to interactive experiences.</p>
   </Fragment>
   <AnnotatedFigure
     slot="right"
@@ -132,7 +136,7 @@ bet, before any exec ask existed.
     <Stat
       value="7.8%"
       label="Unlock rate for Game Lenses on Spotlight (vs 1.1% benchmark)"
-      caption="Game content drove action in a way regular lens content didn't"
+      caption="7× the unlock rate of regular lens content"
     />
   </div>
   <Figure
@@ -165,29 +169,31 @@ The study set out to validate or kill the bets I was making on the
 direction.
 </Section>
 
+<Section size="sub" stage="Research" hideFromNav>
+The findings came back with a clear shape. I reframed each one into a
+How Might We, so every problem the research surfaced had a target a
+bet could land against. Three HMWs, three initial bets, one to one.
+</Section>
+
 <Callouts cols={3}>
-  <Callout eyebrow="Finding 1" title="The mental-model split was real" tone="outline">
-    "Users familiar with Lens games did not strongly associate filter
-    games with Snapchat games, because it wasn't clear they could play
-    games with friends in chat like on other platforms."
+  <Callout eyebrow="HMW 1 → Chat drawer" title="How might we put games where users already expect to find them, inside chat?" tone="outline">
+    Finding: "Users had difficulty finding games due to buried entry
+    points. Users expected to start games within the chat." Most
+    participants would initiate a game by asking a friend in chat
+    first.
   </Callout>
-  <Callout eyebrow="Finding 2" title="Users expected games in chat" tone="outline">
-    "Users had difficulty finding games due to buried entry points...
-    Users expected to start games within the chat." Most participants
-    would initiate a game by asking a friend in chat first.
+  <Callout eyebrow="HMW 2 → Fullscreen UX" title="How might we make a game lens read as a game, not a filter?" tone="outline">
+    Finding: "Users familiar with Lens games did not strongly
+    associate filter games with Snapchat games, because it wasn't
+    clear they could play games with friends in chat like on other
+    platforms." The mental model said filter, not game.
   </Callout>
-  <Callout eyebrow="Finding 3" title="People wanted to play with friends" tone="outline">
-    The most-appealing formats were social ones: live multiplayer,
-    goal-oriented multiplayer, turn-based, party games. Solo or
-    mindless formats ranked lowest.
+  <Callout eyebrow="HMW 3 → Turn-based fix" title="How might we make the social loop legible enough to actually play with friends?" tone="outline">
+    Finding: the most-appealing formats were social ones, live
+    multiplayer, goal-oriented multiplayer, turn-based, party games.
+    Solo or mindless formats ranked lowest.
   </Callout>
 </Callouts>
-
-<Section size="sub" stage="Research" hideFromNav>
-The research gave the work qualitative grounding to sit alongside the
-engagement data. Specific findings show up next to the decisions they
-validated, later in the case study.
-</Section>
 
 <Section size="sub" stage="Research" title="Two jobs to be done" hideFromNav>
 I framed the work for the team around two jobs games could do for
@@ -392,22 +398,22 @@ losing it in the scroll.
 </BeforeAfter>
 
 <Stats cols={4} bare>
-  <Stat value="+178%+" label="Games engagement, year over year" />
+  <Stat value="+178%" label="Games engagement, year over year" />
   <Stat value="+18%" label="Game shares, quarter over quarter" />
   <Stat value="+20%" label="Long game sessions (30s+), QoQ" />
   <Stat value="+0.045%" label="Days with chats sent (Android)" />
 </Stats>
 
 <Section size="sub" stage="Initial improvements" hideFromNav>
-These changes proved that small UX improvements to turn based games had outsize impact to not only game engagement, but chat itself!
+These changes proved that small UX improvements to turn-based games had outsize impact on game engagement and on chat itself.
 </Section>
 
 <Section stage="Strategy" eyebrow="Strategy" title="The exec ask: how do we go big with games?" banner />
 
 <Section size="sub" stage="Strategy" hideFromNav>
 The outstanding engagement signals we saw from just three projects
-were enough. Evan, the CEO, walked over and asked: **"how can we go
-big with games?"** What follows is the answer I arrived at, and the
+were enough. Evan, the CEO, walked over and asked: **how can we go
+big with games?** What follows is the answer I arrived at, and the
 dedicated Games squad that came out of it.
 </Section>
 
@@ -448,10 +454,13 @@ was that the current hyper-casual library wasn't the right base
 to monetize this way long term, that pay-to-play on top of
 pickup-and-drop games isn't where the money in mobile gaming is.
 
-He was right. I'd designed an answer before I understood the
-market. So I stopped pitching and went to study how the
+He was right. So I stopped pitching and went to study how the
 established mobile gaming companies actually make money.
 </Section>
+
+<Quote attribution="The reframe">
+I'd designed an answer before I understood the market.
+</Quote>
 
 <Section stage="Strategy" title="The category bet" />
 
@@ -602,8 +611,6 @@ The deck landed. Evan diverted engineering from Lenses to spin up a dedicated Ga
 
 With the squad stood up, I pressure-tested Pillar 1 with the ads team before committing the year. Their read: games didn't have the inventory to monetize yet, we'd be optimizing a funnel with nothing in it. So I sequenced Pillars 2 and 3 first, grow engagement, then turn on monetization against real inventory. Evan backed the sequencing. The projects below tag back to a pillar from the deck.
 </Section>
-
-{/* TODO: drop a single visual that signals the chapter break, e.g. the deck cover, an org sketch, or a hero shot from the kickoff. */}
 
 <Section stage="Executing the vision" eyebrow="Project 1" title="Live multiplayer, built as a framework" />
 
@@ -760,12 +767,6 @@ Turns became messages, the chat envelope became a live surface, and the 2-player
 Live multiplayer was an early platform bet, not a growth feature. Content supply was the constraint, so the work was scoped around making the surface ready for partner-built games. Success was framed as game retention and shared sessions with friends, not raw opens.
 </Section>
 
-<Section size="sub" stage="Executing the vision" title="What's next" hideFromNav>
-- **A second multiplayer title in test,** built on the same framework as the launch game.
-- **The framework opened to 2nd-party studios,** so external teams can ship live multiplayer without rebuilding the stack.
-- **Public matchmaking primitives scoped,** with lobby and session APIs ready for a matchmaking layer.
-</Section>
-
 <Section stage="Executing the vision" eyebrow="Project 2" title="Daily games and player progression" />
 
 <Section size="sub" stage="Executing the vision" hideFromNav>
@@ -912,15 +913,15 @@ A content-first surface for Games in Spotlight, designed to convert watching int
   <Stat
     value="30M"
     label="Games DAU"
-    caption="Scaled product area, up from the Lenses subset Games started as"
+    caption="Scaled product area, up from a subcategory of Lenses"
   />
   <Stat
     value="+2.9M"
     label="Additional Snaps sent at full scale"
-    caption="From a single Games entrypoint experiment"
+    caption="From a single Games entry point experiment"
   />
   <Stat
-    value="↑&nbsp;120%"
+    value="↑ 120%"
     label="Game Video Posts on iOS"
     caption="After moving capture into play"
   />
@@ -932,7 +933,7 @@ A content-first surface for Games in Spotlight, designed to convert watching int
 </Stats>
 
 <Section size="sub" hideFromNav>
-Games are now their own product area at Snap, not a subset of Lenses. From the early data-science signal that prompted my UX research and the first three games I shipped to prove the opportunity, Games scaled to 30M DAU with a dedicated org. A single Games entrypoint experiment drove an estimated 2.9M additional Snaps sent at full scale, a meaningful lift on Snap's top-line communication metric. Pulling capture into the moment of play more than doubled Game Video Posts on iOS. The Going Big with Games strategy deck earned exec buy-in from the CEO and carved Games out as its own dedicated squad, with headcount, roadmap ownership, and a bi-weekly exec review cadence.
+Games are now their own product area at Snap, not a subset of Lenses. From the early data-science signal that prompted my UX research and the first three games I shipped to prove the opportunity, Games scaled to 30M DAU with a dedicated org. A single Games entry point experiment drove an estimated 2.9M additional Snaps sent at full scale, a meaningful lift on Snap's top-line communication metric. Pulling capture into the moment of play more than doubled Game Video Posts on iOS. The Going Big with Games strategy deck earned exec buy-in from the CEO and carved Games out as its own dedicated squad, with headcount, roadmap ownership, and a bi-weekly exec review cadence.
 </Section>
 
 <Section size="sub" stage="Results" title="What's next" hideFromNav>

@@ -13,10 +13,10 @@ interface Props {
 
 const { title, description, ogImage } = Astro.props;
 const siteName = "Julia Tang | Design";
-const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
+const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
 const desc =
   description ??
-  "Staff Product Designer at Snapchat — visual storytelling, motion, and UX for delightful product experiences.";
+  "Staff Product Designer at Snapchat. Visual storytelling, motion, and UX for delightful product experiences.";
 const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
 ---
 

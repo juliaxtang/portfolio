@@ -23,6 +23,8 @@ export interface PressLogo {
   height?: number;
   href?: string;
   nudgeY?: number;
+  suffix?: string;
+  wrapNudgeY?: number;
 }
 
 export interface ShowcaseContent {
@@ -48,7 +50,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       "Defined and pitched Games strategy directly to Snap's CEO, securing a dedicated squad and scaling the product from an early-stage bet to a 30M+ DAU platform.",
     stats: [
       { value: "30M", label: "Games DAU" },
-      { value: "↑ 2.9M", label: "Estimated Snap sends daily" },
+      { value: "↑ 2.9M", label: "Additional Snaps sent, full-scale estimate" },
       { value: "↑ 120%", label: "Game Video Posts on iOS" },
     ],
     accent: "#FFFC00",
@@ -60,13 +62,30 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Staff Product Designer",
     title: "Topic Chats",
     tagline:
-      "Scaled Topic Chats into a meaningful new engagement surface for Snapchat, driving roughly 71K incremental US DAU through live-event conversation, discovery, notifications, and sharing loops.",
+      "Scaled Topic Chats into a meaningful new engagement surface for Snapchat, driving roughly 71K incremental U.S. DAU through live-event conversation, discovery, notifications, and sharing loops.",
     stats: [
-      { value: "~71K", label: "Incremental U.S. DAU" },
-      { value: "~40K", label: "Peak concurrent users in chat" },
-      { value: "~208K", label: "Messages sent per week" },
+      { value: "↑ 71K", label: "Incremental U.S. DAU" },
+      { value: "40K", label: "Peak concurrent users in chat" },
+      { value: "208K", label: "Messages sent per week" },
     ],
     accent: "#FFFC00",
+    press: [
+      {
+        src: "/projects/festival-mode/techcrunch-dark-logo.png",
+        alt: "TechCrunch",
+        height: 20.6,
+        href: "https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/",
+      },
+      {
+        src: "/projects/topic-chats/Snap_Inc.-Logo-trim.png",
+        alt: "Snap, Inc.",
+        height: 15,
+        nudgeY: 2,
+        wrapNudgeY: -2,
+        suffix: "Newsroom",
+        href: "https://newsroom.snap.com/topic-chats-internets-most-active-group-chats",
+      },
+    ],
   },
   "tappy-cloud": {
     companyLogo: "/logos/tinder.png",
@@ -75,7 +94,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Tappy Cloud",
     tagline:
-      "Architected Tinder's transition from hardcoded profiles to dynamic profiles via a backend-driven experimentation platform. The design tool that came out of it, TaCo, has since powered 50+ experiments and an attributed $50-110M revenue lift.",
+      "Architected Tinder's transition from hardcoded profiles to dynamic profiles via a backend-driven experimentation platform. The design tool that came out of it, TaCo, has since powered 50+ experiments and an attributed $50–110M revenue lift.",
     stats: [
       { value: "↑ 20%", label: "More likes sent across all experiments" },
       { value: "$50–110M", label: "In revenue lift, attributed" },

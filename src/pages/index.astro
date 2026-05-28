@@ -19,6 +19,10 @@ import { snapchatGamesStackItems, snapchatGamesStackProps } from "../components/
 import MediaParallax from "../components/showcase/MediaParallax.astro";
 import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
 import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
+import { showcaseContent } from "../data/showcases";
+
+const snapchatGames = showcaseContent["snapchat-games"];
+const topicChats = showcaseContent["topic-chats"];
 
 // "Julia" rendered letter-by-letter so each can bob on greeting hover.
 const juliaHtml = ["J", "u", "l", "i", "a"]
@@ -94,18 +98,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   <FadeIn>
     <Showcase
-      companyLogo="/logos/snapchat.png"
-      companyName="Snapchat"
-      role="Staff Product Designer"
-      title="Snapchat Games"
-      tagline="Defined and pitched Games strategy directly to Snap's CEO, securing a dedicated squad and scaling the product from an early-stage bet to a 30M+ DAU platform."
-      stats={[
-        { value: "30M", label: "Games DAU" },
-        { value: "↑ 2.9M", label: "Estimated Snap sends daily" },
-        { value: "↑ 120%", label: "Game Video Posts on iOS" },
-      ]}
+      companyLogo={snapchatGames.companyLogo}
+      companyName={snapchatGames.companyName}
+      role={snapchatGames.role}
+      title={snapchatGames.title}
+      tagline={snapchatGames.tagline}
+      stats={snapchatGames.stats}
       ctaHref="/product-design/snapchat-games"
-      accent="#FFFC00"
+      accent={snapchatGames.accent}
       reverse
       id="snapchat-games"
     >
@@ -118,36 +118,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   <FadeIn>
     <Showcase
-      companyLogo="/logos/snapchat.png"
-      companyName="Snapchat"
-      role="Staff Product Designer"
-      title="Topic Chats"
-      tagline="Scaled Topic Chats into a meaningful new engagement surface for Snapchat, driving roughly 71K incremental US DAU through live-event conversation, discovery, notifications, and sharing loops."
-      stats={[
-        { value: "↑ 71K", label: "Incremental US DAU" },
-        { value: "40k", label: "Simultaneously active in chat during peak times" },
-        { value: "208k", label: "Messages sent a week and counting" },
-      ]}
+      companyLogo={topicChats.companyLogo}
+      companyName={topicChats.companyName}
+      role={topicChats.role}
+      title={topicChats.title}
+      tagline={topicChats.tagline}
+      stats={topicChats.stats}
       ctaHref="/product-design/topic-chats"
       ctaLabel="Read the case study"
-      press={[
-        {
-          src: "/projects/festival-mode/techcrunch-dark-logo.png",
-          alt: "TechCrunch",
-          height: 20.6,
-          href: "https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/",
-        },
-        {
-          src: "/projects/topic-chats/Snap_Inc.-Logo-trim.png",
-          alt: "Snap, Inc.",
-          height: 15,
-          nudgeY: 2,
-          wrapNudgeY: -2,
-          suffix: "Newsroom",
-          href: "https://newsroom.snap.com/topic-chats-internets-most-active-group-chats",
-        },
-      ]}
-      accent="#FFFC00"
+      press={topicChats.press}
+      accent={topicChats.accent}
       id="topic-chats"
     >
       <MediaParallax

@@ -46,107 +46,16 @@ function isActive(href: string) {
 <script is:inline>
   (function () {
     const header = document.getElementById("site-header");
-    if (header) {
-      const threshold = 24;
-      function onScroll() {
-        if (window.scrollY > threshold) header.classList.add("is-scrolled");
-        else header.classList.remove("is-scrolled");
-      }
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
+    if (!header) return;
+    const threshold = 24;
+    function onScroll() {
+      if (window.scrollY > threshold) header.classList.add("is-scrolled");
+      else header.classList.remove("is-scrolled");
     }
-
-    // Brand click burst — emojis pop out radially from the name.
-    const brand = document.getElementById("site-brand");
-    if (brand) {
-      const EMOJIS = ["✨", "🎉", "⭐", "💫", "🌟", "💖", "🪄"];
-      const COUNT = 10;
-
-      function burst() {
-        const rect = brand.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        for (let i = 0; i < COUNT; i++) {
-          const sprite = document.createElement("span");
-          sprite.className = "brand-confetti";
-          sprite.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-          // Radial spread, biased upward
-          const angle = (Math.PI * 2 * i) / COUNT + (Math.random() - 0.5) * 0.6;
-          const distance = 70 + Math.random() * 50;
-          const dx = Math.cos(angle) * distance;
-          const dy = Math.sin(angle) * distance - 30; // upward bias
-          sprite.style.left = cx + "px";
-          sprite.style.top = cy + "px";
-          sprite.style.setProperty("--dx", dx.toFixed(1) + "px");
-          sprite.style.setProperty("--dy", dy.toFixed(1) + "px");
-          sprite.style.setProperty(
-            "--rot",
-            (Math.random() * 240 - 120).toFixed(0) + "deg"
-          );
-          document.body.appendChild(sprite);
-          setTimeout(() => sprite.remove(), 1300);
-        }
-      }
-
-      brand.addEventListener("click", (e) => {
-        burst();
-        // If we're already on the home page, suppress the navigation
-        // (re-render would wipe the burst). Otherwise let the link follow.
-        const target = brand.getAttribute("href") || "/";
-        const here = window.location.pathname.replace(/\/$/, "");
-        const dest = target.replace(/\/$/, "");
-        if (here === dest) {
-          e.preventDefault();
-        } else {
-          // Delay navigation slightly so the burst is visible.
-          e.preventDefault();
-          setTimeout(() => { window.location.href = target; }, 380);
-        }
-      });
-    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
   })();
 </script>
-
-<style is:global>
-  /* Confetti is appended to <body> so its styles must be global. */
-  .brand-confetti {
-    position: fixed;
-    font-size: 22px;
-    line-height: 1;
-    pointer-events: none;
-    z-index: 1000;
-    transform: translate(-50%, -50%) scale(0.4);
-    will-change: transform, opacity;
-    animation: brand-confetti-pop 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes brand-confetti-pop {
-    0% {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.4) rotate(0);
-    }
-    15% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform:
-        translate(calc(-50% + var(--dx, 0px)),
-                  calc(-50% + var(--dy, -100px)))
-        scale(1.15)
-        rotate(var(--rot, 90deg));
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .brand-confetti {
-      animation: brand-confetti-pop-reduced 600ms ease-out forwards;
-    }
-    @keyframes brand-confetti-pop-reduced {
-      0%   { opacity: 0; }
-      30%  { opacity: 1; }
-      100% { opacity: 0; }
-    }
-  }
-</style>
 
 <style>
   .site-header {

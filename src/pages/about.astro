@@ -87,8 +87,10 @@ const hobbies = [
       </FadeIn>
 
       <div class="about-body-stack">
-        <div class="fade-in portrait portrait--inline" style="transition-delay: 240ms">
-          <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+        <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
+          <div class="portrait portrait--inline">
+            <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+          </div>
         </div>
 
         <FadeIn delay={240}>
@@ -153,7 +155,7 @@ const hobbies = [
 
         <FadeIn delay={240}>
           <p class="about-body">
-            I approach that as a <b>systems problem</b>. Each feature is a piece of a whole, and the
+            Designing for that, in this moment, is a <b>systems problem</b>. Each feature is a piece of a whole, and the
             question is always how the pieces work together toward something
             greater. That's the space I work in: <b>strategic</b> enough to define what to build, <b>systems-minded</b> enough to connect the pieces, and <b>obsessive about craft</b> to make sure none of it gets lost in execution.
           </p>
@@ -258,6 +260,13 @@ const hobbies = [
     clear: both;
   }
 
+  .portrait-wrap {
+    float: left;
+    width: 308px;
+    margin: 4px var(--s-6) var(--s-3) 0;
+    position: relative;
+    z-index: 1;
+  }
   .portrait {
     /* polaroid card — natural aspect ratio image, generous bottom matte. */
     background: var(--bg-surface);
@@ -267,15 +276,12 @@ const hobbies = [
     border: 1px solid var(--border-subtle);
   }
   .portrait--inline {
-    float: left;
-    width: 308px;
-    margin: 4px var(--s-6) var(--s-3) 0;
     transform: rotate(-2deg);
     transform-origin: 50% 50%;
     transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .portrait--inline:hover {
-    transform: rotate(1.5deg) translateY(-3px);
+    transform: rotate(-0.5deg);
   }
   .portrait img {
     width: 100%;
@@ -283,7 +289,7 @@ const hobbies = [
     display: block;
   }
   @media (max-width: 600px) {
-    .portrait--inline {
+    .portrait-wrap {
       float: none;
       width: 200px;
       margin: 0 0 var(--s-4) 0;
@@ -395,16 +401,16 @@ const hobbies = [
     background-size: 100% 100%;
   }
   .about-body .co--snap:hover {
-    background-image: linear-gradient(rgba(255, 252, 0, 0.42), rgba(255, 252, 0, 0.42));
+    background-image: linear-gradient(var(--co-wash-snap), var(--co-wash-snap));
   }
   .about-body .co--tinder:hover {
-    background-image: linear-gradient(rgba(253, 41, 124, 0.22), rgba(253, 41, 124, 0.22));
+    background-image: linear-gradient(var(--co-wash-tinder), var(--co-wash-tinder));
   }
   .about-body .co--tvtime:hover {
-    background-image: linear-gradient(rgba(80, 80, 80, 0.20), rgba(80, 80, 80, 0.20));
+    background-image: linear-gradient(var(--co-wash-tvtime), var(--co-wash-tvtime));
   }
   .about-body .co--whip:hover {
-    background-image: linear-gradient(rgba(41, 171, 226, 0.24), rgba(41, 171, 226, 0.24));
+    background-image: linear-gradient(var(--co-wash-whip), var(--co-wash-whip));
   }
 
   .fx {
@@ -479,15 +485,6 @@ const hobbies = [
   .about-body b {
     font-weight: 600;
     color: var(--text-primary);
-  }
-
-  .about-pull {
-    font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: clamp(22px, 3vw, 34px);
-    line-height: 1.2;
-    color: var(--text-primary);
-    margin: var(--s-6) 0;
   }
 
   .fx--key {

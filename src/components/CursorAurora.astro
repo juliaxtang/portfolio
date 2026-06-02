@@ -35,6 +35,17 @@
     window.addEventListener("scroll", updateScrollFade, { passive: true });
     updateScrollFade();
 
+    // Three soft brand stops; the cloud morphs through them on a slow loop.
+    const stops = [
+      [244, 217, 204], // peach
+      [220, 210, 232], // lavender
+      [170, 205, 228], // powder blue
+    ];
+    const CYCLE_MS = 14000;
+    const ALPHA = 0.5;
+    const t0 = performance.now();
+    function mix(a, b, t) { return Math.round(a + (b - a) * t); }
+
     function loop() {
       if (!isFinite(x) || !isFinite(y)) { x = 0.5; y = 0.3; }
       if (!isFinite(tx) || !isFinite(ty)) { tx = x; ty = y; }
@@ -42,6 +53,19 @@
       y += (ty - y) * 0.06;
       blob.style.setProperty("--mx", (x * 100).toFixed(2) + "%");
       blob.style.setProperty("--my", (y * 100).toFixed(2) + "%");
+
+      const phase = ((performance.now() - t0) % CYCLE_MS) / CYCLE_MS; // 0..1
+      const f = phase * stops.length;
+      const i = Math.floor(f) % stops.length;
+      const j = (i + 1) % stops.length;
+      const lt = f - Math.floor(f);
+      // ease in/out so the dwell on each color feels intentional
+      const ease = lt < 0.5 ? 2 * lt * lt : 1 - Math.pow(-2 * lt + 2, 2) / 2;
+      const r = mix(stops[i][0], stops[j][0], ease);
+      const g = mix(stops[i][1], stops[j][1], ease);
+      const b = mix(stops[i][2], stops[j][2], ease);
+      blob.style.setProperty("--aurora-color", `rgba(${r}, ${g}, ${b}, ${ALPHA})`);
+
       requestAnimationFrame(loop);
     }
     loop();
@@ -49,6 +73,9 @@
 </script>
 
 <style>
+  /* Single soft cloud that follows the cursor. Its core color cycles slowly
+     through peach → lavender → powder-blue so the hero feels alive without
+     showing distinct color blobs. */
   .cursor-aurora {
     position: fixed;
     inset: 0;
@@ -56,14 +83,12 @@
     pointer-events: none;
     opacity: var(--aurora-opacity, 1);
     transition: opacity 180ms linear;
-    /* Peach is the dominant blob at the cursor so the powder-blue underlines
-       beneath interactive words read clearly (no blue-on-blue collision).
-       Lavender holds the brand mix in the near-offset; powder-blue is pushed
-       far into the periphery so it doesn't compete with the warm core. */
     background:
-      radial-gradient(50% 60% at var(--mx, 50%) var(--my, 30%), rgba(244,217,204,0.40) 0%, transparent 70%),
-      radial-gradient(44% 54% at calc(var(--mx, 50%) + 14%) calc(var(--my, 30%) + 8%), rgba(220,210,232,0.34) 0%, transparent 70%),
-      radial-gradient(42% 52% at calc(var(--mx, 50%) - 10%) calc(var(--my, 30%) + 12%), rgba(170,205,228,0.40) 0%, transparent 72%);
-    filter: blur(40px);
+      radial-gradient(
+        46% 56% at var(--mx, 50%) var(--my, 30%),
+        var(--aurora-color, rgba(244, 217, 204, 0.48)) 0%,
+        transparent 70%
+      );
+    filter: blur(36px);
   }
 </style>

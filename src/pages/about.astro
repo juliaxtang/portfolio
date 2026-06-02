@@ -471,7 +471,20 @@ const hobbies = [
   }
 
   .about-highlight {
-    background: var(--brand-wash-soft);
+    position: relative;
+    background-color: var(--bg-surface);
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.62)),
+      linear-gradient(
+        135deg,
+        #F8E4D9 0%,
+        #EAE2F0 45%,
+        #F8E4D9 75%,
+        #DDEAF2 100%
+      );
+    background-size: 100% 100%, 260% 260%;
+    background-position: 0 0, 0% 50%;
+    background-repeat: no-repeat, no-repeat;
     border-radius: var(--r-sm);
     padding: var(--s-4) var(--s-5);
     text-align: center;
@@ -480,6 +493,59 @@ const hobbies = [
     font-weight: 400;
     font-size: clamp(20px, 2.2vw, 24px);
     line-height: 1.35;
+    transition: background-color 600ms var(--ease-out);
+  }
+  .about-highlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.5px;
+    background: conic-gradient(
+      from var(--shine-angle, 0deg),
+      transparent 0deg,
+      rgba(197, 220, 234, 0.9) 60deg,
+      rgba(220, 210, 232, 0.9) 110deg,
+      rgba(244, 217, 204, 0.9) 160deg,
+      transparent 220deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out);
+    pointer-events: none;
+  }
+  .about-highlight:hover {
+    animation: about-highlight-drift 8s ease-in-out infinite;
+  }
+  .about-highlight:hover::before {
+    opacity: 1;
+    animation: about-highlight-shine 6s linear infinite;
+  }
+  @keyframes about-highlight-drift {
+    0%   { background-position: 0 0, 0% 50%; }
+    50%  { background-position: 0 0, 100% 50%; }
+    100% { background-position: 0 0, 0% 50%; }
+  }
+  @property --shine-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+  @keyframes about-highlight-shine {
+    to { --shine-angle: 360deg; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-highlight,
+    .about-highlight:hover,
+    .about-highlight:hover::before { animation: none; transition: none; }
   }
 
   .about-body b {
@@ -624,10 +690,10 @@ const hobbies = [
   }
   .pill:hover,
   .pill:focus-visible {
-    background: var(--brand-wash-soft);
-    border-color: var(--brand-primary-2);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    background: var(--bg-surface);
+    border-color: var(--text-tertiary);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -14px rgba(20, 22, 28, 0.22);
     outline: none;
   }
 

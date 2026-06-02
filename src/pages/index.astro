@@ -71,7 +71,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
         <FadeIn delay={220}>
           <p class="v2-hero__meta">
-            Currently owning messaging and scaling new product bets at <a class="hero-co hero-co--snap" href="#snapchat-games"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a>. Previously, <a class="hero-co hero-co--tinder" href="#tappy-cloud"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>'s swipe stack and dynamic profiles.
+            Currently at <a class="hero-co hero-co--snap" href="#snapchat-games"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a>: owning messaging and scaling new product bets. Previously at <a class="hero-co hero-co--tinder" href="#tappy-cloud"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>: led the swipe stack and introduced dynamic profiles.
           </p>
         </FadeIn>
       </div>
@@ -259,8 +259,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 <style>
   .v2-hero {
     position: relative;
-    overflow: hidden;
-    padding-top: var(--s-10);
+    overflow: visible;
+    padding-top: var(--s-16);
     padding-bottom: var(--s-10);
     /* Locked to the tallest statement so the dot background never reflows
        when the rotating headline changes line count. */
@@ -490,7 +490,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .v2-hero__meta {
     font-family: var(--font-sans);
     font-size: clamp(15px, 1.3vw, 17px);
-    line-height: 1.55;
+    line-height: 2.1;
     color: var(--text-secondary, var(--text-primary));
     max-width: 620px;
     margin: 0;
@@ -529,7 +529,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     border-radius: var(--r-xs);
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;
-    background-position: 0 100%;
+    background-position: 0 calc(100% - 0.25em);
     background-size: 100% 2px;
     transition:
       background-size 280ms var(--ease-out),

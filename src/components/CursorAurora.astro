@@ -24,13 +24,18 @@
     }
     window.addEventListener("mousemove", move, { passive: true });
 
-    // Fade aurora out as user scrolls past the hero so it stops competing
-    // with the showcases below. Fully opaque at top, gone by ~80vh down.
+    // Dim — but don't kill — the aurora as the user scrolls past the hero,
+    // so it stays as ambient texture below without competing with the
+    // showcases. Full opacity at top, eased down to AURORA_MIN by ~80vh.
+    // Case-study pages don't have a punchy hero block to anchor the aurora,
+    // so let it sit a touch more present in the background there.
+    const AURORA_MIN = location.pathname.startsWith("/product-design/") ? 0.5 : 0.3;
     function updateScrollFade() {
       const y = window.scrollY || 0;
       const vh = window.innerHeight || 1;
       const t = Math.max(0, Math.min(1, 1 - y / (vh * 0.8)));
-      blob.style.setProperty("--aurora-opacity", t.toFixed(3));
+      const o = AURORA_MIN + (1 - AURORA_MIN) * t;
+      blob.style.setProperty("--aurora-opacity", o.toFixed(3));
     }
     window.addEventListener("scroll", updateScrollFade, { passive: true });
     updateScrollFade();

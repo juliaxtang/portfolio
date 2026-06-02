@@ -26,6 +26,12 @@
   --brand-underline:  #C5DCEA;
   --brand-selection:  #C5DCEA;
 
+  /* Company washes — used on inline name callouts on hover. */
+  --co-wash-snap:    rgba(255, 252, 0, 0.42);
+  --co-wash-tinder:  rgba(253, 41, 124, 0.22);
+  --co-wash-tvtime:  rgba(80, 80, 80, 0.20);
+  --co-wash-whip:    rgba(41, 171, 226, 0.24);
+
   /* Radii */
   --r-xs: 4px;
   --r-sm: 8px;

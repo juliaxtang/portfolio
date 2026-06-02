@@ -120,6 +120,56 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         headline.style.height = heights[i] + "px";
       }, 4600);
     })();
+
+    // Replay the greeting flourish on eyebrow hover:
+    //   enter → re-run a short wave pendulum + draw squiggle L-to-R
+    //   leave → erase squiggle L-to-R (wave pendulum self-resolves to 0°)
+    // The first hover takes over from the on-load intro animation by
+    // clearing inline `animation` and using transitions for the squiggle.
+    (() => {
+      const eyebrow = document.querySelector(".v2-hero__eyebrow");
+      const path = document.querySelector(".v2-hero__squiggle path");
+      const emoji = document.querySelector(".v2-hero__wave-emoji");
+      if (!eyebrow || !path || !emoji) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const DRAW_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+      const ERASE_EASE = "cubic-bezier(0.4, 0, 0.6, 1)";
+      const DRAW_MS = 700;
+      const ERASE_MS = 700;
+
+      function drawIn() {
+        // Reset to invisible-before-draw, then transition to drawn.
+        path.style.animation = "none";
+        path.style.transition = "none";
+        path.style.strokeDashoffset = "120";
+        // Force reflow so the next transition picks up the reset.
+        void path.getBoundingClientRect();
+        path.style.transition = "stroke-dashoffset " + DRAW_MS + "ms " + DRAW_EASE;
+        path.style.strokeDashoffset = "0";
+      }
+
+      function eraseOut() {
+        path.style.animation = "none";
+        path.style.transition = "stroke-dashoffset " + ERASE_MS + "ms " + ERASE_EASE;
+        path.style.strokeDashoffset = "-120";
+      }
+
+      function replayWave() {
+        emoji.style.animation = "none";
+        void emoji.getBoundingClientRect();
+        emoji.style.animation =
+          "hero-wave-pendulum-hover 1800ms cubic-bezier(0.36, 0, 0.64, 1) 1 both";
+      }
+
+      eyebrow.addEventListener("mouseenter", () => {
+        drawIn();
+        replayWave();
+      });
+      eyebrow.addEventListener("mouseleave", () => {
+        eraseOut();
+      });
+    })();
   </script>
 
   <FadeIn>
@@ -211,13 +261,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     position: relative;
     overflow: hidden;
     padding-top: var(--s-10);
-    padding-bottom: var(--s-8);
+    padding-bottom: var(--s-10);
     /* Locked to the tallest statement so the dot background never reflows
        when the rotating headline changes line count. */
-    height: 500px;
+    height: 600px;
   }
   @media (max-width: 720px) {
-    .v2-hero { height: 460px; }
+    .v2-hero { height: 540px; }
   }
 
   /* Anchor scroll targets sit below the sticky header. */
@@ -311,6 +361,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     100% { width: 1.25em; margin-right: 0.18em; opacity: 1; transform: translateX(0) scale(1); }
   }
 
+  /* Shorter pendulum used on hover replay — fits in ~1.8s and settles at 0°. */
+  @keyframes hero-wave-pendulum-hover {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(22deg); }
+    20%  { transform: rotate(-16deg); }
+    30%  { transform: rotate(18deg); }
+    40%  { transform: rotate(-12deg); }
+    50%  { transform: rotate(14deg); }
+    60%  { transform: rotate(-8deg); }
+    72%  { transform: rotate(8deg); }
+    84%  { transform: rotate(-3deg); }
+    100% { transform: rotate(0deg); }
+  }
+
   /* Pendulum: starts swinging at 0% so the wave is already mid-wave as
      it slides in. Five decaying swings, then settles at 0° before exit. */
   @keyframes hero-wave-pendulum {
@@ -329,10 +393,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     100%  { transform: rotate(0deg); }
   }
 
-  /* Squiggle: draws in left-to-right and stays — small permanent flourish. */
+  /* Squiggle: draws in L-to-R (0→25%), holds (25→75%), then erases
+     L-to-R (75→100%) so the line reads as continuing on rather than
+     rewinding. Total active duration = 3600ms; with the 900ms delay
+     the whole sequence ends at 4500ms. */
   @keyframes hero-squiggle-intro {
-    0%   { stroke-dashoffset: 120; }
-    100% { stroke-dashoffset: 0; }
+    0%   { stroke-dashoffset: 120;  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+    25%  { stroke-dashoffset: 0;    animation-timing-function: linear; }
+    75%  { stroke-dashoffset: 0;    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+    100% { stroke-dashoffset: -120; }
   }
 
   @media (prefers-reduced-motion: reduce) {

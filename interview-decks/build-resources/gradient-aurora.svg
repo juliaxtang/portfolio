@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="bloom-blue" cx="15%" cy="25%" r="75%" fx="15%" fy="25%">
+      <stop offset="0%" stop-color="#C5DCEA" stop-opacity="0.85"/>
+      <stop offset="35%" stop-color="#C5DCEA" stop-opacity="0.4"/>
+      <stop offset="75%" stop-color="#C5DCEA" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bloom-lavender" cx="85%" cy="15%" r="80%" fx="85%" fy="15%">
+      <stop offset="0%" stop-color="#DCD2E8" stop-opacity="0.8"/>
+      <stop offset="40%" stop-color="#DCD2E8" stop-opacity="0.35"/>
+      <stop offset="80%" stop-color="#DCD2E8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bloom-peach" cx="65%" cy="95%" r="85%" fx="65%" fy="95%">
+      <stop offset="0%" stop-color="#F4D9CC" stop-opacity="0.85"/>
+      <stop offset="40%" stop-color="#F4D9CC" stop-opacity="0.4"/>
+      <stop offset="80%" stop-color="#F4D9CC" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#FDFCFA"/>
+  <rect width="1920" height="1080" fill="url(#bloom-peach)"/>
+  <rect width="1920" height="1080" fill="url(#bloom-lavender)"/>
+  <rect width="1920" height="1080" fill="url(#bloom-blue)"/>
+</svg>

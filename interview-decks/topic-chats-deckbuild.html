@@ -1,0 +1,1740 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Topic Chats — deck build reference</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Portfolio tokens */
+    --ink: #15171C;
+    --ink-soft: #5A5D66;
+    --ink-faint: #8B8E96;
+    --paper: #FDFCFA;
+    --card: #FFFFFF;
+    --line: #EAE6DF;
+    --line-strong: #D8D3CB;
+
+    /* Brand */
+    --brand-blue: #C5DCEA;
+    --brand-peach: #F4D9CC;
+    --brand-lavender: #DCD2E8;
+    --brand-wash: rgba(197, 220, 234, 0.40);
+    --brand-wash-soft: rgba(197, 220, 234, 0.20);
+    --brand-gradient: linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%);
+    --brand-gradient-soft: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%);
+    --brand-aurora:
+      radial-gradient(120% 140% at 15% 25%, rgba(197, 220, 234, 0.85) 0%, rgba(197, 220, 234, 0.4) 35%, transparent 75%),
+      radial-gradient(130% 130% at 85% 15%, rgba(220, 210, 232, 0.8) 0%, rgba(220, 210, 232, 0.35) 40%, transparent 80%),
+      radial-gradient(140% 150% at 65% 95%, rgba(244, 217, 204, 0.85) 0%, rgba(244, 217, 204, 0.4) 40%, transparent 80%),
+      #FDFCFA;
+
+    /* Per-role accent for tie-back rails */
+    --accent: var(--brand-peach);
+    --accent-2: var(--brand-blue);
+    --accent-3: var(--brand-lavender);
+
+    /* Highlight (on-slide text) */
+    --hi: rgba(244, 217, 204, 0.45);
+
+    /* Type */
+    --font-display: "Instrument Serif", "Times New Roman", serif;
+    --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(250, 248, 245, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 28px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  header.top h1 {
+    font-size: 15px; font-weight: 600; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  header.top .meta {
+    font-size: 12px; color: var(--ink-soft);
+  }
+  .roles {
+    margin-left: auto;
+    display: flex; gap: 6px;
+    background: #fff;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+  .roles button {
+    border: 0; background: transparent;
+    font: inherit; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 999px;
+    cursor: pointer; color: var(--ink-soft);
+    transition: background 120ms, color 120ms;
+  }
+  .roles button.active {
+    background: var(--ink); color: white;
+  }
+  main { max-width: 1080px; margin: 0 auto; padding: 36px 28px 80px; }
+  .intro {
+    margin-bottom: 48px;
+  }
+  .intro h2 {
+    font-size: 28px; margin: 0 0 8px;
+    letter-spacing: -0.02em; font-weight: 600;
+  }
+  .intro p { color: var(--ink-soft); margin: 0; max-width: 64ch; }
+  .section-band {
+    margin: 48px 0 18px;
+    display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-band h3 {
+    font-size: 13px; font-weight: 600; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .section-band .pacing {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+  }
+  .slide {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin: 14px 0;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  .slide.no-visual { grid-template-columns: 1fr; }
+  .visual {
+    background: var(--brand-aurora);
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line);
+    position: relative;
+  }
+
+  /* ============================================================
+     SLIDE PREVIEW SYSTEM (.sp)
+     Each slide thumbnail composes as a mini Figma slide.
+     Diagonal-asymmetric: eyebrow + title left, visual right,
+     page number bottom-right. Always 16:9, aurora background.
+     ============================================================ */
+  .sp {
+    position: relative;
+    width: 100%; height: 100%;
+    background: var(--brand-aurora);
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px 14px;
+    font-family: var(--font-sans);
+    color: var(--ink);
+  }
+  .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+    font-family: var(--mono);
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    align-self: start;
+  }
+  .sp-title {
+    grid-column: 1; grid-row: 2;
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.05;
+    color: var(--ink);
+    align-self: end;
+    letter-spacing: -0.005em;
+  }
+  .sp-title.lg { font-size: 26px; }
+  .sp-title.sm { font-size: 18px; }
+  .sp-sub {
+    grid-column: 1; grid-row: 3;
+    font-size: 8.5px;
+    color: var(--ink-soft);
+    font-family: var(--font-sans);
+    line-height: 1.4;
+    max-width: 95%;
+    align-self: end;
+  }
+  .sp-visual {
+    grid-column: 2; grid-row: 1 / span 3;
+    align-self: center;
+    justify-self: end;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .sp-pageno {
+    position: absolute;
+    bottom: 10px; right: 14px;
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--ink-faint);
+    letter-spacing: 0.05em;
+  }
+  .sp-visual img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+  /* archetype: phone mockup (frameless screenshot with shadow + tilt) */
+  .sp-phone {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(20,22,28,.12), 0 4px 8px rgba(20,22,28,.06);
+    background: #fff;
+    border: 1px solid rgba(20,22,28,.04);
+  }
+  .sp-phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sp-phone-trio {
+    position: relative; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sp-phone-trio .sp-phone {
+    position: absolute;
+    width: 38%;
+    aspect-ratio: 9/19;
+  }
+  .sp-phone-trio .sp-phone:nth-child(1) { left: 8%; transform: rotate(-5deg); z-index: 1; }
+  .sp-phone-trio .sp-phone:nth-child(2) { left: 31%; transform: rotate(2deg); z-index: 3; }
+  .sp-phone-trio .sp-phone:nth-child(3) { left: 54%; transform: rotate(-2deg); z-index: 2; }
+
+  /* archetype: single phone hero (right column) */
+  .sp-phone-single {
+    width: 56%; height: 92%;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(20,22,28,.12), 0 4px 8px rgba(20,22,28,.06);
+    background: #fff;
+    overflow: hidden;
+    transform: rotate(2deg);
+  }
+  .sp-phone-single img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  /* archetype: constellation (5+ phones in arc) */
+  .sp-constellation {
+    width: 100%; height: 100%;
+    position: relative;
+  }
+  .sp-constellation .sp-phone {
+    position: absolute;
+    width: 22%;
+    aspect-ratio: 9/19;
+  }
+
+  /* archetype: full-bleed visual (whole slide is image) */
+  .sp[data-archetype="bleed"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    padding: 0;
+  }
+  .sp[data-archetype="bleed"] .sp-eyebrow {
+    position: absolute; top: 14px; left: 16px;
+    color: #fff; mix-blend-mode: difference; z-index: 2;
+  }
+  .sp[data-archetype="bleed"] .sp-visual {
+    grid-column: 1; grid-row: 1 / -1;
+    width: 100%; height: 100%;
+  }
+  .sp[data-archetype="bleed"] .sp-visual img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .sp[data-archetype="bleed"] .sp-pageno { color: #fff; mix-blend-mode: difference; }
+
+  /* archetype: huge metric */
+  .sp-metric {
+    font-family: var(--font-display);
+    color: var(--ink);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .sp-metric .num { font-size: 88px; display: block; }
+  .sp-metric .num.sm { font-size: 56px; }
+  .sp-metric .num.xs { font-size: 40px; }
+  .sp-metric .cap {
+    font-family: var(--mono);
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    line-height: 1.35;
+    display: block;
+  }
+  .sp-metric-stack { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .sp-metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
+  .sp-metric-grid .num { font-size: 38px; }
+
+  /* archetype: one-liner (typography hero, fills the slide) */
+  .sp[data-archetype="oneliner"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="oneliner"] .sp-title {
+    grid-column: 1; grid-row: 2;
+    font-size: 34px;
+    align-self: center;
+    max-width: 90%;
+    line-height: 1.08;
+  }
+  .sp[data-archetype="oneliner"] .sp-visual { display: none; }
+  .sp[data-archetype="oneliner"] .sp-title em { font-style: italic; color: var(--ink-soft); }
+
+  /* archetype: quote */
+  .sp[data-archetype="quote"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="quote"] .sp-title {
+    grid-column: 1; grid-row: 2;
+    font-style: italic;
+    font-size: 30px;
+    align-self: center;
+    max-width: 86%;
+  }
+  .sp[data-archetype="quote"] .sp-sub {
+    text-transform: uppercase;
+    font-family: var(--mono);
+    letter-spacing: 0.14em;
+    font-size: 8px;
+    color: var(--ink-faint);
+  }
+  .sp[data-archetype="quote"] .sp-visual { display: none; }
+
+  /* archetype: diagram (system / 2x2 / tiers) */
+  .sp[data-archetype="diagram"] .sp-title { font-size: 16px; }
+  .sp-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 6px;
+    width: 100%; height: 100%;
+  }
+  .sp-2x2 .cell {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sp-2x2 .cell .job {
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+  .sp-2x2 .cell .what {
+    font-family: var(--font-display); font-size: 14px;
+    color: var(--ink);
+  }
+  .sp-tiers {
+    display: grid; gap: 4px; width: 100%; height: 100%;
+    grid-template-rows: repeat(4, 1fr);
+  }
+  .sp-tiers .tier {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 6px 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sp-tiers .tier .num {
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+  .sp-tiers .tier .name {
+    font-family: var(--font-display); font-size: 12px; color: var(--ink);
+  }
+  .sp-tiers .tier:nth-child(1) { background: rgba(244, 217, 204, 0.55); }
+  .sp-tiers .tier:nth-child(2) { background: rgba(244, 217, 204, 0.30); }
+  .sp-tiers .tier:nth-child(3) { background: rgba(244, 217, 204, 0.15); }
+  .sp-tiers .tier:nth-child(4) { background: #fff; opacity: 0.85; }
+
+  /* archetype: kill (split, struck) */
+  .sp[data-archetype="kill"] {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 0; padding: 0;
+  }
+  .sp[data-archetype="kill"] .sp-pageno { color: #fff; mix-blend-mode: difference; }
+  .sp-kill-left, .sp-kill-right {
+    padding: 14px 16px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sp-kill-left { background: var(--ink); color: var(--paper); }
+  .sp-kill-right { background: var(--paper); color: var(--ink); }
+  .sp-kill-eyebrow {
+    font-family: var(--mono); font-size: 7.5px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    opacity: 0.55;
+  }
+  .sp-kill-title {
+    font-family: var(--font-display); font-size: 15px; line-height: 1.15;
+  }
+  .sp-kill-title.struck {
+    text-decoration: line-through;
+    text-decoration-color: var(--brand-peach);
+    text-decoration-thickness: 1.5px;
+  }
+  .sp-kill-note { font-size: 8px; opacity: 0.6; }
+
+  /* annotation tag (used on photos / phones) */
+  .sp-tag {
+    position: absolute;
+    background: #fff;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-family: var(--mono);
+    font-size: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+    box-shadow: 0 2px 6px rgba(20,22,28,.10);
+  }
+
+  /* === Template-aligned additions === */
+
+  /* Italic serif for hero moments (cover, big metrics, one-word titles) */
+  .sp-title.italic { font-style: italic; font-weight: 400; }
+
+  /* Device-frame phone (template default) */
+  .sp-phone-framed {
+    position: relative;
+    border-radius: 18px;
+    background: #15171C;
+    padding: 4px;
+    box-shadow: 0 10px 24px rgba(20,22,28,.10);
+    border: 1px solid #1a1c22;
+  }
+  .sp-phone-framed::before {
+    content: ""; position: absolute;
+    top: 4px; left: 50%; transform: translateX(-50%);
+    width: 30%; height: 6px;
+    background: #15171C; border-radius: 0 0 6px 6px; z-index: 2;
+  }
+  .sp-phone-framed > .sp-phone-screen {
+    border-radius: 14px; overflow: hidden;
+    width: 100%; height: 100%;
+    background: #fff;
+  }
+  .sp-phone-framed img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Leader-line callout */
+  .sp-leader {
+    position: absolute;
+    font-family: var(--font-sans);
+    font-size: 7px;
+    color: var(--ink-soft);
+    line-height: 1.3;
+    max-width: 110px;
+  }
+  .sp-leader b {
+    display: block; font-family: var(--font-sans); font-weight: 700;
+    color: var(--ink); font-size: 8px; margin-bottom: 1px;
+  }
+  .sp-leader::after {
+    content: ""; position: absolute;
+    height: 1px; background: var(--line-strong);
+    top: 50%;
+  }
+  .sp-leader.right::after { left: 100%; width: 22px; }
+  .sp-leader.left::after  { right: 100%; width: 22px; }
+
+  /* Bold-sans alt headline (template p12, p14, p15) */
+  .sp-title.sans {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-style: normal;
+    font-size: 22px;
+    letter-spacing: -0.015em;
+  }
+
+  /* Break slide: pure-typography reframe (slide 5) */
+  .sp[data-archetype="reframe-break"] {
+    background: var(--paper);
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: 18px 22px;
+  }
+  .sp[data-archetype="reframe-break"] .sp-eyebrow {
+    color: var(--ink-faint);
+  }
+  .sp[data-archetype="reframe-break"] .sp-strike {
+    grid-column: 1; grid-row: 2;
+    align-self: start;
+    margin-top: 6px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--ink-faint);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ink-faint);
+    line-height: 1.1;
+  }
+  .sp[data-archetype="reframe-break"] .sp-title {
+    grid-column: 1; grid-row: 3;
+    align-self: end;
+    font-size: 44px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+  }
+  .sp[data-archetype="reframe-break"] .sp-visual { display: none; }
+
+  /* Break slide: constellation diagonal (slide 10) */
+  .sp[data-archetype="constellation-break"] .sp-constellation .sp-phone {
+    position: absolute;
+    box-shadow: 0 8px 18px rgba(20,22,28,.10);
+  }
+  .sp[data-archetype="constellation-break"] .sp-constellation .sp-phone.anchor {
+    width: 28%;
+    z-index: 3;
+  }
+
+  /* Break slide: full-bleed dimmed photo with overlay headline (slide 12) */
+  .sp[data-archetype="bleed-overlay"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .sp[data-archetype="bleed-overlay"] > .sp-bleed-img {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    filter: brightness(0.6) saturate(0.85);
+  }
+  .sp[data-archetype="bleed-overlay"] > .sp-bleed-overlay {
+    position: absolute; inset: 0;
+    padding: 18px 22px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    color: #fff;
+    background: linear-gradient(180deg, transparent 30%, rgba(20,22,28,0.55) 100%);
+  }
+  .sp[data-archetype="bleed-overlay"] .sp-eyebrow {
+    color: rgba(255,255,255,0.7);
+    position: absolute; top: 16px; left: 22px;
+  }
+  .sp[data-archetype="bleed-overlay"] .sp-bleed-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    line-height: 1.05;
+    color: #fff;
+    max-width: 80%;
+  }
+  .sp[data-archetype="bleed-overlay"] .sp-bleed-title em {
+    font-style: italic;
+  }
+  .sp[data-archetype="bleed-overlay"] .sp-pageno { color: #fff; mix-blend-mode: normal; opacity: 0.8; }
+
+  /* Mono footer strip (alternate eyebrow placement, when needed) */
+  .sp-footer {
+    position: absolute;
+    left: 18px; bottom: 10px;
+    font-family: var(--mono); font-size: 8px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+
+  /* Soft pastel diagram shapes */
+  .sp-shape-peach    { background: rgba(244, 217, 204, 0.7); }
+  .sp-shape-lavender { background: rgba(220, 210, 232, 0.7); }
+  .sp-shape-blue     { background: rgba(197, 220, 234, 0.7); }
+  .sp-shape-label {
+    font-family: var(--mono); font-size: 8px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-soft);
+  }
+
+  /* === Compositional variants for rhythm === */
+
+  /* A. Phone-hero-center — single phone large, centered, title above */
+  .sp[data-archetype="phone-hero"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    text-align: center;
+  }
+  .sp[data-archetype="phone-hero"] .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+    text-align: left;
+  }
+  .sp[data-archetype="phone-hero"] .sp-title {
+    grid-column: 1; grid-row: 1;
+    align-self: start;
+    justify-self: center;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 18px;
+    max-width: 75%;
+  }
+  .sp[data-archetype="phone-hero"] .sp-visual {
+    grid-column: 1; grid-row: 2;
+    justify-self: center;
+  }
+  .sp[data-archetype="phone-hero"] .sp-phone-hero {
+    height: 100%;
+    aspect-ratio: 9/19;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 16px 32px rgba(20,22,28,.14), 0 4px 8px rgba(20,22,28,.08);
+    background: #fff;
+  }
+  .sp[data-archetype="phone-hero"] .sp-phone-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .sp[data-archetype="phone-hero"] .sp-caption {
+    grid-column: 1; grid-row: 3;
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint); text-align: center;
+    margin-top: 6px;
+  }
+
+  /* B. Phone-bleed — phone occupies most of slide, title overlay below */
+  .sp[data-archetype="phone-bleed"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    padding: 14px 16px;
+  }
+  .sp[data-archetype="phone-bleed"] .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+  }
+  .sp[data-archetype="phone-bleed"] .sp-visual {
+    grid-column: 1; grid-row: 2;
+    justify-self: center; align-self: center;
+  }
+  .sp[data-archetype="phone-bleed"] .sp-title {
+    grid-column: 1; grid-row: 3;
+    align-self: end;
+    font-size: 22px;
+    line-height: 1.05;
+  }
+
+  /* C. Phone-leader — phone left, leader callouts right */
+  .sp[data-archetype="phone-leader"] {
+    grid-template-columns: 1fr 1.2fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="phone-leader"] .sp-eyebrow {
+    grid-column: 1 / -1; grid-row: 1;
+  }
+  .sp[data-archetype="phone-leader"] .sp-visual {
+    grid-column: 1; grid-row: 2;
+    justify-self: start; align-items: center;
+  }
+  .sp[data-archetype="phone-leader"] .sp-phone-single {
+    transform: none;
+    width: 55%; height: 92%;
+  }
+  .sp[data-archetype="phone-leader"] .sp-callouts {
+    grid-column: 2; grid-row: 2;
+    align-self: center;
+    display: flex; flex-direction: column;
+    gap: 12px;
+    padding-left: 18px;
+    border-left: 1px solid var(--line);
+  }
+  .sp-callout {
+    font-family: var(--font-sans); font-size: 8px;
+    color: var(--ink-soft); line-height: 1.4;
+    max-width: 130px;
+  }
+  .sp-callout b {
+    display: block; font-weight: 700;
+    color: var(--ink); font-size: 9px;
+    margin-bottom: 2px;
+    font-family: var(--font-sans);
+  }
+  .sp-callout .num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    display: inline-block;
+    margin-right: 6px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  /* D. Top-strip-sans — bold sans headline in aurora strip, content below on paper */
+  .sp[data-archetype="top-strip"] {
+    background: var(--paper);
+    grid-template-columns: 1fr;
+    grid-template-rows: 26% 1fr auto;
+    padding: 0;
+    overflow: hidden;
+  }
+  .sp[data-archetype="top-strip"]::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0;
+    height: 26%; background: var(--brand-aurora);
+    z-index: 0;
+  }
+  .sp[data-archetype="top-strip"] .sp-eyebrow {
+    position: absolute; top: 12px; left: 18px;
+    font-size: 7px; opacity: 0.8;
+    z-index: 1;
+  }
+  .sp[data-archetype="top-strip"] .sp-title {
+    position: absolute; top: 50%; left: 22px;
+    transform: translateY(-50%);
+    font-family: var(--font-sans);
+    font-weight: 700; font-style: normal;
+    font-size: 22px; letter-spacing: -0.015em;
+    line-height: 1; color: var(--ink);
+    z-index: 1; margin: 0;
+  }
+  .sp[data-archetype="top-strip"] .sp-visual {
+    grid-column: 1; grid-row: 2 / span 2;
+    align-self: center; justify-self: center;
+    width: 88%; height: 80%; padding-top: 22%;
+    z-index: 1;
+  }
+
+  /* E. Metric-bleed — oversized italic numeral bleeding off the edge */
+  .sp[data-archetype="metric-bleed"] {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-title {
+    grid-column: 1; grid-row: 2;
+    align-self: end;
+    font-size: 17px;
+    max-width: 85%;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-sub {
+    grid-column: 1; grid-row: 3;
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    max-width: 85%;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-visual {
+    grid-column: 2; grid-row: 1 / -1;
+    align-items: flex-end;
+    justify-content: flex-end;
+    align-self: stretch;
+    overflow: visible;
+    position: relative;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-mega {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 220px;
+    line-height: 0.78;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    position: absolute;
+    right: -14%;
+    bottom: -8%;
+    white-space: nowrap;
+  }
+
+  /* F. Chart-hero — chart fills the slide */
+  .sp[data-archetype="chart-hero"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .sp[data-archetype="chart-hero"] .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+  }
+  .sp[data-archetype="chart-hero"] .sp-title {
+    grid-column: 1; grid-row: 1;
+    align-self: start; justify-self: end;
+    text-align: right;
+    font-size: 14px;
+    max-width: 55%;
+    margin-top: 12px;
+  }
+  .sp[data-archetype="chart-hero"] .sp-visual {
+    grid-column: 1; grid-row: 2;
+    justify-self: stretch;
+    width: 100%; height: 100%;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(20,22,28,.06);
+    padding: 8px;
+    margin-top: 18px;
+  }
+  .sp[data-archetype="chart-hero"] .sp-visual img {
+    object-fit: contain;
+  }
+
+  /* G. Triptych-caption-top — 3 phones row, captions above (template p20) */
+  .sp[data-archetype="triptych-top"] {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="triptych-top"] .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+  }
+  .sp[data-archetype="triptych-top"] .sp-title {
+    grid-column: 1; grid-row: 1;
+    align-self: start; justify-self: center;
+    text-align: center; font-size: 18px;
+    margin-top: 14px;
+  }
+  .sp[data-archetype="triptych-top"] .sp-visual {
+    grid-column: 1; grid-row: 2 / span 2;
+    align-self: end;
+    width: 100%; height: 80%;
+  }
+  .sp-triptych-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    width: 100%; height: 100%;
+    align-items: end;
+  }
+  .sp-triptych-3 .col {
+    display: flex; flex-direction: column;
+    align-items: center;
+  }
+  .sp-triptych-3 .col-cap {
+    font-family: var(--font-sans); font-weight: 700;
+    font-size: 9px; color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .sp-triptych-3 .col-sub {
+    font-family: var(--font-sans); font-size: 7px;
+    color: var(--ink-soft); margin-bottom: 6px;
+    text-align: center; max-width: 90%;
+  }
+  .sp-triptych-3 .sp-phone {
+    width: 100%; aspect-ratio: 9/19;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(20,22,28,.08);
+  }
+  .visual.grid-5 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 4px;
+  }
+  .visual.grid-5 img:nth-child(4),
+  .visual.grid-5 img:nth-child(5) { grid-column: span 1; }
+  .visual.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    padding: 4px;
+  }
+  .visual img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: top;
+    display: block;
+  }
+  .visual.contain img { object-fit: contain; background: #fff; }
+  .visual .typeonly {
+    padding: 18px; text-align: center;
+    font-family: var(--font-display);
+  }
+  .visual .typeonly .big {
+    font-size: 36px; font-weight: 600; letter-spacing: -0.02em;
+    display: block; line-height: 1.05;
+  }
+  .visual .typeonly .label {
+    font-size: 10px; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 8px; font-family: var(--mono);
+  }
+  .visual.dark {
+    background: var(--brand-aurora);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .visual.dark .typeonly { color: var(--ink); }
+  .body h4 {
+    font-size: 11px; margin: 0 0 4px; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: var(--mono); font-weight: 500;
+  }
+  .body .slide-num {
+    font-family: var(--mono); font-size: 11px; color: var(--ink-faint);
+  }
+  .body .slide-title {
+    font-size: 18px; font-weight: 600; margin: 2px 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .field { margin: 12px 0; }
+  .field .label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); font-family: var(--mono); font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .on-slide {
+    background: var(--hi);
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+  }
+  .on-slide.none {
+    background: transparent; color: var(--ink-faint);
+    font-style: italic; padding: 0;
+  }
+  .talk { font-size: 14px; color: var(--ink); }
+  .tieback {
+    background: #fff;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px; border-radius: 4px;
+    font-size: 13.5px; color: var(--ink);
+    margin-top: 4px;
+  }
+  .tieback[data-role="pinterest"] { border-left-color: var(--accent-2); }
+  .tieback[data-role="reddit"] { border-left-color: var(--accent-3); }
+  .tieback.hidden { display: none; }
+  .tieback .role-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--mono); color: var(--ink-faint);
+    margin-bottom: 4px; font-weight: 500;
+  }
+  .tieback.hero {
+    background: linear-gradient(180deg, rgba(255,247,214,0.7), #fff);
+  }
+  .tieback.hero .role-label::after {
+    content: " · hero slide for this role";
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .pause-note {
+    font-size: 12px; color: var(--ink-soft);
+    font-style: italic; margin-top: 8px;
+  }
+  .framing-block {
+    display: none;
+  }
+  .framing-block.active { display: block; }
+  .framing-block .lines {
+    font-family: var(--font-display);
+    font-size: 18px; line-height: 1.5;
+    padding: 14px 0;
+  }
+  .framing-block .lines div {
+    margin-bottom: 10px;
+  }
+  details.appendix, details.stress {
+    margin: 24px 0; padding: 16px 20px;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  details.appendix summary, details.stress summary {
+    font-weight: 600; font-size: 14px; cursor: pointer;
+    list-style: none;
+  }
+  details.appendix summary::before, details.stress summary::before {
+    content: "▸ "; color: var(--ink-faint); font-size: 11px;
+  }
+  details[open].appendix summary::before, details[open].stress summary::before {
+    content: "▾ ";
+  }
+  details .ap-slide {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+  }
+  details .ap-slide b { display: block; margin-bottom: 4px; }
+  .stress-q {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .stress-q .q {
+    font-weight: 600; margin-bottom: 6px;
+  }
+  .stress-q .a { color: var(--ink-soft); }
+  .stress-q .tone {
+    font-size: 12px; color: var(--ink-faint); margin-top: 6px;
+    font-style: italic;
+  }
+  code { font-family: var(--mono); font-size: 12px; background: #f1ede5; padding: 1px 5px; border-radius: 3px; }
+  @media (max-width: 720px) {
+    .slide { grid-template-columns: 1fr; }
+    .visual { aspect-ratio: 16/10; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Topic Chats — deck build reference</h1>
+  <span class="meta">16 slides · ~7 min · anchor case</span>
+  <div class="roles" role="tablist">
+    <button data-role="patreon" class="active">Patreon</button>
+    <button data-role="pinterest">Pinterest</button>
+    <button data-role="reddit">Reddit</button>
+  </div>
+</header>
+
+<main>
+
+<div class="intro">
+  <h2>Topic Chats — anchor case study</h2>
+  <p>Sparse spine, ~30s avg per slide, talk track carries the meaning. Toggle the role pill above to swap framing speech and tie-back notes. Visual thumbnails preview the slide composition; build the real slides in Figma using the rules below.</p>
+</div>
+
+<!-- DESIGN SYSTEM REFERENCE CARD -->
+<details class="appendix" open style="margin-bottom:36px;">
+  <summary>Slide design system — template-aligned, with deliberate breaks</summary>
+
+  <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;font-size:13px;color:var(--ink);">
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Baseline (the template)</div>
+      Full aurora background. Eyebrow top-left in <b>mono caps</b>, page number bottom-right (mono). Title in <b>Instrument Serif</b> — italic for hero/single-word/big-metric moments, roman for declarative two-line headlines. Body in <b>Geist sans</b>. Phones orthogonal in device frames; annotations via thin gray leader lines.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Typography hierarchy</div>
+      <b>Italic serif</b> — covers, single-word titles, big metric numerals (47%, $100M), one-liners where rhythm matters. <b>Roman serif</b> — declarative 2-line headlines. <b>Bold sans</b> — alternate top headline when the slide already has a strong italic element below (metric grids, diagrams). <b>Mono caps</b> — eyebrows, page numbers, photo annotations, axis labels, attributions.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Visual treatment</div>
+      Phones orthogonal by default (template style), device-framed. Bare screenshots in soft surface cards work for data viz. <b>Tilts only for break slides</b> or scrapbook moments (cover photo cluster) — 2–4° max. Leader lines hairline gray, sans labels. Soft pastel fills (peach/lavender/blue) for diagram shapes. Mono LABEL inside shapes.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Color</div>
+      Aurora bg on every content slide (powder blue → lavender → peach). One filled pill or one accent fill per slide max. The kill slide is the only deliberate dark-surface — and it should look like a kill, not template chrome.
+    </div>
+
+    <div style="grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:10px;">Archetypes (mapped to your template page numbers)</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 24px;font-size:12.5px;line-height:1.5;">
+        <div><b>Cover</b> · template p1 — italic serif title centered/left, eyebrow above, full aurora.</div>
+        <div><b>Declarative headline</b> · p2 — roman serif 2-line, eyebrow above.</div>
+        <div><b>Big metric 3-up / 4-up</b> · p10–12 — italic serif numerals; bold sans alt headline.</div>
+        <div><b>Single phone + leader callouts</b> · p18 — device-framed, orthogonal, hairline leaders.</div>
+        <div><b>Two / three phones with captions</b> · p19, p20 — captions above each phone, orthogonal.</div>
+        <div><b>Diagram + text</b> · p15–17 — funnel/donut/venn, soft pastel fills, mono LABELs.</div>
+        <div><b>Timeline</b> · p13–14 — italic years above a hairline rule with markers.</div>
+        <div><b>Quote</b> · p23 — left vertical hairline rule, hanging quote, mono attribution.</div>
+        <div><b>People grid</b> · p24–25 — circular avatars (used for appendix research panel).</div>
+      </div>
+    </div>
+
+    <div style="grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;background:linear-gradient(180deg, rgba(244,217,204,0.20), transparent);padding:14px 14px 4px;margin:0 -8px;border-radius:8px;">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:10px;">⌖ Deliberate template breaks (3 max per deck)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 24px;font-size:12.5px;line-height:1.5;">
+        <div><b>Slide 3 · The reframe</b><br>Pure typography canvas. Strike "Not a content quality problem." in muted neutral. Drop "A topic problem. / A concurrency problem." in roman serif, anchored low. No aurora, no decoration. <i>Staff signal: she leads with the conclusion, then proves it.</i></div>
+        <div><b>Slide 10 · Five surfaces</b><br>Break the orthogonal grid. Five phones staggered on a soft diagonal with varied Y. <b>Scoreboard phone slightly larger</b>, anchors lower-left. Hairline mono leader lines name each surface. Talk track names the principle: <i>same signal, different contract per surface.</i> <i>Staff signal: systems thinking in one frame.</i></div>
+        <div><b>Slide 11 · Earn the entry point</b><br>Full-bleed scoreboard (<i>the bet</i>, not the buried entry — visual must enact the claim), <b>dimmed to 60%</b>. Roman serif headline overlaid, italic on "Earn the entry point." <i>Staff signal: the judgment derives from the diagnosis, "you don't scale a broken loop."</i></div>
+      </div>
+    </div>
+
+    <div style="grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;font-size:12px;color:var(--ink-soft);">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Three mistakes to avoid when breaking template</div>
+      <b>1.</b> Breaking more than 3 slides — if everything's hero, nothing is. The template is the baseline; breaks are punctuation. &nbsp; <b>2.</b> Breaking for decoration, not argument — every break is tied to a beat (reframe / system / claim-not-apology). Never tilt for cool. &nbsp; <b>3.</b> Half-committing — if a numeral bleeds, bleed it 15–20%, not 3%. Timid breaks read as mistakes.
+    </div>
+  </div>
+</details>
+
+<!-- SECTION 1 -->
+<div class="section-band">
+  <h3>1 · The inherited state</h3>
+  <span class="pacing">2 slides · ~35s</span>
+</div>
+
+<!-- SLIDE 1 — TITLE -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="title">
+      <div class="sp-eyebrow">Case Study 1</div>
+      <div class="sp-title lg">Topic&nbsp;Chats:<br>Scaling<br>Communities<br>on&nbsp;Snapchat</div>
+      <div class="sp-visual">
+        <div class="sp-phone-trio">
+          <div class="sp-phone"><img src="../public/projects/topic-chats/live-badge-friends-feed.png" alt="" /></div>
+          <div class="sp-phone"><img src="../public/projects/topic-chats/topic-chat-scoreboard.gif" alt="" /></div>
+          <div class="sp-phone"><img src="../public/projects/topic-chats/live-events-on-map.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">10</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 1 · 60s · <span style="color:var(--ink);">TITLE</span></div>
+    <div class="slide-title">Case Study 1 — Topic Chats</div>
+    <div class="field">
+      <div class="label">Eyebrow</div>
+      <div class="on-slide" style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.14em;">CASE STUDY 1</div>
+    </div>
+    <div class="field">
+      <div class="label">Title (Instrument Serif, left-aligned, 4 lines)</div>
+      <div class="on-slide" style="font-family:var(--font-display);font-size:22px;line-height:1.1;">Topic Chats:<br>Scaling Communities<br>on Snapchat</div>
+    </div>
+    <div class="field">
+      <div class="label">Visual</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Phone trio, slight tilt (−5° / +2° / −2°), staggered depth, soft drop shadow. Suggested screens: Friends feed with live badge, scoreboard inside #marchmadness, and either Map live events or a #dodgers chat. Use the existing case-study hero phone cluster as visual reference.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track (~60s, role-specific — spoken over the title)</div>
+      <div class="talk">
+        <div class="framing-block active" data-role="patreon">"Quick framing. I'm a staff product designer at Snap. The thesis I want to land in the next forty minutes: community products grow when you stop designing the destination and start designing the reason members come back to each other. The two cases I want to walk through both made that turn. The first is a public-conversation product that looked active but wasn't, and the real problem turned out to be the one nobody on the team was naming."</div>
+        <div class="framing-block" data-role="pinterest">"Quick framing. I'm a staff product designer at Snap. The work I'm most known for is treating discovery as a system, content meets users where they already are, across multiple surfaces, with a shared signal, rather than fighting for one home. The two cases I want to walk through both share that pattern. The first is a public-conversation product where I solved discovery by making 'live' a property the whole app could speak."</div>
+        <div class="framing-block" data-role="reddit">"Quick framing. I'm a staff product designer at Snap. Growth is loops, not landings, the work I want to walk through is one where the inherited product was great at landings and terrible at loops. One-and-done participation, no signal pulling users back. The shape of that problem is the same one Reddit faces when users land cold from Google search: the room is empty, there's no reason to stay. The first case is how I fixed it."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 — PHONE-BLEED (phone center-low, title below) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="phone-bleed">
+      <div class="sp-eyebrow">The Inherited State</div>
+      <div class="sp-visual">
+        <div class="sp-phone-single" style="width:30%;height:88%;transform:none;"><img src="../public/projects/topic-chats/inherited-state.png" alt="" /></div>
+      </div>
+      <div class="sp-title">What I inherited.</div>
+      <div class="sp-pageno">11</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 2 · ~15s · <span style="color:var(--ink);">PHONE-BLEED (phone above title)</span></div>
+    <div class="slide-title">What I inherited</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Phone screenshot <b>centered, occupying upper 65%</b> of the canvas, orthogonal (no tilt — let the artifact speak). Title set in roman Instrument Serif <b>below the phone</b>, left-aligned to the bottom margin. Eyebrow top-left. Creates rhythm break from the cover (which had phones right + title left).</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Topic Chats was Snap's bet on public conversation. When I took it over, the surface worked, but the product didn't."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2 — Reframe leads, evidence follows (deductive, HM-prescribed) -->
+<div class="section-band">
+  <h3>2 · The reframe</h3>
+  <span class="pacing">3 slides · ~70s</span>
+</div>
+
+<!-- SLIDE 3 — ⌖ BREAK: reframe LEADS (deductive opening) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="reframe-break">
+      <div class="sp-eyebrow">The Reframe</div>
+      <div class="sp-strike">Not a content quality problem.</div>
+      <div class="sp-title">A topic problem.<br><em>A concurrency problem.</em></div>
+      <div class="sp-pageno">12</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 3 · ~25s · <span style="color:var(--brand-peach);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · REFRAME (deductive lead)</span></div>
+    <div class="slide-title">The reframe leads the case</div>
+    <div class="field">
+      <div class="label">Why this slide leads (not lands)</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">HM-prescribed deductive structure. At staff bar, the reframe IS the work — burying it behind 30s of suspense reads as "let me walk you through my process," the junior tell panels filter on. Lead with the conclusion, name the prior you displaced, spend the next two slides paying it off. <b>Staff signal: she knows what the work was and can defend it.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Paper canvas, no aurora. "Not a content quality problem." in <b>muted serif with hairline strike</b>, top-anchored, ~28px — names the prior being retired. Below it, two stacked lines in roman Instrument Serif ~120–140px: "A topic problem." then "<em>A concurrency problem.</em>" italic. Left-aligned, low-anchored. The strike kills the team's old frame; the new framing asserts what the work actually was.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The framing we'd been using treated this as a content quality problem — that posts were low-effort, that we needed better content. Two patterns in the data convinced me it wasn't. <i>[beat]</i> It was a topic problem, and a concurrency problem. Topics themselves were too broad to anchor a real conversation, and the rooms weren't live enough for one to happen — two stacked failures. The next two slides are how that showed up in the numbers."</div>
+      <div class="pause-note">⏸ Pause before clicking next. Let it land.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4 — METRIC (now: receipts for the reframe, not setup) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">What That Looked Like</div>
+      <div class="sp-title sm">The audience showed up.<br>They just didn't stay.</div>
+      <div class="sp-visual">
+        <div class="sp-metric sp-metric-stack" style="align-items:flex-end;">
+          <div><span class="num">94<span style="font-size:0.6em;">%</span></span><span class="cap">first-time joiners</span></div>
+          <div style="border-top:1px solid var(--line);width:100%;padding-top:10px;"><span class="num sm">73<span style="font-size:0.6em;">%</span></span><span class="cap">one-and-done</span></div>
+        </div>
+      </div>
+      <div class="sp-pageno">13</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 4 · ~20s · <span style="color:var(--ink);">BIG-NUMBER METRIC (reframe receipts)</span></div>
+    <div class="slide-title">What the reframe looked like in the numbers</div>
+    <div class="field">
+      <div class="label">Role in the new arc</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">No longer "symptoms before the reframe." Now: the first piece of evidence backing the reframe asserted on slide 3. Same numbers, different framing — receipts, not setup.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>94%</b> first-time joiners &nbsp;·&nbsp; <b>73%</b> posted once and never returned</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Here's what those two failures looked like in the data. 94% of messages from first-time joiners. 73% posted once and never returned. Most people said hi, got no response, and left. The audience was showing up — they just had nothing to talk about and no one to talk to."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 — TWO PATTERNS (now: the proof for both halves of the reframe) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">The Two Patterns</div>
+      <div class="sp-title">The proof,<br>both sides.</div>
+      <div class="sp-visual">
+        <div style="position:relative;width:88%;height:88%;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 12px 28px rgba(20,22,28,.10);transform:rotate(1deg);">
+          <img src="../public/projects/topic-chats/topic-chats-hi-problem-timestamps.png" alt="" style="width:100%;height:100%;object-fit:cover;" />
+          <div class="sp-tag" style="top:38%;right:8%;">10-min windows</div>
+        </div>
+      </div>
+      <div class="sp-pageno">14</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 5 · ~25s · <span style="color:var(--ink);">SINGLE-VISUAL + ANNOTATION (the proof)</span></div>
+    <div class="slide-title">The two patterns that convinced me</div>
+    <div class="field">
+      <div class="label">Role in the new arc</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Pays off the reframe slide-3 promise ("two patterns in the data convinced me"). Visual shows the concurrency pattern (timestamp clustering); talk track walks both in order — concurrency on the screen, topic specificity from the qualitative read.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Pattern one — concurrency. I pulled the timestamps. 'Hi' posts clustered in ten-minute windows. People dropped in, scanned for a live conversation, and left when they didn't find one. Pattern two — topic. When I read the chats themselves, the topics were too broad to anchor a conversation. Users didn't know what to say. Empty rooms, and even when a room had people in it, no shared thing to talk about. Two stacked failures, both fixable by the same wedge."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section-band">
+  <h3>3 · The wedge</h3>
+  <span class="pacing">1 slide · ~30s</span>
+</div>
+
+<!-- SLIDE 6 — CHART-HERO (merged: chart + "sports as the wedge" as the title) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="chart-hero">
+      <div class="sp-eyebrow">The Wedge</div>
+      <div class="sp-title sm" style="font-size:14px;">Sports as the wedge.<br><em style="color:var(--ink-soft);">Where both already lived.</em></div>
+      <div class="sp-visual">
+        <img src="../public/projects/topic-chats/case-for-sports-and-live-events1.png" alt="" />
+      </div>
+      <div class="sp-pageno">15</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 6 · ~30s · <span style="color:var(--ink);">CHART-HERO (chart + thesis as title)</span></div>
+    <div class="slide-title">Sports as the wedge — where both signals already lived</div>
+    <div class="field">
+      <div class="label">HM note</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Previously slides 6 and 7 were a pause-then-restate. Merged: the wedge thesis ("Sports as the wedge") and the chart that proves it are one slide. Eliminates a filler beat in a 9-minute case.</div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Chart fills ~80% of canvas in a soft surface card. Eyebrow top-left; title upper-right with thesis bold roman + descriptor italic in muted ink. Mono caps caption inside the chart card: "ON-TOPIC RATE BY CATEGORY · INTERNAL ANALYSIS". The visual proves the assertion above it.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"So I cut the data by category to find where both problems were already solved. Generic interest chats were the worst on both axes — broad topics, no concurrency, no anchor and no one to talk to. Sports were the opposite. Sharp topic: there's a game happening, you know exactly what to say. Naturally concurrent: everyone shows up at the same time. So I narrowed the roadmap to sports as the proving ground — not to fix all topic chats, but to find the wedge where both axes were already solved, prove the model there, then generalize."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4 — NEW: problems the hypothesis created -->
+<div class="section-band">
+  <h3>4 · Three problems to solve</h3>
+  <span class="pacing">1 slide · ~25s</span>
+</div>
+
+<!-- SLIDE 7 — Agenda: three problems derived from the hypothesis (transition card, ~12s) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="top-strip">
+      <div class="sp-eyebrow">From Hypothesis to Roadmap</div>
+      <div class="sp-title">Three problems<br>to solve.</div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;height:100%;align-items:start;padding-top:8px;">
+          <div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:34px;line-height:1;letter-spacing:-0.01em;color:var(--ink);margin-bottom:8px;">01</div>
+            <div style="font-family:var(--font-sans);font-weight:700;font-size:10px;color:var(--ink);margin-bottom:4px;">Anchor the chat.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);line-height:1.4;">Every chat needs something specific happening right now to react to.</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:34px;line-height:1;letter-spacing:-0.01em;color:var(--ink);margin-bottom:8px;">02</div>
+            <div style="font-family:var(--font-sans);font-weight:700;font-size:10px;color:var(--ink);margin-bottom:4px;">Signal "live" across surfaces.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);line-height:1.4;">Users won't open a chat if they don't know it's live. The signal has to travel.</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:34px;line-height:1;letter-spacing:-0.01em;color:var(--ink);margin-bottom:8px;">03</div>
+            <div style="font-family:var(--font-sans);font-weight:700;font-size:10px;color:var(--ink);margin-bottom:4px;">Bring people back at the moment.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);line-height:1.4;">Even with the signal, the biggest growth lever is re-entry at peak relevance.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">16</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 7 · ~12s · <span style="color:var(--ink);">AGENDA / TRANSITION CARD</span></div>
+    <div class="slide-title">Three problems to solve (transition)</div>
+    <div class="field">
+      <div class="label">Why this slide — and why fast</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Bridges hypothesis to roadmap. Per HM, treat as a <b>~12s transition card</b>, not a 25s beat — visually the lowest-energy moment in the deck, so don't dwell. Talk through quickly while clicking: "Three problems fall out of the reframe. Let me walk through each." Then move. <b>Staff signal is the derivation, not the slide itself.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Template p3-style agenda. Bold sans "Three problems to solve." in top aurora strip. Below on paper: three columns, each with an italic serif numeral (01/02/03), a bold sans one-line label, and a sans body sentence. Centered title, left-aligned column content.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide" style="font-size:13px;line-height:1.4;"><b>01 · Anchor the chat.</b> Every chat needs something specific happening right now to react to.<br><b>02 · Signal "live" across surfaces.</b> Users won't open a chat if they don't know it's live.<br><b>03 · Bring people back at the moment.</b> Even with the signal, the biggest growth lever is re-entry at peak relevance.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The hypothesis isn't just a diagnosis — it's a roadmap. If topic specificity and concurrency are what drive engagement, then three problems fall out of it. <b>One:</b> anchor the chat in something real-time-specific so people know what to say. <b>Two:</b> signal that the chat is live everywhere in the app, because users won't open a chat if they don't know it's worth opening. <b>Three:</b> build the re-entry mechanisms that pull users back at the moment the chat is most valuable. The rest of the case is how I solved each one."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5 — Problem 1: anchor the chat -->
+<div class="section-band">
+  <h3>5 · Problem 1 — Anchor the chat</h3>
+  <span class="pacing">1 slide · ~30s</span>
+</div>
+
+<!-- SLIDE 8 — PHONE-HERO (centered, BIG, mono caption below) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="phone-hero">
+      <div class="sp-eyebrow">Problem 1 · Anchor the chat</div>
+      <div class="sp-title sm" style="font-size:14px;">A spine, not decoration.</div>
+      <div class="sp-visual">
+        <div class="sp-phone-hero"><img src="../public/projects/topic-chats/topic-chat-scoreboard.gif" alt="" /></div>
+      </div>
+      <div class="sp-caption">Live scoreboard · #marchmadness · real-time</div>
+      <div class="sp-pageno">17</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 8 · ~30s · <span style="color:var(--ink);">PHONE-HERO (centered, oversized)</span></div>
+    <div class="slide-title">The scoreboard solves Problem 1</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">The scoreboard is the most visceral artifact in the case. <b>Phone centered, much larger than other slides</b> — bare screenshot, orthogonal, generous shadow, occupies center 35-40% of slide width with full vertical bleed. Title small above ("A spine, not decoration."), mono caps caption below ("LIVE SCOREBOARD · #MARCHMADNESS · REAL-TIME"). Eyebrow top-left. Centered breaks the rhythm; the GIF carries the moment.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"<b>Problem 1, the anchor.</b> Inside the chat, the most leveraged move was anchoring it in something <i>actually</i> live. Real-time score, clock, key moments. The scoreboard does double duty — it gives people something specific to react to (that's the topic anchor), and it changes in real time so the conversation is always reacting to a real event instead of inventing one (that's the concurrency anchor). It isn't decoration, it's the spine the conversation hangs off. And every scoreboard moment is shareable, which turned the chat into a source of distribution."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback hidden" data-role="pinterest"></div>
+    <div class="tieback" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "For Reddit, the analog is making a thread feel like it's still happening even when it's old — live counts, momentum signal, an AI summary of what people are talking about right now."
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6 — Problem 2: signal "live" across surfaces -->
+<div class="section-band">
+  <h3>6 · Problem 2 — Signal "live" across surfaces</h3>
+  <span class="pacing">2 slides · ~50s</span>
+</div>
+
+<!-- SLIDE 10 — PHONE-LEADER (phone left, leader-line callouts right) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="phone-leader">
+      <div class="sp-eyebrow">Problem 2 · One surface first</div>
+      <div class="sp-visual">
+        <div class="sp-phone-single"><img src="../public/projects/topic-chats/live-badge-friends-feed.png" alt="" /></div>
+      </div>
+      <div class="sp-callouts">
+        <div class="sp-callout"><b>Start in the Friends feed.</b>Snapchat had no shared language for "live." I designed one signal — and started where the eyeballs already were.</div>
+        <div class="sp-callout"><b>The badge</b>Live pill on the chat row. Surfaces the active moment without demanding the user enter the chat to find it.</div>
+        <div class="sp-callout"><b>Trending row</b>Curated discovery for chats hitting concurrency thresholds — wins without competing with friends' content.</div>
+      </div>
+      <div class="sp-pageno">18</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 9 · ~20s · <span style="color:var(--ink);">PHONE-LEADER (annotation callouts)</span></div>
+    <div class="slide-title">One surface</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Phone-with-leader-callouts pattern (template p18). Phone left, orthogonal, device-framed. Right column has three short callouts with bold sans titles + body, each connected to a specific UI element on the phone via a <b>hairline gray leader line</b>. Eyebrow runs full-width above. The callouts do the work — title (eyebrow + "ONE SURFACE") plus the leader-tagged details replace the body paragraph.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"<b>Problem 2, the signal.</b> The scoreboard works — but only if users open the chat in the first place. The harder problem was <i>outside</i> the chat: Snapchat had no shared language for 'live.' I designed one signal, starting in the Friends feed."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11 — ⌖ BREAK: staggered constellation with anchor phone -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="constellation-break">
+      <div class="sp-eyebrow">Problem 2 · All five surfaces</div>
+      <div class="sp-title sm">One signal,<br>five surfaces.</div>
+      <div class="sp-visual">
+        <div class="sp-constellation">
+          <div class="sp-phone anchor" style="bottom:4%;left:2%;"><img src="../public/projects/topic-chats/topic-chat-scoreboard.gif" alt="" /></div>
+          <div class="sp-phone" style="top:2%;left:14%;width:20%;"><img src="../public/projects/topic-chats/live-badge-friends-feed.png" alt="" /></div>
+          <div class="sp-phone" style="top:10%;left:38%;width:20%;"><img src="../public/projects/topic-chats/live-badge-discover.png" alt="" /></div>
+          <div class="sp-phone" style="top:0%;left:60%;width:20%;"><img src="../public/projects/topic-chats/live-badge-search-results.png" alt="" /></div>
+          <div class="sp-phone" style="bottom:8%;left:46%;width:20%;"><img src="../public/projects/topic-chats/live-events-on-map.png" alt="" /></div>
+          <div class="sp-phone" style="bottom:0%;left:68%;width:20%;"><img src="../public/projects/topic-chats/live-activity-widget.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">19</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 10 · ~30s · <span style="color:var(--brand-blue);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · SYSTEM</span></div>
+    <div class="slide-title">All five</div>
+    <div class="field">
+      <div class="label">Why break the template here</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Template phone slides are sterile grids. This one should feel like a system map. <b>Staff signal: systems thinking made visible in one frame.</b> Pinterest hero — dwell.</div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Break the orthogonal grid. Five surface phones staggered on a soft diagonal with varied Y offsets (think Pinterest pin wall, not Apple keynote). The <b>scoreboard phone is slightly larger</b> and anchors the lower-left — it's the source of the signal, the others are surfaces of it. Hairline leader lines connect to mono caps labels (FEED · DISCOVER · SEARCH · MAP · LIVE ACTIVITY). The signal is the same; the surface is what varies.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"One signal, five surfaces"</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track (HM-expanded)</div>
+      <div class="talk">"<b>Same signal, different contract per surface.</b> The signal — that something is happening now — is one thing. The contract is what each surface owes the user: Friends feed is social, so the live pill sits next to people you already know. Discover is editorial, so live chats surface as curated picks. Search is intent-based, so live chats lift above evergreen ones. The Map is ambient and geographic, so live events appear as pins. iOS Live Activity is system-level, so the signal travels off-app to the lock screen. Five surfaces, five contracts, one signal. The hard part wasn't designing the badge — it was getting the badge to read correctly in every context without losing meaning. One glance, anywhere in the app, to know something is happening now. That's the design principle the whole system is built on."</div>
+    </div>
+    <div class="tieback" data-role="patreon">
+      <div class="role-label">Patreon tie-back</div>
+      "For Patreon, this maps to whether 'creator is live' or 'new drop' is a first-class signal that respects each surface's contract. Home feed contract is social proof; creator page contract is intent; push is interruption. Same signal, three different jobs — and the trust problem is the same: never let the signal mean different things in different places, or users learn to ignore it."
+    </div>
+    <div class="tieback hero hidden" data-role="pinterest">
+      <div class="role-label">Pinterest tie-back</div>
+      "The underlying mechanic: a single discovery signal carries a different contract per surface, and the design job is to honor each contract without fracturing the signal. For Pinterest specifically — a 'fresh pin' badge means something different on the home feed (algorithmic surfacing) than on a board (creator intent) than on search (query relevance). Treating those as three different signals is what produces inconsistent recommendation experiences across the app. Treating them as one signal with three surface-specific renderings is the lever. That's the work I'd want to do."
+      <div class="pause-note">⏸ Dwell longer here.</div>
+    </div>
+    <div class="tieback hidden" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "For Reddit this is retention infrastructure. Home feed, search results, push, lock screen — every place a cold-landing user touches the product has to signal 'this thread is alive' in the appropriate idiom. Same signal, different contract: search is intent, push is interruption, the home feed is browse. Get the contracts right and a Google-landed user has four different ways to recognize the thread is worth staying for, without you ever having to say it explicitly."
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7 — Problem 3: bring them back -->
+<div class="section-band">
+  <h3>7 · Problem 3 — Bring them back at the moment</h3>
+  <span class="pacing">4 slides · ~95s</span>
+</div>
+
+<!-- SLIDE 11 — ⌖ BREAK: full-bleed dimmed photo with overlay headline -->
+<!-- HM fix: bleed image swapped from buried entry point → scoreboard. Visual now enacts the bet, not the apology. -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="bleed-overlay">
+      <div class="sp-bleed-img" style="background-image:url('../public/projects/topic-chats/topic-chat-scoreboard.gif');"></div>
+      <div class="sp-bleed-overlay">
+        <div class="sp-eyebrow">Problem 3 · The sequencing call</div>
+        <div class="sp-bleed-title">Prove the bet first.<br><em>Earn the entry point.</em></div>
+      </div>
+      <div class="sp-pageno">20</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 11 · ~30s · <span style="color:var(--brand-lavender);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · CLAIM</span></div>
+    <div class="slide-title">The sequencing call</div>
+    <div class="field">
+      <div class="label">HM fix · why this image, not the other one</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Previously this slide used the buried Friends-feed entry as the bleed image. The HM caught the contradiction: the visual carried apology framing ("look how buried it was") while the verbal claim was the opposite ("I chose to leave it buried"). <b>The image was fighting the claim.</b> Swapped to the scoreboard — the visual now <i>shows the bet</i>. Headline = the sequencing logic. The buried entry point lives in the appendix as supporting context if asked, not as the hero image of the sequencing slide.</div>
+    </div>
+    <div class="field">
+      <div class="label">Why break the template here</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Template half-split would neuter the beat. The image is the evidence; the type is the claim. <b>Staff signal: confidence in a tradeoff most designers would hide.</b> Reddit Growth hero — dwell.</div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Full-bleed screenshot of the buried Friends-feed entry point, <b>dimmed to ~60% brightness</b>, slight desaturation. Roman serif headline overlaid bottom-left in white, italic only on "deliberate". No frame, no aurora, no card. Eyebrow top-left in muted white mono. Page number bottom-right.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"Prove the bet first."</b> / <b>"Earn the entry point."</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"<b>Problem 3, re-entry.</b> Before the mechanisms, I want to name a judgment call here — because it'll come up. User research had surfaced that the entry point was hard to find, so the obvious growth move was a more prominent placement. I explored that. But the reframe stopped me. <i>[beat]</i> The problems are topic specificity and concurrency. A prominent entry point grows top of funnel — and that <i>compounds</i> both problems. More users finding broad-topic empty rooms means more one-and-done, more disappointed cold landings, more trust burned. You don't scale a broken loop, you fix it. So I sequenced: solve concurrency and topic first via the scoreboard and the live-state signal, then build re-entry mechanisms that pull users back at the moments when both problems are <i>already</i> solved — a game is on, a chat is live. Then revisit the entry-point conversation with real numbers behind it. The next two slides are those re-entry mechanisms."</div>
+    </div>
+    <div class="tieback" data-role="patreon">
+      <div class="role-label">Patreon tie-back</div>
+      "This is the move I want to land for Patreon: the diagnosis names what's broken in the loop. Scaling before fixing it just compounds the failure. Communities aren't an exception — broader usage on a weak loop burns trust faster than slower, healthier growth on a fixed one."
+    </div>
+    <div class="tieback hidden" data-role="pinterest">
+      <div class="role-label">Pinterest tie-back</div>
+      "Discovery designed across surfaces buys you time to solve the underlying experience problems before you scale top-of-funnel. Funneling more cold users into a loop that doesn't hold is the opposite of discovery — it's churn dressed up as growth."
+    </div>
+    <div class="tieback hero hidden" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "This is the most Reddit-Growth-relevant part of the case. The judgment derived from the diagnosis — topic specificity plus concurrency. A more prominent entry point would have compounded both. So I built re-entry mechanisms that fire at moments when both problems are already solved (live game, hot chat), then let the numbers earn the next conversation."
+      <div class="pause-note">⏸ Dwell longer here.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12 — TOP-STRIP (bold sans headline in aurora strip, 2×2 below) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="top-strip">
+      <div class="sp-eyebrow">Problem 3 · Four mechanisms</div>
+      <div class="sp-title">Four mechanisms,<br>four jobs.</div>
+      <div class="sp-visual">
+        <div class="sp-2x2">
+          <div class="cell"><span class="job">Interrupt</span><span class="what">Push</span></div>
+          <div class="cell"><span class="job">Anchor</span><span class="what">Billboard</span></div>
+          <div class="cell"><span class="job">Social</span><span class="what">Profile pill</span></div>
+          <div class="cell"><span class="job">Ambient</span><span class="what">Live-state</span></div>
+        </div>
+      </div>
+      <div class="sp-pageno">21</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 12 · ~25s · <span style="color:var(--ink);">TOP-STRIP (bold sans headline + 2×2)</span></div>
+    <div class="slide-title">Four mechanisms, four jobs</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">2×2 grid bottom 65%. Each cell is a soft surface card (1px hairline, 16px radius) holding an annotated screenshot. Mono caps job label top of cell (INTERRUPT / ANCHOR / SOCIAL / AMBIENT). Serif mechanism name bottom. Title left-aligned top.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"I built four growth mechanisms, each doing a different job. Push interrupts at the live moment. Billboards anchor the top of feed during the event. Profile pills make the chat socially discoverable. Live-state signal does ambient work everywhere else. Notifications were the biggest lever of the four, which is the next beat."</div>
+    </div>
+  </div>
+</div>
+
+<!-- (Notifications now part of Section 7 — Problem 3) -->
+
+<!-- SLIDE 13 — TOP-STRIP (bold sans headline + tier diagram) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="top-strip">
+      <div class="sp-eyebrow">Problem 3 · Notification taxonomy</div>
+      <div class="sp-title">A taxonomy<br>built on trust.</div>
+      <div class="sp-visual">
+        <div class="sp-tiers">
+          <div class="tier"><span class="name">Activity about me</span><span class="num">Tier 1</span></div>
+          <div class="tier"><span class="name">Friends</span><span class="num">Tier 2</span></div>
+          <div class="tier"><span class="name">Chat momentum</span><span class="num">Tier 3</span></div>
+          <div class="tier"><span class="name">New chat recs</span><span class="num">Tier 4</span></div>
+        </div>
+      </div>
+      <div class="sp-pageno">22</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 13 · ~30s · <span style="color:var(--ink);">TOP-STRIP (bold sans headline + tier diagram)</span></div>
+    <div class="slide-title">The taxonomy</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Four horizontal tiers, vertical axis labeled in mono caps "PERSONAL RELEVANCE → FREQUENCY BUDGET". Top tier peach-tinted (highest budget), each successive tier lighter — position + tint encode the inverse relationship without color-coding categories. Optional: small notification screenshot embedded inside each tier band.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Built the product's first notification system from scratch. Four tiers ranked by personal relevance, and frequency tied to ranking. Untiered notifications cost trust and train users to mute. The taxonomy let me pull the frequency lever hard on the tiers that earned it, and stay quiet on the ones that didn't."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14 — METRIC-BLEED (oversized italic numeral bleeds off right edge) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-bleed">
+      <div class="sp-eyebrow">Problem 3 · The lift</div>
+      <div class="sp-title">Trust budget,<br>spent well.</div>
+      <div class="sp-sub">U.S. Android · AB-tested vs notifications-off · the lift came mostly from the top two tiers</div>
+      <div class="sp-visual">
+        <div class="sp-mega">+32K</div>
+      </div>
+      <div class="sp-pageno">23</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 14 · ~20s · <span style="color:var(--ink);">METRIC-BLEED (numeral bleeds off canvas)</span></div>
+    <div class="slide-title">The lift</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"+32K DAU"</b> / "U.S. Android · AB-tested vs. notifications-off"</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"32 thousand additional daily actives, AB-tested against a notifications-off control. The lift came mostly from the top two tiers."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback hidden" data-role="pinterest"></div>
+    <div class="tieback" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "For Reddit Growth this is directly transferable, notification taxonomy is one of the highest-leverage tools for SEO-landed users who haven't opted in to anything specific yet."
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section-band">
+  <h3>8 · The proof</h3>
+  <span class="pacing">2 slides · ~50s</span>
+</div>
+
+<!-- SLIDE 15 — CENTERED OVERSIZED METRIC (bottom-anchored italic) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="oneliner">
+      <div class="sp-eyebrow">March Madness · The Stress Test</div>
+      <div class="sp-title italic" style="font-size:96px;line-height:0.85;align-self:end;text-align:left;">52K<br><span style="font-family:var(--mono);font-style:normal;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-top:8px;">peak concurrent · single chat</span></div>
+      <div class="sp-pageno">24</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 15 · ~25s · <span style="color:var(--ink);">CENTERED OVERSIZED METRIC</span></div>
+    <div class="slide-title">March Madness, single chat</div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Different from slide 15 to keep rhythm. <b>"52K"</b> in italic Instrument Serif at ~260px, anchored low-left of the canvas (not bleeding off — sitting solid on the baseline). Mono caps caption "PEAK CONCURRENT · SINGLE CHAT" tucked directly below. Eyebrow top-left names March Madness. Generous top whitespace.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"52K"</b> / "peak concurrent in a single chat"</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"March Madness was the stress test. Three weeks, every loop firing at once. Peak concurrent in a single chat hit 52 thousand, a floor the inherited product never reached."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16 — METRIC GRID -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">The Outcome</div>
+      <div class="sp-title sm">What it<br>added up to.</div>
+      <div class="sp-visual">
+        <div class="sp-metric sp-metric-grid">
+          <div><span class="num">~71K</span><span class="cap">incr DAU</span></div>
+          <div><span class="num">~208K</span><span class="cap">msgs / week</span></div>
+          <div><span class="num">25–45K</span><span class="cap">sends / day</span></div>
+        </div>
+      </div>
+      <div class="sp-pageno">25</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 16 · ~25s · <span style="color:var(--ink);">METRIC GRID (3-up)</span></div>
+    <div class="slide-title">What it added up to</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>~71K</b> incremental DAU · <b>~208K</b> msgs/week · <b>25–45K</b> sends/day sustained</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"71 thousand incremental U.S. DAU. 200K+ messages a week. 25 to 45 thousand sends per day sustained across the tournament. The wedge plus the system around it compounded. Topic Chats became a stronger product once it stopped trying to be everything at once."</div>
+    </div>
+    <div class="tieback" data-role="patreon">
+      <div class="role-label">Patreon close</div>
+      "The takeaway I'd carry to Patreon: communities scale when you stop trying to be everything at once and pick the wedge where the audience already wants to be in the same place at the same time."
+    </div>
+    <div class="tieback hidden" data-role="pinterest">
+      <div class="role-label">Pinterest close</div>
+      "Two takeaways for Pinterest: one, discovery has to travel; two, retention is a property of the system, not of any one surface."
+    </div>
+    <div class="tieback hidden" data-role="reddit">
+      <div class="role-label">Reddit close</div>
+      "The summary: a one-and-done surface, the wedge with natural concurrency, the live signal across the app, the notification system that pulled users back. Every part of that maps to retention from cold landings."
+    </div>
+  </div>
+</div>
+
+<!-- APPENDIX -->
+<details class="appendix">
+  <summary>Appendix slides (hidden, pull up if asked)</summary>
+  <div class="ap-slide"><b>A1 — Send limits</b><code>before-send-limit.png</code> / <code>after-send-limit.png</code> before/after. Rate cap that catches spammers, not regulars.</div>
+  <div class="ap-slide"><b>A2 — Mark as Off Topic</b><code>mark-as-off-topic.gif</code> + 3× adoption stat. One-tap moderation, 3× adoption vs the formal report flow, surfaced signal the report flow never saw.</div>
+  <div class="ap-slide"><b>A3 — Sharing & invite loops</b><code>sharing-topic-chats-sender.gif</code> + <code>sharing-topic-chats-receiver.png</code>. Turn chat into distribution, preserve live context off-platform.</div>
+  <div class="ap-slide"><b>A4 — What's next</b><code>associated-topic-chats-nba01.png</code> + <code>cross-posting-content.png</code> + <code>topic-chats-polls-voting.gif</code>. Discovery flywheel between teams and chats, cross-posting, time-bound polls. Plus the entry point redesign, now that the product has earned the right.</div>
+  <div class="ap-slide"><b>A5 — Tradeoff / regret</b>The daily-challenges-as-solo-loop assumption that landed in group sends instead, would scope leaderboards earlier next time.</div>
+</details>
+
+<!-- STRESS TEST -->
+<details class="stress">
+  <summary>Stress-test / objection cheat sheet</summary>
+
+  <div class="stress-q">
+    <div class="q">"A decision where data and judgment disagreed?"</div>
+    <div class="a">Volume data pointed at generic interest chats — they had the most members on paper. Judgment (and the dual reframe from the timestamps and chat-content read) said sports had the two properties that actually mattered: <i>topic specificity</i> (people know what to say because the game is the anchor) and <i>natural concurrency</i> (everyone shows up at the same time because the game has a schedule). I picked the wedge with both signals over the wedge with the bigger headcount. Validated by the +32K DAU from notifications and the 52K peak concurrent in a single March Madness chat.</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"Why is the entry point buried? Why not fight for something prominent?"</div>
+    <div class="a">"User research surfaced people had trouble finding the entry point, and I took that signal seriously. I explored more prominent placements early on, but I made the judgment call quickly — and it derived directly from the reframe. The reframe says the problems are topic specificity and concurrency. A more prominent entry point would grow top of funnel, but it would also <i>compound</i> both: more users finding broad-topic empty rooms means more one-and-done participation, more disappointed cold landings, more trust burned. You don't scale a broken loop, you fix it. So I sequenced. Solve the underlying problems first via Problems 1 and 2 — the scoreboard solves topic + live-anchor inside the chat, the live-state signal solves concurrency-discovery across surfaces. Then Problem 3 is re-entry: mechanisms that pull users back at moments when both problems are <i>already</i> solved. Notifications turned out to be the biggest lever at +32K DAU. Once the loop was demonstrably working, the entry-point conversation became a much stronger one — with real numbers behind it."</div>
+    <div class="tone">Tone: the judgment derives from the reframe, not from politics. "Scaling before solving compounds the problems" is the staff move — name the systems-level reason, not just "we didn't have the numbers yet." That second framing reads as compliance with a constraint; the first reads as product judgment.</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"What would you do with another quarter?"</div>
+    <div class="a">"Now that the product has earned the right, the entry point itself is the next unlock. Here's the sketch." (Have a 1-slide sketch ready in appendix.) Don't lead with this, close with it. Lead = apology. Close = roadmap.</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"What was the strongest argument against the sports wedge?"</div>
+    <div class="a">Probably: sports narrows the TAM and locks us into seasonal traffic. Counter-argument was right on its face. What would have changed my mind: if the category analysis hadn't shown sports winning on <i>both</i> axes (topic specificity and concurrency) as cleanly as it did, or if the operating cost of live-event integrations had been prohibitive. Neither was true. The wedge let us learn the loop where both signals were already solved, then generalize the playbook — scoreboard anchor + live-state signal + notification taxonomy — to other live moments after.</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"You picked sports over generic interest chats even though the data showed generic interest had the most members. Walk me through the conversation where someone senior pushed back on that, and what specifically changed their mind."</div>
+    <div class="a"><b style="color:var(--ink);">⚠ Prep a real answer. HM-flagged as the hardest panel question.</b> The current "data vs judgment" answer (above) explains <i>your reasoning</i> but not <i>the room</i>. Staff candidates can re-enact the room. Three things to prep:<br><br><b>1.</b> Name the person — actual PM, eng lead, or exec who pushed back, not "the team."<br><b>2.</b> Name their specific objection — not "they preferred volume" but the precise argument they made (e.g., "we'll never hit DAU targets on seasonal traffic," or "sports narrows the brand").<br><b>3.</b> Name the artifact that turned the argument — the chart, the demo, the pilot data, the qualitative quote. The moment the argument <i>turned</i>, not the conclusion you both eventually reached.<br><br>If the call was actually uncontested, that's a tell — but you can still recover by naming who you proactively went to <i>before</i> they could push back, and what you brought them. Without a named partner, this answer reads as either lucky or unowned.</div>
+    <div class="tone">Tone: re-enact the room, don't summarize the reasoning. "I went to [name] with [artifact] because I knew [their objection] would be the hardest one to defend. What turned it was…"</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"You killed your own pitch on Games. Walk me through a moment you killed something of your own on Topic Chats, before it shipped."</div>
+    <div class="a"><b style="color:var(--ink);">⚠ Prep a real answer here.</b> The HM panel will ask this as the staff-vs-senior cut. Daily Challenges in appendix A5 is a <i>post-hoc</i> learning (you misread the data). They'll want a <i>prospective</i> kill, something you saw coming and stopped before it shipped. Candidates worth thinking through: a slide you cut from the original notification spec; an entry-point pitch you rejected before bringing it to leadership; a chat surface variant you killed in design review. Pick the one with the cleanest "saw the bleed coming → stopped it → here's what the trade was" arc.</div>
+    <div class="tone">Tone: name the call <i>before</i> it shipped, not after. That's the staff-vs-senior cut.</div>
+  </div>
+</details>
+
+</main>
+
+<script>
+  const buttons = document.querySelectorAll('.roles button');
+  function setRole(role) {
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.role === role));
+    document.querySelectorAll('.framing-block').forEach(el => {
+      el.classList.toggle('active', el.dataset.role === role);
+    });
+    document.querySelectorAll('.tieback').forEach(el => {
+      el.classList.toggle('hidden', el.dataset.role !== role);
+    });
+    localStorage.setItem('deck-role', role);
+  }
+  buttons.forEach(b => b.addEventListener('click', () => setRole(b.dataset.role)));
+  setRole(localStorage.getItem('deck-role') || 'patreon');
+</script>
+
+</body>
+</html>

@@ -272,6 +272,18 @@
   border-color: var(--text-primary);
 }
 .ip-btn--primary:hover { background: #2A2D34; }
+.ip-btn--ghost {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: transparent;
+  margin-left: 8px;
+  color: var(--text-secondary);
+}
+.ip-btn--ghost:hover {
+  background: var(--bg-sunken);
+  color: var(--text-primary);
+}
 
 /* ---------- Modal ---------- */
 

@@ -37,6 +37,19 @@ export interface Role {
     offer: string;
   };
   questions: Record<string, RoleQuestion>;
+  pendingTailor?: boolean;
+  tailorExtra?: string;
+  tailored?: {
+    html: string;
+    evidence?: { bulletText: string; claimIds: string[] }[];
+    hmNotes?: string;
+    fillRatio?: number;
+    pages?: number;
+    pdfPath?: string | null;
+    warnings?: string[];
+    ats?: { pass: boolean; hardFailures: string[]; warnings: string[]; extractedChars?: number } | null;
+    updatedAt?: string;
+  } | null;
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
@@ -67,6 +80,20 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ questionId, extraDetails }),
     }),
+  queueTailor: (slug: string, tailorExtra?: string) =>
+    req<Role>(`/roles/${slug}/queue-tailor`, {
+      method: "POST",
+      body: JSON.stringify({ tailorExtra: tailorExtra ?? "" }),
+    }),
+  buildTailoredPdf: (slug: string) =>
+    req<{
+      pdfPath: string | null;
+      fillRatio: number;
+      pages: number;
+      warnings: string[];
+      rung: string;
+      ats?: { pass: boolean; hardFailures: string[]; warnings: string[] };
+    }>(`/roles/${slug}/tailored.pdf`, { method: "POST" }),
   syncStatus: () => req<SyncStatus>("/sync"),
   syncNow: () =>
     req<SyncStatus>("/sync", { method: "POST" }),
@@ -102,6 +129,7 @@ export function followUpDue(role: Role): { due: boolean; days: number; threshold
 export function pendingCount(role: Role): number {
   let n = 0;
   if (role.pendingContext) n++;
+  if (role.pendingTailor) n++;
   for (const q of Object.values(role.questions)) if (q.pendingRegen) n++;
   return n;
 }

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Julia Tang — Cover Letter, Duolingo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Tokens ─────────────────────────────────────────────── */
+    :root {
+      --font-display: "Instrument Serif", "Times New Roman", serif;
+      --font-sans:    "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+      --brand-primary:   #C5DCEA;
+      --brand-secondary: #F4D9CC;
+      --brand-accent:    #ECD8DD;
+
+      --brand-bar: linear-gradient(90deg, #C5DCEA 0%, #ECD8DD 50%, #F4D9CC 100%);
+
+      --bg-canvas:   #FDFDFC;
+      --bg-surface:  #FFFFFF;
+
+      --text-primary:   #15171C;
+      --text-secondary: #5A5D66;
+      --text-tertiary:  #8B8E96;
+
+      --border-subtle:  #EAE6DF;
+      --border-default: #D8D3CB;
+
+      --shadow-md: 0 4px 12px rgba(20,22,28,.06), 0 2px 4px rgba(20,22,28,.04);
+
+      --page-w: 720px;
+    }
+
+    /* ─── Reset ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── Screen shell ───────────────────────────────────────── */
+    html {
+      background:
+        radial-gradient(60% 70% at 18% 28%, rgba(197,220,234,0.55) 0%, transparent 62%),
+        radial-gradient(55% 65% at 82% 18%, rgba(236,216,221,0.45) 0%, transparent 64%),
+        radial-gradient(70% 75% at 62% 88%, rgba(244,217,204,0.50) 0%, transparent 66%),
+        #F5F2EE;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 40px 20px 60px;
+    }
+
+    /* ─── Export bar (screen only) ───────────────────────────── */
+    .export-bar {
+      max-width: var(--page-w);
+      margin: 0 auto 14px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-export {
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: 999px;
+      padding: 7px 16px;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: border-color .15s, color .15s;
+    }
+    .btn-export:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
+    /* ─── Page card ──────────────────────────────────────────── */
+    .page {
+      max-width: var(--page-w);
+      margin: 0 auto;
+      background: var(--bg-surface);
+      border-radius: 16px;
+      box-shadow: var(--shadow-md), 0 0 0 1px rgba(20,22,28,.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 980px;
+    }
+
+    /* ─── Top brand bar ──────────────────────────────────────── */
+    .brand-bar {
+      height: 3px;
+      background: var(--brand-bar);
+    }
+
+    /* ─── Header ─────────────────────────────────────────────── */
+    .header {
+      padding: 40px 52px 32px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .header__left {
+      flex-shrink: 0;
+    }
+
+    .header__name {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .header__name em {
+      font-style: italic;
+    }
+
+    .header__role {
+      font-size: 12.5px;
+      color: var(--text-tertiary);
+    }
+
+    .header__meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .header__meta-item {
+      font-size: 12.5px;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    a.header__meta-item:hover { color: var(--text-primary); }
+
+    .header__meta-sep {
+      display: none;
+    }
+
+    .header__meta-pw {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-tertiary);
+      background: var(--border-subtle);
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin-left: 4px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ─── Body ───────────────────────────────────────────────── */
+    .body {
+      padding: 44px 52px 52px;
+      flex: 1;
+    }
+
+    .date {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.04em;
+      margin-bottom: 30px;
+    }
+
+    .salutation {
+      font-size: 14.5px;
+      font-weight: 400;
+      color: var(--text-primary);
+      letter-spacing: -0.005em;
+      margin-bottom: 28px;
+    }
+
+    .prose p {
+      font-size: 14.5px;
+      line-height: 1.78;
+      color: var(--text-secondary);
+      margin-bottom: 18px;
+      letter-spacing: -0.005em;
+    }
+    .prose p:last-child { margin-bottom: 0; }
+
+    .prose strong {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .prose em {
+      font-style: italic;
+    }
+
+    .prose a {
+      color: var(--text-primary);
+      text-decoration: underline;
+      text-decoration-color: var(--brand-primary);
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      transition: text-decoration-color .2s;
+    }
+    .prose a:hover { text-decoration-color: var(--text-primary); }
+
+    /* ─── Sign-off ───────────────────────────────────────────── */
+    .sign-off {
+      margin-top: 34px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .sign-off__valediction {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 10px;
+    }
+
+    .sign-off__name {
+      font-family: var(--font-display);
+      font-style: normal;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .sign-off__links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sign-off__link {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color .15s;
+    }
+    .sign-off__link:hover { color: var(--text-primary); }
+
+    /* ─── Bottom brand bar ───────────────────────────────────── */
+    .brand-bar-bottom {
+      height: 2px;
+      background: var(--brand-bar);
+      opacity: 0.5;
+    }
+
+    /* ─── Print / PDF ────────────────────────────────────────── */
+    @media print {
+      html { background: white; }
+      body { background: white; padding: 0; }
+      .export-bar { display: none; }
+      .page {
+        max-width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .header { padding: 32px 44px 26px; }
+      .body { padding: 36px 44px 44px; }
+      .prose p { font-size: 13.5px; margin-bottom: 14px; }
+      .brand-bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .brand-bar-bottom {
+        print-color-adjust: exact; -webkit-print-color-adjust: exact;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+      }
+    }
+
+    @page {
+      size: letter;
+      margin: 0.55in 0.5in;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="export-bar">
+    <button class="btn-export" onclick="window.print()">Save as PDF</button>
+  </div>
+
+  <div class="page">
+    <div class="brand-bar"></div>
+
+    <header class="header">
+      <div class="header__left">
+        <div class="header__name">Julia Tang</div>
+        <div class="header__role">Staff Product Designer</div>
+      </div>
+      <div class="header__meta">
+        <a href="mailto:juliaxtang@gmail.com" class="header__meta-item">juliaxtang@gmail.com</a>
+        <a href="https://julia-tang.site" target="_blank" class="header__meta-item">julia-tang.site</a><span class="header__meta-pw">pw: 2026</span>
+      </div>
+    </header>
+
+    <main class="body">
+
+      <p class="date">May 2026</p>
+
+      <p class="salutation">Dear Duolingo Hiring Team,</p>
+
+      <div class="prose">
+
+        <p>
+          I speak five languages and am working on a sixth. Duolingo is a big part of how that
+          started, and not in a surface way. Language learning is genuinely daunting for most
+          people: you can't measure your own progress, you feel incompetent for a long time, and
+          the activation energy to even begin is enormous.
+        </p>
+
+        <p>
+          What Duolingo figured out, and what I think is underappreciated as a design achievement,
+          is that it solves the cold-start problem. Short lessons, immediate feedback, XP that makes
+          you feel capable before you technically are: it decouples perceived progress from actual
+          fluency, and that's what gets people through the door. It worked on me. I've since
+          graduated to platforms built for intermediate and advanced learners, but Duolingo did
+          exactly what it needed to: it made the first step feel possible. That's the product I
+          want to spend my career on.
+        </p>
+
+        <p>
+          At Snapchat I own design for Games as a Staff Product Designer — defining the vision,
+          building the exec case, shipping to 30M+ DAU, and developing the designers around me.
+          Getting there required holding both ends of the range at once: setting the long-term
+          strategic frame while also being the person who sweats a transition curve or a line of
+          microcopy until it's right.
+        </p>
+
+        <p>
+          That combination is what I find most satisfying about design work, and it's where I
+          think I'd contribute most at Duolingo. I care as much about the unexpected moments of
+          delight that make a product feel alive as I do about the business logic underneath them.
+          AI is part of how I get there — I use Cursor and Claude daily across the full design
+          process, and have shipped AI-driven features at Snap.
+        </p>
+
+        <p>
+          Before Snap I was at Tinder for three years, where I shipped Festival Mode zero-to-one
+          in two months with engagement that more than doubled the main experience, and led
+          Tappy Cloud, a backend-driven profile system that has since powered 50+ experiments and
+          an estimated $50-110M in revenue lift. The through line across all of it is consumer
+          products where the design has to earn the habit, not just enable the function.
+        </p>
+
+        <p>
+          Half a billion learners is a number that actually means something to me. I'd love to
+          talk about what the team is building.
+        </p>
+
+      </div>
+
+      <div class="sign-off">
+        <p class="sign-off__valediction">Warmly,</p>
+        <div class="sign-off__name">Julia Tang</div>
+        <div class="sign-off__links">
+          <a href="https://julia-tang.site" target="_blank" class="sign-off__link">julia-tang.site</a>
+          <a href="mailto:juliaxtang@gmail.com" class="sign-off__link">juliaxtang@gmail.com</a>
+        </div>
+      </div>
+
+    </main>
+
+    <div class="brand-bar-bottom"></div>
+  </div>
+
+</body>
+</html>

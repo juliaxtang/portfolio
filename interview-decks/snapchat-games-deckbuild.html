@@ -1,0 +1,1846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Snapchat Games — deck build reference</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #15171C;
+    --ink-soft: #5A5D66;
+    --ink-faint: #8B8E96;
+    --paper: #FDFCFA;
+    --card: #FFFFFF;
+    --line: #EAE6DF;
+    --line-strong: #D8D3CB;
+
+    --brand-blue: #C5DCEA;
+    --brand-peach: #F4D9CC;
+    --brand-lavender: #DCD2E8;
+    --brand-wash: rgba(197, 220, 234, 0.40);
+    --brand-wash-soft: rgba(197, 220, 234, 0.20);
+    --brand-gradient: linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%);
+    --brand-gradient-soft: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%);
+    --brand-aurora:
+      radial-gradient(120% 140% at 15% 25%, rgba(197, 220, 234, 0.85) 0%, rgba(197, 220, 234, 0.4) 35%, transparent 75%),
+      radial-gradient(130% 130% at 85% 15%, rgba(220, 210, 232, 0.8) 0%, rgba(220, 210, 232, 0.35) 40%, transparent 80%),
+      radial-gradient(140% 150% at 65% 95%, rgba(244, 217, 204, 0.85) 0%, rgba(244, 217, 204, 0.4) 40%, transparent 80%),
+      #FDFCFA;
+
+    --accent: var(--brand-peach);
+    --accent-2: var(--brand-blue);
+    --accent-3: var(--brand-lavender);
+
+    --hi: rgba(244, 217, 204, 0.45);
+
+    --font-display: "Instrument Serif", "Times New Roman", serif;
+    --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink); background: var(--paper);
+    line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  header.top {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(250, 248, 245, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 28px;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  header.top h1 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+  header.top .meta { font-size: 12px; color: var(--ink-soft); }
+  .roles {
+    margin-left: auto;
+    display: flex; gap: 6px;
+    background: #fff; padding: 4px;
+    border: 1px solid var(--line); border-radius: 999px;
+  }
+  .roles button {
+    border: 0; background: transparent; font: inherit;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 999px;
+    cursor: pointer; color: var(--ink-soft);
+    transition: background 120ms, color 120ms;
+  }
+  .roles button.active { background: var(--ink); color: white; }
+  main { max-width: 1080px; margin: 0 auto; padding: 36px 28px 80px; }
+  .intro { margin-bottom: 48px; }
+  .intro h2 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.02em; font-weight: 600; }
+  .intro p { color: var(--ink-soft); margin: 0; max-width: 64ch; }
+  .handoff {
+    margin-top: 18px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .handoff .label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); font-family: var(--mono); font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .handoff .text { font-size: 15px; font-family: var(--font-display); }
+  .handoff .text[data-role] { display: none; }
+  .handoff .text.active { display: block; }
+  .section-band {
+    margin: 48px 0 18px;
+    display: flex; align-items: baseline; gap: 14px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  }
+  .section-band h3 {
+    font-size: 13px; font-weight: 600; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .section-band .pacing { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+  .slide {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin: 14px 0;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+  .visual {
+    background: var(--brand-aurora);
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line);
+    position: relative;
+  }
+
+  /* SLIDE PREVIEW SYSTEM (.sp) — shared with topic-chats-deckbuild */
+  .sp {
+    position: relative; width: 100%; height: 100%;
+    background: var(--brand-aurora);
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 8px 14px;
+    font-family: var(--font-sans);
+    color: var(--ink);
+  }
+  .sp-eyebrow {
+    grid-column: 1; grid-row: 1;
+    font-family: var(--mono); font-size: 8px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-soft); align-self: start;
+  }
+  .sp-title {
+    grid-column: 1; grid-row: 2;
+    font-family: var(--font-display); font-size: 22px;
+    line-height: 1.05; color: var(--ink);
+    align-self: end; letter-spacing: -0.005em;
+  }
+  .sp-title.lg { font-size: 26px; }
+  .sp-title.sm { font-size: 18px; }
+  .sp-sub {
+    grid-column: 1; grid-row: 3;
+    font-size: 8.5px; color: var(--ink-soft);
+    line-height: 1.4; max-width: 95%; align-self: end;
+  }
+  .sp-visual {
+    grid-column: 2; grid-row: 1 / span 3;
+    align-self: center; justify-self: end;
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .sp-pageno {
+    position: absolute; bottom: 10px; right: 14px;
+    font-family: var(--mono); font-size: 8px;
+    color: var(--ink-faint); letter-spacing: 0.05em;
+  }
+  .sp-visual img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .sp-phone {
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 12px 28px rgba(20,22,28,.12), 0 4px 8px rgba(20,22,28,.06);
+    background: #fff;
+    border: 1px solid rgba(20,22,28,.04);
+  }
+  .sp-phone img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sp-phone-trio {
+    position: relative; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sp-phone-trio .sp-phone {
+    position: absolute; width: 38%; aspect-ratio: 9/19;
+  }
+  .sp-phone-trio .sp-phone:nth-child(1) { left: 8%; transform: rotate(-5deg); z-index: 1; }
+  .sp-phone-trio .sp-phone:nth-child(2) { left: 31%; transform: rotate(2deg); z-index: 3; }
+  .sp-phone-trio .sp-phone:nth-child(3) { left: 54%; transform: rotate(-2deg); z-index: 2; }
+  .sp-phone-single {
+    width: 56%; height: 92%;
+    border-radius: 10px;
+    box-shadow: 0 12px 28px rgba(20,22,28,.12), 0 4px 8px rgba(20,22,28,.06);
+    background: #fff; overflow: hidden;
+    transform: rotate(2deg);
+  }
+  .sp-phone-single img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .sp-constellation { width: 100%; height: 100%; position: relative; }
+  .sp-constellation .sp-phone { position: absolute; width: 22%; aspect-ratio: 9/19; }
+  .sp[data-archetype="bleed"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding: 0;
+  }
+  .sp[data-archetype="bleed"] .sp-eyebrow {
+    position: absolute; top: 14px; left: 16px;
+    color: #fff; mix-blend-mode: difference; z-index: 2;
+  }
+  .sp[data-archetype="bleed"] .sp-visual {
+    grid-column: 1; grid-row: 1 / -1; width: 100%; height: 100%;
+  }
+  .sp[data-archetype="bleed"] .sp-visual img { width: 100%; height: 100%; object-fit: cover; }
+  .sp[data-archetype="bleed"] .sp-pageno { color: #fff; mix-blend-mode: difference; }
+  .sp-metric {
+    font-family: var(--font-display); color: var(--ink);
+    line-height: 0.95; letter-spacing: -0.02em;
+  }
+  .sp-metric .num { font-size: 88px; display: block; }
+  .sp-metric .num.sm { font-size: 56px; }
+  .sp-metric .num.xs { font-size: 40px; }
+  .sp-metric .cap {
+    font-family: var(--mono); font-size: 8px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-soft); margin-top: 4px;
+    line-height: 1.35; display: block;
+  }
+  .sp-metric-stack { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .sp-metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
+  .sp-metric-grid .num { font-size: 38px; }
+  .sp[data-archetype="oneliner"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="oneliner"] .sp-title {
+    grid-column: 1; grid-row: 2; font-size: 34px;
+    align-self: center; max-width: 90%; line-height: 1.08;
+  }
+  .sp[data-archetype="oneliner"] .sp-visual { display: none; }
+  .sp[data-archetype="oneliner"] .sp-title em { font-style: italic; color: var(--ink-soft); }
+  .sp[data-archetype="quote"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="quote"] .sp-title {
+    grid-column: 1; grid-row: 2;
+    font-style: italic; font-size: 30px;
+    align-self: center; max-width: 86%;
+  }
+  .sp[data-archetype="quote"] .sp-sub {
+    text-transform: uppercase; font-family: var(--mono);
+    letter-spacing: 0.14em; font-size: 8px; color: var(--ink-faint);
+  }
+  .sp[data-archetype="quote"] .sp-visual { display: none; }
+  .sp[data-archetype="diagram"] .sp-title { font-size: 16px; }
+  .sp-2x2 {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+    gap: 6px; width: 100%; height: 100%;
+  }
+  .sp-2x2 .cell {
+    background: #fff; border: 1px solid var(--line); border-radius: 6px;
+    padding: 8px 10px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sp-2x2 .cell .job {
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint);
+  }
+  .sp-2x2 .cell .what {
+    font-family: var(--font-display); font-size: 14px; color: var(--ink);
+  }
+  .sp[data-archetype="kill"] {
+    grid-template-columns: 1fr 1fr; grid-template-rows: 1fr;
+    gap: 0; padding: 0;
+  }
+  .sp[data-archetype="kill"] .sp-pageno { color: #fff; mix-blend-mode: difference; }
+  .sp-kill-left, .sp-kill-right {
+    padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .sp-kill-left { background: var(--ink); color: var(--paper); }
+  .sp-kill-right { background: var(--paper); color: var(--ink); }
+  .sp-kill-eyebrow {
+    font-family: var(--mono); font-size: 7.5px;
+    text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.55;
+  }
+  .sp-kill-title {
+    font-family: var(--font-display); font-size: 15px; line-height: 1.15;
+  }
+  .sp-kill-title.struck {
+    text-decoration: line-through; text-decoration-color: var(--brand-peach);
+    text-decoration-thickness: 1.5px;
+  }
+  .sp-kill-note { font-size: 8px; opacity: 0.6; }
+  .sp-tag {
+    position: absolute; background: #fff; border-radius: 999px;
+    padding: 3px 8px; font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink);
+    box-shadow: 0 2px 6px rgba(20,22,28,.10);
+  }
+
+  /* === Template-aligned additions === */
+  .sp-title.italic { font-style: italic; font-weight: 400; }
+  .sp-title.sans {
+    font-family: var(--font-sans); font-weight: 700; font-style: normal;
+    font-size: 22px; letter-spacing: -0.015em;
+  }
+  .sp-phone-framed {
+    position: relative; border-radius: 18px; background: #15171C;
+    padding: 4px; box-shadow: 0 10px 24px rgba(20,22,28,.10);
+    border: 1px solid #1a1c22;
+  }
+  .sp-phone-framed::before {
+    content: ""; position: absolute;
+    top: 4px; left: 50%; transform: translateX(-50%);
+    width: 30%; height: 6px;
+    background: #15171C; border-radius: 0 0 6px 6px; z-index: 2;
+  }
+  .sp-phone-framed > .sp-phone-screen {
+    border-radius: 14px; overflow: hidden;
+    width: 100%; height: 100%; background: #fff;
+  }
+  .sp-phone-framed img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sp-leader {
+    position: absolute; font-family: var(--font-sans); font-size: 7px;
+    color: var(--ink-soft); line-height: 1.3; max-width: 110px;
+  }
+  .sp-leader b {
+    display: block; font-family: var(--font-sans); font-weight: 700;
+    color: var(--ink); font-size: 8px; margin-bottom: 1px;
+  }
+
+  /* Break: Evan quote — italic display, "go big" upright */
+  .sp[data-archetype="quote-break"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+    padding: 20px 24px;
+  }
+  .sp[data-archetype="quote-break"] .sp-quote {
+    grid-column: 1; grid-row: 2;
+    align-self: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 30px;
+    line-height: 1.04;
+    color: var(--ink);
+    max-width: 92%;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  .sp[data-archetype="quote-break"] .sp-quote .upright {
+    font-style: normal;
+  }
+  .sp[data-archetype="quote-break"] .sp-attribution {
+    position: absolute; bottom: 12px; right: 24px;
+    font-family: var(--mono); font-size: 8px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  /* Break: kill slide — asymmetric, no template chrome */
+  .sp[data-archetype="kill-break"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+    padding: 20px 22px;
+    background: var(--paper);
+  }
+  .sp[data-archetype="kill-break"] .sp-strike {
+    grid-column: 1; grid-row: 1 / span 2;
+    align-self: start;
+    margin-top: 24px;
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--ink-faint);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ink-faint);
+    line-height: 1.15;
+    max-width: 60%;
+    font-style: italic;
+    opacity: 0.6;
+  }
+  .sp[data-archetype="kill-break"] .sp-kill-headline {
+    grid-column: 1; grid-row: 3;
+    align-self: end;
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  /* Break: 6-phone constellation with one tilted */
+  .sp-constellation .sp-phone.deliberate-tilt {
+    transform: rotate(-4deg);
+  }
+
+  /* === Compositional variants for rhythm === */
+  .sp[data-archetype="phone-hero"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+    text-align: center;
+  }
+  .sp[data-archetype="phone-hero"] .sp-eyebrow { grid-column: 1; grid-row: 1; text-align: left; }
+  .sp[data-archetype="phone-hero"] .sp-title {
+    grid-column: 1; grid-row: 1; align-self: start; justify-self: center;
+    text-align: center; margin-top: 14px; font-size: 18px; max-width: 75%;
+  }
+  .sp[data-archetype="phone-hero"] .sp-visual { grid-column: 1; grid-row: 2; justify-self: center; }
+  .sp[data-archetype="phone-hero"] .sp-phone-hero {
+    height: 100%; aspect-ratio: 9/19;
+    border-radius: 10px; overflow: hidden;
+    box-shadow: 0 16px 32px rgba(20,22,28,.14), 0 4px 8px rgba(20,22,28,.08);
+    background: #fff;
+  }
+  .sp[data-archetype="phone-hero"] .sp-phone-hero img { width: 100%; height: 100%; object-fit: cover; }
+  .sp[data-archetype="phone-hero"] .sp-caption {
+    grid-column: 1; grid-row: 3;
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint); text-align: center; margin-top: 6px;
+  }
+
+  .sp[data-archetype="phone-bleed"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+    padding: 14px 16px;
+  }
+  .sp[data-archetype="phone-bleed"] .sp-eyebrow { grid-column: 1; grid-row: 1; }
+  .sp[data-archetype="phone-bleed"] .sp-visual {
+    grid-column: 1; grid-row: 2; justify-self: center; align-self: center;
+  }
+  .sp[data-archetype="phone-bleed"] .sp-title {
+    grid-column: 1; grid-row: 3; align-self: end;
+    font-size: 22px; line-height: 1.05;
+  }
+
+  .sp[data-archetype="top-strip"] {
+    background: var(--paper);
+    grid-template-columns: 1fr; grid-template-rows: 26% 1fr auto;
+    padding: 0; overflow: hidden;
+  }
+  .sp[data-archetype="top-strip"]::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0;
+    height: 26%; background: var(--brand-aurora); z-index: 0;
+  }
+  .sp[data-archetype="top-strip"] .sp-eyebrow {
+    position: absolute; top: 12px; left: 18px;
+    font-size: 7px; opacity: 0.8; z-index: 1;
+  }
+  .sp[data-archetype="top-strip"] .sp-title {
+    position: absolute; top: 50%; left: 22px;
+    transform: translateY(-50%);
+    font-family: var(--font-sans); font-weight: 700; font-style: normal;
+    font-size: 22px; letter-spacing: -0.015em; line-height: 1;
+    color: var(--ink); z-index: 1; margin: 0;
+  }
+  .sp[data-archetype="top-strip"] .sp-visual {
+    grid-column: 1; grid-row: 2 / span 2;
+    align-self: center; justify-self: center;
+    width: 88%; height: 80%; padding-top: 22%; z-index: 1;
+  }
+
+  .sp[data-archetype="metric-bleed"] {
+    grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-eyebrow { grid-column: 1; grid-row: 1; }
+  .sp[data-archetype="metric-bleed"] .sp-title {
+    grid-column: 1; grid-row: 2; align-self: end;
+    font-size: 17px; max-width: 85%;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-sub {
+    grid-column: 1; grid-row: 3;
+    font-family: var(--mono); font-size: 7px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-faint); max-width: 85%;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-visual {
+    grid-column: 2; grid-row: 1 / -1;
+    align-items: flex-end; justify-content: flex-end;
+    align-self: stretch; overflow: visible; position: relative;
+  }
+  .sp[data-archetype="metric-bleed"] .sp-mega {
+    font-family: var(--font-display); font-style: italic;
+    font-size: 220px; line-height: 0.78; letter-spacing: -0.04em;
+    color: var(--ink); position: absolute;
+    right: -14%; bottom: -8%; white-space: nowrap;
+  }
+
+  .sp[data-archetype="chart-hero"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr;
+  }
+  .sp[data-archetype="chart-hero"] .sp-eyebrow { grid-column: 1; grid-row: 1; }
+  .sp[data-archetype="chart-hero"] .sp-title {
+    grid-column: 1; grid-row: 1; align-self: start; justify-self: end;
+    text-align: right; font-size: 14px; max-width: 55%; margin-top: 12px;
+  }
+  .sp[data-archetype="chart-hero"] .sp-visual {
+    grid-column: 1; grid-row: 2; justify-self: stretch;
+    width: 100%; height: 100%;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 8px; box-shadow: 0 8px 20px rgba(20,22,28,.06);
+    padding: 8px; margin-top: 18px;
+  }
+  .sp[data-archetype="chart-hero"] .sp-visual img { object-fit: contain; }
+
+  .sp[data-archetype="triptych-top"] {
+    grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;
+  }
+  .sp[data-archetype="triptych-top"] .sp-eyebrow { grid-column: 1; grid-row: 1; }
+  .sp[data-archetype="triptych-top"] .sp-title {
+    grid-column: 1; grid-row: 1; align-self: start; justify-self: center;
+    text-align: center; font-size: 18px; margin-top: 14px;
+  }
+  .sp[data-archetype="triptych-top"] .sp-visual {
+    grid-column: 1; grid-row: 2 / span 2;
+    align-self: end; width: 100%; height: 80%;
+  }
+  .sp-triptych-3 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;
+    width: 100%; height: 100%; align-items: end;
+  }
+  .sp-triptych-3 .col { display: flex; flex-direction: column; align-items: center; }
+  .sp-triptych-3 .col-cap {
+    font-family: var(--font-sans); font-weight: 700;
+    font-size: 9px; color: var(--ink); margin-bottom: 4px;
+  }
+  .sp-triptych-3 .col-sub {
+    font-family: var(--font-sans); font-size: 7px;
+    color: var(--ink-soft); margin-bottom: 6px;
+    text-align: center; max-width: 90%;
+  }
+  .sp-triptych-3 .sp-phone {
+    width: 100%; aspect-ratio: 9/19;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(20,22,28,.08);
+  }
+  .visual.grid-3 {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; padding: 4px;
+  }
+  .visual.grid-6 {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2px; padding: 4px;
+  }
+  .visual img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block;
+  }
+  .visual.contain img { object-fit: contain; background: #fff; }
+  .visual .typeonly {
+    padding: 18px; text-align: center;
+    font-family: var(--font-display);
+  }
+  .visual .typeonly .big {
+    font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
+    display: block; line-height: 1.05;
+  }
+  .visual .typeonly .label {
+    font-size: 10px; color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 8px; font-family: var(--mono);
+  }
+  .visual.dark {
+    background: var(--brand-aurora);
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+  .visual.dark .typeonly { color: var(--ink); }
+  .body .slide-num { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+  .body .slide-title { font-size: 18px; font-weight: 600; margin: 2px 0 14px; letter-spacing: -0.01em; }
+  .field { margin: 12px 0; }
+  .field .label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); font-family: var(--mono); font-weight: 500; margin-bottom: 4px;
+  }
+  .on-slide {
+    background: var(--hi); padding: 10px 14px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+  }
+  .on-slide.none {
+    background: transparent; color: var(--ink-faint);
+    font-style: italic; padding: 0;
+  }
+  .talk { font-size: 14px; color: var(--ink); }
+  .tieback {
+    background: #fff;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px; border-radius: 4px;
+    font-size: 13.5px; color: var(--ink); margin-top: 4px;
+  }
+  .tieback[data-role="pinterest"] { border-left-color: var(--accent-2); }
+  .tieback[data-role="reddit"] { border-left-color: var(--accent-3); }
+  .tieback.hidden { display: none; }
+  .tieback .role-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+    font-family: var(--mono); color: var(--ink-faint);
+    margin-bottom: 4px; font-weight: 500;
+  }
+  .tieback.hero .role-label::after {
+    content: " · dwell here";
+    color: var(--ink-soft); font-weight: 600;
+  }
+  .pause-note {
+    font-size: 12px; color: var(--ink-soft);
+    font-style: italic; margin-top: 8px;
+  }
+  details.appendix, details.stress, details.close {
+    margin: 24px 0; padding: 16px 20px;
+    background: #fff; border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  details summary {
+    font-weight: 600; font-size: 14px; cursor: pointer;
+    list-style: none;
+  }
+  details summary::before { content: "▸ "; color: var(--ink-faint); font-size: 11px; }
+  details[open] summary::before { content: "▾ "; }
+  details .ap-slide, details .close-block {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line); font-size: 14px;
+  }
+  details .ap-slide b, details .close-block b { display: block; margin-bottom: 4px; }
+  .close-block[data-role] { display: none; }
+  .close-block.active { display: block; }
+  .stress-q {
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line); font-size: 14px;
+  }
+  .stress-q .q { font-weight: 600; margin-bottom: 6px; }
+  .stress-q .a { color: var(--ink-soft); }
+  code { font-family: var(--mono); font-size: 12px; background: #f1ede5; padding: 1px 5px; border-radius: 3px; }
+  @media (max-width: 720px) {
+    .slide { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Snapchat Games — deck build reference</h1>
+  <span class="meta">28 slides · ~15-18 min · long version · second case</span>
+  <div class="roles" role="tablist">
+    <button data-role="patreon" class="active">Patreon</button>
+    <button data-role="pinterest">Pinterest</button>
+    <button data-role="reddit">Reddit</button>
+  </div>
+</header>
+
+<main>
+
+<div class="intro">
+  <h2>Snapchat Games — second case</h2>
+  <p>Universal second case after Topic Chats. No standalone framing slide, the deck-level framing belongs to the anchor. Toggle the role pill above to swap the handoff line, key tie-back notes, and the close. All assets pulled from <code>public/projects/snapchat-games/</code>.</p>
+
+  <div class="handoff" id="handoff-block-anchor">
+    <div class="label">Handoff line — say before slide 1</div>
+    <div class="text active" data-role="patreon">"The second case is shorter and sits in a different domain, but the through-line is the same. I want to show you how I treated games not as entertainment, but as a community feature. As a reason for friends to talk."</div>
+    <div class="text" data-role="pinterest">"The second case is shorter, a different product but the same pattern. I argued an entire content category into existence inside an app that didn't have one, and then built the distribution system to support it."</div>
+    <div class="text" data-role="reddit">"The second case is shorter, a different product but the growth pattern is the one I want to land. Spotting an unowned signal in the data, shipping the loops, and earning the bigger bet from the results."</div>
+  </div>
+</div>
+
+<!-- DESIGN SYSTEM REFERENCE CARD -->
+<details class="appendix" open style="margin-bottom:36px;">
+  <summary>Slide design system — template-aligned, with deliberate breaks</summary>
+
+  <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;font-size:13px;color:var(--ink);">
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Baseline (the template)</div>
+      Full aurora background. Eyebrow top-left in <b>mono caps</b>, page number bottom-right (mono). Title in <b>Instrument Serif</b> — italic for hero/single-word/big-metric moments, roman for declarative two-line headlines. Body in <b>Geist sans</b>. Phones orthogonal in device frames; annotations via thin gray leader lines.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Typography hierarchy</div>
+      <b>Italic serif</b> — covers, single-word titles, big metric numerals ($100M, 47%), one-liners where rhythm matters. <b>Roman serif</b> — declarative 2-line headlines. <b>Bold sans</b> — alternate headline when slide already has a strong italic element below (metric grids, diagrams). <b>Mono caps</b> — eyebrows, page numbers, annotations, axis labels, attributions.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Visual treatment</div>
+      Phones orthogonal by default (template style), device-framed. Bare screenshots in soft surface cards for data viz. <b>Tilts only on break slides</b> or scrapbook moments — 2–4° max. Leader lines hairline gray. Soft pastel fills for diagram shapes (peach/lavender/blue). Mono LABEL inside shapes.
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Color</div>
+      Aurora bg every content slide. One filled pill / accent per slide max. The kill slide is the only deliberate dark-surface — and it should look like a kill, not template chrome.
+    </div>
+
+    <div style="grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;background:linear-gradient(180deg, rgba(244,217,204,0.20), transparent);padding:14px 14px 4px;margin:0 -8px;border-radius:8px;">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:10px;">⌖ Deliberate template breaks (3 max per deck)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 24px;font-size:12.5px;line-height:1.5;">
+        <div><b>Slide 17 · Evan quote</b><br>Kill the left hairline rule. Italic display serif fills 80% of canvas. <b>"go big" set in upright (un-italic)</b> — visual inversion makes the CEO's ask land as a directive. Mono attribution bottom-right, small. <i>Staff signal: hold a room with one sentence.</i></div>
+        <div><b>Slide 18 · The kill</b><br>This <b>must not</b> look like a template slide. Strike "Arcade economy..." in faded neutral italic, small, top-left. Drop "Hyper-casual caps out on IAP" at <b>1.5× deck headline scale</b>, bottom-left, rest of canvas empty. Asymmetry is the point. <i>Staff signal: she killed her own idea and is showing the receipt.</i></div>
+        <div><b>Slide 22 · 6 surfaces</b><br>Staggered with <b>visible SOCIAL / PASSIVE lane labels</b> in mono caps at the left margin. One phone rotated ~4° off-axis as the disruptive Resurrection bet. <i>Staff signal: systems thinking with the bets named.</i></div>
+      </div>
+    </div>
+
+    <div style="grid-column:1 / -1;border-top:1px solid var(--line);padding-top:14px;font-size:12px;color:var(--ink-soft);">
+      <div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Three mistakes to avoid when breaking template</div>
+      <b>1.</b> Breaking more than 3 slides — if everything's hero, nothing is. &nbsp; <b>2.</b> Breaking for decoration, not argument — every break is tied to a beat. Never tilt for cool. &nbsp; <b>3.</b> Half-committing — if the numeral bleeds, bleed it 15–20%, not 3%. Timid breaks read as mistakes.
+    </div>
+  </div>
+</details>
+
+<!-- SECTION 1 -->
+<div class="section-band">
+  <h3>1 · Where Games started</h3>
+  <span class="pacing">2 slides · ~35s</span>
+</div>
+
+<!-- SLIDE 1 — TITLE -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="title">
+      <div class="sp-eyebrow">Case Study 2</div>
+      <div class="sp-title lg">Snapchat Games:<br>Arguing a new<br>category into<br>existence.</div>
+      <div class="sp-visual">
+        <div class="sp-phone-trio">
+          <div class="sp-phone"><img src="../public/projects/snapchat-games/early snapchat game 1.gif" alt="" /></div>
+          <div class="sp-phone"><img src="../public/projects/snapchat-games/early snapchat games 2.gif" alt="" /></div>
+          <div class="sp-phone"><img src="../public/projects/snapchat-games/early snapchat game 3.gif" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">27</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 1 · ~20s · <span style="color:var(--ink);">TITLE</span></div>
+    <div class="slide-title">Case Study 2 — Snapchat Games</div>
+    <div class="field">
+      <div class="label">Eyebrow / Title</div>
+      <div class="on-slide" style="font-family:var(--font-display);font-size:20px;line-height:1.1;"><span style="font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);display:block;margin-bottom:6px;">CASE STUDY 2</span>Snapchat Games:<br>Arguing a new category into existence.</div>
+    </div>
+    <div class="field">
+      <div class="label">Visual</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Phone trio of three early hyper-casual game lens GIFs (or one carousel GIF + two game GIFs). Same tilt/stagger as Topic Chats title.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Quickly, the setup. Games on Snapchat were a buried subset of lenses, mixed into the camera carousel with face filters and AR effects. No dedicated category, no reliable search, no shared identity. You found a game by stumbling into it."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2 — PHONE-BLEED (carousel GIF center, title below) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="phone-bleed">
+      <div class="sp-eyebrow">Where Games Started</div>
+      <div class="sp-visual">
+        <div class="sp-phone-single" style="width:32%;height:88%;transform:none;"><img src="../public/projects/snapchat-games/old-lens-carousel.gif" alt="" /></div>
+      </div>
+      <div class="sp-title">Hyper-casual. Solo. <em>Buried.</em></div>
+      <div class="sp-pageno">28</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 2 · ~15s · <span style="color:var(--ink);">PHONE-BLEED (carousel above title)</span></div>
+    <div class="slide-title">Hyper-casual, solo, broken social</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">"Hyper-casual. Solo. Buried."</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The experiences were hyper-casual, single-screen, almost entirely solo. Nobody at Snap was calling Games a category. I had to make the case that they were one."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section-band">
+  <h3>2 · The signal</h3>
+  <span class="pacing">1 slide · ~25s</span>
+</div>
+
+<!-- SLIDE 3 — METRIC (stacked) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">The Signal</div>
+      <div class="sp-title sm">An anomaly<br>nobody owned.</div>
+      <div class="sp-visual">
+        <div class="sp-metric sp-metric-stack" style="align-items:flex-end;">
+          <div><span class="num">30<span style="font-size:0.6em;">%</span></span><span class="cap">D1 retention · top game lenses</span></div>
+          <div style="border-top:1px solid var(--line);width:100%;padding-top:10px;"><span class="num sm">7.8<span style="font-size:0.6em;">%</span></span><span class="cap">Spotlight unlock · vs 1.1% benchmark</span></div>
+        </div>
+      </div>
+      <div class="sp-pageno">29</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 3 · ~25s · <span style="color:var(--ink);">BIG-NUMBER METRIC</span></div>
+    <div class="slide-title">The data</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>30%</b> D1 retention · <b>7.8%</b> Spotlight unlock (vs <b>1.1%</b> benchmark)</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track (now carries the pre-CEO judgment too)</div>
+      <div class="talk">"Strong demand from a product area we hadn't invested in. 30% D1 retention on top game lenses with no daily mechanism in place. 7.8% Spotlight unlock rate against a 1.1% benchmark — game content drove action in a way regular lens content didn't. The org wasn't asking me to look at Games. I pulled the data because the signal was anomalous, and I made the call that it was worth a structured bet — before any exec ask existed."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback" data-role="pinterest">
+      <div class="role-label">Pinterest tie-back</div>
+      "For a discovery company, this is the parallel of the early signal in a content category nobody is merchandising yet."
+    </div>
+    <div class="tieback hidden" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "The 7.8% Spotlight unlock vs 1.1% benchmark is the Reddit-Growth-flavored insight — an anomaly in the data that nobody owns yet."
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section-band">
+  <h3>3 · The frame and the first wins</h3>
+  <span class="pacing">3 slides · ~75s</span>
+</div>
+
+<!-- SLIDE 4 — RESEARCH (stripped: 3 findings as short headlines, HMW chip in eyebrow) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="research-findings">
+      <div class="sp-eyebrow" style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.18em;color:var(--ink-soft);">Foundational UXR · 11 participants · ages 13–24</div>
+      <div class="sp-title sm" style="font-size:18px;">The research.</div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;height:100%;align-items:stretch;">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">HMW 1 → Fullscreen UX</div>
+            <div style="font-family:var(--font-display);font-size:22px;line-height:1.05;">Felt like filters,<br>not games.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">HMW 2 → Chat drawer</div>
+            <div style="font-family:var(--font-display);font-size:22px;line-height:1.05;">Games belong<br>in chat.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">HMW 3 → Turn-based fix</div>
+            <div style="font-family:var(--font-display);font-size:22px;line-height:1.05;">Social over<br>solo.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">30</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 4 · ~25s · <span style="color:var(--ink);">RESEARCH (stripped: HMW chip + short headline)</span></div>
+    <div class="slide-title">The research that shaped the bets</div>
+    <div class="field">
+      <div class="label">Why this stripped version</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Previous version was a wall of finding paragraphs. Now: study setup lives in a small mono eyebrow at the top, the title compresses to "The research", and each card is just the HMW chip + a 3-5 word headline. <b>The slide carries the shape of the argument; the talk track carries the substance.</b> Body copy on a slide always loses to body copy spoken out loud.</div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Mono eyebrow at top with the study setup ("Foundational UXR · 11 participants · ages 13–24"). Compact title below. Three equal cards, each a soft surface with: mono chip mapping HMW → bet at top, bottom-anchored display serif headline (~22px, 2 lines). No body paragraphs. The headline is the entire payload of the card.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Eyebrow: <b>Foundational UXR · 11 participants · ages 13–24</b> &nbsp; Title: <b>The research.</b> &nbsp; Cards: <b>Felt like filters, not games</b> (HMW 1 → Fullscreen UX) · <b>Games belong in chat</b> (HMW 2 → Chat drawer) · <b>Social over solo</b> (HMW 3 → Turn-based fix)</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The data told me there was demand. I needed qual to tell me what kind. I partnered with UXR on a foundational gaming study, 11 Snapchatters ages 13 to 24, half regular Lens-game players, half not, all also playing on at least one competitor platform like iMessage, Roblox, or Instagram. The findings came back simple. Lens games felt like filters, not games. Games belonged in chat. Social over solo. I turned each one into a how-might-we so the next slide of bets had a target to land against. The three cards on screen show the mapping, HMW one to fullscreen UX, HMW two to chat drawer, HMW three to turn-based fix, one to one."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback hidden" data-role="pinterest"></div>
+    <div class="tieback" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "Quant gave me the anomaly, qual told me what to build against. Pairing them before scoping the work is the difference between shipping three bets and shipping three guesses."
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5 — DIAGRAM (two-up: two jobs) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="diagram">
+      <div class="sp-eyebrow">The Frame</div>
+      <div class="sp-title sm">Two jobs<br>games could do.</div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;height:100%;">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:4px;">Job 1</div>
+            <div style="font-family:var(--font-display);font-size:18px;line-height:1.05;">Connections<br>+ Conversations</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:4px;">Job 2</div>
+            <div style="font-family:var(--font-display);font-size:18px;line-height:1.05;">Growth<br>+ Resurrection</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">31</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 5 · ~25s · <span style="color:var(--ink);">DIAGRAM (two-up)</span></div>
+    <div class="slide-title">Two jobs</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>Connections + Conversations</b> / <b>Growth + Resurrection</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Two jobs games could do for Snap. Connections and conversations, games as a reason to open a chat. Growth and resurrection, games as a reason to open the app, especially for users with a weaker social graph. The two jobs implied different surfaces. That became the system. The three initial bets that follow each load-bear against one or both of these jobs, and the fullscreen game UX in particular is the platform-level bet that earns its keep across both."</div>
+    </div>
+    <div class="tieback hero" data-role="patreon">
+      <div class="role-label">Patreon tie-back</div>
+      "This is the Patreon-relevant job. People didn't want a games destination, they wanted a reason to message a friend. Games were that reason."
+    </div>
+    <div class="tieback hidden" data-role="pinterest"></div>
+    <div class="tieback hidden" data-role="reddit"></div>
+  </div>
+</div>
+
+<!-- SLIDE 6 — TRIPTYCH-TOP (3 phones, one bet per HMW) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="triptych-top">
+      <div class="sp-eyebrow">First Bets</div>
+      <div class="sp-title sm" style="font-size:14px;">Three bets,<br>one per HMW.</div>
+      <div class="sp-visual">
+        <div class="sp-triptych-3">
+          <div class="col">
+            <div class="col-cap">Chat drawer</div>
+            <div class="col-sub">HMW 1: put games where users already expect them, inside chat.</div>
+            <div class="sp-phone"><img src="../public/projects/snapchat-games/chat drawer - after.gif" alt="" /></div>
+          </div>
+          <div class="col">
+            <div class="col-cap">Fullscreen UX</div>
+            <div class="col-sub">HMW 2: make a game lens read as a game, not a filter.</div>
+            <div class="sp-phone"><img src="../public/projects/snapchat-games/games-entrypoint-friendsfeed.png" alt="" /></div>
+          </div>
+          <div class="col">
+            <div class="col-cap">Turn-based fix</div>
+            <div class="col-sub">HMW 3: make the social loop legible enough to actually play with friends.</div>
+            <div class="sp-phone"><img src="../public/projects/snapchat-games/turn-based-problem-1.gif" alt="" /></div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">32</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 6 · ~25s · <span style="color:var(--ink);">TRIPTYCH-TOP (one bet per HMW)</span></div>
+    <div class="slide-title">Three bets, one per HMW</div>
+    <div class="field">
+      <div class="label">Retitle</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Old title "Three lower-effort, high-leverage bets" was consultant-speak. New title maps each bet to the HMW it answers from slide 4. <b>Staff signal: the bets aren't intuition, they're targeted responses to user problems I scoped before scoping the ships.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Three phones in a row, bold sans caption + one-line body above each (template p20 pattern). Orthogonal, soft shadow, centered title above. Each caption explicitly names the HMW the bet answers.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>Chat drawer</b> · HMW 1 &nbsp; <b>Fullscreen UX</b> · HMW 2 &nbsp; <b>Turn-based fix</b> · HMW 3</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Three bets, one per HMW. Chat drawer answers HMW 1, put games where users already expected them, inside the conversation. Fullscreen UX answers HMW 2, make a game lens actually read as a game, not a filter. Turn-based fix answers HMW 3, make the social loop legible enough that two people can actually play. Not three guesses, three targeted responses."</div>
+    </div>
+    <div class="tieback hero" data-role="patreon">
+      <div class="role-label">Patreon tie-back (moved from slide 5 — HM)</div>
+      "This is the Patreon-relevant move. Putting the loop inside the conversation, not next to it, is what compounds community engagement. Patreon's equivalent is creator drops, comments, DMs — features compound when you put them where the conversation already is, not in a separate destination."
+    </div>
+    <div class="tieback hidden" data-role="pinterest"></div>
+    <div class="tieback hidden" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "Three lower-effort high-leverage bets to test the loop before asking for more investment. Standard growth practice — each bet targets a specific HMW from the research, so success or failure is legible against a stated problem instead of 'does the feature work generally.'"
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3b -->
+<div class="section-band">
+  <h3>3b · Bet 1 · Chat drawer</h3>
+  <span class="pacing">3 slides · ~75s · gloss for short version</span>
+</div>
+
+<!-- SLIDE 7 — Bet 1 PROBLEM (chat drawer) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 1 · HMW 1</div>
+      <div class="sp-title sm">Games belong<br><em>in chat.</em></div>
+      <div class="sp-visual">
+        <div class="sp-phone-single" style="width:38%;height:88%;"><img src="../public/projects/snapchat-games/Chat drawer - Before.png" alt="" /></div>
+      </div>
+      <div class="sp-pageno">33</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 7 · ~25s · <span style="color:var(--ink);">BET 1 · PROBLEM</span></div>
+    <div class="slide-title">Bet 1, the problem</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"Games belong in chat."</b> · No way to start a game with a friend mid-conversation.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Bet one was about answering HMW one, put games where users already expected them, inside the conversation. Today, this is what the chat input bar looked like. Stickers, polls, location, no games. The research had said most users would ask a friend in chat first, then go looking. The flow was broken because the looking step had nowhere to land."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8 — Bet 1 SOLUTION (before/after of chat drawer) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 1 · Solution</div>
+      <div class="sp-title sm">A Games entry,<br><em>inside the drawer.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:80%;"><img src="../public/projects/snapchat-games/Chat drawer - Before.png" alt="" /></div>
+          <div class="sp-phone" style="width:80%;"><img src="../public/projects/snapchat-games/chat drawer - after.gif" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">34</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 8 · ~30s · <span style="color:var(--ink);">BET 1 · BEFORE/AFTER</span></div>
+    <div class="slide-title">Bet 1, the solution</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Before: no Games entry. After: Games icon opens a drawer of turn-based games playable with friends.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"I designed a Games entry into the chat drawer. Tap an icon while you're in any one-to-one or group chat, the drawer opens with every turn-based game playable with friends. The whole point is that games become something you do mid-conversation, not a separate destination you have to leave chat for."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9 — Bet 1 RESULT (chat drawer metrics + follow-up) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-result">
+      <div class="sp-eyebrow">Bet 1 · Result</div>
+      <div class="sp-title sm">One entry,<br><em>2.9M new Snaps.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+2.9M</div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Snaps · est. at full scale</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+1.35M</div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Active back-and-forth friendships</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">35</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 9 · ~25s · <span style="color:var(--ink);">BET 1 · RESULT (+ follow-up)</span></div>
+    <div class="slide-title">Bet 1, the result</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>+2.9M</b> est. Snaps sent · <b>+1.35M</b> active back-and-forth friendships · <b>+0.06%</b> NA DAU</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The drawer alone drove 2.9 million additional Snaps at full scale, and 1.35 million additional active back-and-forth friendships. The result was strong enough that we ran a follow-up, surfacing games at the top level of the chat input bar alongside stickers and polls, and that lifted North America DAU by another 0.06%. One bet, two ships, both moved Snap's primary social-send metric."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3c -->
+<div class="section-band">
+  <h3>3c · Bet 2 · Fullscreen UX</h3>
+  <span class="pacing">3 slides · ~75s · gloss for short version</span>
+</div>
+
+<!-- SLIDE 10 — Bet 2 PROBLEM (fullscreen UX) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 2 · HMW 2</div>
+      <div class="sp-title sm">Felt like<br><em>a filter, not a game.</em></div>
+      <div class="sp-visual">
+        <div class="sp-phone-single" style="width:38%;height:88%;"><img src="../public/projects/snapchat-games/old-lens-carousel.gif" alt="" /></div>
+      </div>
+      <div class="sp-pageno">36</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 10 · ~25s · <span style="color:var(--ink);">BET 2 · PROBLEM</span></div>
+    <div class="slide-title">Bet 2, the problem</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"Felt like a filter, not a game."</b> · Camera chrome dominated game lenses, breaking the mental model.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Bet two answered HMW two, the mental-model split. Games were built on the Lens framework, so they ran on top of the camera UI. For tap-to-play games that was fine. For anything with moderate mechanics, the camera controls got in the way, and the UI kept telling the user 'AR filter' when the experience was trying to say 'game'. And because games were user-generated, any lens could use any mechanic in any position, so the fix had to be universal, no per-game configuration."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11 — Bet 2 SOLUTION (fullscreen video) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 2 · Solution</div>
+      <div class="sp-title sm">Fullscreen on start.<br><em>Capture in play.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:80%;"><video src="../public/projects/snapchat-games/fullscreen-ux-1.mp4" autoplay muted loop playsinline></video></div>
+          <div class="sp-phone" style="width:80%;"><video src="../public/projects/snapchat-games/fullscreen-ux-2.mp4" autoplay muted loop playsinline></video></div>
+        </div>
+      </div>
+      <div class="sp-pageno">37</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 11 · ~30s · <span style="color:var(--ink);">BET 2 · SOLUTION</span></div>
+    <div class="slide-title">Bet 2, the solution</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Fullscreen on start. One unified capture: tap = silent start. Long-press = start + hands-free recording. Round auto-progresses to Preview.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"I redesigned the game lens experience to open fullscreen on start, and unified the capture control. A single tap starts the game silently. A long-press starts the game and starts hands-free recording. When the round ends, it auto-progresses to Preview so the clip is ready to send without leaving the game flow. Fading the camera UI after gameplay starts meant users could play without fear of accidentally tapping camera controls, which is what unlocked more complicated mechanics on the platform."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12 — Bet 2 RESULT (fullscreen metrics) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-result">
+      <div class="sp-eyebrow">Bet 2 · Result</div>
+      <div class="sp-title sm">More than<br><em>double the posts.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+120<span style="font-size:0.55em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Game Lens posts · iOS</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+130<span style="font-size:0.55em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Video posts across game lenses</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">38</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 12 · ~25s · <span style="color:var(--ink);">BET 2 · RESULT</span></div>
+    <div class="slide-title">Bet 2, the result</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>+120%</b> game lens posts (iOS) · <b>+130%</b> video posts · <b>+19%</b> engagement on the tested lens</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Game lens posts on iOS more than doubled, video posts across game lenses up 130%, engagement rate on the tested lens up 19%. And because the behavior shipped as the foundation for how every new game onboards, the gains compound every time a new title is added to the catalog."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3d -->
+<div class="section-band">
+  <h3>3d · Bet 3 · Turn-based fix</h3>
+  <span class="pacing">3 slides · ~85s · gloss for short version</span>
+</div>
+
+<!-- SLIDE 13 — Bet 3 PROBLEM (turn-based) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 3 · HMW 3</div>
+      <div class="sp-title sm">Multiplayer existed,<br><em>but was invisible.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:80%;"><img src="../public/projects/snapchat-games/turn-based-problem-1.gif" alt="" /></div>
+          <div class="sp-phone" style="width:80%;"><img src="../public/projects/snapchat-games/turn-based-problem-2.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">39</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 13 · ~25s · <span style="color:var(--ink);">BET 3 · PROBLEM</span></div>
+    <div class="slide-title">Bet 3, the problem</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Turn-based games ran on Snap's record-and-send framework with no invitation UI and no in-product explanation. Users had no idea multiplayer was possible.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Bet three answered HMW three, make the social loop legible enough to actually play. The turn-based flow was built on Snapchat's record-and-send framework with no dedicated invitation UI and no in-product explanation. You'd tap a game lens, play your turn, then it expected you to Snap the result to someone. Nothing told you that was the loop. Most users who stumbled in had no idea multiplayer was possible, let alone how to start it."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14 — Bet 3 SOLUTION (auto-capture + envelope redesign) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Bet 3 · Solution</div>
+      <div class="sp-title sm">Auto-capture the turn.<br><em>Re-skin the envelope.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:80%;"><video src="../public/projects/snapchat-games/auto-capture.mp4" autoplay muted loop playsinline></video></div>
+          <div style="display:flex;flex-direction:column;gap:8px;width:80%;">
+            <img src="../public/projects/snapchat-games/snap-envelopes - before.png" alt="" style="width:100%;border-radius:8px;" />
+            <img src="../public/projects/snapchat-games/snap-envelopes - after.png" alt="" style="width:100%;border-radius:8px;" />
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">40</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 14 · ~35s · <span style="color:var(--ink);">BET 3 · SOLUTION (two-up)</span></div>
+    <div class="slide-title">Bet 3, the solution</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Auto-capture at end of turn + redesigned game envelope ("your turn" / "their turn") + clearer Friends-feed callouts.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Two changes. First, auto-capture. When your turn ends, the game captures it automatically and prompts you to send, so the send step is explicit instead of invisible. Second, I redesigned the envelope. Game snaps used to disappear into a busy chat as generic envelopes. The new envelope reads as a game at a glance, with the lens artwork and a clear 'your turn' or 'their turn' state. Same treatment carried into the Friends feed so users could track game progress without losing it in the scroll."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15 — Bet 3 RESULT (turn-based metrics) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-result">
+      <div class="sp-eyebrow">Bet 3 · Result</div>
+      <div class="sp-title sm">Games engagement,<br><em>nearly tripled.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+178<span style="font-size:0.55em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Games engagement · YoY</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:56px;line-height:1;letter-spacing:-0.02em;">+20<span style="font-size:0.55em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Long game sessions (30s+) · QoQ</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">41</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 15 · ~25s · <span style="color:var(--ink);">BET 3 · RESULT</span></div>
+    <div class="slide-title">Bet 3, the result</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>+178%</b> games engagement YoY · <b>+18%</b> game shares QoQ · <b>+20%</b> long sessions QoQ · <b>+0.045%</b> days with chats sent</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Games engagement up 178% year-over-year. Game shares up 18% quarter-over-quarter. Long sessions, defined as 30 seconds or more, up 20%. And the chat-side metric moved too, days with chats sent up 0.045% on Android. Small UX fixes to a broken multiplayer loop had outsize impact on the chat product itself."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3e -->
+<div class="section-band">
+  <h3>3e · Aggregate · attributed</h3>
+  <span class="pacing">1 slide · ~25s</span>
+</div>
+
+<!-- SLIDE 16 — TOP-STRIP (bold sans headline + italic metric grid) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="top-strip">
+      <div class="sp-eyebrow">The Aggregate</div>
+      <div class="sp-title">Strong enough to change<br>the conversation.</div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;height:100%;align-items:end;justify-items:center;">
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Chat drawer</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:42px;line-height:1;letter-spacing:-0.02em;">+2.9M</div>
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:6px;">Snaps · est. at full scale</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Fullscreen UX</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:42px;line-height:1;letter-spacing:-0.02em;">+120<span style="font-size:0.6em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:6px;">Game posts · iOS</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);margin-bottom:6px;">Turn-based fix</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:42px;line-height:1;letter-spacing:-0.02em;">+178<span style="font-size:0.6em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:6px;">YoY engagement</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">42</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 16 · ~20s · <span style="color:var(--ink);">TOP-STRIP (per-bet result, not aggregate blob)</span></div>
+    <div class="slide-title">The aggregate, attributed</div>
+    <div class="field">
+      <div class="label">Why this changed</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Previous version had three metrics floating without ownership. Now each metric sits under a mono chip naming the bet it came from, in the same left-to-right order as the bets on Slide 6. <b>Staff signal: every bet earned a number, and the numbers are legible against the bets that produced them, not pooled into one ambiguous lift.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>Chat drawer</b> +2.9M Snaps · <b>Fullscreen UX</b> +120% game posts (iOS) · <b>Turn-based fix</b> +178% YoY engagement</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Each bet earned its own number. Chat drawer drove an estimated 2.9 million additional Snaps at full scale. Fullscreen UX more than doubled game video posts on iOS. The turn-based fix lifted year-over-year game engagement 178%. Three bets, three results, strong enough to change the conversation."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section-band">
+  <h3>4 · The inflection</h3>
+  <span class="pacing">3 slides · ~60s</span>
+</div>
+
+<!-- SLIDE 17 — ⌖ BREAK: directive quote, "go big" upright -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="quote-break">
+      <div class="sp-eyebrow">The Inflection</div>
+      <div class="sp-quote">"How can we <span class="upright">go big</span><br>with games?"</div>
+      <div class="sp-attribution">Evan Spiegel · CEO</div>
+      <div class="sp-pageno">43</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 17 · ~15s · <span style="color:var(--brand-peach);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · DIRECTIVE</span></div>
+    <div class="slide-title">The CEO walks over</div>
+    <div class="field">
+      <div class="label">Why break the template here</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Template quote with left hairline rule reads as wall ornament. Inverting italic/upright on "go big" makes the CEO's ask land as a directive, not decoration. <b>Staff signal: she can hold a room with one sentence.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Kill the left vertical rule. Set the quote in <b>italic Instrument Serif at display scale</b> (~80px), filling 80% of canvas width, with <b>"go big"</b> as the only upright (un-italic) words. Hanging open-quote outside the measure. Mono attribution bottom-right, small. No quote-mark graphic, no photo.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><i>"How can we go big with games?"</i> — Evan, CEO</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Results strong enough that the CEO walked over and asked the question."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18 — ⌖ BREAK: asymmetric kill, not template chrome -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="kill-break">
+      <div class="sp-eyebrow">The Kill</div>
+      <div class="sp-strike">Arcade economy on top<br>of the hyper-casual library.</div>
+      <div class="sp-kill-headline">Hyper-casual<br>caps out on IAP.</div>
+      <div class="sp-pageno">44</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 18 · ~25s · <span style="color:var(--brand-peach);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · KILL</span></div>
+    <div class="slide-title">The killed pitch</div>
+    <div class="field">
+      <div class="label">Why break the template here</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">This is the single moment where I sound staff instead of senior, and a hiring manager will read it as the hinge of the whole case. A template split-slide would neuter it. The kill slide must <i>look like</i> a kill. <b>Staff signal: I killed my own idea after the CEO had already greenlit a squad against it, and I'm showing the receipt instead of hiding it.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Paper canvas, no aurora. <b>Top-left, small:</b> "Arcade economy on top of the hyper-casual library." set in italic Instrument Serif at ~24px, muted gray, with a hairline strike-through. <b>Bottom-left, large:</b> "Hyper-casual caps out on IAP." in roman Instrument Serif at <b>1.5× the deck's normal headline scale</b> (~120px), anchored to the corner. Right two-thirds empty. Asymmetry is the point — push the type to the actual corner, don't half-commit.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Split slide. Left (dark): <s>Arcade economy on top of hyper-casual</s>. Right (light): "I designed an answer before I understood the market."</div>
+    </div>
+    <div class="field">
+      <div class="label">Build note</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">The slide should <i>look like</i> a kill: the pitched title is struck through in a sharp red line on a dark left half. Right half is the lesson on a clean light background. The visual is the staff signal, don't hide it behind a faded GIF.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"I want to flag this on purpose, because it's the single most important decision in this case. After the early wins, I had the CEO's attention and engineering ready to spin up a squad. The obvious move was to monetize what we had, so my first pitch was an arcade economy on top of the existing hyper-casual library. Score points playing games, spend them in a Snap storefront, top up with cash. Evan pushed back. His gut said the library itself was the wrong base. And he was right, I had designed an answer before I understood the market. So I stopped pitching, killed my own deck, and spent the next two weeks studying how mobile gaming actually monetizes. That's the work that earned the category bet on the next slide, and it's the work that earned the squad. The reason I'm dwelling on this slide is that the staff-signal here isn't that I shipped a strategy, it's that I was willing to throw out my own strategy after it had been blessed."</div>
+      <div class="pause-note">⏸ Say it on purpose. The killed pitch is the hinge of the whole case study.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19 — CHART-HERO (industry chart fills slide) — HM: annotate the IAP ceiling -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="chart-hero">
+      <div class="sp-eyebrow">The Category Bet</div>
+      <div class="sp-title sm" style="font-size:14px;">Hyper-casual<br>→ <em>hybrid-casual.</em></div>
+      <div class="sp-visual">
+        <img src="../public/projects/snapchat-games/hybrid-casual-revenue.png" alt="" />
+      </div>
+      <div class="sp-pageno">45</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 19 · ~25s · <span style="color:var(--ink);">CHART-HERO (data is the slide)</span></div>
+    <div class="slide-title">The category bet</div>
+    <div class="field">
+      <div class="label">Composition + HM annotation note</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Industry chart fills 80% of canvas in a soft surface card. Eyebrow top-left, title small upper-right in roman serif. <b>HM critique: the chart must visibly prove the IAP ceiling claim within 5 seconds of viewing it</b> — if the panel can't read the y-axis or the gap between hyper-casual and hybrid-casual revenue per user, the kill on slide 9 is unsupported. Add a mono annotation tag inside the chart card overlaying the hyper-casual revenue line: <b>"IAP ceiling · ARPU caps here"</b>. The chart goes from supporting visual to <i>the proof of the kill</i>.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"Hyper-casual → hybrid-casual"</b> · annotated callout on chart: "IAP CEILING · ARPU CAPS HERE"</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The insight that anchored the deck: Snap was sitting in hyper-casual, but the industry's growing center is hybrid-casual, hyper-casual mechanics layered with mid-core meta systems. The only segment growing 30% year-over-year, the only one that unlocks IAP. And Snap's social graph was the unfair advantage that made it ours to win."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback" data-role="pinterest">
+      <div class="role-label">Pinterest tie-back</div>
+      "The category framing was what landed the deck. Not 'we need more games', 'we're in the wrong category, here's the right one, here's why our graph wins it.' For Pinterest, this maps to arguing a content category into existence and showing why Pinterest has structural advantage in it."
+    </div>
+    <div class="tieback hidden" data-role="reddit"></div>
+  </div>
+</div>
+
+<!-- SECTION 4b -->
+<div class="section-band">
+  <h3>4b · The strategy</h3>
+  <span class="pacing">2 slides · ~60s</span>
+</div>
+
+<!-- SLIDE 20 — Two principles (Evan + Bobby) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="diagram">
+      <div class="sp-eyebrow">Two Principles</div>
+      <div class="sp-title sm">Two leaders,<br><em>two bets to balance.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;height:100%;">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Evan · CEO</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.1;">"How can Snapchat become the place people go for social mobile games?"</div>
+            <div style="font-family:var(--font-sans);font-size:9px;line-height:1.3;color:var(--ink-soft);">Lean on the friend graph as unfair advantage.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Bobby · CTO</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.1;">"Developers should only have to worry about making a good game. We handle the rest."</div>
+            <div style="font-family:var(--font-sans);font-size:9px;line-height:1.3;color:var(--ink-soft);">Distribution, monetization, social plumbing become Snap's job.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">46</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 20 · ~30s · <span style="color:var(--ink);">STRATEGY · TWO PRINCIPLES</span></div>
+    <div class="slide-title">Two principles</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Evan: social-first gaming destination, leverage friend graph. Bobby: developers only worry about the game, Snap handles distribution + monetization + social.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Before pillars, two principles that had to coexist. Evan's framing, social-first gaming destination, Snap's friend graph is the unfair advantage over standalone game platforms. Bobby's framing, our developers should only have to worry about making a good game, everything else, distribution, monetization, the social plumbing, becomes Snap's job. Two different bets on what Snap Games should become, both load-bearing. The pillars on the next slide had to answer both."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21 — Four pillars (with bet→pillar mapping) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="diagram">
+      <div class="sp-eyebrow">Four Pillars</div>
+      <div class="sp-title sm">Four pillars,<br><em>one year of work.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;width:100%;height:100%;">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Pillar 1</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;margin-top:4px;">Monetize existing games.</div>
+            <div style="font-family:var(--font-sans);font-size:9px;color:var(--ink-soft);margin-top:4px;">Spotlight Games tab, ad inventory.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Pillar 2</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;margin-top:4px;">Enable hybrid-casual mechanics.</div>
+            <div style="font-family:var(--font-sans);font-size:9px;color:var(--ink-soft);margin-top:4px;">Multiplayer, progression, content drops.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Pillar 3</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;margin-top:4px;">Incentivize devs.</div>
+            <div style="font-family:var(--font-sans);font-size:9px;color:var(--ink-soft);margin-top:4px;">Promotion slots, upfront funding.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Pillar 4</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;margin-top:4px;">Diversify monetization.</div>
+            <div style="font-family:var(--font-sans);font-size:9px;color:var(--ink-soft);margin-top:4px;">IAP on Snap's payments rails.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">47</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 21 · ~30s · <span style="color:var(--ink);">STRATEGY · FOUR PILLARS</span></div>
+    <div class="slide-title">Four pillars</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">P1 monetize existing · P2 enable hybrid-casual mechanics · P3 incentivize devs · P4 diversify monetization beyond ads</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Four pillars to focus the next year of work. Monetize existing games on surfaces that already had ad inventory. Enable hybrid-casual mechanics, multiplayer, progression, content drops. Incentivize the developer ecosystem with promotion slots and upfront funding. Diversify monetization with IAP on Snap's existing payments rails. Each pillar got a clear design direction in the deck. I also stress-tested pillar one with the ads team before committing the year, their read was games didn't have inventory yet, so I sequenced pillars two and three first, grow engagement, then turn on monetization against real inventory. Evan backed the sequencing."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section-band">
+  <h3>5 · Distribution system</h3>
+  <span class="pacing">1 slide · ~25s</span>
+</div>
+
+<!-- SLIDE 22 — ⌖ BREAK: 6-phone constellation, one deliberate tilt — HM: ensure SOCIAL/PASSIVE lane labels are visible -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Distribution</div>
+      <div class="sp-title sm">A system of surfaces,<br>not one home.</div>
+      <div class="sp-visual">
+        <div class="sp-constellation">
+          <div style="position:absolute;top:14%;left:-12%;transform:rotate(-90deg);transform-origin:center;font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.18em;color:var(--ink-faint);width:60px;text-align:center;">Social</div>
+          <div style="position:absolute;bottom:14%;left:-12%;transform:rotate(-90deg);transform-origin:center;font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.18em;color:var(--ink-faint);width:60px;text-align:center;">Passive</div>
+          <div class="sp-phone" style="top:6%;left:6%;width:19%;"><img src="../public/projects/snapchat-games/chat drawer - after.gif" alt="" /></div>
+          <div class="sp-phone" style="top:6%;left:30%;width:19%;"><img src="../public/projects/snapchat-games/games-entrypoint-friendsfeed.png" alt="" /></div>
+          <div class="sp-phone" style="top:6%;left:54%;width:19%;"><img src="../public/projects/snapchat-games/pillar2-live-multiplayer-oncall.gif" alt="" /></div>
+          <div class="sp-phone" style="bottom:6%;left:6%;width:19%;"><img src="../public/projects/snapchat-games/games-in-discover-option2-carousel.gif" alt="" /></div>
+          <div class="sp-phone" style="bottom:6%;left:30%;width:19%;"><img src="../public/projects/snapchat-games/pillar1-1spotlighttab.gif" alt="" /></div>
+          <div class="sp-phone deliberate-tilt" style="bottom:6%;left:54%;width:19%;box-shadow:0 14px 28px rgba(20,22,28,.15);"><img src="../public/projects/snapchat-games/flagship-multiplayer-1.gif" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">48</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 22 · ~25s · <span style="color:var(--brand-blue);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ TEMPLATE BREAK · SYSTEM</span></div>
+    <div class="slide-title">A system, not a destination</div>
+    <div class="field">
+      <div class="label">Why break the template here</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Same logic as Topic Chats slide 10: template phone-grids are sterile. Here, one phone tilted ~4° off-axis names the <b>Resurrection / disruptive bet</b> as the standout. One deliberate tilt in an otherwise clean field reads as intent, not sloppiness. <b>Staff signal: systems thinking with the bets named.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Composition</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Six phones across two intent lanes: <b>SOCIAL</b> (chat drawer · friends feed · in-call) on top, <b>PASSIVE</b> (discover carousel · spotlight tab · live multiplayer) on bottom. Five sit orthogonal; the <b>live multiplayer phone (bottom-right) is tilted ~4°</b> with a slightly heavier shadow — the disruptive resurrection bet. Mono caps lane labels in the left margin. No connecting lines.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>"Games as a system of surfaces, not one home"</b></div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The unlock was treating Games as a system of entry points matched to player intent. Social games on social surfaces, chat drawer, friends feed, in-call. Solo retentive games on passive-browse, Lens carousel category, Discover carousel, Spotlight Games tab."</div>
+    </div>
+    <div class="tieback hidden" data-role="patreon"></div>
+    <div class="tieback hero hidden" data-role="pinterest">
+      <div class="role-label">Pinterest tie-back</div>
+      "Same content area, sliced by player intent, lands in completely different places in the app. Spotlight Games tab hit 10% view-to-unlock vs 0.6% on For You, when you match the surface to the intent, conversion is an order of magnitude different."
+    </div>
+    <div class="tieback hero hidden" data-role="reddit">
+      <div class="role-label">Reddit tie-back</div>
+      "Six entry points across two intent lanes. This is the exact mental model Reddit uses for landing-page-to-app surfaces, a system of entry points matched to user intent, not one home."
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5b -->
+<div class="section-band">
+  <h3>5b · Executing the vision</h3>
+  <span class="pacing">5 slides · ~155s · gloss for short version</span>
+</div>
+
+<!-- SLIDE 23 — Live multiplayer framework rules -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="diagram">
+      <div class="sp-eyebrow">Project 1 · Live MP</div>
+      <div class="sp-title sm">A framework,<br><em>not a feature.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;height:100%;">
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Entry</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;">Always start solo.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);">Fun from first tap.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Join</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;">Drop in from chat.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);">Sessions ping friends.</div>
+          </div>
+          <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;">
+            <div style="font-family:var(--mono);font-size:7px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-faint);">Lifecycle</div>
+            <div style="font-family:var(--font-display);font-size:14px;line-height:1.1;">Stay warm until empty.</div>
+            <div style="font-family:var(--font-sans);font-size:8px;color:var(--ink-soft);">One player keeps it alive.</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">49</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 23 · ~30s · <span style="color:var(--ink);">PILLAR 2 · MULTIPLAYER FRAMEWORK</span></div>
+    <div class="slide-title">Live multiplayer, scoped as a framework</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Entry: always start solo. Join: drop in from chat. Lifecycle: stay warm until empty.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Pillar two, executing. Sync multiplayer is many mechanics, turn-based, real-time, tap-to-bid, co-op drawing. Solving for one game would have shipped one game. So I scoped the work as a contract every live game on Snap would inherit, three rules. Always start solo, the game is fun from the first tap before a single friend joins. Drop in from chat, starting a session pings friends, they join when the round allows or watch the current one. Stay warm until empty, one player is enough to keep a session alive. That's the framework."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24 — Blockbuster + three entry points -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Blockbuster</div>
+      <div class="sp-title sm">Three ways<br><em>into a session.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/flagship-multiplayer-friendsfeed.png" alt="" /></div>
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/flagship-multiplayer-inchat.png" alt="" /></div>
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/flagship-multiplayer-notification.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">50</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 24 · ~30s · <span style="color:var(--ink);">BLOCKBUSTER · ENTRY POINTS</span></div>
+    <div class="slide-title">Blockbuster, the in-house flagship</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Friends feed presence chip · live chat envelope · push notification on social signal.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Blockbuster was the in-house co-op flagship, designed to stress-test every part of the framework before partner studios touched it. It doubled as the proving ground for entry points. Friends' bitmojis surface wherever a friend already looks, with one tap to drop in as a player or spectator. Three entry points, friends feed for ambient presence, chat envelope to drop in mid-thread, push notification that fires on social signal, not engagement signal. The default path in is joining a friend who's already playing."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 25 — Turn-based migrated onto the live framework -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Framework, applied</div>
+      <div class="sp-title sm">Turns,<br><em>moved onto the framework.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/turn-based-live-framework-1.png" alt="" /></div>
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/turn-based-live-framework-2.png" alt="" /></div>
+          <div class="sp-phone" style="width:90%;"><img src="../public/projects/snapchat-games/turn-based-live-framework-3.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">51</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 25 · ~30s · <span style="color:var(--ink);">FRAMEWORK · TURN-BASED MIGRATION</span></div>
+    <div class="slide-title">Turn-based games on the live framework</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Turns become messages. The envelope becomes a live surface. The 2-player ceiling comes off.</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Once the framework existed, turn-based games moved onto it too. Turns became messages in the live session. A scoreboard tracks who's up, who's played, who's still to go. The chat envelope from bet three updates in place as friends take their turns, with a Remind CTA when the round stalls. And critically, the 2-player ceiling comes off, turn-based games can now host whole lobbies. That's compounding, bet three's UX work plus the new framework gives us a new product behavior the old version of the platform couldn't support."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 26 — Daily games + the group-sends insight -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-result">
+      <div class="sp-eyebrow">Project 2 · Daily Games</div>
+      <div class="sp-title sm">A solo loop,<br><em>that lifted group sends.</em></div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:14px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:80%;"><img src="../public/projects/snapchat-games/daily-games-drawer.gif" alt="" /></div>
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-display);font-style:italic;font-size:48px;line-height:1;letter-spacing:-0.02em;">+1.8<span style="font-size:0.55em;">%</span></div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:8px;">Group sends</div>
+            <div style="font-family:var(--font-display);font-style:italic;font-size:32px;line-height:1;letter-spacing:-0.02em;margin-top:14px;">+3.89M</div>
+            <div style="font-family:var(--mono);font-size:8px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-soft);margin-top:6px;">Reciprocal friendships</div>
+          </div>
+        </div>
+      </div>
+      <div class="sp-pageno">52</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 26 · ~35s · <span style="color:var(--brand-peach);background:var(--ink);padding:2px 8px;border-radius:4px;font-weight:600;">⌖ THE MISREAD · CANDIDLY</span></div>
+    <div class="slide-title">Daily Challenges, the misread that worked out</div>
+    <div class="field">
+      <div class="label">Why this slide matters</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">This is the second self-critique in the deck, after the killed pitch. A Staff candidate names their misreads on purpose. Daily Challenges was scoped as solo retention, the win landed in group sends instead. The insight reshapes the leaderboards roadmap. <b>Staff signal: I show the receipt when the metric tells me I scoped the bet wrong.</b></div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>+1.8%</b> group sends · <b>+1.0%</b> group views · <b>+3.89M</b> reciprocal friendships (+0.13% on Snap's core friend-graph metric)</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Daily Challenges, pillar two's solo loop. Daily Challenges row pinned to the front of the Games drawer, per-game streaks, auto-Snap to Preview, notifications fire only on social signal. I scoped it as a habit loop for users without a friend online that day. The misread, the win landed in group sends. Plus 1.8% on Snap's primary social-send metric, 3.89 million additional reciprocal friendships against control. Players were using single-player puzzles as a reason to talk to each other. That insight reshaped the next roadmap, leaderboards became the next bet, to make the side effect the product."</div>
+      <div class="pause-note">⏸ Say "the misread" on purpose. Naming the second self-critique builds trust.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 27 — Discover tradeoff + Spotlight Games tab -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp">
+      <div class="sp-eyebrow">Project 3 · Discover + Spotlight</div>
+      <div class="sp-title sm">Earn the feed's pixels.</div>
+      <div class="sp-visual">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;height:100%;align-items:center;justify-items:center;">
+          <div class="sp-phone" style="width:90%;opacity:0.5;"><img src="../public/projects/snapchat-games/games-in-discover-option1-tile.png" alt="" /></div>
+          <div class="sp-phone" style="width:96%;box-shadow:0 14px 28px rgba(20,22,28,.18);"><img src="../public/projects/snapchat-games/games-in-discover-option2-carousel.png" alt="" /></div>
+          <div class="sp-phone" style="width:90%;opacity:0.5;"><img src="../public/projects/snapchat-games/games-in-discover-option3-pill.png" alt="" /></div>
+        </div>
+      </div>
+      <div class="sp-pageno">53</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 27 · ~30s · <span style="color:var(--ink);">DISCOVER TRADEOFF + SPOTLIGHT METRIC</span></div>
+    <div class="slide-title">Discover tradeoff, Spotlight results</div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide">Three options pressure-tested for Discover. Carousel won, discoverability + feed citizenship + storefront equity + ad inventory. Spotlight Games tab: <b>10.0%</b> view-to-unlock (vs <b>0.6%</b> on For You).</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"Pillar three, distribution. Three options pressure-tested for Discover. The tile sold one game and competed with Stories for hero space. The pill sold zero and read as a hashtag chip. The carousel won, multiple games on screen at once, sat next to Stories instead of on top of them, every tile is an entry point to the storefront, and it's the only option with native room for playable game ads. Then on Spotlight, we shipped a dedicated Games tab built around game-native content. The result was an order of magnitude shift, 10% view-to-unlock against 0.6% on For You and 0.3% on Following, 7.6x the share rate. Match the surface to the intent, conversion changes magnitude."</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section-band">
+  <h3>6 · The result</h3>
+  <span class="pacing">1 slide · ~25s</span>
+</div>
+
+<!-- SLIDE 28 — METRIC-BLEED (close: lead with squad, 30M supporting — HM fix) -->
+<div class="slide">
+  <div class="visual">
+    <div class="sp" data-archetype="metric-bleed">
+      <div class="sp-eyebrow">The Result</div>
+      <div class="sp-title">CEO-sponsored squad.<br><em>Headcount. Roadmap. Bi-weekly exec review.</em></div>
+      <div class="sp-sub">30M Games DAU · +2.9M incremental Snaps · games no longer a subset of Lenses</div>
+      <div class="sp-visual">
+        <div class="sp-mega">30M</div>
+      </div>
+      <div class="sp-pageno">54</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="slide-num">Slide 28 · ~25s · <span style="color:var(--ink);">METRIC-BLEED (close: squad-led)</span></div>
+    <div class="slide-title">The result</div>
+    <div class="field">
+      <div class="label">HM close-fix</div>
+      <div class="talk" style="font-size:13px;color:var(--ink-soft);">Previously this slide stacked three outcomes (30M / +2.9M / squad) without ranking, then closed with "Games are at their best when they give friends a reason to talk" — which reverted to the community spine and undercut the category-bet close. <b>HM: pick one. The squad is the staff outcome; 30M is supporting.</b> Squad now leads the headline; 30M bleeds off as the supporting hero numeral.</div>
+    </div>
+    <div class="field">
+      <div class="label">On-slide text</div>
+      <div class="on-slide"><b>CEO-sponsored squad.</b> Headcount. Roadmap. Bi-weekly exec review. &nbsp;·&nbsp; supporting: <b>30M</b> Games DAU · <b>+2.9M</b> Snaps</div>
+    </div>
+    <div class="field">
+      <div class="label">Talk track</div>
+      <div class="talk">"The outcome that mattered most wasn't the 30M DAU. It was the CEO-sponsored squad — headcount, roadmap ownership, bi-weekly exec review. Games went from a buried subset of Lenses to its own product area inside the org. 30 million daily actives was the proof that earned the squad. 2.9 million additional Snaps was the proof the loop worked. The squad was the proof the case had landed."</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSE -->
+<details class="close" open>
+  <summary>Close (after slide 28)</summary>
+  <div class="close-block active" data-role="patreon">
+    <b>Patreon close</b>
+    "Closing line: Games scaled because we treated them as a community feature, not as entertainment. That's the lesson I'd bring to Patreon, community products don't grow by getting better at the activity, they grow by getting better at giving members a reason to engage with each other."
+  </div>
+  <div class="close-block" data-role="pinterest">
+    <b>Pinterest close</b>
+    "Closing line: both cases I walked through today are the same shape. A signal nobody was looking at, a reframe that defined the bet, and a distribution system that made the bet travel across surfaces. That's the discovery work I want to do at Pinterest."
+  </div>
+  <div class="close-block" data-role="reddit">
+    <b>Reddit close</b>
+    "Closing line: both cases I walked through are growth stories told through retention. Find the loop that brings people back, not just the moment that brings them in. The mechanism that earned the squad here is the same one I'd want to bring to Reddit."
+  </div>
+</details>
+
+<!-- APPENDIX -->
+<details class="appendix">
+  <summary>Appendix slides (hidden, pull up if asked)</summary>
+  <div class="ap-slide"><b>A1 — Foundational research</b>UXR study, 11 participants, 13–24, split regular/non-regular game players. Three findings: mental-model split, expected games in chat, wanted to play with friends.</div>
+  <div class="ap-slide"><b>A2 — Live multiplayer framework</b>Three rules: always start solo, drop in from chat, stay warm until empty. Blockbuster as in-house flagship. Turn-based games moved onto the same framework.</div>
+  <div class="ap-slide"><b>A3 — Daily Challenges (the misread, candidly)</b>Scoped as solo retention. Win landed in <b>group sends</b> (+1.8%), group views, +3.89M reciprocal friendships. Players were using single-player puzzles as a reason to talk to each other. Changed the leaderboards roadmap. <i>Strong Patreon-relevant & Reddit-relevant lesson when invited.</i></div>
+  <div class="ap-slide"><b>A4 — Discover carousel tradeoff</b>Three options pressure-tested: Tile (sells one game), Carousel (catalog merchandising), Pill (overlooked). Carousel won, discoverability, feed citizenship, storefront equity, ad inventory.</div>
+  <div class="ap-slide"><b>A5 — Spotlight Games tab</b>10.0% view-to-unlock vs 0.6% on For You vs 0.3% on Following. 7.6× share rate. 2× lens unlocks. +12% session depth.</div>
+</details>
+
+<!-- STRESS TEST -->
+<details class="stress">
+  <summary>Stress-test cheat sheet</summary>
+  <div class="stress-q">
+    <div class="q">"A decision where data and judgment disagreed?"</div>
+    <div class="a">Data said hyper-casual was Snap's library and "monetize what we have" was the obvious move — that was my first pitch. Judgment, after studying the market, said the library itself was the wrong base. Hyper-casual structurally caps out on IAP. The growth is in hybrid-casual. I killed my own pitch and went back with the category bet. That's the call that earned the squad.</div>
+  </div>
+
+  <div class="stress-q">
+    <div class="q">"You killed the arcade economy after Evan greenlit it. Walk me through the conversation where you told him you were throwing out the pitch he'd backed — what did you actually say, and what would you have done if he'd told you to ship it anyway?"</div>
+    <div class="a"><b style="color:var(--ink);">⚠ Prep a real answer. HM-flagged as the hardest games panel question.</b> The current talk track ("I stopped pitching, killed my own deck, spent two weeks studying the market") frames the kill as a clean intellectual pivot. A panel will want the <i>messier</i> version. Four things to prep:<br><br><b>1.</b> Who you told first — your manager, the squad lead, the GM, or Evan directly? Did engineering already have story points loaded? What did the eng lead think?<br><b>2.</b> What you actually said to Evan — verbatim opening, not the conclusion. ("I want to walk back the arcade pitch" vs "I've been studying the market and I think we got the category wrong.")<br><b>3.</b> What you brought with you — the chart, the competitor breakdown, the IAP-ceiling analysis, the hybrid-casual revenue data. What was the artifact that made the new direction defensible.<br><b>4.</b> Plan B — what you would have done if Evan had said "I hear you, ship arcade anyway." Would you have shipped it and continued making the category case? Resigned the squad lead role? Pushed harder? <b>This is the question the answer turns on.</b> A staff candidate has a real answer here.</div>
+    <div class="tone">Tone: re-enact the conversation, don't summarize the conclusion. "I went to [name] first because [reason]. I opened with [specific phrase] because I needed [their reaction]. If he'd pushed back, I would have…" If you can answer this crisply, the kill becomes the strongest beat in any case you present. If you can't, the kill reads as designer-says-no rather than staff-leads-the-room.</div>
+  </div>
+</details>
+
+</main>
+
+<script>
+  const buttons = document.querySelectorAll('.roles button');
+  function setRole(role) {
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.role === role));
+    document.querySelectorAll('.handoff .text').forEach(el => {
+      el.classList.toggle('active', el.dataset.role === role);
+    });
+    document.querySelectorAll('.close-block').forEach(el => {
+      el.classList.toggle('active', el.dataset.role === role);
+    });
+    document.querySelectorAll('.tieback').forEach(el => {
+      el.classList.toggle('hidden', el.dataset.role !== role);
+    });
+    localStorage.setItem('deck-role', role);
+  }
+  buttons.forEach(b => b.addEventListener('click', () => setRole(b.dataset.role)));
+  setRole(localStorage.getItem('deck-role') || 'patreon');
+</script>
+
+</body>
+</html>

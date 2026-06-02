@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Slide template previews</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --display: "Instrument Serif", serif;
+    --sans: "Geist", system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, Menlo, monospace;
+    --canvas: #FDFCFA;
+    --surface: #FFFFFF;
+    --sunken: #EFF5FA;          /* cool wash — analytical reframes */
+    --sunken-warm: #F4F0EA;     /* warm wash — human moments */
+    --text-primary: #15171C;
+    --text-secondary: #5A5D66;
+    --text-tertiary: #8B8E96;
+    --text-inverse: #FDFCFA;
+    --border-subtle: #EAE6DF;
+    --border-default: #D8D3CB;
+    --brand-primary: #C5DCEA;
+    --brand-secondary: #F4D9CC;
+    --brand-accent: #DCD2E8;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--canvas);
+    color: var(--text-primary);
+    font: 14px/1.5 var(--sans);
+    padding: 48px;
+  }
+  .page-title {
+    font-family: var(--display);
+    font-size: 48px;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+  .page-intro {
+    color: var(--text-secondary);
+    max-width: 720px;
+    margin-bottom: 48px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(560px, 1fr));
+    gap: 32px;
+  }
+
+  /* Each card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .card-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-family: var(--display);
+    font-size: 24px;
+    line-height: 1.15;
+  }
+  .card-note {
+    color: var(--text-secondary);
+    font-size: 13px;
+    padding: 16px 24px 0;
+  }
+  .card-meta {
+    padding: 16px 24px 24px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 1.6;
+  }
+  .card-meta b { color: var(--text-secondary); font-weight: 500; }
+
+  /* Slide stage — 1920×1080 scaled to fit card width (~512px) */
+  .stage-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: var(--canvas);
+    overflow: hidden;
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    transform: scale(calc(560 / 1920));
+  }
+  @media (max-width: 1200px) {
+    .stage { transform: scale(calc(420 / 1920)); }
+  }
+  /* dynamic scaling via container query fallback */
+  .stage-wrap { container-type: inline-size; }
+  @container (min-width: 400px) {
+    .stage { transform: scale(calc(100cqw / 1920)); width: 1920px; height: 1080px; }
+  }
+
+  /* Backgrounds */
+  .bg-canvas { background: var(--canvas); }
+  .bg-sunken { background: var(--sunken); }
+  .bg-sunken-warm { background: var(--sunken-warm); }
+  .bg-soft-gradient {
+    background: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%);
+  }
+  .bg-aurora {
+    background:
+      radial-gradient(120% 140% at 15% 25%, rgba(197, 220, 234, 0.85) 0%, rgba(197, 220, 234, 0.4) 35%, transparent 75%),
+      radial-gradient(130% 130% at 85% 15%, rgba(220, 210, 232, 0.8) 0%, rgba(220, 210, 232, 0.35) 40%, transparent 80%),
+      radial-gradient(140% 150% at 65% 95%, rgba(244, 217, 204, 0.85) 0%, rgba(244, 217, 204, 0.4) 40%, transparent 80%),
+      #FDFCFA;
+  }
+
+  /* === Template-specific compositions === */
+
+  /* T1 — Title (cover) */
+  .t1 { padding: 96px; position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; }
+  .t1 .eyebrow { font-family: var(--mono); font-size: 16px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 24px; }
+  .t1 .headline { font-family: var(--display); font-size: 96px; line-height: 1.05; max-width: 1400px; }
+  .t1 .subhead { font-family: var(--sans); font-weight: 500; font-size: 28px; color: var(--text-secondary); margin-top: 32px; max-width: 1200px; line-height: 1.3; }
+  .t1 .page-num { position: absolute; bottom: 64px; right: 96px; font-family: var(--mono); font-size: 14px; color: var(--text-tertiary); }
+
+  /* T2 — Big-stat */
+  .t2 { padding: 96px; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
+  .t2 .stat-primary { font-family: var(--display); font-size: 180px; line-height: 0.95; }
+  .t2 .stat-label { font-family: var(--sans); font-weight: 500; font-size: 28px; color: var(--text-secondary); margin-top: 32px; }
+  .t2 .stat-caption { font-family: var(--mono); font-size: 16px; color: var(--text-tertiary); margin-top: 16px; }
+  .t2-row { flex-direction: row; gap: 96px; align-items: center; justify-content: center; }
+  .t2-row .stat-primary { font-size: 120px; }
+  .t2-cell { display: flex; flex-direction: column; align-items: center; }
+
+  /* T3 — Full-bleed */
+  .t3 { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .t3-img-mock {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(197,220,234,0.6) 0%, rgba(220,210,232,0.6) 50%, rgba(244,217,204,0.6) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    font-family: var(--mono);
+    font-size: 32px;
+  }
+  .t3-mobile { width: 100%; height: 100%; background: var(--sunken); display: flex; align-items: center; justify-content: center; }
+  .t3-mobile-frame {
+    width: 480px; height: 100%;
+    background: linear-gradient(135deg, rgba(197,220,234,0.7), rgba(220,210,232,0.7));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-primary); font-family: var(--mono); font-size: 24px;
+  }
+
+  /* T4 — Image + callout */
+  .t4 { display: flex; height: 100%; padding: 96px; gap: 96px; align-items: center; }
+  .t4-img {
+    flex: 0 0 1100px;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(197,220,234,0.6), rgba(220,210,232,0.6));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary); font-family: var(--mono); font-size: 28px;
+  }
+  .t4-callout { flex: 1; }
+  .t4-kicker { font-family: var(--mono); font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 16px; }
+  .t4-text { font-family: var(--sans); font-weight: 600; font-size: 48px; line-height: 1.2; }
+
+  /* T5 — Grid */
+  .t5 { padding: 96px 96px 112px; height: 100%; display: flex; flex-direction: column; }
+  .t5 .headline { font-family: var(--sans); font-weight: 600; font-size: 48px; margin-bottom: 64px; line-height: 1.2; }
+  .t5 .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px; flex: 1; }
+  .t5 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; flex: 1; }
+  .t5 .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 32px; flex: 1; }
+  .t5 .cell {
+    background: linear-gradient(135deg, rgba(197,220,234,0.5), rgba(220,210,232,0.5));
+    border-radius: 12px;
+    display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px;
+    color: var(--text-secondary); font-family: var(--mono); font-size: 20px;
+  }
+
+  /* T6 — Statement */
+  .t6 { padding: 96px; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; }
+  .t6 .statement { font-family: var(--display); font-size: 96px; line-height: 1.1; max-width: 1400px; }
+  .t6 .statement-two-line .line-1 { display: block; }
+  .t6 .statement-two-line .line-2 { display: block; font-size: 60px; color: var(--text-secondary); margin-top: 24px; }
+  .t6 .attribution { font-family: var(--mono); font-size: 24px; color: var(--text-tertiary); margin-top: 56px; text-align: right; }
+
+  /* Layer-name overlay */
+  .layer-overlay {
+    position: absolute; inset: 0;
+    pointer-events: none;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+  .layer-overlay span {
+    position: absolute;
+    background: rgba(253, 252, 250, 0.9);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border-subtle);
+    white-space: nowrap;
+  }
+
+  /* Header band */
+  .toc {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 48px;
+  }
+  .toc a {
+    display: inline-block; padding: 6px 12px;
+    background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 999px;
+    color: var(--text-secondary); text-decoration: none; font-size: 12px; font-family: var(--mono);
+  }
+  .toc a:hover { background: var(--brand-primary); color: var(--text-primary); }
+</style>
+</head>
+<body>
+  <h1 class="page-title">Slide template previews</h1>
+  <p class="page-intro">Visual reference for the 6 templates you'll build in Figma. Each tile shows real type, real spacing, real colors at 16:9. Use these alongside <code>per-slide-checklist.md</code> while building.</p>
+
+  <div class="toc">
+    <a href="#t1">T1 · Title / Cover</a>
+    <a href="#t2">T2 · Big-stat</a>
+    <a href="#t3">T3 · Full-bleed image</a>
+    <a href="#t4">T4 · Image + callout</a>
+    <a href="#t5">T5 · Multi-image grid</a>
+    <a href="#t6">T6 · Statement</a>
+  </div>
+
+  <div class="grid">
+
+    <!-- T1 Cover -->
+    <div class="card" id="t1">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 1 · Cover</div>
+        <div class="card-title">Title / Section divider</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-aurora">
+          <div class="t1">
+            <div class="eyebrow">Eyebrow text · uppercase mono</div>
+            <div class="headline">A short, declarative headline that anchors the case study</div>
+            <div class="subhead">Optional one-line subhead in Geist Medium 28px for the through-line</div>
+            <div class="page-num">01 / 20</div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: framing slide, between-case dividers, "what's next" closer.</p>
+      <div class="card-meta">
+        <b>Bg:</b> gradient-aurora.svg (or canvas + accent bar for mid-deck dividers)<br>
+        <b>Headline:</b> Instrument Serif 96px · max-width 1400px<br>
+        <b>Subhead:</b> Geist Medium 28px · text/secondary<br>
+        <b>Padding:</b> 96px all sides
+      </div>
+    </div>
+
+    <!-- T2 Single big-stat -->
+    <div class="card" id="t2">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 2 · Big-stat (single)</div>
+        <div class="card-title">One number that lands</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-canvas">
+          <div class="t2">
+            <div class="stat-primary">+32K</div>
+            <div class="stat-label">DAU lift</div>
+            <div class="stat-caption">U.S. Android · AB-tested vs. notifications-off</div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: every single-stat reveal. The workhorse template — half your stat slides.</p>
+      <div class="card-meta">
+        <b>Stat:</b> Instrument Serif 180px · centered both axes<br>
+        <b>Label:</b> Geist Medium 28px · text/secondary<br>
+        <b>Caption:</b> Geist Mono 16px · text/tertiary
+      </div>
+    </div>
+
+    <!-- T2 Row variant -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 2 · Big-stat (3-up row)</div>
+        <div class="card-title">Results grid variant</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-canvas">
+          <div class="t2 t2-row">
+            <div class="t2-cell">
+              <div class="stat-primary">52K</div>
+              <div class="stat-label">peak concurrent</div>
+            </div>
+            <div class="t2-cell">
+              <div class="stat-primary">71K</div>
+              <div class="stat-label">incremental DAU</div>
+            </div>
+            <div class="t2-cell">
+              <div class="stat-primary">208K</div>
+              <div class="stat-label">msgs / week</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: end-of-deck results, aggregate-wins slides. Display drops to 120px to fit 3 stats.</p>
+      <div class="card-meta">
+        <b>Variants also build:</b> 2-up (display 140px), 4-up 2×2 (display 96px)<br>
+        <b>Layer naming for Smart Animate:</b> first stat = <code>stat / primary</code> if it carries from a single-stat slide
+      </div>
+    </div>
+
+    <!-- T3 Full bleed -->
+    <div class="card" id="t3">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 3 · Full-bleed image</div>
+        <div class="card-title">Image fills the frame</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage">
+          <div class="t3">
+            <div class="t3-img-mock">img / [content-name]</div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: hero visuals — inherited state, scoreboard, full carousel. No padding, no caption.</p>
+      <div class="card-meta">
+        <b>Layer name:</b> <code>img / [semantic-id]</code> — must match across slides if persisting<br>
+        <b>Optional overlay:</b> headline at bottom-left, white with dropshadow, only if image needs context
+      </div>
+    </div>
+
+    <!-- T3 Mobile letterbox variant -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 3 · Letterbox (tall mobile)</div>
+        <div class="card-title">9:16 portrait, soft letterbox</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage">
+          <div class="t3">
+            <div class="t3-mobile">
+              <div class="t3-mobile-frame">img / scoreboard (9:16)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: scoreboard, chat drawer GIFs, any vertical mobile mockup. Don't stretch.</p>
+      <div class="card-meta">
+        <b>Letterbox color:</b> bg/sunken (#EFF5FA) · optional 1px border/subtle hairline · stays on-brand
+      </div>
+    </div>
+
+    <!-- T4 Image + callout -->
+    <div class="card" id="t4">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 4 · Image + callout</div>
+        <div class="card-title">Image left, single line right</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-canvas">
+          <div class="t4">
+            <div class="t4-img">img / content</div>
+            <div class="t4-callout">
+              <div class="t4-kicker">Optional kicker</div>
+              <div class="t4-text">A single short line of weight</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: image needs light annotation — "10-minute windows", "Sports as the wedge", "A spine, not decoration."</p>
+      <div class="card-meta">
+        <b>Image:</b> ~57% of canvas width · vertically centered<br>
+        <b>Callout:</b> Geist Semibold 48px · max-width 480px<br>
+        <b>Mirror variant:</b> image-right / callout-left for visual rhythm
+      </div>
+    </div>
+
+    <!-- T5 5-up grid -->
+    <div class="card" id="t5">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 5 · Grid (5-up)</div>
+        <div class="card-title">Cross-surface display</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-canvas">
+          <div class="t5">
+            <div class="headline">One signal, five surfaces</div>
+            <div class="grid-5">
+              <div class="cell">friends-feed</div>
+              <div class="cell">discover</div>
+              <div class="cell">search</div>
+              <div class="cell">map</div>
+              <div class="cell">live-activity</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: Topic Chats slide 12 (live state). The "wow" Smart Animate reveal — first cell carries from prior slide.</p>
+      <div class="card-meta">
+        <b>Cell layer names:</b> <code>surface / friends-feed</code>, <code>surface / discover</code>, etc.<br>
+        <b>Variants:</b> 3-up (Games triptychs), 4-up (mechanisms), 6-up 3×2 (Games slide 11)
+      </div>
+    </div>
+
+    <!-- T5 3-up grid -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 5 · Grid (3-up)</div>
+        <div class="card-title">Triptych — three initial wins</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-canvas">
+          <div class="t5">
+            <div class="headline">Chat drawer · Fullscreen UX · Turn-based fix</div>
+            <div class="grid-3">
+              <div class="cell">bet / chat-drawer</div>
+              <div class="cell">bet / fullscreen</div>
+              <div class="cell">bet / turn-based</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: Games slide 2 (early lenses), Games slide 6 (three initial bets), Games slide 11 (use 3×2 for 6 surfaces).</p>
+      <div class="card-meta">
+        <b>Bigger cells:</b> show mobile mockups at readable size<br>
+        <b>Cell layer names:</b> semantic per slide (<code>bet / *</code>, <code>game / *</code>, <code>surface / *</code>)
+      </div>
+    </div>
+
+    <!-- T6 Statement, cool wash -->
+    <div class="card" id="t6">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 6 · Statement (cool wash)</div>
+        <div class="card-title">Analytical reframe</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-sunken">
+          <div class="t6">
+            <div class="statement">Not a content problem. A concurrency problem.</div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: reframes that lean clinical / analytical. The pale blue wash signals a beat shift without breaking the pastel brand. Pause before clicking next.</p>
+      <div class="card-meta">
+        <b>Background:</b> bg/sunken (#EFF5FA)<br>
+        <b>Statement:</b> Instrument Serif 96px · text/primary · max-width 1400px<br>
+        <b>Layer name:</b> <code>statement / primary</code>
+      </div>
+    </div>
+
+    <!-- T6 Statement, two-line cool wash -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 6 · Statement (two-line, cool wash)</div>
+        <div class="card-title">Constraint reveal</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-sunken">
+          <div class="t6">
+            <div class="statement statement-two-line">
+              <span class="line-1">The entry point was buried.</span>
+              <span class="line-2">That was a deliberate call.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: TC slide 14 (constraint). Two-line stack: assertion + reframe of that assertion.</p>
+      <div class="card-meta">
+        <b>Background:</b> bg/sunken (#EFF5FA)<br>
+        <b>Line 1:</b> Instrument Serif 96px · text/primary<br>
+        <b>Line 2:</b> Instrument Serif 60px · text/secondary<br>
+        <b>Layer names:</b> <code>statement / primary</code>, <code>statement / secondary</code>
+      </div>
+    </div>
+
+    <!-- T6 Statement, warm wash -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 6 · Statement (warm wash)</div>
+        <div class="card-title">Human / personal moment</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-sunken-warm">
+          <div class="t6">
+            <div class="statement">I made the bet before anyone asked.</div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: Games slide 4 (the call), TC slide 16 (notifications were the biggest lever). Warm cream wash signals a human / personal-conviction beat vs. an analytical one.</p>
+      <div class="card-meta">
+        <b>Background:</b> bg/sunken-warm (#F4F0EA)<br>
+        <b>Statement:</b> Instrument Serif 96px · text/primary<br>
+        <b>Layer name:</b> <code>statement / primary</code>
+      </div>
+    </div>
+
+    <!-- T6 Quote with attribution, soft gradient -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-eyebrow">Template 6 · Quote with attribution (soft gradient)</div>
+        <div class="card-title">CEO quote · biggest-moment treatment</div>
+      </div>
+      <div class="stage-wrap">
+        <div class="stage bg-soft-gradient">
+          <div class="t6">
+            <div>
+              <div class="statement" style="font-style: italic;">"How can we go big with games?"</div>
+              <div class="attribution">— Evan, CEO</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="card-note">Used for: Games slide 8 (CEO inflection). The soft pastel gradient earns its place once or twice across both decks for the biggest moments. Don't reuse — it loses force.</p>
+      <div class="card-meta">
+        <b>Background:</b> gradient-soft.svg (full bleed)<br>
+        <b>Quote:</b> italic Instrument Serif 96px · text/primary<br>
+        <b>Attribution:</b> Geist Mono 24px · text/tertiary · right-aligned, 56px below quote
+      </div>
+    </div>
+
+  </div>
+
+  <p style="margin-top: 64px; padding-top: 32px; border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); font-family: var(--mono); font-size: 12px;">
+    Built from tokens.css. Each tile is real CSS rendered at 1920×1080 and scaled into a 16:9 card. What you see here is what Figma should produce.
+  </p>
+
+</body>
+</html>

@@ -44,6 +44,44 @@ export default function Dashboard() {
     });
   }, [roles]);
 
+  async function queueTailor(slug: string) {
+    try {
+      await api.queueTailor(slug);
+      reload();
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  async function downloadTailoredPdf(slug: string) {
+    try {
+      const res = await api.buildTailoredPdf(slug);
+      const lines: string[] = [];
+      if (res.pdfPath) {
+        lines.push(`PDF written to:\n${res.pdfPath}`);
+      } else {
+        lines.push(`PDF NOT written (ATS lint blocked it).`);
+      }
+      lines.push(`Fill ratio: ${(res.fillRatio * 100).toFixed(0)}% · rung: ${res.rung}`);
+      if (res.ats) {
+        lines.push(`ATS: ${res.ats.pass ? "PASS" : "FAIL"}`);
+        if (res.ats.hardFailures?.length) {
+          lines.push(`Hard failures:\n- ${res.ats.hardFailures.join("\n- ")}`);
+        }
+        if (res.ats.warnings?.length) {
+          lines.push(`Warnings:\n- ${res.ats.warnings.join("\n- ")}`);
+        }
+      }
+      if (res.warnings?.length) {
+        lines.push(`Fit warnings:\n- ${res.warnings.join("\n- ")}`);
+      }
+      alert(lines.join("\n\n"));
+      reload();
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
   async function updateStatus(slug: string, status: Status) {
     setRoles((prev) =>
       prev
@@ -98,8 +136,8 @@ export default function Dashboard() {
       {totalPending > 0 && (
         <div className="ip-queue">
           <strong>{totalPending} item{totalPending === 1 ? "" : "s"} queued for Claude Code.</strong>{" "}
-          Open a Claude Code session in this repo and run <code>/prep</code> (or just say
-          "process pending interview prep") and the drafts will be filled in.
+          Open a Claude Code session in this repo and run <code>/prep</code> (for JD digests and
+          answer drafts) or <code>/tailor-resume</code> (for resume tailoring jobs).
         </div>
       )}
 
@@ -169,6 +207,29 @@ export default function Dashboard() {
                       <span className="ip-flag ip-flag--queued">{pendingCount(r)} queued</span>
                     )}
                     {fu.due && <span className="ip-flag">Follow up</span>}
+                    {r.pendingTailor ? (
+                      <span className="ip-flag ip-flag--queued">Tailor queued</span>
+                    ) : r.tailored?.html ? (
+                      <button
+                        className="ip-btn ip-btn--ghost"
+                        onClick={() => downloadTailoredPdf(r.slug)}
+                        title={
+                          r.tailored.pdfPath
+                            ? `Last PDF: ${r.tailored.pdfPath}`
+                            : "Render and save PDF"
+                        }
+                      >
+                        {r.tailored.pdfPath ? "Rebuild PDF" : "Build PDF"}
+                      </button>
+                    ) : (
+                      <button
+                        className="ip-btn ip-btn--ghost"
+                        onClick={() => queueTailor(r.slug)}
+                        title="Queue a tailored resume for this role. Run /tailor-resume in Claude Code to process."
+                      >
+                        Tailor resume
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

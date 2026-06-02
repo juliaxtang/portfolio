@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Gradient preview & PNG export</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font: 14px/1.5 system-ui, -apple-system, sans-serif; background: #FDFCFA; color: #15171C; padding: 32px; }
+  h1 { font-size: 20px; margin-bottom: 8px; }
+  p  { color: #5A5D66; margin-bottom: 24px; max-width: 720px; }
+  section { margin-bottom: 48px; }
+  h2 { font-size: 14px; font-family: ui-monospace, Menlo, monospace; color: #5A5D66; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stage {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    transform: scale(0.42);
+    margin-bottom: -628px;
+    box-shadow: 0 24px 48px -12px rgba(20,22,28,.12), 0 8px 16px rgba(20,22,28,.06);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .brand  { background: linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%); }
+  .soft   { background: linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%); }
+  .aurora {
+    background:
+      radial-gradient(120% 140% at 15% 25%, rgba(197, 220, 234, 0.85) 0%, rgba(197, 220, 234, 0.4) 35%, transparent 75%),
+      radial-gradient(130% 130% at 85% 15%, rgba(220, 210, 232, 0.8) 0%, rgba(220, 210, 232, 0.35) 40%, transparent 80%),
+      radial-gradient(140% 150% at 65% 95%, rgba(244, 217, 204, 0.85) 0%, rgba(244, 217, 204, 0.4) 40%, transparent 80%),
+      #FDFCFA;
+  }
+  .note { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #8B8E96; margin-top: 8px; }
+</style>
+</head>
+<body>
+  <h1>Brand gradients — slide-resolution preview</h1>
+  <p>Each panel is rendered at 1920×1080 (Figma Slides native), scaled to 42% for preview. To export a PNG: open Chrome DevTools (⌘⌥I) → Run Command (⌘⇧P) → "Capture node screenshot" with the stage selected. Or use the SVG files in this folder directly — Figma imports SVG losslessly.</p>
+
+  <section>
+    <h2>brand-gradient (saturated)</h2>
+    <div class="stage brand"></div>
+    <p class="note">linear-gradient(135deg, #C5DCEA 0%, #DCD2E8 48%, #F4D9CC 100%)</p>
+  </section>
+
+  <section>
+    <h2>brand-gradient-soft (subtle)</h2>
+    <div class="stage soft"></div>
+    <p class="note">linear-gradient(135deg, #DDEAF2 0%, #EAE2F0 50%, #F8E4D9 100%)</p>
+  </section>
+
+  <section>
+    <h2>brand-aurora (multi-radial, hero treatment)</h2>
+    <div class="stage aurora"></div>
+    <p class="note">3× radial blooms on #FDFCFA — matches portfolio Hero.astro</p>
+  </section>
+</body>
+</html>

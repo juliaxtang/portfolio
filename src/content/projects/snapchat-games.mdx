@@ -31,9 +31,8 @@ import JobsLanes from "../../components/case-study/JobsLanes.astro";
 import HybridCasualGrowth from "../../components/case-study/HybridCasualGrowth.astro";
 import TradeoffSet from "../../components/case-study/TradeoffSet.astro";
 
-<Section stage="Background" eyebrow="Background" title="Where Games started" banner />
-
-<TwoUp ratio="1:1" align="center" title="What is a Lens?">
+<Section stage="Background" title="Where Games started" headless>
+<TwoUp ratio="1:1" align="center" eyebrow="Background" title="Where Games started">
   <Fragment slot="left">
 <p>Lenses are AR effects that live in the carousel along the bottom of Snapchat's camera, the main screen of the app.</p>
 
@@ -51,6 +50,7 @@ import TradeoffSet from "../../components/case-study/TradeoffSet.astro";
     width="narrow"
   />
 </TwoUp>
+</Section>
 
 <Section size="sub" stage="Background" title="Games were just Lenses in that carousel" hideFromNav>
 Games were a subset of lenses, mixed into the same carousel as face

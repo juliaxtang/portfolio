@@ -22,6 +22,7 @@ interface Props {
   id?: string;
   stage?: string;
   hideFromNav?: boolean;
+  headless?: boolean;
   class?: string;
 }
 
@@ -35,6 +36,7 @@ const {
   id,
   stage,
   hideFromNav = false,
+  headless = false,
   class: className = "",
 } = Astro.props;
 
@@ -44,7 +46,7 @@ const finalId = id ?? (title ? slugify(title) : undefined);
 
 const navLabel = stage ?? eyebrow ?? title;
 
-const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", banner ? "cs-section--banner" : "", size === "sub" ? "cs-section--sub" : "", className]
+const cls = ["cs-section", wide ? "cs-section--wide" : "cs-section--narrow", banner ? "cs-section--banner" : "", size === "sub" ? "cs-section--sub" : "", headless ? "cs-section--headless" : "", className]
   .filter(Boolean)
   .join(" ");
 const hasBody = await Astro.slots.has("default");
@@ -57,7 +59,7 @@ const hasBody = await Astro.slots.has("default");
   data-cs-nav-label={navLabel}
   data-cs-stage={stage ?? eyebrow ?? ""}
 >
-  {(eyebrow || title) && (
+  {(eyebrow || title) && !headless && (
     banner ? (
       <div class="cs-banner">
         <div class="cs-banner__inner">
@@ -141,8 +143,27 @@ const hasBody = await Astro.slots.has("default");
     margin-block: var(--s-12);
   }
   /* The first banner (typically Background) sits flush against the hero;
-     no top margin. */
-  .cs-section--banner:first-of-type { margin-top: 0; }
+     no top margin. It also drops the brand gradient so a hot hero accent
+     (Snap yellow, Tinder coral) doesn't crash into the cool pastel wash —
+     canvas lets the hero land cleanly. Later banners keep the gradient as
+     a real chapter divider. */
+  .cs-section--banner:first-of-type { margin-top: 0; margin-bottom: 0; }
+  .cs-section--banner:first-of-type .cs-banner {
+    background: transparent;
+    padding-block: var(--s-16) var(--s-2);
+  }
+  /* Pull the next section closer to the first banner's title — no gradient
+     wall to separate them, so the original chapter-divider spacing reads as
+     a floaty gap. The title becomes the heading of the section below. */
+  .cs-section--banner:first-of-type + .cs-section { padding-top: var(--s-4); }
+  /* Headless: register in nav but don't render a visual header or constrain
+     inner width. The child component (e.g. TwoUp with its own title) owns
+     the visible heading and width. */
+  .cs-section--headless {
+    max-width: none;
+    margin-inline: 0;
+    padding-block: 0;
+  }
   /* A banner immediately followed by an OverlayBanner sits flush with
      the overlay below it. */
   .cs-section--banner:has(+ section.cs-overlay) { margin-bottom: 0; }

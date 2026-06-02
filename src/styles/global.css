@@ -85,7 +85,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--text-primary);
   text-decoration: underline;
   text-decoration-color: var(--brand-underline);
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 1px;
   text-underline-offset: 4px;
   transition: text-decoration-color .25s var(--ease), color .25s var(--ease);
 }
@@ -115,7 +115,7 @@ a.prose-out {
   background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
   background-repeat: no-repeat;
   background-position: 0 100%;
-  background-size: 100% 2px;
+  background-size: 100% 1px;
   padding-bottom: 1px;
   border-radius: var(--r-xs);
   transition:

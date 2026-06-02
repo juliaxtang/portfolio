@@ -149,6 +149,23 @@ const password = "2026";
       return;
     }
 
+    // Auto-unlock via ?k=<password> so cold-app readers don't have to
+    // type the password. Strips the param from the URL after unlocking.
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("k") === expected) {
+      sessionStorage.setItem(key, "1");
+      gate.remove();
+      document.documentElement.style.overflow = "";
+      params.delete("k");
+      const qs = params.toString();
+      const cleanUrl =
+        window.location.pathname +
+        (qs ? "?" + qs : "") +
+        window.location.hash;
+      window.history.replaceState({}, "", cleanUrl);
+      return;
+    }
+
     document.documentElement.style.overflow = "hidden";
 
     const form = gate.querySelector<HTMLFormElement>(".gate__form");

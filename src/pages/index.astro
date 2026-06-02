@@ -212,7 +212,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     overflow: hidden;
     padding-top: var(--s-10);
     padding-bottom: var(--s-8);
-    min-height: 420px;
+    /* Locked to the tallest statement so the dot background never reflows
+       when the rotating headline changes line count. */
+    height: 500px;
+  }
+  @media (max-width: 720px) {
+    .v2-hero { height: 460px; }
   }
 
   /* Anchor scroll targets sit below the sticky header. */
@@ -266,17 +271,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     width: 0;
     margin-right: 0;
     opacity: 0;
-    /* outer: handles slide in/out — per-keyframe easing so entry is
-       ease-out and exit is its mirror (ease-in), giving symmetric feel. */
-    animation: hero-wave-slide 4800ms linear 600ms 1 both;
+    /* outer: slides in once and stays — wave is a permanent fixture. */
+    animation: hero-wave-slide 600ms cubic-bezier(0.22, 1, 0.36, 1) 600ms 1 both;
     will-change: transform, opacity, width;
   }
   .v2-hero__wave-emoji {
     display: inline-block;
     transform-origin: 70% 80%;
-    /* inner: handles rotation only, runs the full duration so the wave
-       is already swinging during the slide-in. */
-    animation: hero-wave-pendulum 4800ms cubic-bezier(0.36, 0, 0.64, 1) 600ms 1 both;
+    /* inner: pendulum runs through the slide-in and the next few
+       seconds, then settles to rest at 0°. */
+    animation: hero-wave-pendulum 4200ms cubic-bezier(0.36, 0, 0.64, 1) 600ms 1 both;
   }
   .v2-hero__name {
     position: relative;
@@ -287,31 +291,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -0.45em;
+    bottom: -0.22em;
     width: 100%;
-    height: 0.5em;
+    height: 0.4em;
     color: var(--brand-primary, currentColor);
     pointer-events: none;
     overflow: visible;
   }
   .v2-hero__squiggle path {
-    /* Path length is ~119px; dasharray = 120 keeps the dashoffset 0 → -120
-       range meaningful (anything past -119 is already invisible and wastes
-       the exit window, which made the erase read as a sudden disappear). */
     stroke-dasharray: 120;
     stroke-dashoffset: 120;
-    /* delay 900ms, runs for 4500ms → ends at 5400ms (same absolute end as wave) */
-    animation: hero-squiggle-intro 4500ms linear 900ms 1 both;
+    /* Delay 900ms → draw in 900ms → hold → erase L-to-R, ends at 4500ms total. */
+    animation: hero-squiggle-intro 3600ms linear 900ms 1 both;
   }
 
-  /* Slide in (0-12.5%, 600ms) → hold → slide out (87.5-100%, 600ms).
-     Entry and exit use the same easing curve and the same duration; the
-     exit keyframes are an exact mirror of the entry keyframes. */
+  /* Slide in once on load and stay — no exit. */
   @keyframes hero-wave-slide {
-    0%    { width: 0;      margin-right: 0;      opacity: 0; transform: translateX(-6px) scale(0.85); animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
-    12.5% { width: 1.25em; margin-right: 0.18em; opacity: 1; transform: translateX(0) scale(1);       animation-timing-function: linear; }
-    87.5% { width: 1.25em; margin-right: 0.18em; opacity: 1; transform: translateX(0) scale(1);       animation-timing-function: cubic-bezier(0.64, 0, 0.78, 0); }
-    100%  { width: 0;      margin-right: 0;      opacity: 0; transform: translateX(-6px) scale(0.85); }
+    0%   { width: 0;      margin-right: 0;      opacity: 0; transform: translateX(-6px) scale(0.85); }
+    100% { width: 1.25em; margin-right: 0.18em; opacity: 1; transform: translateX(0) scale(1); }
   }
 
   /* Pendulum: starts swinging at 0% so the wave is already mid-wave as
@@ -332,14 +329,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     100%  { transform: rotate(0deg); }
   }
 
-  /* Squiggle: draws in left-to-right (entry), holds, then erases
-     left-to-right (exit) so it reads as a continuing line rather than
-     rewinding. Same easing as wave entry/exit. */
+  /* Squiggle: draws in left-to-right and stays — small permanent flourish. */
   @keyframes hero-squiggle-intro {
-    0%    { stroke-dashoffset: 120; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
-    20%   { stroke-dashoffset: 0;   animation-timing-function: linear; }              /* drawn in */
-    86.7% { stroke-dashoffset: 0;   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); } /* start exit — ease-in-out so the wipe is visibly continuous, not snap-late */
-    100%  { stroke-dashoffset: -120; }                                                /* erase from the left */
+    0%   { stroke-dashoffset: 120; }
+    100% { stroke-dashoffset: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {

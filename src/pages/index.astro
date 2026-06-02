@@ -18,6 +18,7 @@ import { snapchatGamesStackItems, snapchatGamesStackProps } from "../components/
 import MediaParallax from "../components/showcase/MediaParallax.astro";
 import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
 import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
+import HomeAbout from "../components/HomeAbout.astro";
 import { showcaseContent } from "../data/showcases";
 
 const snapchatGames = showcaseContent["snapchat-games"];
@@ -223,16 +224,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </div>
 
   <FadeIn>
-    <FestivalModeShowcase />
-  </FadeIn>
-
-  <FadeIn>
     <Showcase
       companyLogo="/logos/tinder.png"
       companyName="Tinder"
       role="Senior Product Designer"
       title="App Redesign"
-      tagline="Designed Sparks, Tinder's profile system of Prompts, Quizzes, and refreshed match interactions. Started as a 2022 Hackathon win, shipped globally in 2023."
+      tagline={[
+        "Tinder's profile had been a single photo and bio for over a decade.",
+        "I designed Sparks, the new profile system of Prompts, Quizzes, and refreshed match interactions that gave people more to talk about. It started as a 2022 Hackathon win, then shipped globally in 2023.",
+      ]}
       stats={[
         { value: "↑ 0.8%", label: "Subscription Cash" },
         { value: "↑ 0.3%", label: "Days Active" },
@@ -240,6 +240,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       ]}
       ctaHref="https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/"
       ctaLabel="See press coverage"
+      press={[
+        {
+          src: "/projects/festival-mode/techcrunch-dark-logo.png",
+          alt: "TechCrunch",
+          height: 14,
+          href: "https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/",
+        },
+      ]}
       accent="#FD297C"
       id="app-redesign"
     >
@@ -253,6 +261,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </Showcase>
   </FadeIn>
 
+  <FadeIn>
+    <FestivalModeShowcase reverse />
+  </FadeIn>
+
+  <HomeAbout />
 
 </BaseLayout>
 

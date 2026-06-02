@@ -47,7 +47,10 @@ interface Props {
   year?: string | number;
   role?: string;
   title: string;
-  tagline?: string;
+  /** A single string renders as one paragraph; an array renders each item
+   *  as its own paragraph so the body text reads as two beats (context →
+   *  what I did) rather than one dense block. */
+  tagline?: string | string[];
   stats?: StatProps[];
   /** Optional bullet list rendered between tagline and CTA (e.g. "Featuring:"). */
   features?: string[];
@@ -92,7 +95,10 @@ const {
 const resolvedBgImage = bgImage && (bgImage.startsWith("http")
   ? bgImage
   : `${import.meta.env.BASE_URL.replace(/\/$/, "")}${bgImage.startsWith("/") ? "" : "/"}${bgImage}`);
-const isLinked = !!ctaHref && !comingSoon;
+// v2 (Rina Kang style): the homepage IS the case study. No link-outs,
+// no CTA, no clickable title or hero. ctaHref/ctaLabel are accepted on
+// the API for compatibility but intentionally not rendered.
+const isLinked = false;
 const isExternal = !!ctaHref && /^https?:\/\//.test(ctaHref);
 
 const accentStyle = accent ? `--cs-accent:${accent};` : "";
@@ -124,13 +130,12 @@ const meta = [role].filter(Boolean) as string[];
           {companyName && <span class="showcase__company">{companyName}</span>}
         </div>
       )}
-      {meta.length > 0 && (
-        <p class="t-eyebrow showcase__meta">{meta.join(" · ")}</p>
+      <h2 class="showcase__title">{title}</h2>
+      {tagline && (
+        Array.isArray(tagline)
+          ? <div class="showcase__tagline">{tagline.map((para) => <p>{para}</p>)}</div>
+          : <p class="showcase__tagline">{tagline}</p>
       )}
-      <h2 class="showcase__title">
-        {isLinked ? <a class="showcase__title-link" href={ctaHref}>{title}</a> : title}
-      </h2>
-      {tagline && <p class="showcase__tagline">{tagline}</p>}
       {features.length > 0 && (
         <div class="showcase__features">
           <p class="showcase__features-label">Featuring:</p>
@@ -140,38 +145,25 @@ const meta = [role].filter(Boolean) as string[];
         </div>
       )}
       {stats.length > 0 && (
-        <ul class="showcase__stats">
+        <ul class="showcase__stats-grid" style={`--stat-cols:${stats.length};`}>
           {stats.map((s) => (
-            <li>
-              <p class="showcase__stat-value">{s.value}</p>
-              <p class="showcase__stat-label">{s.label}</p>
+            <li class="showcase__stat-cell">
+              <span class="showcase__stat-value">{s.value}</span>
+              <span class="showcase__stat-label">{s.label}</span>
             </li>
           ))}
         </ul>
       )}
-      {comingSoon ? (
+      {comingSoon && (
         <p class="showcase__coming-soon">
           <button class="showcase__coming-soon-btn" disabled aria-disabled="true">
             <span class="showcase__cs-default">Case study available for interviews</span>
             <span class="showcase__cs-hover" aria-hidden="true">Ask me about it!</span>
           </button>
         </p>
-      ) : ctaHref && (
-        <p class="showcase__cta">
-          <a
-            class="showcase__cta-btn"
-            href={ctaHref}
-            target={isExternal ? "_blank" : undefined}
-            rel={isExternal ? "noopener noreferrer" : undefined}
-          >
-            <span class="showcase__cta-label">{ctaLabel}</span>
-            <i class="ph ph-arrow-up-right showcase__cta-arrow" aria-hidden="true"></i>
-          </a>
-        </p>
       )}
       {press.length > 0 && (
-        <div class="showcase__press" aria-label="As seen on">
-          <span class="showcase__press-label">As seen on</span>
+        <div class="showcase__press" aria-label="Featured in">
           <ul class="showcase__press-logos" role="list">
             {press.map((logo) => {
               const imgStyle = [
@@ -215,21 +207,8 @@ const meta = [role].filter(Boolean) as string[];
         </div>
       )}
     </div>
-    <div class={"showcase__hero" + (isLinked ? " showcase__hero--linked" : "")}>
-      {isLinked ? (
-        <a
-          class="showcase__hero-link"
-          href={ctaHref}
-          target={isExternal ? "_blank" : undefined}
-          rel={isExternal ? "noopener noreferrer" : undefined}
-          aria-label={isExternal ? `${ctaLabel}: ${title}` : `Read the ${title} case study`}
-          tabindex="-1"
-        >
-          <slot />
-        </a>
-      ) : (
-        <slot />
-      )}
+    <div class="showcase__hero">
+      <slot />
     </div>
   </div>
 </section>
@@ -316,14 +295,14 @@ const meta = [role].filter(Boolean) as string[];
     margin: 0 0 var(--s-2);
   }
   .showcase__logo {
-    height: clamp(12px, 1vw, 14px);
+    height: clamp(18px, 1.6vw, 22px);
     width: auto;
     display: block;
     object-fit: contain;
   }
   .showcase__company {
     font-family: var(--font-sans);
-    font-size: clamp(15px, 1.4vw, 18px);
+    font-size: clamp(18px, 1.6vw, 22px);
     font-weight: 600;
     letter-spacing: -0.012em;
     color: var(--text-primary);
@@ -349,58 +328,83 @@ const meta = [role].filter(Boolean) as string[];
   }
 
   .showcase__tagline {
-    font-size: clamp(15px, 1.2vw, 17px);
-    line-height: 1.5;
-    color: var(--text-primary);
-    margin: 0 0 var(--s-4);
+    font-size: clamp(14px, 1.15vw, 15px);
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0 0 var(--s-6);
+    max-width: 40ch;
+  }
+  .showcase__tagline p {
+    margin: 0 0 var(--s-3);
+  }
+  .showcase__tagline p:last-child {
+    margin-bottom: 0;
   }
 
-  .showcase__stats {
+  /* Stats sit directly under the title as the project's impact proof.
+     Equal-width columns so a long label never pushes a sibling onto a
+     new line; on narrow widths the grid collapses to a stack. Max-width
+     is matched to the tagline measure so the divider line above the
+     metrics aligns with the prose block, not the full text column. */
+  .showcase__stats-grid {
     list-style: none;
-    margin: 0 0 var(--s-4);
-    padding: 0;
+    margin: 0 0 var(--s-6);
+    padding: var(--s-3) 0 0;
+    border-top: 1px solid var(--border-subtle, rgba(20, 22, 28, 0.08));
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto auto;
-    gap: var(--s-3);
+    grid-template-columns: repeat(var(--stat-cols, 3), minmax(0, 1fr));
+    gap: var(--s-4);
+    /* font-size and max-width match the tagline so the 40ch measure
+       resolves to the same pixel width and the divider line above the
+       metrics aligns exactly with the prose block edge. The value/label
+       children set their own font-size so this only affects ch math. */
+    font-size: clamp(14px, 1.15vw, 15px);
+    max-width: 40ch;
   }
-  .showcase__stats li {
-    display: grid;
-    grid-template-rows: subgrid;
-    grid-row: span 2;
-    gap: var(--s-1);
+  .showcase__stat-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
   }
   .showcase__stat-value {
     font-family: var(--font-sans);
-    font-weight: 500;
-    font-size: clamp(20px, 2vw, 26px);
-    line-height: 1.1;
-    letter-spacing: -0.018em;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
-    margin: 0;
+    font-size: clamp(20px, 1.8vw, 24px);
+    letter-spacing: -0.014em;
+    line-height: 1.1;
   }
   .showcase__stat-label {
-    font-size: 13px;
-    line-height: 1.4;
-    color: var(--text-secondary);
-    margin: 0;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    line-height: 1.35;
+    /* Reserve 2 label lines per cell so 1-line and 2-line labels in the
+       same row occupy the same vertical band. Short labels center inside
+       that band so they don't read as "top-stuck with empty space below."
+       text-wrap: pretty discourages orphans on modern browsers; labels
+       themselves also glue their final two words with NBSP as a fallback. */
+    min-height: calc(1.35em * 2);
+    display: flex;
+    align-items: center;
+    text-wrap: pretty;
+  }
+  @media (max-width: 520px) {
+    .showcase__stats-grid {
+      grid-template-columns: 1fr;
+      gap: var(--s-2);
+    }
+  }
+  .showcase__stats-sep {
+    color: var(--text-tertiary);
+    opacity: 0.55;
+    user-select: none;
   }
 
+  /* Press: no label, smaller logos, quieter row. Reads as a caption. */
   .showcase__press {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--s-3);
     margin: var(--s-8) 0 0;
-  }
-  .showcase__press-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
   }
   .showcase__press-logos {
     list-style: none;
@@ -408,12 +412,8 @@ const meta = [role].filter(Boolean) as string[];
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    /* Wordmarks in each press logo sit near the bottom of their bounding
-       image (icons / crests live above), so aligning bottoms aligns the
-       visible text baselines across the row. Per-logo nudgeY fine-tunes
-       residual drift from descenders / crest depth. */
     align-items: flex-end;
-    gap: var(--s-3) var(--s-4);
+    gap: var(--s-2) var(--s-3);
   }
   .showcase__press-logos li {
     display: flex;
@@ -421,13 +421,13 @@ const meta = [role].filter(Boolean) as string[];
   }
   .showcase__press-suffix {
     font-family: var(--font-sans);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-tertiary);
     line-height: 1;
-    margin-left: 4px;
-    opacity: 0.65;
-    transform: translateY(-2px);
+    margin-left: 3px;
+    opacity: 0.7;
+    transform: translateY(-1px);
     transition: opacity 200ms var(--ease-out);
   }
   .showcase__press-link:hover .showcase__press-suffix,
@@ -435,11 +435,11 @@ const meta = [role].filter(Boolean) as string[];
     opacity: 1;
   }
   .showcase__press-logos img {
-    height: 18px;
+    height: 11px;
     width: auto;
     object-fit: contain;
     display: block;
-    opacity: 0.65;
+    opacity: 0.55;
     transition: opacity 200ms var(--ease-out);
   }
   .showcase__press-logos img:hover { opacity: 1; }

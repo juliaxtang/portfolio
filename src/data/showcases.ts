@@ -33,7 +33,7 @@ export interface ShowcaseContent {
   year: number;
   role: string;
   title: string;
-  tagline: string;
+  tagline: string | string[];
   stats: ShowcaseStat[];
   accent: string;
   press?: PressLogo[];
@@ -45,13 +45,15 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     companyName: "Snapchat",
     year: 2025,
     role: "Staff Product Designer",
-    title: "Snapchat Games",
-    tagline:
-      "Defined and pitched Games strategy directly to Snap's CEO, securing a dedicated squad and scaling the product from an early-stage bet to a 30M+ DAU platform.",
+    title: "Social Games",
+    tagline: [
+      "Games on Snapchat lived buried in the camera's lens carousel, with no dedicated category and no reliable way to find them.",
+      "I spotted the engagement opportunity, commissioned the research, and reframed Games as a category bet. I got buy-in from the CEO and earned a dedicated squad to scale it.",
+    ],
     stats: [
       { value: "30M", label: "Games DAU" },
-      { value: "↑ 2.9M", label: "Additional Snaps sent, full-scale estimate" },
-      { value: "↑ 120%", label: "Game Video Posts on iOS" },
+      { value: "↑ 2.9M", label: "Additional Snaps sent, full-scale estimate" },
+      { value: "↑ 120%", label: "Game Video Posts on iOS" },
     ],
     accent: "#FFFC00",
   },
@@ -61,25 +63,27 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     year: 2025,
     role: "Staff Product Designer",
     title: "Topic Chats",
-    tagline:
-      "Scaled Topic Chats into a meaningful new engagement surface for Snapchat, driving roughly 71K incremental U.S. DAU through live-event conversation, discovery, notifications, and sharing loops.",
+    tagline: [
+      "Topic Chats was a half-finished public-chat MVP when I took it over: the surface worked, the product didn't. Most chats opened with a wave of 'hi' posts and went quiet.",
+      "I reshaped it into a live-events product anchored in sports, designing the discovery, notification, and sharing loops that gave people a reason to stay.",
+    ],
     stats: [
       { value: "↑ 71K", label: "Incremental U.S. DAU" },
-      { value: "40K", label: "Peak concurrent users in chat" },
-      { value: "208K", label: "Messages sent per week" },
+      { value: "40K", label: "Peak concurrent users in chat" },
+      { value: "208K", label: "Messages sent per week" },
     ],
     accent: "#FFFC00",
     press: [
       {
         src: "/projects/festival-mode/techcrunch-dark-logo.png",
         alt: "TechCrunch",
-        height: 20.6,
+        height: 16,
         href: "https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/",
       },
       {
         src: "/projects/topic-chats/Snap_Inc.-Logo-trim.png",
         alt: "Snap, Inc.",
-        height: 15,
+        height: 12,
         nudgeY: 2,
         wrapNudgeY: -2,
         suffix: "Newsroom",
@@ -92,13 +96,15 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     companyName: "Tinder",
     year: 2023,
     role: "Senior Product Designer",
-    title: "Tappy Cloud",
-    tagline:
-      "Architected Tinder's transition from hardcoded profiles to dynamic profiles via a backend-driven experimentation platform. The design tool that came out of it, TaCo, has since powered 50+ experiments and an attributed $50–110M revenue lift.",
+    title: "Dynamic Profiles",
+    tagline: [
+      "On Tinder, profile pages had been hardcoded and one-size-fits-all for years.",
+      "I led the six-month effort to build Tappy Cloud, the backend-driven system and internal design tool (TaCo) that turned profiles into something teams could test, configure, and personalize per user.",
+    ],
     stats: [
-      { value: "↑ 20%", label: "More likes sent across all experiments" },
-      { value: "$50–110M", label: "In revenue lift, attributed" },
-      { value: "50+", label: "Tappy experiments launched on TaCo" },
+      { value: "↑ 20%", label: "More likes sent across all experiments" },
+      { value: "$50–110M", label: "In revenue lift, attributed" },
+      { value: "50+", label: "Tappy experiments launched on TaCo" },
     ],
     accent: "#FD297C",
   },
@@ -108,40 +114,42 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     year: 2022,
     role: "Senior Product Designer",
     title: "Festival Mode",
-    tagline:
-      "Turned live events into high-intent social discovery surfaces on Tinder, driving 2× the likes and conversations of the main swipe stack.",
+    tagline: [
+      "Festival Mode first launched in 2019 as a single-festival entry attached to Tinder's main swipe deck, then got pulled during the pandemic.",
+      "With IRL events returning in 2022, I led the two-month relaunch on Tinder Explore, reframing it from a one-time swipe surface into a high-intent social discovery experience for every festival of the season.",
+    ],
     stats: [
-      { value: "2×", label: "Likes sent and convos started vs. main stack" },
-      { value: "↑ 10%", label: "Tile opens on Explore" },
-      { value: "2 months", label: "From kickoff to launch" },
+      { value: "2×", label: "Likes sent and convos started vs. main stack" },
+      { value: "↑ 10%", label: "Tile opens on Explore" },
+      { value: "2 months", label: "From kickoff to launch" },
     ],
     accent: "#FA7255",
     press: [
       {
         src: "/projects/festival-mode/mashable-dark-logo.png",
         alt: "Mashable",
-        height: 14,
+        height: 11,
         href: "https://mashable.com/article/tinder-festival-mode",
       },
       {
         src: "/projects/festival-mode/engadget-dark-logo.png",
         alt: "Engadget",
-        height: 22.66,
-        nudgeY: 3,
+        height: 18,
+        nudgeY: 2,
         href: "https://www.engadget.com/tinder-festival-mode-returns-163640137.html",
       },
       {
         src: "/projects/festival-mode/techcrunch-dark-logo.png",
         alt: "TechCrunch",
-        height: 20.6,
-        nudgeY: 4,
+        height: 16,
+        nudgeY: 3,
         href: "https://techcrunch.com/2022/04/14/tinder-adds-a-festival-mode-for-making-connections-ahead-of-concerts-and-events/",
       },
       {
         src: "/projects/festival-mode/dailymail-dark-logo.png",
         alt: "Daily Mail",
-        height: 20,
-        nudgeY: 5,
+        height: 16,
+        nudgeY: 4,
         href: "https://www.dailymail.com/sciencetech/article-10719027/Tinder-launches-FESTIVAL-MODE-lets-singletons-match-fellow-festivalgoers.html",
       },
     ],

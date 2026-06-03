@@ -1,0 +1,228 @@
+---
+/**
+ * Top-right social icons: copy-email + LinkedIn external link.
+ *
+ * Two render modes:
+ *   - default: fixed top-right of the viewport. Visible on desktop where
+ *     the SideRail anchors the left.
+ *   - inline:  static, dropped inside the mobile Header next to nav so the
+ *     icons don't fight the nav links for the fixed top-right region.
+ *
+ * Cursor morphs are handled by CustomCursor — the email button carries
+ * data-cursor="copy-email" and the LinkedIn link carries
+ * data-cursor="external" so the cursor swaps to the matching pill /
+ * arrow morph while hovered.
+ */
+const EMAIL = "juliaxtang@gmail.com";
+const LINKEDIN = "https://www.linkedin.com/in/juliaxtang/";
+
+interface Props {
+  variant?: "fixed" | "inline" | "footer";
+}
+const { variant = "fixed" } = Astro.props;
+
+// The fixed top-right variant only carries the "Let's get in touch!"
+// lede on /about — every other page keeps just the two icons so the
+// header reads as a quiet utility. The footer variant always shows the
+// lede, and the inline mobile-header variant never does (no room).
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isAbout = pathname === "/about" || pathname.startsWith("/about/");
+const showLede =
+  variant === "footer" || (variant === "fixed" && isAbout);
+---
+
+<div class:list={["social-icons", `social-icons--${variant}`]} aria-label="Contact links">
+  {showLede && (
+    <span class="social-icons__lede" aria-hidden="true">Let's get in touch!</span>
+  )}
+  <button
+    type="button"
+    class="social-icons__btn"
+    data-cursor="copy-email"
+    data-email={EMAIL}
+    aria-label={`Copy email address ${EMAIL}`}
+  >
+    <i class="ph ph-envelope-simple" aria-hidden="true"></i>
+  </button>
+  <a
+    class="social-icons__btn"
+    data-cursor="external"
+    href={LINKEDIN}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Open Julia Tang's LinkedIn in a new tab"
+  >
+    <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+  </a>
+</div>
+
+<script is:inline>
+  (function () {
+    if (window.__socialIconsBound) return;
+    window.__socialIconsBound = true;
+
+    // When the footer scrolls into view, hide the lede on the fixed
+    // top-right variant — the footer's own "Let's get in touch!" + icons
+    // are already on screen, so the persistent header copy would just be
+    // a redundant repeat. Re-shows as soon as the footer leaves again.
+    function watchFooter() {
+      var fixed = document.querySelector(".social-icons--fixed");
+      var footer = document.querySelector("footer");
+      if (!fixed || !footer || !("IntersectionObserver" in window)) return;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          fixed.classList.toggle("is-at-footer", entry.isIntersecting);
+        });
+      }, { threshold: 0.01 });
+      io.observe(footer);
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", watchFooter);
+    } else {
+      watchFooter();
+    }
+
+    document.addEventListener("click", function (e) {
+      var btn = e.target && e.target.closest
+        ? e.target.closest('[data-cursor="copy-email"]')
+        : null;
+      if (!btn) return;
+      var email = btn.getAttribute("data-email") || "";
+      if (!email) return;
+      function flash() {
+        btn.classList.add("is-copied");
+        var cursor = document.getElementById("cursor");
+        if (cursor) cursor.classList.add("is-copy-done");
+        setTimeout(function () {
+          btn.classList.remove("is-copied");
+          if (cursor) cursor.classList.remove("is-copy-done");
+        }, 1400);
+      }
+      function fallback() {
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = email;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "absolute";
+          ta.style.left = "-9999px";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          flash();
+        } catch (_) {}
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email).then(flash, fallback);
+      } else {
+        fallback();
+      }
+    });
+  })();
+</script>
+
+<style>
+  .social-icons {
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+  }
+
+  /* Fixed variant: anchors top-right of the viewport. Top padding matches
+     the SideRail's var(--s-10) so the icons sit on the same eye-line as
+     the wordmark on the left. Hidden below 1024px (the Header takes over
+     and gets the inline variant). */
+  .social-icons--fixed {
+    position: fixed;
+    top: var(--s-10);
+    right: clamp(var(--s-6), 3vw, var(--s-12));
+    z-index: 60;
+  }
+  @media (max-width: 1023px) {
+    .social-icons--fixed { display: none; }
+  }
+
+  /* Inline variant: sits inside the mobile Header. Hidden at desktop
+     widths where the fixed variant is responsible. */
+  .social-icons--inline {
+    gap: var(--s-4);
+    margin-left: var(--s-4);
+  }
+  @media (min-width: 1024px) {
+    .social-icons--inline { display: none; }
+  }
+
+  /* Footer variant: replaces the old Email / LinkedIn text links. Always
+     visible regardless of viewport, sized down a touch to read at the
+     same weight as the surrounding 14px footer links. */
+  .social-icons--footer {
+    gap: var(--s-4);
+  }
+  .social-icons--footer .social-icons__btn { padding: var(--s-1); margin: calc(var(--s-1) * -1); }
+  .social-icons--footer .social-icons__btn i { font-size: 22px; }
+
+  .social-icons__btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: var(--s-2);
+    margin: calc(var(--s-2) * -1);
+    color: var(--text-secondary);
+    border-radius: var(--r-xs);
+    text-decoration: none;
+    line-height: 0;
+    transition:
+      color var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease);
+  }
+  .social-icons__btn i {
+    font-size: 26px;
+    display: inline-block;
+    transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .social-icons__lede {
+    font-family: var(--font-sans);
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+  /* Hide the lede inside the mobile Header — the row is already tight
+     with brand + nav + icons, and the line wouldn't have room to read. */
+  .social-icons--inline .social-icons__lede { display: none; }
+  /* Hide the lede on the fixed variant once the footer is in view (its
+     own lede + icons live in the footer, so the persistent copy would be
+     a duplicate). Fades out so it doesn't pop. */
+  .social-icons--fixed .social-icons__lede {
+    transition:
+      opacity 220ms var(--ease-out),
+      transform 280ms var(--ease-out);
+  }
+  .social-icons--fixed.is-at-footer .social-icons__lede {
+    opacity: 0;
+    transform: translateX(6px);
+    pointer-events: none;
+  }
+
+  @media (max-width: 540px) {
+    .social-icons__lede { display: none; }
+  }
+  .social-icons__btn:hover,
+  .social-icons__btn:focus-visible {
+    color: var(--text-primary);
+    outline: none;
+  }
+  .social-icons__btn:hover i,
+  .social-icons__btn:focus-visible i {
+    transform: translateY(-1px);
+  }
+  .social-icons__btn:active i {
+    transform: scale(0.92);
+  }
+
+  @media (max-width: 540px) {
+    .social-icons__btn i { font-size: 22px; }
+  }
+</style>

@@ -9,6 +9,11 @@ html {
   scroll-behavior: smooth;
   overflow-x: clip;
   text-size-adjust: 100%;
+  /* iOS Safari shows a translucent gray rectangle over every tappable
+     element on touch — clashes with the soft pastel aesthetic and
+     conflicts with the custom :hover wash / :active press states. Kill
+     it; the per-element :active feedback (which we control) takes over. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {

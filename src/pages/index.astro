@@ -290,9 +290,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <FestivalModeShowcase reverse />
   </FadeIn>
 
+  <div class="home-footer-spacer" aria-hidden="true"></div>
+
 </BaseLayout>
 
 <style>
+  .home-footer-spacer {
+    height: var(--s-16);
+  }
+  @media (max-width: 720px) {
+    .home-footer-spacer { height: var(--s-10); }
+  }
+
   .v2-hero {
     position: relative;
     overflow: visible;

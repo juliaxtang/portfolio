@@ -539,12 +539,15 @@ const meta = [role].filter(Boolean) as string[];
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     gap: var(--s-2) var(--s-3);
+  }
+  #festival-mode .showcase__press-logos {
+    gap: var(--s-3) var(--s-6);
   }
   .showcase__press-logos li {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
   }
   .showcase__press-suffix {
     font-family: var(--font-sans);

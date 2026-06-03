@@ -128,11 +128,13 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
         src: "/projects/festival-mode/mashable-dark-logo.png",
         alt: "Mashable",
         href: "https://mashable.com/article/tinder-festival-mode",
+        height: 12,
       },
       {
         src: "/projects/festival-mode/engadget-dark-logo.png",
         alt: "Engadget",
         href: "https://www.engadget.com/tinder-festival-mode-returns-163640137.html",
+        height: 20,
       },
       {
         src: "/projects/festival-mode/techcrunch-dark-logo.png",
@@ -143,6 +145,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
         src: "/projects/festival-mode/dailymail-dark-logo.png",
         alt: "Daily Mail",
         href: "https://www.dailymail.com/sciencetech/article-10719027/Tinder-launches-FESTIVAL-MODE-lets-singletons-match-fellow-festivalgoers.html",
+        height: 14,
       },
     ],
   },

@@ -162,7 +162,20 @@ const resolve = (p: string) =>
     --stack-y: 0px;
   }
   @media (max-width: 900px) {
-    .video-stack { margin-right: auto; }
+    /* Center the stack and shrink it so the rotated outer phones don't
+       clip against the column edges (their +/-9deg rotation pushes the
+       corners well past the bounding-box and the stack's own absolute
+       items already reach 101% width). */
+    .video-stack {
+      margin-inline: auto;
+      max-width: min(var(--vs-max-w, 540px), 84%);
+    }
+  }
+  @media (max-width: 1100px) and (min-width: 901px) {
+    /* In the two-column desktop layout the hero column is ~430px wide
+       around this breakpoint; the stack's outer phones bleed left/right
+       through the .showcase__inner padding. Pull it in. */
+    .video-stack { max-width: min(var(--vs-max-w, 540px), 92%); margin-inline: auto; }
   }
 
   .video-stack__item {

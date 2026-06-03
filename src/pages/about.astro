@@ -231,6 +231,9 @@ const hobbies = [
   }
 
   .about { padding-top: var(--s-16); position: relative; }
+  @media (max-width: 720px) {
+    .about { padding-top: var(--s-10); }
+  }
   .about-eyebrow { margin-bottom: var(--s-3); color: var(--text-tertiary); }
 
   /* Body stack — paragraphs flush-left at the same edge as the title and
@@ -349,7 +352,10 @@ const hobbies = [
     white-space: nowrap;
   }
   @media (max-width: 720px) {
-    .about-title { white-space: normal; }
+    .about-title { white-space: normal; font-size: clamp(40px, 9vw, 56px); margin-bottom: var(--s-8); }
+  }
+  @media (max-width: 420px) {
+    .about-title { font-size: 38px; }
   }
 
   .hi-ticker {

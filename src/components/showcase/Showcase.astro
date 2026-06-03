@@ -263,8 +263,11 @@ const meta = [role].filter(Boolean) as string[];
     z-index: 0;
     pointer-events: none;
   }
-  @media (max-width: 720px) {
+  @media (max-width: 900px) {
     .showcase { padding-block: var(--s-12); }
+  }
+  @media (max-width: 480px) {
+    .showcase { padding-block: var(--s-10); }
   }
 
   /* Optional full-bleed decorative background (e.g. wave). Sits behind
@@ -353,7 +356,7 @@ const meta = [role].filter(Boolean) as string[];
   }
 
   @media (max-width: 900px) {
-    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-8); padding: 0 var(--s-5); overflow-x: clip; }
+    .showcase__inner { grid-template-columns: 1fr; gap: var(--s-6); padding: 0 var(--s-5); overflow-x: clip; }
     .showcase__text,
     .showcase__hero,
     .showcase--reverse .showcase__text,
@@ -363,6 +366,10 @@ const meta = [role].filter(Boolean) as string[];
     .showcase--reverse .showcase__hero { order: 1; }
     .showcase__inner > .showcase__text { order: 2; }
     .showcase__inner > .showcase__hero { order: 1; }
+    /* Drop the desktop 440px hero floor so a short hero (e.g. a 320px
+       phone composition) doesn't reserve 100+px of empty space above
+       the text column on mobile. */
+    .showcase__hero { min-height: 0; }
   }
 
   .showcase__brand {
@@ -394,11 +401,14 @@ const meta = [role].filter(Boolean) as string[];
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 400;
-    font-size: clamp(35px, 3.96vw, 48px);
+    font-size: clamp(32px, 3.96vw, 48px);
     line-height: 1.1;
     letter-spacing: -0.01em;
     color: var(--text-primary);
     margin: 0 0 var(--s-5);
+  }
+  @media (max-width: 480px) {
+    .showcase__title { font-size: 30px; margin-bottom: var(--s-4); }
   }
   .showcase__title-link {
     color: inherit;
@@ -407,11 +417,14 @@ const meta = [role].filter(Boolean) as string[];
   }
 
   .showcase__tagline {
-    font-size: clamp(14px, 1.15vw, 15px);
+    font-size: clamp(15px, 1.15vw, 15px);
     line-height: 1.65;
     color: var(--text-secondary);
     margin: 0 0 var(--s-8);
     max-width: 40ch;
+  }
+  @media (max-width: 900px) {
+    .showcase__tagline { margin-bottom: var(--s-6); }
   }
   .showcase__tagline p {
     margin: 0 0 var(--s-4);
@@ -501,8 +514,14 @@ const meta = [role].filter(Boolean) as string[];
   @media (max-width: 520px) {
     .showcase__stats-grid {
       grid-template-columns: 1fr;
-      gap: var(--s-2);
+      gap: var(--s-3);
+      padding-bottom: var(--s-5);
+      margin-bottom: var(--s-5);
     }
+    /* Stacked labels don't need to reserve two lines per cell — that was
+       to align varying-length labels in the same horizontal row. */
+    .showcase__stat-label { min-height: 0; }
+    .showcase__stat-cell { gap: 4px; }
   }
   .showcase__stats-sep {
     color: var(--text-tertiary);
@@ -658,6 +677,12 @@ const meta = [role].filter(Boolean) as string[];
     max-width: 540px;
     margin-inline: auto;
     width: 100%;
+  }
+  @media (max-width: 900px) {
+    /* Drop the desktop 440px hero floor on mobile so a shorter hero
+       composition doesn't reserve 100+px of dead space above the text
+       column when the two columns stack. */
+    .showcase__hero { min-height: 0; }
   }
   .showcase__hero-link {
     display: block;

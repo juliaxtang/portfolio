@@ -348,6 +348,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   @media (max-width: 720px) {
     .v2-hero { min-height: 560px; padding-top: var(--s-8); }
   }
+  @media (max-width: 420px) {
+    .v2-hero { min-height: 460px; padding-top: var(--s-6); padding-bottom: var(--s-6); }
+  }
 
   /* The global SideRail handles wordmark + nav on desktop; on smaller
      widths the rail collapses and the sticky Header takes over (rule

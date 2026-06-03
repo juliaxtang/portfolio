@@ -31,6 +31,9 @@ const { value, label, caption } = Astro.props;
     background: var(--cs-stat-bg, var(--bg-surface));
     border: 1px solid var(--cs-stat-border-color, var(--border-default));
   }
+  @media (max-width: 480px) {
+    .cs-stat { padding: var(--cs-stat-padding, var(--s-5)); }
+  }
   .cs-stat__value {
     font-family: var(--cs-stat-value-font, var(--font-sans));
     font-weight: var(--cs-stat-value-weight, 500);

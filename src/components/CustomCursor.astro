@@ -55,6 +55,34 @@
 
     document.documentElement.classList.add("has-custom-cursor");
 
+    // Measure the natural widths of the two copy-pill labels so the pill
+    // can shrink from "Copy email" to "Copied!" smoothly after a copy.
+    // Both labels live in the same grid cell (stacked for crossfade) so we
+    // can't read their individual offsetWidth in place; measure off-screen
+    // using a span that inherits the pill's font. Re-measure once webfonts
+    // load so the widths reflect the actual rendered font, not the fallback.
+    function measureCopyPill() {
+      const pill = cursor.querySelector(".cursor__copy-pill");
+      if (!pill) return;
+      const probe = document.createElement("span");
+      probe.style.cssText =
+        "position:absolute;left:-9999px;top:-9999px;visibility:hidden;" +
+        "white-space:nowrap;font-family:var(--font-sans);font-size:12px;" +
+        "font-weight:500;line-height:1;letter-spacing:normal;";
+      document.body.appendChild(probe);
+      probe.textContent = "Copy email";
+      const wIdle = Math.ceil(probe.getBoundingClientRect().width);
+      probe.textContent = "Copied!";
+      const wDone = Math.ceil(probe.getBoundingClientRect().width);
+      document.body.removeChild(probe);
+      pill.style.setProperty("--cp-w-idle", wIdle + "px");
+      pill.style.setProperty("--cp-w-done", wDone + "px");
+    }
+    measureCopyPill();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(measureCopyPill);
+    }
+
     // Lerped follow — cursor eases toward the actual mouse position so
     // it lags slightly, which is what reads as "smoothness."
     //
@@ -712,10 +740,14 @@
     top: 0;
     transform: translate(-50%, -50%) scale(0.05, 0.55);
     transform-origin: 50% 50%;
-    display: inline-flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-items: center;
-    justify-content: center;
+    justify-items: center;
     padding: 6px 12px;
+    box-sizing: content-box;
+    width: var(--cp-w-idle, max-content);
+    max-width: var(--cp-w-idle, none);
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -726,25 +758,26 @@
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    will-change: transform, opacity;
+    overflow: hidden;
+    will-change: transform, opacity, width;
     transition:
       opacity 180ms var(--ease-out),
-      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1),
+      width 360ms cubic-bezier(0.34, 1.45, 0.64, 1),
+      max-width 360ms cubic-bezier(0.34, 1.45, 0.64, 1);
   }
   .cursor__copy-pill-label {
     display: inline-block;
     grid-area: 1 / 1;
+    justify-self: center;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
     opacity: 0;
     transform: translateY(4px);
     transition:
       opacity 200ms var(--ease-out),
       transform 240ms var(--ease-out);
-  }
-  /* Stack the two labels so the pill width is set by the longer one and
-     stays steady while they crossfade. */
-  .cursor__copy-pill {
-    display: inline-grid;
-    grid-template-columns: 1fr;
   }
   .cursor.is-copy-pill .cursor__dot,
   .cursor.is-copy-pill .cursor__ring {
@@ -757,6 +790,10 @@
   .cursor.is-copy-pill .cursor__copy-pill {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-copy-pill.is-copy-done .cursor__copy-pill {
+    width: var(--cp-w-done, max-content);
+    max-width: var(--cp-w-done, none);
   }
   .cursor.is-copy-pill .cursor__copy-pill-label[data-state="idle"] {
     opacity: 1;

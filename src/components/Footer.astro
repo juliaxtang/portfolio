@@ -1,6 +1,6 @@
 ---
-import SocialIcons from "./SocialIcons.astro";
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const EMAIL = "juliaxtang@gmail.com";
 ---
 
 <footer class="site-footer">
@@ -30,7 +30,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       <a href={`${base}/resume.pdf`} target="_blank" rel="noopener">Resume</a>
     </nav>
     <div class="footer-right">
-      <SocialIcons variant="footer" />
+      <span class="footer-chat-lede">Let's chat!</span>
+      <button
+        type="button"
+        class="footer-email"
+        data-cursor="copy-email"
+        data-email={EMAIL}
+        aria-label={`Copy email address ${EMAIL}`}
+      >
+        {EMAIL}
+      </button>
     </div>
   </div>
 </footer>
@@ -83,10 +92,35 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   .footer-right {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--s-4);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--s-1);
     margin-left: auto;
+    line-height: 1.2;
+  }
+  .footer-chat-lede {
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+    font-size: 12px;
+    letter-spacing: -0.005em;
+  }
+  .footer-email {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    color: var(--text-secondary);
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .footer-email:hover,
+  .footer-email:focus-visible {
+    color: var(--text-primary);
+    outline: none;
   }
   .footer-nav-contact {
     display: flex;

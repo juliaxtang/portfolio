@@ -17,6 +17,13 @@
 <div class="cursor" id="cursor" aria-hidden="true">
   <div class="cursor__dot"></div>
   <div class="cursor__ring"></div>
+  <div class="cursor__pill" aria-hidden="true">
+    <span class="cursor__pill-label">Read about it</span>
+    <svg class="cursor__pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5 11L11 5" />
+      <path d="M6 5h5v5" />
+    </svg>
+  </div>
 </div>
 
 <script is:inline>
@@ -81,6 +88,8 @@
     function onMove(e) {
       mx = e.clientX;
       my = e.clientY;
+      document.documentElement.style.setProperty("--cursor-x", mx + "px");
+      document.documentElement.style.setProperty("--cursor-y", my + "px");
       if (!rafId) tick();
     }
 
@@ -107,6 +116,11 @@
         "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
         "rotate(" + lastAngle.toFixed(4) + "rad) " +
         "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+      // Expose the cursor position as CSS variables so hover-revealed
+      // images can attach themselves to the cursor (the image becomes
+      // the cursor while it's over the trigger).
+      document.documentElement.style.setProperty("--cursor-x", cx.toFixed(2) + "px");
+      document.documentElement.style.setProperty("--cursor-y", cy.toFixed(2) + "px");
 
       if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
         rafId = requestAnimationFrame(tick);
@@ -201,13 +215,28 @@
       cursor.classList.toggle("on-dark", mode === "dark");
     }
 
+    // Elements that own a hover-revealed visual (a polaroid photo, a
+     // preview image, a caption list, etc.) hide the cursor so the
+     // reveal IS the cursor — no double-stamp of a dot over the artwork.
+     function ownsHoverReveal(el) {
+       return el && el.closest && el.closest("[data-cursor='hide'], .pill, .prose-out--preview");
+     }
+
+    function isPressPill(el) {
+      return el && el.closest && el.closest(".showcase__press-link");
+    }
+
     document.addEventListener("mouseover", function (e) {
       if (isInteractive(e.target)) cursor.classList.add("is-interactive");
+      if (ownsHoverReveal(e.target)) cursor.classList.add("is-hidden");
+      if (isPressPill(e.target)) cursor.classList.add("is-press-pill");
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
       // Only drop the state if we've fully left interactive territory.
       if (!isInteractive(e.relatedTarget)) cursor.classList.remove("is-interactive");
+      if (!ownsHoverReveal(e.relatedTarget)) cursor.classList.remove("is-hidden");
+      if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
     });
 
     // Click ripple + hold-to-expand. On press the ring scales up
@@ -326,6 +355,14 @@
     transform: scale(1);
   }
 
+  /* Hover-reveal areas — fade the cursor out so the revealed image or
+     graphic stands in for it. Children inherit the fade. */
+  .cursor.is-hidden .cursor__dot,
+  .cursor.is-hidden .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+  }
+
   /* Held — ring grows smoothly while pressed. The longer the hold,
      the more the eased ramp keeps pulling toward the larger scale,
      so the visual responds to hold duration. */
@@ -345,6 +382,51 @@
   }
   .cursor.is-pressed:not(.is-interactive) .cursor__ring {
     opacity: 1;
+  }
+
+  /* Cursor-morphed "Read about it" pill — replaces the dot/ring when
+     hovering a press logo. Centered on the cursor position, slides up
+     just slightly so the cursor visually grows out of the dot. */
+  .cursor__pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 220ms var(--ease-out);
+  }
+  .cursor__pill-arrow {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+  .cursor.is-press-pill .cursor__dot,
+  .cursor.is-press-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+  }
+  .cursor.is-press-pill .cursor__pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .cursor.on-dark.is-press-pill .cursor__pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
   }
 
   /* Ripple — spawned on mouseup, expands and fades. */

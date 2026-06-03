@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FadeIn from "../components/FadeIn.astro";
+import HeroGrid from "../components/HeroGrid.astro";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -43,6 +44,7 @@ const hobbies = [
 
 <BaseLayout title="About">
   <div class="about-canvas" id="about-canvas">
+    <HeroGrid />
     <article class="page-narrow about">
       <FadeIn>
         <p class="t-eyebrow about-eyebrow">About</p>
@@ -104,8 +106,14 @@ const hobbies = [
           <p class="about-body">
             At <strong class="co co--tinder"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</strong>, I shipped Tappy Cloud, the backend-driven
             platform behind relationship intent and profile customization
-            at scale. At <strong class="co co--tvtime"><img src={`${base}/logos/tv time.png`} alt="" aria-hidden="true" />TV Time</strong>, I doubled the user base from 10M to
-            20M during my time there, and I won a <a
+            at scale.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={240}>
+          <p class="about-body">
+            At <strong class="co co--tvtime"><img src={`${base}/logos/tv time.png`} alt="" aria-hidden="true" />TV Time</strong>, I doubled the user base from 10M to
+            20M, and I won a <a
               class="prose-out prose-out--preview"
               href="https://winners.webbyawards.com/2021/apps-software/general-apps/entertainment-sports/167683/tv-time"
               target="_blank"
@@ -115,12 +123,17 @@ const hobbies = [
               style="--tilt:-3deg"
               aria-hidden="true"
             ><img src={`${base}/about/webby-tv-time.png`} alt="" loading="lazy" /></span>Webby</a> for my work.
+          </p>
+        </FadeIn>
+
+        <FadeIn delay={240}>
+          <p class="about-body">
             At <strong class="co co--whip"><img src={`${base}/logos/whip media.png`} alt="" aria-hidden="true" />Whip Media</strong>, I built a B2B content licensing
             marketplace, used by NBCUniversal, Warner Bros., and HBO.
           </p>
         </FadeIn>
 
-        <FadeIn delay={240}>
+        <FadeIn delay={240} class="below-portrait">
           <p class="about-body">
             Before product design, I studied <span class="fx fx--film"
               ><span class="fx-photo" style="--tilt:-5deg" aria-hidden="true"><img
@@ -140,31 +153,13 @@ const hobbies = [
           </p>
         </FadeIn>
 
-        <FadeIn delay={240}>
+        <FadeIn delay={240} class="below-portrait">
           <p class="about-body">
-            I've always been drawn to technology as a tool to <b>connect us</b>. COVID made that visceral: being forced apart showed how much digital products could either bridge that distance or fail to, and it shaped the moves I made after.
+            I've always been drawn to technology as a tool to connect us. COVID made that visceral: being forced apart showed how much digital products could either bridge that distance or fail to, and it shaped the moves I made after.
           </p>
         </FadeIn>
 
-        <FadeIn delay={240}>
-          <p class="about-body about-highlight">
-            As AI reshapes how we engage with the world, designing
-            experiences that feel genuinely human matters more than ever.
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={240}>
-          <p class="about-body">
-            Designing for that, in this moment, is a <b>systems problem</b>. Each feature is a piece of a whole, and the
-            question is always how the pieces work together toward something
-            greater. That's the space I work in: <b>strategic</b> enough to define what to build, <b>systems-minded</b> enough to connect the pieces, and <b>obsessive about craft</b> to make sure none of it gets lost in execution.
-          </p>
-        </FadeIn>
       </div>
-
-      <FadeIn delay={320}>
-        <p class="about-body">Want to see it in practice?</p>
-      </FadeIn>
 
       <FadeIn delay={320}>
         <div class="about-cta">
@@ -263,7 +258,7 @@ const hobbies = [
   .portrait-wrap {
     float: left;
     width: 308px;
-    margin: 4px var(--s-6) var(--s-3) 0;
+    margin: 4px var(--s-8) var(--s-5) 0;
     position: relative;
     z-index: 1;
   }
@@ -276,12 +271,12 @@ const hobbies = [
     border: 1px solid var(--border-subtle);
   }
   .portrait--inline {
-    transform: rotate(-2deg);
+    transform: rotate(0deg);
     transform-origin: 50% 50%;
     transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .portrait--inline:hover {
-    transform: rotate(-0.5deg);
+    transform: rotate(-2deg);
   }
   .portrait img {
     width: 100%;
@@ -352,6 +347,10 @@ const hobbies = [
 
   /* All about-page body paragraphs share the same type so the page reads
      as a single voice, not a resume summary + body. */
+  .about-body-stack :global(.below-portrait) {
+    clear: left;
+  }
+
   .about-body {
     font-size: 17px;
     line-height: 1.6;
@@ -379,11 +378,12 @@ const hobbies = [
     gap: 0.32em;
     padding: 0 0.18em;
     cursor: default;
+    font-weight: 400;
     border-radius: var(--r-xs);
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;
     background-position: 0 100%;
-    background-size: 100% 1px;
+    background-size: 100% 0;
     transition:
       background-size 280ms var(--ease-out),
       background-image 280ms var(--ease-out);
@@ -721,9 +721,13 @@ const hobbies = [
     list-style: disc;
     padding: 0 0 0 18px;
     margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    color: var(--text-tertiary);
     white-space: nowrap;
   }
   .pill-caption li::marker {
@@ -764,7 +768,15 @@ const hobbies = [
   .pill:hover .pill-photo,
   .pill:focus-visible .pill-photo {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) rotate(var(--tilt, 0deg)) scale(1);
+    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1);
+  }
+  /* Lift the polaroid off the pill and pin it to the cursor while
+     hovering — the image becomes the cursor. */
+  .pill:hover .pill-photo {
+    position: fixed;
+    left: var(--cursor-x, 50%);
+    top: var(--cursor-y, 50%);
+    bottom: auto;
   }
 
   .about-cta {

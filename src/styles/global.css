@@ -164,7 +164,15 @@ a.prose-out:hover {
 .prose-out--preview:hover .prose-out__preview,
 .prose-out--preview:focus-visible .prose-out__preview {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) rotate(var(--tilt, -3deg)) scale(1);
+  transform: translate(-50%, -50%) rotate(var(--tilt, -3deg)) scale(1);
+}
+/* Detach the preview from its trigger and pin it to the cursor while
+   hovering — the image becomes the cursor. */
+.prose-out--preview:hover .prose-out__preview {
+  position: fixed;
+  left: var(--cursor-x, 50%);
+  top: var(--cursor-y, 50%);
+  bottom: auto;
 }
 @media (prefers-reduced-motion: reduce) {
   .prose-out__preview {
@@ -172,7 +180,7 @@ a.prose-out:hover {
   }
   .prose-out--preview:hover .prose-out__preview,
   .prose-out--preview:focus-visible .prose-out__preview {
-    transform: translateX(-50%) rotate(var(--tilt, -3deg));
+    transform: translate(-50%, -50%) rotate(var(--tilt, -3deg));
   }
 }
 

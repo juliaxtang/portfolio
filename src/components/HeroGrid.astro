@@ -144,6 +144,12 @@
 
     resize();
     window.addEventListener("resize", resize, { passive: true });
+    window.addEventListener("load", resize);
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(() => resize());
+      ro.observe(canvas);
+      if (canvas.parentElement) ro.observe(canvas.parentElement);
+    }
     if (!reduce) {
       window.addEventListener("mousemove", onMove, { passive: true });
       window.addEventListener("mouseout", (e) => { if (!e.relatedTarget) onLeave(); });

@@ -3,7 +3,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 const links = [
   { href: `${base}/`, label: "Work" },
-  { href: `${base}/about`, label: "About" },
   { href: `${base}/resume.pdf`, label: "Resume", external: true },
 ];
 function isActive(href: string) {

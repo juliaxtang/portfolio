@@ -219,7 +219,6 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
           const ch = cardHeight();
           cols.forEach((col, i) => {
             const img = imgs[i];
-            col.style.transform = "";
             if (img && ch > 0) {
               const showN = showCards > 0
                 ? Math.min(showCards, cards || showCards)
@@ -236,8 +235,19 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
               const base = i === 0 ? 0 : -range;
               const y = base + direction * -eased * range;
               img.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+              // Also drift the column boxes themselves in opposite
+              // directions (left up, right down) as the section passes
+              // through the viewport, so the parallax reads even when
+              // the eye isn't tracking individual cards — the two
+              // columns visibly shear past each other on the page.
+              // Linear in progress (not eased) so the column motion is
+              // distinguishable from the eased image-strip motion.
+              const colDrift = 56;
+              const colY = direction * (progress - 0.5) * 2 * -colDrift;
+              col.style.transform = `translate3d(0, ${colY.toFixed(2)}px, 0)`;
               return;
             }
+            col.style.transform = "";
             if (!img) return;
             const colH = col.clientHeight;
             const imgH = img.clientHeight;

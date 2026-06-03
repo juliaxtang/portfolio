@@ -840,7 +840,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      aspect-ratio 1206/1415 and image translated up 14.85%. */
   .hero-reveal__item--snap-chat {
     width: clamp(260px, 22vw, 360px);
-    right: 1%;
+    right: 6%;
     top: 14%;
   }
   .hero-reveal__chat-crop {
@@ -863,23 +863,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      fight them. Native aspect ~ 2018/981. */
   .hero-reveal__item--snap-envelope {
     width: clamp(220px, 22vw, 340px);
-    left: 1%;
+    left: 6%;
     bottom: 10%;
   }
-  /* Tinder SUPERLIKE: oversized sticker on the left margin — meant to
-     feel playful, like a slapped-on patch over the corner of the canvas. */
+  /* Tinder SUPERLIKE: oversized sticker pulled inward from the left
+     margin so it tucks closer to the headline instead of hugging the
+     viewport edge. */
   .hero-reveal__item--tinder-superlike {
     width: clamp(220px, 24vw, 360px);
-    left: 1%;
+    left: 12%;
     top: 10%;
     transform-origin: 30% 70%;
     rotate: -8deg;
   }
   /* Tinder phone: small enough that the full screen reads in one
-     glance, hugging the right edge. */
+     glance, pulled inward from the right edge to feel more composed. */
   .hero-reveal__item--tinder-phone {
     width: clamp(150px, 14vw, 220px);
-    right: 2%;
+    right: 12%;
     top: 12%;
   }
   /* Under the desktop breakpoint the hero is single column and short.

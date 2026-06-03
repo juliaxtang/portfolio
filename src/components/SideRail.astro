@@ -1,0 +1,139 @@
+---
+/**
+ * Persistent left rail for desktop ≥1024px: wordmark anchored top-left,
+ * vertical nav (Work / About / Resume) vertically centered. The whole
+ * element is marked `transition:persist` so it survives view transitions
+ * between pages — the active indicator bar then slides smoothly via a CSS
+ * transition when JS toggles which item is current.
+ */
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+---
+
+<aside class="site-rail" id="site-rail" transition:persist data-rail-mount>
+  <a class="site-rail__wordmark" href={`${base}/`}>Julia Tang</a>
+
+  <nav class="site-rail__nav" aria-label="Primary">
+    <div class="site-rail__items">
+      <a class="site-rail__item" data-rail="work" href={`${base}/`}>Work</a>
+      <a class="site-rail__item" data-rail="about" href={`${base}/about`}>About</a>
+      <a class="site-rail__item" data-rail="resume" href={`${base}/resume.pdf`} target="_blank" rel="noopener">Resume</a>
+      <span class="site-rail__indicator" aria-hidden="true"></span>
+    </div>
+  </nav>
+</aside>
+
+<script is:inline>
+  (function () {
+    function setActive() {
+      const rail = document.getElementById("site-rail");
+      if (!rail) return;
+      const path = (location.pathname.replace(/\/$/, "") || "/");
+      let active = "work";
+      if (path === "/about" || path.startsWith("/about/")) active = "about";
+      // resume opens in a new tab — it never becomes the active route on this window.
+
+      const items = rail.querySelectorAll(".site-rail__item");
+      items.forEach((el) => {
+        if (el.dataset.rail === active) el.classList.add("is-active");
+        else el.classList.remove("is-active");
+      });
+
+      const activeEl = rail.querySelector('.site-rail__item.is-active');
+      const indicator = rail.querySelector(".site-rail__indicator");
+      const container = rail.querySelector(".site-rail__items");
+      if (!activeEl || !indicator || !container) return;
+
+      const itemRect = activeEl.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      /* Center the fixed-height indicator vertically against the active
+         item, then slide via transform — transforms animate reliably
+         where transitions on top/height-from-vars do not. */
+      const indHeight = indicator.offsetHeight || 23;
+      const y = itemRect.top - containerRect.top + (itemRect.height - indHeight) / 2;
+      indicator.style.transform = `translateY(${y}px)`;
+    }
+
+    setActive();
+    // Astro View Transitions re-fires page-load on each navigation.
+    document.addEventListener("astro:page-load", setActive);
+    // Recompute on resize because the items can grow at different line heights.
+    let r;
+    window.addEventListener("resize", () => {
+      clearTimeout(r);
+      r = setTimeout(setActive, 120);
+    });
+    // Web fonts may shift item metrics after first paint.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(setActive);
+    }
+  })();
+</script>
+
+<style>
+  .site-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: clamp(180px, 16vw, 240px);
+    padding: var(--s-10) clamp(var(--s-6), 3vw, var(--s-12));
+    display: flex;
+    flex-direction: column;
+    z-index: 60;
+    pointer-events: none;
+  }
+  .site-rail > * { pointer-events: auto; }
+
+  .site-rail__wordmark {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 2vw, 32px);
+    line-height: 1;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .site-rail__nav {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+  .site-rail__items {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-6);
+  }
+  .site-rail__item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 1.3;
+    color: var(--text-primary);
+    text-decoration: none;
+    padding-left: var(--s-3);
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .site-rail__item:hover,
+  .site-rail__item:focus-visible {
+    color: var(--text-secondary);
+    outline: none;
+  }
+
+  .site-rail__indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 1.4em;
+    background: var(--brand-primary);
+    border-radius: 2px;
+    transition: transform 360ms var(--ease-out);
+    will-change: transform;
+  }
+
+  @media (max-width: 1023px) {
+    .site-rail { display: none; }
+  }
+</style>

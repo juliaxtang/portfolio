@@ -75,6 +75,12 @@ function isActive(href: string) {
       box-shadow var(--dur-normal) var(--ease);
     border-bottom: 1px solid transparent;
   }
+  /* Desktop: the persistent <SideRail> is the brand + nav, so the
+     horizontal sticky header is hidden. Below 1024px the rail collapses
+     and this header reappears so nav is always reachable. */
+  @media (min-width: 1024px) {
+    .site-header { display: none; }
+  }
   .site-header.is-scrolled {
     background: rgba(253, 252, 250, 0.8);
     backdrop-filter: saturate(140%) blur(10px);

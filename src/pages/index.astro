@@ -35,6 +35,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 <BaseLayout title="Julia Tang | Product Designer">
   <section class="v2-hero" data-home-hero>
     <HeroGrid />
+
+    <div class="hero-reveal hero-reveal--snap" aria-hidden="true">
+      <div class="hero-reveal__item hero-reveal__item--snap-chat">
+        <div class="hero-reveal__chat-crop">
+          <img src={`${base}/projects/hero/snap-chat.gif`} alt="" />
+        </div>
+      </div>
+      <div class="hero-reveal__item hero-reveal__item--snap-envelope">
+        <img src={`${base}/projects/hero/snap-envelope.png`} alt="" />
+      </div>
+    </div>
+
+    <div class="hero-reveal hero-reveal--tinder" aria-hidden="true">
+      <div class="hero-reveal__item hero-reveal__item--tinder-superlike">
+        <img src={`${base}/projects/hero/superlike.gif`} alt="" />
+      </div>
+      <div class="hero-reveal__item hero-reveal__item--tinder-phone">
+        <img src={`${base}/projects/hero/tinder-phone.gif`} alt="" />
+      </div>
+    </div>
+
     <div class="v2-hero__grid">
       <div class="v2-hero__text">
         <FadeIn>
@@ -81,10 +102,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
         <FadeIn delay={220}>
           <div class="v2-hero__meta">
-            <p>
+            <p class="v2-hero__meta-col v2-hero__meta-col--snap">
               Currently building social experiences at <a class="hero-co hero-co--snap" href="#snapchat-games" data-cursor="scroll-pill"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a> with Cursor and Claude.
             </p>
-            <p>
+            <p class="v2-hero__meta-col v2-hero__meta-col--tinder">
               Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud" data-cursor="scroll-pill"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
             </p>
             <p>
@@ -94,6 +115,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         </FadeIn>
       </div>
     </div>
+
+    <a class="v2-hero__scroll" href="#work" aria-label="See my work">
+      <span class="v2-hero__scroll-label">See my work</span>
+      <svg
+        class="v2-hero__scroll-chevron"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      ><path d="M6 9 L12 15 L18 9" /></svg>
+    </a>
   </section>
 
   <script is:inline>
@@ -349,8 +385,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     /* Locked so the dot background never reflows when the rotating headline
        changes line count. Sized so the right text block sits visually centered
        with the left rail's nav and the rotating 100px display headline has
-       room to land 2 or 3 lines without clipping. */
-    min-height: 820px;
+       room to land 2 or 3 lines without clipping. Capped to viewport height
+       on shorter laptops so the scroll chevron at the bottom never falls
+       below the fold. */
+    min-height: min(820px, 100vh);
   }
   @media (max-width: 1023px) {
     /* Off-desktop the SideRail collapses into the sticky Header, so the hero
@@ -397,7 +435,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     max-width: 1640px;
     margin: 0 auto;
     padding: var(--s-10) clamp(var(--s-6), 3vw, var(--s-12)) 0;
-    min-height: 820px;
+    /* Grid is inside .v2-hero which already has --s-16 bottom padding, so
+       subtract that from the cap so the outer hero never exceeds the
+       viewport (otherwise the scroll chevron falls off-screen). */
+    min-height: min(820px, calc(100vh - var(--s-16)));
   }
   @media (max-width: 1023px) {
     .v2-hero__grid {
@@ -827,5 +868,168 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .hero-co--tinder:hover,
   .hero-co--tinder:focus-visible {
     background-image: linear-gradient(var(--co-wash-tinder), var(--co-wash-tinder));
+  }
+
+  /* Hover-reveal imagery layer.
+     Two groups (snap + tinder), each containing 2 project images. Hidden by
+     default, fade in when the matching .hero-co link is hovered. Sits behind
+     the text but above the HeroGrid dot field. Pointer-events disabled so
+     the imagery never intercepts cursor events targeting the text. */
+  .hero-reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 320ms var(--ease-out);
+  }
+  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap,
+  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap,
+  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder,
+  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder {
+    opacity: 1;
+  }
+  .hero-reveal__item {
+    position: absolute;
+    transform: translateY(8px);
+    transition: transform 360ms var(--ease-out);
+  }
+  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder .hero-reveal__item {
+    transform: translateY(0);
+  }
+  .hero-reveal__item img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Snap chat: hugs the LEFT edge, sized small so it lives in the margin
+     beside the text rather than under it. The GIF includes a dynamic
+     island top and a keyboard bottom that we don't want — crop them out
+     with overflow:hidden + a fixed aspect-ratio frame. The visible region
+     of the source is y=210..1625 of the 1206x2622 frame, hence
+     aspect-ratio 1206/1415 and image translated up 14.85%. */
+  .hero-reveal__item--snap-chat {
+    width: clamp(260px, 22vw, 360px);
+    right: 6%;
+    top: 8%;
+  }
+  .hero-reveal__chat-crop {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1206 / 1415;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    border: 1px solid rgba(20, 20, 40, 0.08);
+    box-shadow: 0 24px 60px -32px rgba(20, 20, 40, 0.18);
+    background: var(--surface, #fff);
+  }
+  .hero-reveal__chat-crop img {
+    position: absolute;
+    top: -14.85%;
+    left: 0;
+    width: 100%;
+    height: auto;
+  }
+  /* Snap envelope: top-right, below the social icons so it doesn't
+     fight them. Native aspect ~ 2018/981. */
+  .hero-reveal__item--snap-envelope {
+    width: clamp(220px, 22vw, 340px);
+    left: 6%;
+    bottom: 10%;
+  }
+  /* Tinder SUPERLIKE: oversized sticker pulled inward from the left
+     margin so it tucks closer to the headline instead of hugging the
+     viewport edge. */
+  .hero-reveal__item--tinder-superlike {
+    /* The available margin (viewport-left → headline-left at col 3 of the
+       12-col grid) is ~17% of the viewport on desktop, so 17vw keeps the
+       sticker tucked in that column at any width. Floor keeps it readable
+       on the narrowest desktop; ceiling lets it grow on ultra-wide
+       displays where the headline drifts further inward. */
+    width: clamp(180px, 18vw, 460px);
+    left: 4%;
+    top: 10%;
+    transform-origin: 30% 70%;
+    rotate: -8deg;
+  }
+  /* Tinder phone: small enough that the full screen reads in one
+     glance, pulled inward from the right edge to feel more composed,
+     and lifted so it clears the AI meta paragraph below. */
+  .hero-reveal__item--tinder-phone {
+    width: clamp(150px, 14vw, 220px);
+    right: 12%;
+    top: 4%;
+  }
+  .hero-reveal__item--tinder-phone img {
+    border-radius: var(--r-md);
+    border: 1px solid rgba(20, 20, 40, 0.08);
+    box-shadow: 0 24px 60px -32px rgba(20, 20, 40, 0.18);
+  }
+  /* Under the desktop breakpoint the hero is single column and short.
+     Hide the reveal imagery to avoid overlapping the stacked text. */
+  @media (max-width: 1023px) {
+    .hero-reveal { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal,
+    .hero-reveal__item { transition: none; }
+  }
+
+  /* Scroll affordance pinned to the bottom of the hero. Anchors to #work,
+     gently bounces to invite scroll. */
+  .v2-hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(var(--s-8), 5vh, var(--s-12));
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--text-secondary);
+    text-decoration: none;
+    z-index: 2;
+    opacity: 0;
+    animation: hero-scroll-fade-in 600ms var(--ease-out) 1400ms 1 both;
+    transition: color 220ms var(--ease-out), transform 220ms var(--ease-out);
+  }
+  .v2-hero__scroll:hover,
+  .v2-hero__scroll:focus-visible {
+    color: var(--text-primary);
+    outline: none;
+  }
+  .v2-hero__scroll-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .v2-hero__scroll-chevron {
+    width: 22px;
+    height: 22px;
+    animation: hero-scroll-bounce 2200ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes hero-scroll-fade-in {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+  @keyframes hero-scroll-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(6px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .v2-hero__scroll { animation: none; opacity: 1; }
+    .v2-hero__scroll-chevron { animation: none; }
+  }
+  @media (max-width: 1023px) {
+    .v2-hero__scroll { position: static; transform: none; margin: var(--s-8) auto 0; display: flex; }
+    @keyframes hero-scroll-fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   }
 </style>

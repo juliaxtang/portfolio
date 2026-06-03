@@ -14,15 +14,7 @@
  */
 ---
 
-<!-- transition:persist keeps the same cursor element (and the inline
-     script's closure over it) alive across ClientRouter view
-     transitions. Without it, every soft-nav swaps in a fresh cursor
-     DOM but the document-level mouseover listeners attached on first
-     load still reference the detached old element, so new pages
-     never get .is-media / .is-hidden — i.e. the cloned hover artwork
-     stops showing on /about, on case studies, anywhere reached via
-     in-app navigation. -->
-<div class="cursor" id="cursor" aria-hidden="true" transition:persist>
+<div class="cursor" id="cursor" aria-hidden="true">
   <div class="cursor__dot"></div>
   <div class="cursor__ring"></div>
   <div class="cursor__media" id="cursor-media" aria-hidden="true"></div>
@@ -44,17 +36,7 @@
     const cursor = document.getElementById("cursor");
     if (!cursor) return;
 
-    // Astro's ClientRouter rebuilds the <html> element's attributes
-    // from the new page on every view transition, which wipes any
-    // class JS added at runtime. Re-apply on each astro:page-load so
-    // the cursor: none !important rule keeps matching after soft
-    // navigation — otherwise both the custom dot AND the native
-    // pointer end up visible on the second page.
-    function markCursorActive() {
-      document.documentElement.classList.add("has-custom-cursor");
-    }
-    markCursorActive();
-    document.addEventListener("astro:page-load", markCursorActive);
+    document.documentElement.classList.add("has-custom-cursor");
 
     // Lerped follow — cursor eases toward the actual mouse position so
     // it lags slightly, which is what reads as "smoothness."

@@ -1,15 +1,16 @@
 ---
 /**
  * Persistent left rail for desktop ≥1024px: wordmark anchored top-left,
- * vertical nav (Work / About / Resume) vertically centered. The whole
- * element is marked `transition:persist` so it survives view transitions
- * between pages — the active indicator bar then slides smoothly via a CSS
- * transition when JS toggles which item is current.
+ * vertical nav (Work / About / Resume) vertically centered. The active
+ * indicator bar's position is set by JS on each page load and snaps into
+ * place (no cross-page slide animation — that required ClientRouter view
+ * transitions, which were removed because they silently broke ~30
+ * is:inline IIFE scripts that don't support re-initialization).
  */
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
-<aside class="site-rail" id="site-rail" transition:persist data-rail-mount>
+<aside class="site-rail" id="site-rail" data-rail-mount>
   <a class="site-rail__wordmark" href={`${base}/`}>Julia Tang</a>
 
   <nav class="site-rail__nav" aria-label="Primary">
@@ -54,8 +55,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     }
 
     setActive();
-    // Astro View Transitions re-fires page-load on each navigation.
-    document.addEventListener("astro:page-load", setActive);
     // Recompute on resize because the items can grow at different line heights.
     let r;
     window.addEventListener("resize", () => {

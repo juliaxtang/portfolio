@@ -39,7 +39,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     <div class="hero-reveal hero-reveal--snap" aria-hidden="true">
       <div class="hero-reveal__item hero-reveal__item--snap-chat">
         <div class="hero-reveal__chat-crop">
-          <img src={`${base}/projects/hero/snap-chat.png`} alt="" />
+          <img src={`${base}/projects/hero/snap-chat.gif`} alt="" />
         </div>
       </div>
       <div class="hero-reveal__item hero-reveal__item--snap-envelope">
@@ -102,10 +102,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
         <FadeIn delay={220}>
           <div class="v2-hero__meta">
-            <p>
+            <p class="v2-hero__meta-col v2-hero__meta-col--snap">
               Currently building social experiences at <a class="hero-co hero-co--snap" href="#snapchat-games" data-cursor="scroll-pill"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a> with Cursor and Claude.
             </p>
-            <p>
+            <p class="v2-hero__meta-col v2-hero__meta-col--tinder">
               Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud" data-cursor="scroll-pill"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
             </p>
             <p>
@@ -805,10 +805,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     opacity: 0;
     transition: opacity 320ms var(--ease-out);
   }
-  .v2-hero:has(.hero-co--snap:hover) .hero-reveal--snap,
-  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal--snap,
-  .v2-hero:has(.hero-co--tinder:hover) .hero-reveal--tinder,
-  .v2-hero:has(.hero-co--tinder:focus-visible) .hero-reveal--tinder {
+  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap,
+  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap,
+  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder,
+  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder {
     opacity: 1;
   }
   .hero-reveal__item {
@@ -816,10 +816,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     transform: translateY(8px);
     transition: transform 360ms var(--ease-out);
   }
-  .v2-hero:has(.hero-co--snap:hover) .hero-reveal--snap .hero-reveal__item,
-  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal--snap .hero-reveal__item,
-  .v2-hero:has(.hero-co--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
-  .v2-hero:has(.hero-co--tinder:focus-visible) .hero-reveal--tinder .hero-reveal__item {
+  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
+  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder .hero-reveal__item {
     transform: translateY(0);
   }
   .hero-reveal__item img {
@@ -827,20 +827,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     height: auto;
     display: block;
   }
-  /* Snap chat: left side, vertically centered. The GIF includes a dynamic
+  /* Snap chat: hugs the LEFT edge, sized small so it lives in the margin
+     beside the text rather than under it. The GIF includes a dynamic
      island top and a keyboard bottom that we don't want — crop them out
      with overflow:hidden + a fixed aspect-ratio frame. The visible region
      of the source is y=210..1625 of the 1206x2622 frame, hence
      aspect-ratio 1206/1415 and image translated up 14.85%. */
   .hero-reveal__item--snap-chat {
-    width: clamp(220px, 22vw, 340px);
-    left: 14%;
-    top: 50%;
-    transform: translateY(calc(-50% + 8px));
-  }
-  .v2-hero:has(.hero-co--snap:hover) .hero-reveal__item--snap-chat,
-  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal__item--snap-chat {
-    transform: translateY(-50%);
+    width: clamp(180px, 15vw, 240px);
+    left: 1%;
+    bottom: 8%;
   }
   .hero-reveal__chat-crop {
     position: relative;
@@ -858,23 +854,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     width: 100%;
     height: auto;
   }
-  /* Snap envelope: top right. Native aspect ~ 2018/981. */
+  /* Snap envelope: top-right, below the social icons so it doesn't
+     fight them. Native aspect ~ 2018/981. */
   .hero-reveal__item--snap-envelope {
-    width: clamp(280px, 30vw, 500px);
-    right: 5%;
-    top: 8%;
+    width: clamp(240px, 24vw, 380px);
+    right: 1%;
+    top: 11%;
   }
-  /* Tinder SUPERLIKE: small square, upper-left near the headline edge. */
+  /* Tinder SUPERLIKE: small badge, top-LEFT margin above the wordmark
+     line so it never lands on top of the headline. */
   .hero-reveal__item--tinder-superlike {
-    width: clamp(180px, 18vw, 290px);
-    left: 16%;
-    top: 20%;
-  }
-  /* Tinder phone: right edge, full hero height-ish. */
-  .hero-reveal__item--tinder-phone {
-    width: clamp(260px, 26vw, 420px);
-    right: 2%;
+    width: clamp(130px, 12vw, 200px);
+    left: 1%;
     top: 14%;
+  }
+  /* Tinder phone: hugs the RIGHT edge so the headline reads cleanly. */
+  .hero-reveal__item--tinder-phone {
+    width: clamp(220px, 20vw, 320px);
+    right: 1%;
+    top: 10%;
   }
   /* Under the desktop breakpoint the hero is single column and short.
      Hide the reveal imagery to avoid overlapping the stacked text. */

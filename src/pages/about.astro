@@ -771,6 +771,38 @@ const hobbies = [
     transform: translateX(-50%) translateY(0) rotate(var(--tilt, -3deg)) scale(1);
   }
 
+  /* Touch devices: the cursor-portal images can't fire without a real
+     mouse, so the .fx-photo polaroids and .prose-out__preview previews
+     for "film", "Neopets HTML guide", and "The Lego Movie 2" are
+     entirely invisible on phones/tablets. Promote each one to an inline
+     block that renders directly below its trigger word so the
+     image-as-context is reachable. Widths cap to the column so a
+     polaroid doesn't bleed off-canvas. */
+  @media (hover: none), (pointer: coarse) {
+    .fx { display: inline; }
+    .fx-photo,
+    .prose-out__preview {
+      position: static;
+      display: block;
+      opacity: 1 !important;
+      transform: rotate(var(--tilt, 0deg));
+      pointer-events: auto;
+      margin: var(--s-3) auto var(--s-4);
+      max-width: min(260px, 100%);
+      width: 100%;
+    }
+    .fx-photo--wide,
+    .prose-out__preview--wide {
+      max-width: min(320px, 100%);
+    }
+    .prose-out__preview {
+      padding: 8px 8px 28px;
+    }
+    .prose-out__preview--bare {
+      padding: 0;
+    }
+  }
+
   /* === Hobby pills === */
   .pill-row {
     list-style: none;

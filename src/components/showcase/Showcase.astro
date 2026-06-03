@@ -465,6 +465,8 @@ const meta = [role].filter(Boolean) as string[];
     font-weight: 500;
   }
   .showcase__cta-btn {
+    position: relative;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
@@ -475,12 +477,27 @@ const meta = [role].filter(Boolean) as string[];
     border: 1.5px solid var(--border-default);
     background: var(--bg-surface);
     transition:
-      background var(--dur-normal) var(--ease-out),
       border-color var(--dur-normal) var(--ease-out),
       gap var(--dur-normal) var(--ease-out),
       transform var(--dur-normal) var(--ease-out),
       box-shadow var(--dur-normal) var(--ease-out);
   }
+  /* Liquid fill — soft brand wash rises from below on hover with a
+     curved leading edge that flattens as the fill rises. */
+  .showcase__cta-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--brand-wash);
+    transform: translateY(101%);
+    border-radius: 50% 50% 0 0 / 16px 16px 0 0;
+    transition:
+      transform 720ms cubic-bezier(0.45, 0, 0.15, 1),
+      border-radius 720ms cubic-bezier(0.45, 0, 0.15, 1);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .showcase__cta-btn > * { position: relative; z-index: 1; }
   .showcase__cta-arrow {
     font-size: 1.05em;
     line-height: 0;
@@ -496,10 +513,18 @@ const meta = [role].filter(Boolean) as string[];
   .showcase:has(.showcase__hero-link:hover) .showcase__cta-btn,
   .showcase:has(.showcase__hero-link:focus-visible) .showcase__cta-btn {
     gap: var(--s-3);
-    background: var(--bg-surface);
     border-color: var(--text-tertiary);
     transform: translateY(-1px);
     box-shadow: 0 12px 28px -14px rgba(20, 22, 28, 0.22);
+  }
+  .showcase__cta-btn:hover::before,
+  .showcase__cta-btn:focus-visible::before,
+  .showcase:has(.showcase__title-link:hover) .showcase__cta-btn::before,
+  .showcase:has(.showcase__title-link:focus-visible) .showcase__cta-btn::before,
+  .showcase:has(.showcase__hero-link:hover) .showcase__cta-btn::before,
+  .showcase:has(.showcase__hero-link:focus-visible) .showcase__cta-btn::before {
+    transform: translateY(0);
+    border-radius: 0;
   }
   .showcase__cta-btn:hover .showcase__cta-arrow,
   .showcase__cta-btn:focus-visible .showcase__cta-arrow,

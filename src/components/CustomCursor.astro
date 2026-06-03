@@ -1,0 +1,266 @@
+---
+/**
+ * CustomCursor — a smooth lerping cursor for desktop pointers.
+ *
+ * Visual:
+ *   - At rest: a small filled dot.
+ *   - Over interactive elements: an outlined ring fades in around the
+ *     dot, and the dot scales down (ring becomes the focal mark).
+ *   - On click / press: the ring scales up smoothly (responds to hold).
+ *   - On release: a brand-color ripple expands outward and fades.
+ *
+ * Mounted globally from BaseLayout. Disabled on touch/no-hover devices
+ * and when prefers-reduced-motion is set.
+ */
+---
+
+<div class="cursor" id="cursor" aria-hidden="true">
+  <div class="cursor__dot"></div>
+  <div class="cursor__ring"></div>
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const cursor = document.getElementById("cursor");
+    if (!cursor) return;
+
+    document.documentElement.classList.add("has-custom-cursor");
+
+    // Lerped follow — cursor eases toward the actual mouse position so
+    // it lags slightly, which is what reads as "smoothness."
+    //
+    // The lag also drives a comet-tail effect: when the residual
+    // (target - current) grows past a threshold, the cursor stretches
+    // along the motion axis and squishes perpendicular to it, easing
+    // back to a circle as it catches up.
+    let mx = window.innerWidth / 2;
+    let my = window.innerHeight / 2;
+    let cx = mx;
+    let cy = my;
+    const EASE = 0.22;
+    // Tail tuning: below MIN_SPEED nothing stretches; the full stretch
+    // is reached at MAX_SPEED. MAX_STRETCH is the X axis stretch at max
+    // speed, MAX_SQUISH is the Y axis compression.
+    const TAIL_MIN_SPEED = 8;
+    const TAIL_MAX_SPEED = 80;
+    const TAIL_MAX_STRETCH = 0.6;
+    const TAIL_MAX_SQUISH = 0.28;
+    let lastAngle = 0;
+    let rafId = 0;
+
+    function onMove(e) {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!rafId) tick();
+    }
+
+    function tick() {
+      const dx = mx - cx;
+      const dy = my - cy;
+      const speed = Math.sqrt(dx * dx + dy * dy);
+
+      // Update the motion angle only when actually moving — at rest the
+      // direction is undefined, so we hold the last one and ease the
+      // stretch to zero rather than flicker the rotation.
+      let stretch = 0;
+      if (speed > TAIL_MIN_SPEED) {
+        const t = Math.min(1, (speed - TAIL_MIN_SPEED) / (TAIL_MAX_SPEED - TAIL_MIN_SPEED));
+        stretch = t;
+        lastAngle = Math.atan2(dy, dx);
+      }
+      const sx = 1 + stretch * TAIL_MAX_STRETCH;
+      const sy = 1 - stretch * TAIL_MAX_SQUISH;
+
+      cx += dx * EASE;
+      cy += dy * EASE;
+      cursor.style.transform =
+        "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
+        "rotate(" + lastAngle.toFixed(4) + "rad) " +
+        "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        rafId = 0;
+      }
+    }
+
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mouseleave", function () {
+      cursor.style.opacity = "0";
+    });
+    window.addEventListener("mouseenter", function () {
+      cursor.style.opacity = "";
+    });
+
+    // Interactive detection — when the cursor enters any clickable
+    // element, the ring fades in.
+    const INTERACTIVE = "a, button, [role='button'], summary, input, textarea, select, label, [data-cursor='interactive'], [tabindex]:not([tabindex='-1'])";
+
+    function isInteractive(el) {
+      return el && el.closest && el.closest(INTERACTIVE);
+    }
+
+    document.addEventListener("mouseover", function (e) {
+      if (isInteractive(e.target)) cursor.classList.add("is-interactive");
+    });
+    document.addEventListener("mouseout", function (e) {
+      // Only drop the state if we've fully left interactive territory.
+      if (!isInteractive(e.relatedTarget)) cursor.classList.remove("is-interactive");
+    });
+
+    // Click ripple + hold-to-expand. On press the ring scales up
+    // smoothly; on release the current ring snapshots a ripple that
+    // expands outward and fades. Holding longer = bigger pre-ripple ring.
+    document.addEventListener("mousedown", function () {
+      cursor.classList.add("is-pressed");
+    });
+
+    document.addEventListener("mouseup", function () {
+      if (!cursor.classList.contains("is-pressed")) return;
+      cursor.classList.remove("is-pressed");
+      spawnRipple();
+    });
+
+    function spawnRipple() {
+      const ripple = document.createElement("div");
+      ripple.className = "cursor__ripple";
+      cursor.appendChild(ripple);
+      // Force a reflow so the animation always plays.
+      void ripple.offsetWidth;
+      ripple.classList.add("is-running");
+      ripple.addEventListener("animationend", function () { ripple.remove(); });
+    }
+  })();
+</script>
+
+<style is:global>
+  /* Hide the native cursor everywhere when the custom one is active. */
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
+</style>
+
+<style>
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 10000;
+    will-change: transform;
+    /* Disable on touch / no-hover devices. */
+    transition: opacity 200ms var(--ease-out);
+  }
+
+  /* Hide on touch / coarse-pointer environments even if the script
+     somehow mounts the element. */
+  @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .cursor { display: none; }
+  }
+
+  .cursor__dot,
+  .cursor__ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* Filled dot at rest — small, neutral. */
+  .cursor__dot {
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    margin-top: -5px;
+    background: var(--text-primary);
+    opacity: 0.9;
+    transition:
+      transform 220ms var(--ease-out),
+      opacity 220ms var(--ease-out);
+  }
+
+  /* Outlined ring — appears over interactive targets. */
+  .cursor__ring {
+    width: 32px;
+    height: 32px;
+    margin-left: -16px;
+    margin-top: -16px;
+    border: 1.5px solid var(--text-primary);
+    opacity: 0;
+    transform: scale(0.55);
+    transition:
+      transform 320ms var(--ease-out),
+      opacity 240ms var(--ease-out),
+      border-color 240ms var(--ease-out);
+  }
+
+  .cursor.is-interactive .cursor__dot {
+    transform: scale(0);
+    opacity: 0;
+  }
+  .cursor.is-interactive .cursor__ring {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Held — ring grows smoothly while pressed. The longer the hold,
+     the more the eased ramp keeps pulling toward the larger scale,
+     so the visual responds to hold duration. */
+  .cursor.is-pressed .cursor__ring {
+    transform: scale(1.55);
+    border-color: var(--brand-primary-2, var(--text-primary));
+    transition:
+      transform 900ms var(--ease-out),
+      border-color 240ms var(--ease-out),
+      opacity 240ms var(--ease-out);
+    opacity: 1;
+  }
+  /* When pressed without being over interactive, still show the ring. */
+  .cursor.is-pressed:not(.is-interactive) .cursor__dot {
+    transform: scale(0);
+    opacity: 0;
+  }
+  .cursor.is-pressed:not(.is-interactive) .cursor__ring {
+    opacity: 1;
+  }
+
+  /* Ripple — spawned on mouseup, expands and fades. */
+  .cursor__ripple {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    margin-left: -16px;
+    margin-top: -16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--brand-primary);
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(1);
+  }
+  .cursor__ripple.is-running {
+    animation: cursor-ripple 720ms var(--ease-out) forwards;
+  }
+  @keyframes cursor-ripple {
+    0% {
+      opacity: 0.7;
+      transform: scale(1);
+      border-width: 2px;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(3.2);
+      border-width: 0.5px;
+    }
+  }
+</style>

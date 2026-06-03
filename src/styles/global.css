@@ -225,17 +225,28 @@ a.prose-out:hover {
    ========================================================== */
 .fade-in {
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity var(--dur-slower) var(--ease-out),
-              transform var(--dur-slower) var(--ease-out);
-  will-change: opacity, transform;
+  /* Slight scale-up + soft blur in addition to the rise — gives each
+     block a developing-into-place quality (Studio-Think-style entry). */
+  transform: translateY(28px) scale(0.97);
+  filter: blur(4px);
+  transition:
+    opacity var(--dur-slower) var(--ease-out),
+    transform var(--dur-slower) var(--ease-out),
+    filter var(--dur-slower) var(--ease-out);
+  will-change: opacity, transform, filter;
 }
 .fade-in.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  filter: blur(0);
 }
 @media (prefers-reduced-motion: reduce) {
-  .fade-in { opacity: 1; transform: none; transition: none; }
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
 }
 
 /* ==========================================================

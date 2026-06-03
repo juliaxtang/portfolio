@@ -773,6 +773,8 @@ const hobbies = [
   }
 
   .cta-btn {
+    position: relative;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     gap: var(--s-2);
@@ -785,12 +787,27 @@ const hobbies = [
     font-weight: 500;
     text-decoration: none;
     transition:
-      background var(--dur-normal) var(--ease-out),
       border-color var(--dur-normal) var(--ease-out),
       gap var(--dur-normal) var(--ease-out),
       transform var(--dur-normal) var(--ease-out),
       box-shadow var(--dur-normal) var(--ease-out);
   }
+  /* Liquid fill — brand-wash rises from below with a curved top edge
+     that flattens as the button fills. */
+  .cta-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--brand-wash);
+    transform: translateY(101%);
+    border-radius: 50% 50% 0 0 / 18px 18px 0 0;
+    transition:
+      transform 720ms cubic-bezier(0.45, 0, 0.15, 1),
+      border-radius 720ms cubic-bezier(0.45, 0, 0.15, 1);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .cta-btn > * { position: relative; z-index: 1; }
   .cta-arrow {
     font-size: 1.05em;
     line-height: 0;
@@ -799,10 +816,14 @@ const hobbies = [
   .cta-btn:hover,
   .cta-btn:focus-visible {
     gap: var(--s-3);
-    background: var(--bg-surface);
     border-color: var(--text-tertiary);
     transform: translateY(-1px);
     box-shadow: 0 12px 28px -14px rgba(20, 22, 28, 0.22);
+  }
+  .cta-btn:hover::before,
+  .cta-btn:focus-visible::before {
+    transform: translateY(0);
+    border-radius: 0;
   }
   .cta-btn:hover .cta-arrow,
   .cta-btn:focus-visible .cta-arrow {

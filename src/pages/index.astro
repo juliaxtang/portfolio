@@ -386,8 +386,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     /* Locked so the dot background never reflows when the rotating headline
        changes line count. Sized so the right text block sits visually centered
        with the left rail's nav and the rotating 100px display headline has
-       room to land 2 or 3 lines without clipping. */
-    min-height: 820px;
+       room to land 2 or 3 lines without clipping. Capped to viewport height
+       on shorter laptops so the scroll chevron at the bottom never falls
+       below the fold. */
+    min-height: min(820px, 100vh);
   }
   @media (max-width: 1023px) {
     /* Off-desktop the SideRail collapses into the sticky Header, so the hero
@@ -434,7 +436,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     max-width: 1640px;
     margin: 0 auto;
     padding: var(--s-10) clamp(var(--s-6), 3vw, var(--s-12)) 0;
-    min-height: 820px;
+    /* Grid is inside .v2-hero which already has --s-16 bottom padding, so
+       subtract that from the cap so the outer hero never exceeds the
+       viewport (otherwise the scroll chevron falls off-screen). */
+    min-height: min(820px, calc(100vh - var(--s-16)));
   }
   @media (max-width: 1023px) {
     .v2-hero__grid {
@@ -889,7 +894,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .v2-hero__scroll {
     position: absolute;
     left: 50%;
-    bottom: var(--s-6);
+    bottom: clamp(var(--s-8), 5vh, var(--s-12));
     transform: translateX(-50%);
     display: inline-flex;
     flex-direction: column;

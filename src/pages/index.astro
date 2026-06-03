@@ -839,9 +839,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      of the source is y=210..1625 of the 1206x2622 frame, hence
      aspect-ratio 1206/1415 and image translated up 14.85%. */
   .hero-reveal__item--snap-chat {
-    width: clamp(180px, 15vw, 240px);
-    left: 1%;
-    bottom: 8%;
+    width: clamp(260px, 22vw, 360px);
+    right: 1%;
+    top: 14%;
   }
   .hero-reveal__chat-crop {
     position: relative;
@@ -862,22 +862,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   /* Snap envelope: top-right, below the social icons so it doesn't
      fight them. Native aspect ~ 2018/981. */
   .hero-reveal__item--snap-envelope {
-    width: clamp(240px, 24vw, 380px);
-    right: 1%;
-    top: 11%;
-  }
-  /* Tinder SUPERLIKE: small badge, top-LEFT margin above the wordmark
-     line so it never lands on top of the headline. */
-  .hero-reveal__item--tinder-superlike {
-    width: clamp(130px, 12vw, 200px);
+    width: clamp(220px, 22vw, 340px);
     left: 1%;
-    top: 14%;
+    bottom: 10%;
   }
-  /* Tinder phone: hugs the RIGHT edge so the headline reads cleanly. */
-  .hero-reveal__item--tinder-phone {
-    width: clamp(220px, 20vw, 320px);
-    right: 1%;
+  /* Tinder SUPERLIKE: oversized sticker on the left margin — meant to
+     feel playful, like a slapped-on patch over the corner of the canvas. */
+  .hero-reveal__item--tinder-superlike {
+    width: clamp(220px, 24vw, 360px);
+    left: 1%;
     top: 10%;
+    transform-origin: 30% 70%;
+    rotate: -8deg;
+  }
+  /* Tinder phone: small enough that the full screen reads in one
+     glance, hugging the right edge. */
+  .hero-reveal__item--tinder-phone {
+    width: clamp(150px, 14vw, 220px);
+    right: 2%;
+    top: 12%;
   }
   /* Under the desktop breakpoint the hero is single column and short.
      Hide the reveal imagery to avoid overlapping the stacked text. */

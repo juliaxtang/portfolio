@@ -194,6 +194,29 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
       })();
     </script>
 
+    <!-- Hash-scroll rescue. The homepage hero lazy-loads media, so the
+         browser's one-shot scroll-to-hash on initial paint can land
+         before the layout settles, leaving the target offscreen. After
+         load, re-scroll to the hashed element so /#work from /about
+         actually lands on the first case study. -->
+    <script is:inline>
+      (function () {
+        if (!location.hash || location.hash.length < 2) return;
+        var id = decodeURIComponent(location.hash.slice(1));
+        function jump() {
+          var el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+        }
+        if (document.readyState === "complete") {
+          requestAnimationFrame(jump);
+        } else {
+          window.addEventListener("load", function () {
+            requestAnimationFrame(jump);
+          });
+        }
+      })();
+    </script>
+
     <!-- Fade-in observer. Runs on every page load (every nav is a full
          document load now that ClientRouter view transitions are gone)
          so .fade-in blocks reveal as they scroll into view. A 1.2s

@@ -90,12 +90,21 @@
     }
 
     window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("mouseleave", function () {
-      cursor.style.opacity = "0";
+
+    // Hide the cursor when the pointer leaves the viewport so it doesn't
+    // appear stuck at the edge. `mouseleave` on the documentElement is
+    // the reliable signal (window doesn't fire it consistently). Also
+    // catch `mouseout` with no relatedTarget as a belt-and-suspenders.
+    function hide() { cursor.style.opacity = "0"; }
+    function show() { cursor.style.opacity = ""; }
+    document.documentElement.addEventListener("mouseleave", hide);
+    document.documentElement.addEventListener("mouseenter", show);
+    document.addEventListener("mouseout", function (e) {
+      if (!e.relatedTarget && !e.toElement) hide();
     });
-    window.addEventListener("mouseenter", function () {
-      cursor.style.opacity = "";
-    });
+    // Also hide when the window loses focus (alt-tab, switching apps).
+    window.addEventListener("blur", hide);
+    window.addEventListener("focus", show);
 
     // Interactive detection — when the cursor enters any clickable
     // element, the ring fades in.
@@ -105,8 +114,59 @@
       return el && el.closest && el.closest(INTERACTIVE);
     }
 
+    // Contrast-aware bg detection. On mouseover, walk up from the target
+    // looking for the first opaque background color (text elements have
+    // transparent bg so the walk naturally skips them — even dark text
+    // won't flip the cursor). Compute relative luminance; if dark, flip
+    // the dot/ring to the light text-inverse color.
+    //
+    // Authors can force a mode by adding data-cursor-bg="dark" (or
+    // "light") to any container, e.g. phone-mockup wrappers where the
+    // dark content lives inside an <img>/<video> with transparent CSS bg.
+    function parseRGB(str) {
+      if (!str) return null;
+      const m = str.match(/^rgba?\(([^)]+)\)$/);
+      if (!m) return null;
+      const parts = m[1].split(",").map(function (s) { return parseFloat(s.trim()); });
+      if (parts.length < 3 || parts.some(isNaN)) return null;
+      const a = parts.length === 4 ? parts[3] : 1;
+      return { r: parts[0], g: parts[1], b: parts[2], a: a };
+    }
+    function isDarkColor(c) {
+      if (!c || c.a < 0.5) return false;
+      // Perceived luminance (Rec. 601 weights).
+      const lum = (0.299 * c.r + 0.587 * c.g + 0.114 * c.b) / 255;
+      return lum < 0.42;
+    }
+    function findCursorMode(el) {
+      // First check for an explicit data-cursor-bg override on the
+      // element or any ancestor.
+      let cur = el;
+      while (cur && cur.nodeType === 1 && cur !== document.documentElement) {
+        const explicit = cur.getAttribute && cur.getAttribute("data-cursor-bg");
+        if (explicit === "dark") return "dark";
+        if (explicit === "light") return "light";
+        cur = cur.parentNode;
+      }
+      // Otherwise walk up looking for the first opaque background color.
+      cur = el;
+      while (cur && cur.nodeType === 1 && cur !== document.documentElement) {
+        const bg = parseRGB(getComputedStyle(cur).backgroundColor);
+        if (bg && bg.a >= 0.5) {
+          return isDarkColor(bg) ? "dark" : "light";
+        }
+        cur = cur.parentNode;
+      }
+      return "light";
+    }
+    function updateMode(target) {
+      const mode = findCursorMode(target);
+      cursor.classList.toggle("on-dark", mode === "dark");
+    }
+
     document.addEventListener("mouseover", function (e) {
       if (isInteractive(e.target)) cursor.classList.add("is-interactive");
+      updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
       // Only drop the state if we've fully left interactive territory.
@@ -126,9 +186,19 @@
       spawnRipple();
     });
 
+    // Astro scopes component CSS via a data-astro-cid-* attribute. Copy
+    // that attribute onto dynamically-created children so the scoped
+    // ripple animation rule matches them.
+    let scopeAttr = null;
+    for (let i = 0; i < cursor.attributes.length; i++) {
+      const n = cursor.attributes[i].name;
+      if (n.indexOf("data-astro-cid") === 0) { scopeAttr = n; break; }
+    }
+
     function spawnRipple() {
       const ripple = document.createElement("div");
       ripple.className = "cursor__ripple";
+      if (scopeAttr) ripple.setAttribute(scopeAttr, "");
       cursor.appendChild(ripple);
       // Force a reflow so the animation always plays.
       void ripple.offsetWidth;
@@ -185,7 +255,8 @@
     opacity: 0.9;
     transition:
       transform 220ms var(--ease-out),
-      opacity 220ms var(--ease-out);
+      opacity 220ms var(--ease-out),
+      background-color 220ms var(--ease-out);
   }
 
   /* Outlined ring — appears over interactive targets. */
@@ -202,6 +273,12 @@
       opacity 240ms var(--ease-out),
       border-color 240ms var(--ease-out);
   }
+
+  /* Contrast flip — when the cursor is over a dark background, the dot
+     and ring switch to the inverse text color (cream) so they stay
+     visible. Triggered by JS via .on-dark on the parent. */
+  .cursor.on-dark .cursor__dot { background: var(--text-inverse, #FDFCFA); }
+  .cursor.on-dark .cursor__ring { border-color: var(--text-inverse, #FDFCFA); }
 
   .cursor.is-interactive .cursor__dot {
     transform: scale(0);
@@ -249,18 +326,18 @@
     transform: scale(1);
   }
   .cursor__ripple.is-running {
-    animation: cursor-ripple 720ms var(--ease-out) forwards;
+    animation: cursor-ripple 400ms var(--ease-out) forwards;
   }
   @keyframes cursor-ripple {
     0% {
-      opacity: 0.7;
+      opacity: 0.85;
       transform: scale(1);
       border-width: 2px;
     }
     100% {
       opacity: 0;
-      transform: scale(3.2);
-      border-width: 0.5px;
+      transform: scale(3);
+      border-width: 0.4px;
     }
   }
 </style>

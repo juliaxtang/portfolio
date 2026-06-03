@@ -113,10 +113,15 @@
 
       cx += dx * EASE;
       cy += dy * EASE;
-      cursor.style.transform =
-        "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
-        "rotate(" + lastAngle.toFixed(4) + "rad) " +
-        "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+      // Skip the comet-tail rotation/stretch while the cursor is
+      // morphed into the press-logo pill, so the pill rides upright
+      // with the pointer instead of spinning as the mouse moves.
+      const isPill = cursor.classList.contains("is-press-pill");
+      cursor.style.transform = isPill
+        ? "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)"
+        : "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
+          "rotate(" + lastAngle.toFixed(4) + "rad) " +
+          "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
       // Expose the cursor position as CSS variables so hover-revealed
       // images can attach themselves to the cursor (the image becomes
       // the cursor while it's over the trigger).

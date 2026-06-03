@@ -44,7 +44,17 @@
     const cursor = document.getElementById("cursor");
     if (!cursor) return;
 
-    document.documentElement.classList.add("has-custom-cursor");
+    // Astro's ClientRouter rebuilds the <html> element's attributes
+    // from the new page on every view transition, which wipes any
+    // class JS added at runtime. Re-apply on each astro:page-load so
+    // the cursor: none !important rule keeps matching after soft
+    // navigation — otherwise both the custom dot AND the native
+    // pointer end up visible on the second page.
+    function markCursorActive() {
+      document.documentElement.classList.add("has-custom-cursor");
+    }
+    markCursorActive();
+    document.addEventListener("astro:page-load", markCursorActive);
 
     // Lerped follow — cursor eases toward the actual mouse position so
     // it lags slightly, which is what reads as "smoothness."

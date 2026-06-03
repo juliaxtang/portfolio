@@ -297,14 +297,24 @@ const meta = [role].filter(Boolean) as string[];
   .showcase__inner {
     position: relative;
     z-index: 1;
-    max-width: 1080px;
+    /* Match the homepage hero grid so the project text + media sit in the
+       same horizontal range as the hero copy above (cols 4 onward of a
+       12-col grid spanning the same outer container). */
+    max-width: 1640px;
     margin: 0 auto;
-    padding: 0 var(--s-6);
+    padding: 0 clamp(var(--s-6), 3vw, var(--s-12));
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--s-6);
     gap: var(--s-6);
     align-items: center;
   }
+  /* Non-reverse: text on left, hero/media on right — both inside cols 3-11. */
+  .showcase__text { grid-column: 3 / span 4; }
+  .showcase__hero { grid-column: 7 / span 5; }
+  /* Reverse: hero on left, text on right — still pinned to cols 3-11. */
+  .showcase--reverse .showcase__hero { grid-column: 3 / span 4; }
+  .showcase--reverse .showcase__text { grid-column: 7 / span 5; }
   .showcase--reverse .showcase__text { order: 2; }
   .showcase--reverse .showcase__hero { order: 1; }
   /* tightHero: pull the text column toward the hero column. On non-reverse,
@@ -344,6 +354,10 @@ const meta = [role].filter(Boolean) as string[];
 
   @media (max-width: 900px) {
     .showcase__inner { grid-template-columns: 1fr; gap: var(--s-8); padding: 0 var(--s-5); overflow-x: clip; }
+    .showcase__text,
+    .showcase__hero,
+    .showcase--reverse .showcase__text,
+    .showcase--reverse .showcase__hero { grid-column: 1 / -1; }
     .showcase__text { max-width: 520px; }
     .showcase--reverse .showcase__text { order: 2; }
     .showcase--reverse .showcase__hero { order: 1; }

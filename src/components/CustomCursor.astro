@@ -113,10 +113,15 @@
 
       cx += dx * EASE;
       cy += dy * EASE;
-      cursor.style.transform =
-        "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
-        "rotate(" + lastAngle.toFixed(4) + "rad) " +
-        "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+      // Skip the comet-tail rotation/stretch while the cursor is morphed
+      // into the press-logo pill, so the pill rides upright with the
+      // pointer instead of spinning as the mouse moves.
+      const isPill = cursor.classList.contains("is-press-pill");
+      cursor.style.transform = isPill
+        ? "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)"
+        : "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
+          "rotate(" + lastAngle.toFixed(4) + "rad) " +
+          "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
       // Expose the cursor position as CSS variables so hover-revealed
       // images can attach themselves to the cursor (the image becomes
       // the cursor while it's over the trigger).
@@ -486,11 +491,18 @@
   /* Cursor-morphed "Read about it" pill — replaces the dot/ring when
      hovering a press logo. Centered on the cursor position, slides up
      just slightly so the cursor visually grows out of the dot. */
+  /* Cursor-morphed "Read about it" pill.
+     The pill is always rendered at its content size, but at rest it's
+     squashed down to a thin horizontal sliver the height of the dot.
+     On is-press-pill the scale releases (with an overshoot bezier) so
+     the dot reads as physically stretching outward into a full pill.
+     Label + arrow fade in once the shape has finished its expansion. */
   .cursor__pill {
     position: absolute;
     left: 0;
     top: 0;
-    transform: translate(-50%, -50%) scale(0.9);
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -505,23 +517,45 @@
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
+    will-change: transform, opacity;
     transition:
       opacity 180ms var(--ease-out),
-      transform 220ms var(--ease-out);
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__pill-label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 260ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
   }
   .cursor__pill-arrow {
     width: 12px;
     height: 12px;
     flex-shrink: 0;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
   }
   .cursor.is-press-pill .cursor__dot,
   .cursor.is-press-pill .cursor__ring {
     opacity: 0;
     transform: scale(0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 240ms var(--ease-out);
   }
   .cursor.is-press-pill .cursor__pill {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-press-pill .cursor__pill-label,
+  .cursor.is-press-pill .cursor__pill-arrow {
+    opacity: 1;
+    transform: translateX(0);
   }
   .cursor.on-dark.is-press-pill .cursor__pill {
     background: var(--text-inverse, #FDFCFA);

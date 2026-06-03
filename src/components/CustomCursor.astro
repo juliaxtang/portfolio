@@ -113,15 +113,23 @@
 
       cx += dx * EASE;
       cy += dy * EASE;
-      // Skip the comet-tail rotation/stretch while the cursor is
-      // morphed into the press-logo pill, so the pill rides upright
-      // with the pointer instead of spinning as the mouse moves.
-      const isPill = cursor.classList.contains("is-press-pill");
-      cursor.style.transform = isPill
-        ? "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)"
-        : "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
+      // While carrying a hover-revealed image, snap the cursor to the
+      // raw mouse position (no lerp) and drop the comet-tail
+      // rotation/stretch so the artwork rides upright with the mouse
+      // instead of swaying behind the lerped position.
+      const carryingMedia = cursor.classList.contains("is-media")
+        || cursor.classList.contains("is-press-pill");
+      if (carryingMedia) {
+        cx = mx;
+        cy = my;
+        cursor.style.transform =
+          "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
+      } else {
+        cursor.style.transform =
+          "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
           "rotate(" + lastAngle.toFixed(4) + "rad) " +
           "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+      }
       // Expose the cursor position as CSS variables so hover-revealed
       // images can attach themselves to the cursor (the image becomes
       // the cursor while it's over the trigger).
@@ -165,7 +173,11 @@
 
     // Interactive detection — when the cursor enters any clickable
     // element, the ring fades in.
-    const INTERACTIVE = "a, button, [role='button'], summary, input, textarea, select, label, [data-cursor='interactive'], [tabindex]:not([tabindex='-1'])";
+    // Only true actionable affordances expand the cursor into a ring:
+    // links with an actual href, buttons, role=button, summary, and
+    // form fields. Bare tabindex spans (hover-reveal pills) and labels
+    // stay in the resting dot state because clicking them does nothing.
+    const INTERACTIVE = "a[href], button, [role='button'], summary, input, textarea, select, [data-cursor='interactive']";
 
     function isInteractive(el) {
       return el && el.closest && el.closest(INTERACTIVE);
@@ -247,7 +259,13 @@
     function showMedia(trigger) {
       if (!media) return;
       const src = getMediaSource(trigger);
-      if (!src) return;
+      // If the new trigger has no clonable artwork (e.g. the Language
+      // learner pill — captionList only), drop whatever was showing so a
+      // previous pill's image doesn't linger.
+      if (!src) {
+        clearMedia();
+        return;
+      }
       // Use the trigger element itself as the cache key — same trigger
       // re-entered should not rebuild the clone.
       if (mediaSourceKey === trigger) return;
@@ -271,7 +289,12 @@
       const reveal = e.target && e.target.closest
         ? e.target.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx")
         : null;
-      if (reveal) {
+      // Only hide the cursor if this trigger actually owns a clonable
+      // graphic — otherwise (e.g. the Language learner pill, which has
+      // a caption list but no photo) we'd be hiding the cursor for no
+      // visible replacement.
+      const hasArtwork = reveal && getMediaSource(reveal);
+      if (hasArtwork) {
         cursor.classList.add("is-hidden");
         // Seed cursor coords from the entry event so the revealed image
         // attaches at the actual entry point instead of the stale last
@@ -298,12 +321,13 @@
       const stillIn = e.relatedTarget && e.relatedTarget.closest
         ? e.relatedTarget.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx")
         : null;
-      if (!stillIn) {
+      const stillHasArtwork = stillIn && getMediaSource(stillIn);
+      if (!stillHasArtwork) {
         cursor.classList.remove("is-hidden");
         clearMedia();
       } else {
-        // Moved into a different reveal trigger — rebuild the clone for
-        // the new source if the trigger changed.
+        // Moved into a different reveal trigger that owns artwork —
+        // rebuild the clone for the new source if the trigger changed.
         showMedia(stillIn);
       }
       if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
@@ -372,7 +396,11 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
   }
-  .cursor__media .cursor__media-art {
+  /* Cloned art carries its source page's scope-attribute, so we live in
+     a global stylesheet block. Compound selector bumps the specificity
+     past the source's scoped `.fx-photo` / `.pill-photo` /
+     `.prose-out__preview { opacity: 0 !important }` rules. */
+  .cursor.is-media .cursor__media .cursor__media-art {
     position: static !important;
     left: auto !important;
     top: auto !important;

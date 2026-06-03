@@ -89,86 +89,76 @@ const hobbies = [
       </FadeIn>
 
       <div class="about-body-stack">
-        <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
-          <div class="portrait portrait--inline">
-            <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+        <div class="about-row">
+          <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
+            <div class="portrait portrait--inline">
+              <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+            </div>
+          </div>
+
+          <div class="about-row__text">
+            <FadeIn delay={240}>
+              <p class="about-body">
+                I'm a Staff Product Designer at <span class="co-wrap"><strong class="co co--snap"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snap</strong>,</span> based in LA, where I present product strategy to the CEO weekly.
+              </p>
+            </FadeIn>
+
+            <FadeIn delay={240}>
+              <p class="about-body">
+                As an internet kid, I taught myself HTML to deck out my Neopets profile with <img class="glitter-inline" src={`${base}/about/glittergraphics.gif`} alt="glitter graphics" /> (shoutout to the <span class="fx fx--neopets"
+                  ><span class="fx-photo fx-photo--bare fx-photo--wide" style="--tilt:3deg" aria-hidden="true"><img
+                    src={`${base}/about/neopets.jpg`} alt="" loading="lazy" /></span
+                  >Neopets HTML guide</span>). My taste was ... questionable. But the love for making digital things stuck.
+              </p>
+            </FadeIn>
           </div>
         </div>
 
-        <FadeIn delay={240}>
-          <p class="about-body">
-            I'm a Staff Product Designer at <strong class="co co--snap"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snap</strong>, where I scaled Snapchat Games to 30M+ DAU and
-            present product strategy to the CEO weekly.
-          </p>
-        </FadeIn>
+        <div class="about-row about-row--reverse">
+          <div class="about-row__text">
+            <FadeIn delay={240}>
+              <p class="about-body">
+                Before product design, I studied <span class="fx fx--film"
+                  ><span class="fx-photo" style="--tilt:-5deg" aria-hidden="true"><img
+                    src={`${base}/about/film.png`} alt="" loading="lazy" /></span
+                  >film</span> at USC. I got my start in design working at an
+                agency on major film marketing campaigns, including my award-winning work on <a
+                  class="prose-out prose-out--preview"
+                  href="https://www.thetangentagency.com/projects/lego-movie-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ><span
+                  class="prose-out__preview prose-out__preview--bare prose-out__preview--wide"
+                  style="--tilt:4deg"
+                  aria-hidden="true"
+                ><img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" /></span><em>The
+                  Lego Movie 2</em></a>.
+              </p>
+            </FadeIn>
 
-        <FadeIn delay={240}>
-          <p class="about-body">
-            At <strong class="co co--tinder"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</strong>, I shipped Tappy Cloud, the backend-driven
-            platform behind relationship intent and profile customization
-            at scale.
-          </p>
-        </FadeIn>
+            <FadeIn delay={240}>
+              <p class="about-body">
+                Mostly, I just love making things. Sometimes small, just for me. Sometimes a feature that solves a real problem. Sometimes quieter, the kind that exists to make you feel a particular way. The reasons change. The instinct doesn't.
+              </p>
+            </FadeIn>
 
-        <FadeIn delay={240}>
-          <p class="about-body">
-            At <strong class="co co--tvtime"><img src={`${base}/logos/tv time.png`} alt="" aria-hidden="true" />TV Time</strong>, I doubled the user base from 10M to
-            20M, and I won a <a
-              class="prose-out prose-out--preview"
-              href="https://winners.webbyawards.com/2021/apps-software/general-apps/entertainment-sports/167683/tv-time"
-              target="_blank"
-              rel="noopener noreferrer"
-            ><span
-              class="prose-out__preview prose-out__preview--round"
-              style="--tilt:-3deg"
-              aria-hidden="true"
-            ><img src={`${base}/about/webby-tv-time.png`} alt="" loading="lazy" /></span>Webby</a> for my work.
-          </p>
-        </FadeIn>
+            <FadeIn delay={320}>
+              <div class="about-cta">
+                <a href={`${base}/`} class="cta-btn">
+                  Check out my work!
+                  <span class="cta-arrow" aria-hidden="true">↗</span>
+                </a>
+              </div>
+            </FadeIn>
+          </div>
 
-        <FadeIn delay={240}>
-          <p class="about-body">
-            At <strong class="co co--whip"><img src={`${base}/logos/whip media.png`} alt="" aria-hidden="true" />Whip Media</strong>, I built a B2B content licensing
-            marketplace, used by NBCUniversal, Warner Bros., and HBO.
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={240} class="below-portrait">
-          <p class="about-body">
-            Before product design, I studied <span class="fx fx--film"
-              ><span class="fx-photo" style="--tilt:-5deg" aria-hidden="true"><img
-                src={`${base}/about/film.png`} alt="" loading="lazy" /></span
-              >film</span> at USC. I got my start in design working at an
-            agency on major film marketing campaigns, including my award-winning work on <a
-              class="prose-out prose-out--preview"
-              href="https://www.thetangentagency.com/projects/lego-movie-2"
-              target="_blank"
-              rel="noopener noreferrer"
-            ><span
-              class="prose-out__preview prose-out__preview--bare prose-out__preview--wide"
-              style="--tilt:4deg"
-              aria-hidden="true"
-            ><img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" /></span><em>The
-              Lego Movie 2</em></a>.
-          </p>
-        </FadeIn>
-
-        <FadeIn delay={240} class="below-portrait">
-          <p class="about-body">
-            I've always been drawn to technology as a tool to connect us. COVID made that visceral: being forced apart showed how much digital products could either bridge that distance or fail to, and it shaped the moves I made after.
-          </p>
-        </FadeIn>
-
-      </div>
-
-      <FadeIn delay={320}>
-        <div class="about-cta">
-          <a href={`${base}/`} class="cta-btn">
-            Check out my work!
-            <span class="cta-arrow" aria-hidden="true">↗</span>
-          </a>
+          <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
+            <div class="portrait portrait--inline portrait--inline-alt">
+              <img src={`${base}/about/julia%202.JPG`} alt="Second portrait of Julia Tang" loading="lazy" />
+            </div>
+          </div>
         </div>
-      </FadeIn>
+      </div>
 
     </article>
   </div>
@@ -255,12 +245,64 @@ const hobbies = [
     clear: both;
   }
 
+  /* Each about row pairs a portrait with a stack of paragraphs and
+     vertically centers them. The second row reverses so the portrait
+     sits on the right. Stacks vertically on narrow viewports. */
+  .about-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-8);
+    /* Scale the row-to-row gap fluidly with viewport width — narrower
+       viewports get a tighter rhythm (so stacked text doesn't look
+       stranded between paragraphs) while the big-canvas layout still
+       gets the generous --s-10 breathing room. */
+    margin-bottom: clamp(var(--s-5), 3.2vw, var(--s-10));
+  }
+  .about-row:last-child { margin-bottom: 0; }
+  .about-row--reverse { /* portrait on the right */ }
+  .about-row__text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  /* Each paragraph in the two-up column is wrapped in a FadeIn div, so
+     the `:last-child` test has to target the outer wrapper. Without
+     this the original rule matched every paragraph (each is the only
+     .about-body inside its FadeIn) and zeroed all the bottom margins. */
+  .about-row__text > .fade-in:last-child .about-body { margin-bottom: 0; }
+  @media (max-width: 760px) {
+    .about-row,
+    .about-row--reverse {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--s-5);
+    }
+  }
+
   .portrait-wrap {
-    float: left;
+    flex: 0 0 auto;
     width: 308px;
-    margin: 4px var(--s-8) var(--s-5) 0;
     position: relative;
     z-index: 1;
+  }
+  /* Opening portrait: render the image at its natural aspect so the
+     full body is in frame, not just the face. */
+  .about-row:first-child .portrait-wrap {
+    width: 320px;
+  }
+  .about-row:first-child .portrait img {
+    aspect-ratio: auto;
+    object-fit: cover;
+    object-position: 50% 50%;
+  }
+  /* Secondary portrait: a touch larger than the opening portrait but
+     not overwhelming next to the two-paragraph text column. */
+  .about-row--reverse .portrait-wrap {
+    width: 340px;
+  }
+  .about-row--reverse .portrait img {
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 35%;
   }
   .portrait {
     /* polaroid card — natural aspect ratio image, generous bottom matte. */
@@ -278,16 +320,20 @@ const hobbies = [
   .portrait--inline:hover {
     transform: rotate(-2deg);
   }
+  /* The right-column portrait tilts the other way on hover for a tiny
+     bit of asymmetry between the two rows. */
+  .portrait--inline-alt:hover {
+    transform: rotate(2deg);
+  }
   .portrait img {
     width: 100%;
     height: auto;
     display: block;
   }
-  @media (max-width: 600px) {
+  @media (max-width: 760px) {
     .portrait-wrap {
-      float: none;
-      width: 200px;
-      margin: 0 0 var(--s-4) 0;
+      width: 220px;
+      align-self: center;
     }
   }
 
@@ -356,6 +402,10 @@ const hobbies = [
     line-height: 1.6;
     color: var(--text-primary);
     margin: 0 0 var(--s-5);
+    /* Let the browser rebalance the last 1–2 lines so we don't end up
+       with a lonely "(" or a single-word widow at the end of a paragraph
+       in the narrow two-up columns. */
+    text-wrap: pretty;
   }
   .about-body strong {
     font-weight: 600;
@@ -396,6 +446,14 @@ const hobbies = [
     object-fit: contain;
     position: relative;
     z-index: 1;
+    /* Nudge the logo down a hair so its visual mid-line aligns with
+       the text baseline (logos read top-heavy at baseline alignment). */
+    transform: translateY(0.08em);
+  }
+  /* Keep the company callout and its trailing comma on the same line so
+     the comma can't be orphaned to the start of the next line. */
+  .about-body .co-wrap {
+    white-space: nowrap;
   }
   .about-body .co:hover {
     background-size: 100% 100%;
@@ -427,7 +485,7 @@ const hobbies = [
     left: 50%;
     width: 240px;
     pointer-events: none;
-    opacity: 0;
+    opacity: 0 !important;
     transform: translateX(-50%) translateY(8px) rotate(var(--tilt, -4deg)) scale(0.94);
     transform-origin: 50% 100%;
     transition:
@@ -435,8 +493,10 @@ const hobbies = [
       transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 5;
     background: var(--bg-surface);
-    padding: 6px 6px 32px;
-    border-radius: var(--r-sm);
+    /* Thin polaroid border so the image fills the frame instead of
+       floating in a bulky matte. */
+    padding: 3px 3px 10px;
+    border-radius: var(--r-xs);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-subtle);
   }
@@ -445,6 +505,17 @@ const hobbies = [
     height: auto;
     display: block;
   }
+  /* Bare + wide variant — no polaroid frame, larger so a full
+     screenshot like the Neopets HTML guide reads at this scale. */
+  .fx-photo--bare {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    border-radius: var(--r-xs);
+    overflow: hidden;
+  }
+  .fx-photo--wide { width: 460px; }
   /* The hover-revealed photo is rendered as a clone inside the
      custom cursor (.cursor__media), so the original stays invisible. */
 
@@ -464,6 +535,44 @@ const hobbies = [
   }
   .fx--film:hover,
   .fx--clio:hover {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
+  }
+
+  /* Neopets nod — softer than .fx--film, no bold weight, just a thin
+     brand underline that fills into the wash on hover. The cursor-portal
+     image is the main hover signal; the underline is only a hint that
+     the parenthetical is hoverable. */
+  /* Glitter graphics — always-on inline GIF that replaces the words
+     "glitter graphics" in the sentence flow. Sized to sit inside the
+     paragraph's line-box without pushing the line taller than its
+     text-only siblings (1.4em + a -0.15em baseline nudge keeps the
+     glyphs centered on the x-height, per the HM stress-test fix). */
+  .glitter-inline {
+    display: inline-block;
+    vertical-align: -0.15em;
+    height: 1.4em;
+    width: auto;
+    margin: 0 0.1em;
+  }
+
+  /* Keep .fx--neopets as plain inline so the link wraps with the
+     surrounding sentence instead of being treated as an inline-block
+     atom that pushes adjacent punctuation onto its own line. */
+  .fx--neopets {
+    display: inline;
+    color: var(--text-primary);
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
+    transition:
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out);
+  }
+  .fx--neopets:hover {
     background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
     background-size: 100% 100%;
   }
@@ -600,7 +709,9 @@ const hobbies = [
     position: absolute;
     bottom: calc(100% + 8px);
     left: 50%;
-    width: 220px;
+    /* width intentionally omitted so the global
+       .prose-out__preview--wide value (820px) isn't shadowed by a
+       higher-specificity scoped base. */
     pointer-events: none;
     opacity: 0;
     transform: translateX(-50%) translateY(8px) rotate(var(--tilt, -3deg)) scale(0.94);
@@ -640,7 +751,9 @@ const hobbies = [
     transform: scale(1.18);
     transform-origin: center;
   }
-  .prose-out__preview--wide { width: 320px; }
+  /* Width override removed — the global .prose-out__preview--wide
+     value (820px) was being pinned down to 320px by this scoped
+     duplicate, capping the Lego Movie 2 hover at the wrong size. */
   .prose-out__preview img {
     width: 100%;
     height: auto;
@@ -744,7 +857,7 @@ const hobbies = [
     left: 50%;
     width: 232px;
     pointer-events: none;
-    opacity: 0;
+    opacity: 0 !important;
     transform: translateX(-50%) translateY(10px) rotate(var(--tilt, 0deg)) scale(0.9);
     transform-origin: 50% 100%;
     transition:
@@ -767,8 +880,13 @@ const hobbies = [
      custom cursor (.cursor__media), so the original stays invisible. */
 
   .about-cta {
-    margin-top: 0;
-    margin-bottom: var(--s-16);
+    margin-top: var(--s-6);
+    margin-bottom: 0;
+  }
+  /* Push the article away from the page footer now that the CTA lives
+     inside the bottom row instead of being the article's own block. */
+  .about-body-stack {
+    padding-bottom: var(--s-16);
   }
 
   .cta-btn {

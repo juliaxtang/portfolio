@@ -127,6 +127,17 @@ a.prose-out:hover {
   background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
   background-size: 100% 100%;
 }
+/* Preview-variant links get their hover signal entirely from the
+   cursor-portal artwork (Webby polaroid, Lego Movie 2 GIF, etc.) —
+   strip every other hover state on the link itself so nothing else
+   moves or fills underneath the cursor's graphic. */
+a.prose-out--preview,
+a.prose-out--preview:hover,
+a.prose-out--preview:focus-visible {
+  background-image: none;
+  background-size: 0 0;
+  transition: none;
+}
 .prose-out--preview { position: relative; }
 .prose-out__preview {
   position: absolute;
@@ -134,7 +145,10 @@ a.prose-out:hover {
   left: 50%;
   width: 220px;
   pointer-events: none;
-  opacity: 0;
+  /* Force-invisible at all times — the visible artwork is rendered
+     inside the CustomCursor's .cursor__media portal, so nothing here
+     in the document flow should ever bleed through. */
+  opacity: 0 !important;
   transform: translateX(-50%) translateY(8px) rotate(var(--tilt, -3deg)) scale(0.94);
   transform-origin: 50% 100%;
   transition:
@@ -155,7 +169,7 @@ a.prose-out:hover {
   box-shadow: var(--shadow-md);
   overflow: hidden;
 }
-.prose-out__preview--wide { width: 300px; }
+.prose-out__preview--wide { width: 820px; }
 .prose-out__preview img {
   width: 100%;
   height: auto;

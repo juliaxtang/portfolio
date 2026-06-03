@@ -813,6 +813,12 @@ const hobbies = [
     box-shadow: 0 12px 28px -14px rgba(20, 22, 28, 0.22);
     outline: none;
   }
+  /* Touch press feedback — gives a tap a brief confirmation since the
+     desktop cursor-portal photo can't fire on touch. */
+  .pill:active {
+    transform: translateY(0);
+    background: var(--bg-sunken);
+  }
 
   .pill-emoji {
     display: inline-block;
@@ -854,6 +860,43 @@ const hobbies = [
   .pill:focus-visible .pill-caption {
     opacity: 1;
     transform: translateY(-50%) translateX(0);
+  }
+  /* Touch devices: there's no hover and the cursor-portal photo never
+     fires, so the language list would otherwise be entirely invisible.
+     Surface it inline below the pill at all times — the Language Learner
+     pill becomes a self-contained chip on mobile that already shows the
+     info a hover would have revealed. */
+  @media (hover: none), (pointer: coarse) {
+    .pill:has(.pill-caption) {
+      flex-wrap: wrap;
+      align-items: center;
+      row-gap: var(--s-2);
+      border-radius: var(--r-lg);
+      padding: var(--s-3) var(--s-5) var(--s-3);
+    }
+    .pill-caption {
+      position: static;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      flex-basis: 100%;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s-1) var(--s-3);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      line-height: 1.2;
+      white-space: normal;
+    }
+    .pill-caption li { display: inline; }
+    .pill-caption li::marker { content: ""; }
+    .pill-caption li + li::before {
+      content: "·";
+      margin-right: var(--s-2);
+      opacity: 0.5;
+    }
   }
 
   /* Polaroid photo that floats above each pill on hover. */

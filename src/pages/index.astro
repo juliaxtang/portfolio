@@ -35,6 +35,27 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 <BaseLayout title="Julia Tang | Product Designer">
   <section class="v2-hero" data-home-hero>
     <HeroGrid />
+
+    <div class="hero-reveal hero-reveal--snap" aria-hidden="true">
+      <div class="hero-reveal__item hero-reveal__item--snap-chat">
+        <div class="hero-reveal__chat-crop">
+          <img src={`${base}/projects/hero/snap-chat.png`} alt="" />
+        </div>
+      </div>
+      <div class="hero-reveal__item hero-reveal__item--snap-envelope">
+        <img src={`${base}/projects/hero/snap-envelope.png`} alt="" />
+      </div>
+    </div>
+
+    <div class="hero-reveal hero-reveal--tinder" aria-hidden="true">
+      <div class="hero-reveal__item hero-reveal__item--tinder-superlike">
+        <img src={`${base}/projects/hero/superlike.gif`} alt="" />
+      </div>
+      <div class="hero-reveal__item hero-reveal__item--tinder-phone">
+        <img src={`${base}/projects/hero/tinder-phone.gif`} alt="" />
+      </div>
+    </div>
+
     <div class="v2-hero__grid">
       <div class="v2-hero__text">
         <FadeIn>
@@ -94,6 +115,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         </FadeIn>
       </div>
     </div>
+
+    <a class="v2-hero__scroll" href="#work" aria-label="Scroll to see my work">
+      <span class="v2-hero__scroll-label">Scroll to see my work</span>
+      <svg
+        class="v2-hero__scroll-chevron"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+        focusable="false"
+      ><path d="M6 9 L12 15 L18 9" /></svg>
+    </a>
   </section>
 
   <script is:inline>
@@ -754,5 +790,154 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   .hero-co--tinder:hover,
   .hero-co--tinder:focus-visible {
     background-image: linear-gradient(var(--co-wash-tinder), var(--co-wash-tinder));
+  }
+
+  /* Hover-reveal imagery layer.
+     Two groups (snap + tinder), each containing 2 project images. Hidden by
+     default, fade in when the matching .hero-co link is hovered. Sits behind
+     the text but above the HeroGrid dot field. Pointer-events disabled so
+     the imagery never intercepts cursor events targeting the text. */
+  .hero-reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 320ms var(--ease-out);
+  }
+  .v2-hero:has(.hero-co--snap:hover) .hero-reveal--snap,
+  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal--snap,
+  .v2-hero:has(.hero-co--tinder:hover) .hero-reveal--tinder,
+  .v2-hero:has(.hero-co--tinder:focus-visible) .hero-reveal--tinder {
+    opacity: 1;
+  }
+  .hero-reveal__item {
+    position: absolute;
+    transform: translateY(8px);
+    transition: transform 360ms var(--ease-out);
+  }
+  .v2-hero:has(.hero-co--snap:hover) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal--snap .hero-reveal__item,
+  .v2-hero:has(.hero-co--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
+  .v2-hero:has(.hero-co--tinder:focus-visible) .hero-reveal--tinder .hero-reveal__item {
+    transform: translateY(0);
+  }
+  .hero-reveal__item img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Snap chat: left side, vertically centered. The GIF includes a dynamic
+     island top and a keyboard bottom that we don't want — crop them out
+     with overflow:hidden + a fixed aspect-ratio frame. The visible region
+     of the source is y=210..1625 of the 1206x2622 frame, hence
+     aspect-ratio 1206/1415 and image translated up 14.85%. */
+  .hero-reveal__item--snap-chat {
+    width: clamp(220px, 22vw, 340px);
+    left: 14%;
+    top: 50%;
+    transform: translateY(calc(-50% + 8px));
+  }
+  .v2-hero:has(.hero-co--snap:hover) .hero-reveal__item--snap-chat,
+  .v2-hero:has(.hero-co--snap:focus-visible) .hero-reveal__item--snap-chat {
+    transform: translateY(-50%);
+  }
+  .hero-reveal__chat-crop {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1206 / 1415;
+    overflow: hidden;
+    border-radius: var(--r-md);
+    box-shadow: 0 24px 60px -32px rgba(20, 20, 40, 0.18);
+    background: var(--surface, #fff);
+  }
+  .hero-reveal__chat-crop img {
+    position: absolute;
+    top: -14.85%;
+    left: 0;
+    width: 100%;
+    height: auto;
+  }
+  /* Snap envelope: top right. Native aspect ~ 2018/981. */
+  .hero-reveal__item--snap-envelope {
+    width: clamp(280px, 30vw, 500px);
+    right: 5%;
+    top: 8%;
+  }
+  /* Tinder SUPERLIKE: small square, upper-left near the headline edge. */
+  .hero-reveal__item--tinder-superlike {
+    width: clamp(180px, 18vw, 290px);
+    left: 16%;
+    top: 20%;
+  }
+  /* Tinder phone: right edge, full hero height-ish. */
+  .hero-reveal__item--tinder-phone {
+    width: clamp(260px, 26vw, 420px);
+    right: 2%;
+    top: 14%;
+  }
+  /* Under the desktop breakpoint the hero is single column and short.
+     Hide the reveal imagery to avoid overlapping the stacked text. */
+  @media (max-width: 1023px) {
+    .hero-reveal { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal,
+    .hero-reveal__item { transition: none; }
+  }
+
+  /* Scroll affordance pinned to the bottom of the hero. Anchors to #work,
+     gently bounces to invite scroll. */
+  .v2-hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: var(--s-6);
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--text-secondary);
+    text-decoration: none;
+    z-index: 2;
+    opacity: 0;
+    animation: hero-scroll-fade-in 600ms var(--ease-out) 1400ms 1 both;
+    transition: color 220ms var(--ease-out), transform 220ms var(--ease-out);
+  }
+  .v2-hero__scroll:hover,
+  .v2-hero__scroll:focus-visible {
+    color: var(--text-primary);
+    outline: none;
+  }
+  .v2-hero__scroll-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .v2-hero__scroll-chevron {
+    width: 22px;
+    height: 22px;
+    animation: hero-scroll-bounce 2200ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes hero-scroll-fade-in {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+  }
+  @keyframes hero-scroll-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(6px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .v2-hero__scroll { animation: none; opacity: 1; }
+    .v2-hero__scroll-chevron { animation: none; }
+  }
+  @media (max-width: 1023px) {
+    .v2-hero__scroll { position: static; transform: none; margin: var(--s-8) auto 0; display: flex; }
+    @keyframes hero-scroll-fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   }
 </style>

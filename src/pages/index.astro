@@ -93,13 +93,39 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       // height is its OWN rendered height (not the grid cell's max).
       headline.classList.add("is-measured");
 
+      // Measure each statement's natural height by promoting it to a
+      // normal-flow box one at a time. Pre-measuring while every slot is
+      // absolutely positioned at the same coords yields a per-statement
+      // height of zero (or the first slot's height) on some browsers, so
+      // the longest statement gets clipped. Promoting + restoring is a
+      // single layout pass per slot and runs once on load.
       function measure() {
-        return [...slots].map((s) => Math.ceil(s.getBoundingClientRect().height));
+        const out = [];
+        for (const s of slots) {
+          const prevPos = s.style.position;
+          const prevVis = s.style.visibility;
+          s.style.position = "static";
+          s.style.visibility = "hidden";
+          out.push(s.offsetHeight);
+          s.style.position = prevPos;
+          s.style.visibility = prevVis;
+        }
+        return out;
       }
 
       let heights = measure();
       let i = 0;
       headline.style.height = heights[i] + "px";
+
+      // Web fonts (Geist) can land after this script runs; metrics shift
+      // enough on the longest statement to clip a line. Remeasure once
+      // fonts settle so the headline reserves the right height.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          heights = measure();
+          headline.style.height = heights[i] + "px";
+        });
+      }
 
       let resizeT;
       window.addEventListener("resize", () => {
@@ -429,12 +455,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      tallest one reserves the height and the layout never jumps. */
   .v2-hero__headline {
     margin: 0;
-    font-family: var(--font-sans);
-    font-weight: 600;
-    font-size: clamp(36px, 5.4vw, 64px);
-    line-height: 1.08;
-    letter-spacing: -0.018em;
+    /* Display serif (Instrument Serif, not italic) for editorial weight
+       on the rotating hero statements; sans elsewhere keeps the rest of
+       the page utilitarian. */
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(40px, 5.6vw, 68px);
+    line-height: 1.15;
+    letter-spacing: -0.005em;
     color: var(--text-primary);
+    /* Reserve a hair of room below the baseline so serif descenders
+       (e.g. `p`, `y`, `g`) don't clip against the headline's
+       overflow:hidden during the height transition. */
+    padding-bottom: 0.12em;
     display: grid;
     transition: height 620ms var(--ease-out);
     overflow: hidden;

@@ -50,8 +50,8 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Staff Product Designer",
     title: "Social Games",
     tagline: [
-      "Games on Snapchat lived buried in the camera's lens carousel, with no dedicated category and no reliable way to find them.",
-      "I spotted the engagement opportunity, commissioned the research, and reframed Games as a category bet. I got buy-in from the CEO and earned a dedicated squad to scale it.",
+      "Games on Snapchat were camera filters with no product investment behind them. I saw the opportunity in the data, commissioned a research study, and designed three tests to prove out the bet.",
+      "All three landed. I got CEO buy-in to go big on Games, earned a dedicated squad, and scaled it into a proper product area with 30M daily users in less than a year.",
     ],
     stats: [
       { value: "30M", label: "Games DAU" },
@@ -67,8 +67,8 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Staff Product Designer",
     title: "Topic Chats",
     tagline: [
-      "Topic Chats was a half-finished public-chat MVP when I took it over: the surface worked, the product didn't. Most chats opened with a wave of 'hi' posts and went quiet.",
-      "I reshaped it into a live-events product anchored in sports, designing the discovery, notification, and sharing loops that gave people a reason to stay.",
+      "Topic Chats was a half-finished public-chat MVP. The surface worked, the product didn't. Most chats opened with a wave of 'hi' posts and went quiet, because the topics were too broad and never enough people were in chat at once.",
+      "I reshaped it into a live-events product anchored in sports and fandom. I designed the growth loops and high-leverage features (like the live scoreboard), and shaped the roadmap sequencing that got us to scale.",
     ],
     stats: [
       { value: "↑ 71K", label: "Incremental U.S. DAU" },
@@ -97,8 +97,8 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Dynamic Profiles",
     tagline: [
-      "On Tinder, profile pages had been hardcoded and one-size-fits-all for years.",
-      "I led the six-month effort to build Tappy Cloud, the backend-driven system and internal design tool (TaCo) that turned profiles into something teams could test, configure, and personalize per user.",
+      "Every Tinder profile had the same ordering of content at the same time. Nothing was personalized. Teams wanted to test profile variants, but none of them could do so quickly without running into content collisions or inconsistent UI.",
+      "I led the six-month build of Tappy Cloud, the backend system and internal tool (TaCo) that turned the profile from a fixed template into a surface teams could test, configure, and personalize. It unlocked rapid experimentation, faster iteration on new profile elements, and UI consistency across the app.",
     ],
     stats: [
       { value: "↑ 20%", label: "Likes sent across all experiments", colFr: 0.75 },
@@ -114,8 +114,8 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Festival Mode",
     tagline: [
-      "Festival Mode first launched in 2019 as a single-festival entry attached to Tinder's main swipe deck, then got pulled during the pandemic.",
-      "With IRL events returning in 2022, I led the two-month relaunch on Tinder Explore, reframing it from a one-time swipe surface into a high-intent social discovery experience for every festival of the season.",
+      "When IRL events came roaring back post-pandemic, Tinder had no real way for festivalgoers to find each other or plan their season together.",
+      "I designed Festival Mode 0→1 on Tinder Explore: a season-long social discovery experience around live events and music, grounded in the festivalgoer persona. Shipped in time for the start of music festival season.",
     ],
     stats: [
       { value: "2×", label: "Likes sent and convos started vs. main stack" },

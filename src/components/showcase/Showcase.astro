@@ -592,6 +592,22 @@ const meta = [role].filter(Boolean) as string[];
   .showcase__press-link:focus-visible {
     transform: translateY(-1px);
   }
+  /* Touch devices: the 16px logo + 0.55 opacity hover-brighten reads as a
+     too-small, too-faint tap target (and the hover lift never fires).
+     Lift the rest opacity to 0.85 and expand the hit area with vertical
+     padding so each logo gets a comfortable ~36px tap zone without
+     visually growing the logo itself. */
+  @media (hover: none), (pointer: coarse) {
+    .showcase__press-logos img { opacity: 0.85; }
+    .showcase__press-link {
+      padding: 10px 4px;
+      margin: -10px -4px;
+    }
+    .showcase__press-link:active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
 
   .showcase__cta {
     margin: 0;

@@ -242,4 +242,25 @@ const resolve = (p: string) =>
       transform: rotate(var(--rot)) !important;
     }
   }
+
+  /* Touch devices: kill the hover scale-up. On touch, :hover sticks
+     after the first tap (until tapping elsewhere), so the composition
+     would end up with one phone permanently zoomed and rotated forward,
+     pushing siblings and breaking the fanned arrangement. The stack
+     reads fine at rest on mobile — it doesn't need a "focal" interaction
+     to be legible. Leave cursor: default so it doesn't suggest tapping
+     does something. */
+  @media (hover: none), (pointer: coarse) {
+    .video-stack__item { cursor: default; }
+    .video-stack__item:hover {
+      transform:
+        translate3d(0, var(--stack-y), 0)
+        rotate(var(--rot)) !important;
+      scale: 1 !important;
+      z-index: auto !important;
+      box-shadow:
+        0 24px 40px rgba(20, 22, 28, 0.22),
+        0 8px 16px rgba(20, 22, 28, 0.10) !important;
+    }
+  }
 </style>

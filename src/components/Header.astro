@@ -163,6 +163,21 @@ function isActive(href: string) {
     transform: scaleX(1);
   }
 
+  /* Touch devices: expand the nav-link hit area to ~44px (iOS thumb
+     threshold) without growing the visible text. Padding + matching
+     negative margin keeps the row's layout box unchanged. Also wire a
+     :active press state since :hover sticks awkwardly on touch. */
+  @media (hover: none), (pointer: coarse) {
+    .nav-links a {
+      padding: 12px 10px;
+      margin: -12px -10px;
+    }
+    .nav-links a:active {
+      color: var(--text-primary);
+      background-size: 100% 100%;
+    }
+  }
+
   @media (max-width: 540px) {
     .site-header { padding: var(--s-4) var(--s-5); }
     .nav-links { gap: var(--s-4); }

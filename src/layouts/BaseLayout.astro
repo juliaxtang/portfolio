@@ -70,13 +70,25 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
     <SiteGate />
     <CustomCursor />
 
-    <!-- Fade-in observer (cheap, works without any framework) -->
+    <!-- Fade-in observer. Re-run after every ClientRouter view transition
+         (astro:page-load fires on initial load AND after each swap) so
+         .fade-in elements on the next page get observed too. Without
+         this, soft-navigating between routes (e.g. / -> /about) left
+         every wrapped block stuck at opacity: 0 and the page rendered
+         blank. A setTimeout safety net forcibly reveals anything still
+         hidden after 1.2s, so a view-transition hiccup can never strand
+         a page invisible. -->
     <script is:inline>
-      (function () {
+      function revealAllFadeIns() {
+        var els = document.querySelectorAll(".fade-in:not(.is-visible)");
+        els.forEach(function (el) { el.classList.add("is-visible"); });
+      }
+      function initFadeInObserver() {
         if (typeof window === "undefined") return;
-        var els = document.querySelectorAll(".fade-in");
+        var els = document.querySelectorAll(".fade-in:not(.is-visible)");
+        if (!els.length) return;
         if (!("IntersectionObserver" in window)) {
-          els.forEach(function (el) { el.classList.add("is-visible"); });
+          revealAllFadeIns();
           return;
         }
         var io = new IntersectionObserver(
@@ -91,7 +103,11 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
           { threshold: 0.15 }
         );
         els.forEach(function (el) { io.observe(el); });
-      })();
+        setTimeout(revealAllFadeIns, 1200);
+      }
+      document.addEventListener("astro:page-load", initFadeInObserver);
+      if (document.readyState !== "loading") initFadeInObserver();
+      else document.addEventListener("DOMContentLoaded", initFadeInObserver);
     </script>
   </body>
 </html>

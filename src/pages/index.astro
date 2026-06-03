@@ -321,8 +321,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
        when the rotating headline changes line count. */
     height: 600px;
   }
-  @media (max-width: 720px) {
-    .v2-hero { height: 540px; }
+  @media (max-width: 900px) {
+    .v2-hero {
+      padding-top: var(--s-12);
+      padding-bottom: var(--s-6);
+      /* Min-height tracks the tallest statement (~3 lines + meta + paddings)
+         without leaving a 100+px dead band of dots below short statements. */
+      height: auto;
+      min-height: 420px;
+    }
+  }
+  @media (max-width: 420px) {
+    .v2-hero {
+      padding-top: var(--s-10);
+      min-height: 380px;
+    }
   }
 
   /* Anchor scroll targets sit below the sticky header. */

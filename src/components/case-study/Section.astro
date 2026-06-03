@@ -173,6 +173,11 @@ const hasBody = await Astro.slots.has("default");
 
   @media (max-width: 720px) {
     .cs-section { padding-block: var(--s-10); }
+    .cs-section__head { margin-bottom: var(--s-5); }
+    .cs-section--sub { padding-block: var(--s-5); }
+  }
+  @media (max-width: 480px) {
+    .cs-section { padding-block: var(--s-8); }
   }
 
   .cs-section__head {

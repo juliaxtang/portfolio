@@ -256,7 +256,9 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
       max-height: 50vh;
     }
     .cs-hero__overlay,
-    .cs-hero--flipped .cs-hero__overlay {
+    .cs-hero--flipped .cs-hero__overlay,
+    .cs-hero--phone-cluster .cs-hero__overlay,
+    .cs-hero__overlay:not(:has(.cs-hero__visual)) {
       grid-template-columns: 1fr;
       padding-block: var(--s-8);
       background: color-mix(in srgb, var(--cs-accent) 42%, var(--bg-canvas));
@@ -266,6 +268,15 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
     .cs-hero--flipped .cs-hero__visual { display: none; }
     .cs-hero__panel,
     .cs-hero--flipped .cs-hero__panel { grid-column: 1; grid-row: 1; }
+    /* The mobile overlay paints a pale wash over the hero bleed, so the
+       dark background image lightText was calibrated against is no longer
+       visible — revert to default dark text so the title stays legible
+       on the pale wash. */
+    .cs-hero--light-text {
+      --text-primary: #15171C;
+      --text-secondary: #5A5D66;
+      --text-tertiary: #8B8E96;
+    }
   }
 
   .cs-hero__brand {
@@ -303,11 +314,14 @@ const accentStyle = accent ? `--cs-accent:${accent};` : "";
   .cs-hero__title {
     font-family: var(--font-sans);
     font-weight: 700;
-    font-size: clamp(36px, 4.6vw, 64px);
+    font-size: clamp(34px, 4.6vw, 64px);
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--text-primary);
     margin: 0;
+  }
+  @media (max-width: 420px) {
+    .cs-hero__title { font-size: 32px; }
   }
 
   .cs-hero__summary {

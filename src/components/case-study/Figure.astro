@@ -104,6 +104,9 @@ const mediaStyle = styleParts.join(";");
     transition: transform 0.35s var(--ease-out, cubic-bezier(0.2, 0, 0, 1));
     will-change: transform;
   }
+  @media (max-width: 720px) {
+    .cs-figure { margin: var(--s-6) auto; }
+  }
   .cs-figure:hover {
     transform: scale(1.015);
   }

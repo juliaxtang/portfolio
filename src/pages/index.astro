@@ -13,8 +13,8 @@ import FadeIn from "../components/FadeIn.astro";
 import HeroGrid from "../components/HeroGrid.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
-import VideoStack from "../components/showcase/VideoStack.astro";
-import { snapchatGamesStackItems, snapchatGamesStackProps } from "../components/showcase/projects/snapchatGamesStack";
+import VideoCardStack from "../components/showcase/VideoCardStack.astro";
+import { snapchatGamesStackItems } from "../components/showcase/projects/snapchatGamesStack";
 import MediaParallax from "../components/showcase/MediaParallax.astro";
 import TappyCloudShowcase from "../components/showcase/projects/TappyCloudShowcase.astro";
 import FestivalModeShowcase from "../components/showcase/projects/FestivalModeShowcase.astro";
@@ -234,9 +234,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       id="snapchat-games"
     >
       <div data-cursor-bg="light">
-        <VideoStack
+        <VideoCardStack
           items={[...snapchatGamesStackItems]}
-          {...snapchatGamesStackProps}
         />
       </div>
     </Showcase>

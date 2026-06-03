@@ -1,0 +1,537 @@
+---
+/**
+ * VideoCardStack — a swipeable / tappable deck of phone-shaped videos.
+ *
+ * The top card is the hero (big, centered, no rotation); the rest peek
+ * out from behind with a slight Y offset, scale-down, and gentle
+ * counter-rotation so the deck reads as hand-stacked rather than
+ * stamped. Tap, click, or swipe the top card to throw it; it animates
+ * out, returns to the back of the stack, and the next card promotes to
+ * hero. Infinite shuffle.
+ *
+ * Behaviors:
+ *  - Pointer drag on the top card translates + rotates with the cursor.
+ *    Release past the threshold throws the card off-screen; release
+ *    below it snaps back.
+ *  - Click anywhere on the deck advances by one (no-drag tap).
+ *  - prefers-reduced-motion: replaces the throw with a fast cross-fade.
+ */
+interface Item {
+  src: string;
+  alt?: string;
+  poster?: string;
+  /** Per-item override for the card's aspect ratio, when the source
+   *  video isn't 9:19.5 (e.g. shorter storefront recordings). */
+  aspect?: string;
+}
+interface Props {
+  items: Item[];
+  /** Card aspect ratio (CSS aspect-ratio string). */
+  itemAspect?: string;
+  /** Top-card width as a CSS value (% of container width). */
+  itemWidth?: string;
+  /** Max width of the deck container. */
+  maxWidth?: string;
+  /** Aspect ratio of the deck container. */
+  aspect?: string;
+}
+
+const {
+  items,
+  itemAspect = "9 / 19.5",
+  itemWidth = "89%",
+  maxWidth = "380px",
+  aspect = "0.46 / 1",
+} = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const resolve = (p: string) =>
+  p.startsWith("http") || p.startsWith(base)
+    ? p
+    : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+---
+
+<div
+  class="card-stack"
+  data-card-stack
+  style={`--cs-max-w:${maxWidth};--cs-aspect:${aspect};--cs-item-aspect:${itemAspect};--cs-item-w:${itemWidth};`}
+>
+  <div class="card-stack__deck" data-deck data-cursor="swipe-pill">
+    {items.map((it) => (
+      <div
+        class="card-stack__card"
+        data-card
+        style={it.aspect ? `--cs-this-aspect:${it.aspect};` : ""}
+        aria-label={it.alt || ""}
+      >
+        <video
+          src={resolve(it.src)}
+          poster={it.poster ? resolve(it.poster) : undefined}
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          aria-label={it.alt || ""}
+        />
+      </div>
+    ))}
+  </div>
+  <button
+    type="button"
+    class="card-stack__next"
+    data-next
+    aria-label="Show next game"
+  >
+    <span
+      class="card-stack__next-arrow"
+      aria-hidden="true"
+      style={`--cs-arrow-src:url('${resolve("/projects/snapchat-games/swipe-arrow.png")}');`}
+    ></span>
+    <span class="card-stack__next-label">Swipe<br />to shuffle</span>
+  </button>
+</div>
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+
+    function init() {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const decks = document.querySelectorAll("[data-card-stack]");
+      decks.forEach((root) => setupDeck(root, reduced));
+
+      // Same off-screen autoplay workaround as VideoStack.
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) e.target.play().catch(() => {});
+          });
+        },
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll(".card-stack video").forEach((v) => io.observe(v));
+    }
+
+    function setupDeck(root, reduced) {
+      const deck = root.querySelector("[data-deck]");
+      const nextBtn = root.querySelector("[data-next]");
+      if (!deck) return;
+      const order = Array.from(deck.querySelectorAll("[data-card]"));
+      if (!order.length) return;
+
+      // Resting positions for stack indices 0..N. Tweak if more than 4
+      // cards are ever shown — the offsets compound visually.
+      const POSE = [
+        { ty: 0,  scale: 1.00, rot:  0,    blur: 0,    opacity: 1 },
+        { ty: 28, scale: 0.96, rot: -4.5,  blur: 0.3,  opacity: 0.96 },
+        { ty: 50, scale: 0.92, rot:  5.5,  blur: 0.6,  opacity: 0.92 },
+        { ty: 70, scale: 0.88, rot: -3.0,  blur: 1.0,  opacity: 0.85 },
+      ];
+
+      function applyResting() {
+        order.forEach((card, i) => {
+          const p = POSE[Math.min(i, POSE.length - 1)];
+          card.style.transition =
+            "transform 480ms var(--ease-out), opacity 320ms var(--ease-out), filter 320ms var(--ease-out)";
+          card.style.transform =
+            "translate3d(0, " + p.ty + "px, 0) rotate(" + p.rot + "deg) scale(" + p.scale + ")";
+          card.style.opacity = String(p.opacity);
+          card.style.filter = p.blur ? "blur(" + p.blur + "px)" : "";
+          card.style.zIndex = String(order.length - i);
+          card.style.pointerEvents = i === 0 ? "auto" : "none";
+          card.classList.toggle("is-top", i === 0);
+        });
+      }
+
+      let advancing = false;
+
+      function advance(direction) {
+        if (advancing) return;
+        advancing = true;
+        const top = order[0];
+        if (!top) {
+          advancing = false;
+          return;
+        }
+        const dir = direction || (Math.random() < 0.5 ? -1 : 1);
+        root.classList.add("is-advanced"); // hide idle hint after first interaction
+
+        if (reduced) {
+          order.push(order.shift());
+          applyResting();
+          setTimeout(() => { advancing = false; }, 160);
+          return;
+        }
+
+        // Deck-shuffle motion, optimized for rapid chaining:
+        //  1. Shift order immediately and promote every card EXCEPT the
+        //     swiped one to its new pose in the same tick. The card
+        //     behind moves up as fast as the CSS transition allows.
+        //  2. The swiped card slides out to the side with z-index 0 so
+        //     it tucks behind the new top.
+        //  3. After the slide-out, the swiped card arcs back to the
+        //     centered back-of-stack pose.
+        const sideX = dir * Math.min(200, (root.clientWidth || 320) * 0.55);
+        const sideRot = dir * 11;
+
+        // Shift order so order[0] is the new top.
+        order.push(order.shift());
+
+        // Slide old top out.
+        top.style.transition =
+          "transform 240ms cubic-bezier(0.32, 0, 0.32, 1), opacity 240ms ease-out, filter 240ms ease-out";
+        top.style.zIndex = "0";
+        top.style.transform =
+          "translate3d(" + sideX + "px, 8px, 0) rotate(" + sideRot + "deg) scale(0.94)";
+        top.style.opacity = "0.88";
+        top.style.filter = "blur(0.4px)";
+        top.classList.remove("is-top");
+        top.style.pointerEvents = "none";
+
+        // Promote the rest of the deck immediately. The new top reaches
+        // its top pose within the resting transition (no wait for the
+        // swiped card to finish moving).
+        for (let i = 0; i < order.length - 1; i++) {
+          const card = order[i];
+          const p = POSE[Math.min(i, POSE.length - 1)];
+          card.style.transition =
+            "transform 360ms var(--ease-out), opacity 280ms var(--ease-out), filter 280ms var(--ease-out)";
+          card.style.transform =
+            "translate3d(0, " + p.ty + "px, 0) rotate(" + p.rot + "deg) scale(" + p.scale + ")";
+          card.style.opacity = String(p.opacity);
+          card.style.filter = p.blur ? "blur(" + p.blur + "px)" : "";
+          card.style.zIndex = String(order.length - i);
+          card.style.pointerEvents = i === 0 ? "auto" : "none";
+          card.classList.toggle("is-top", i === 0);
+        }
+
+        // After slide-out, move the swiped card to its back-of-stack pose.
+        setTimeout(() => {
+          const back = POSE[Math.min(order.length - 1, POSE.length - 1)];
+          top.style.transition =
+            "transform 340ms var(--ease-out), opacity 280ms var(--ease-out), filter 280ms var(--ease-out)";
+          top.style.transform =
+            "translate3d(0, " + back.ty + "px, 0) rotate(" + back.rot + "deg) scale(" + back.scale + ")";
+          top.style.opacity = String(back.opacity);
+          top.style.filter = back.blur ? "blur(" + back.blur + "px)" : "";
+          top.style.zIndex = "1";
+        }, 220);
+
+        // Lockout short enough to allow rapid chained shuffles, but
+        // long enough that the new top has visibly started promoting.
+        setTimeout(() => { advancing = false; }, 220);
+      }
+
+      // Pointer drag on the top card.
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+      let dx = 0;
+      let dy = 0;
+      let pointerId = null;
+      let didDrag = false;
+
+      function topCard() { return order[0]; }
+
+      function onPointerDown(e) {
+        if (advancing) return;
+        const card = topCard();
+        if (!card) return;
+        // Only react to the top card's own pointer events.
+        if (!card.contains(e.target)) return;
+        dragging = true;
+        didDrag = false;
+        startX = e.clientX;
+        startY = e.clientY;
+        dx = 0;
+        dy = 0;
+        pointerId = e.pointerId;
+        try { card.setPointerCapture(pointerId); } catch (_) {}
+        card.style.transition = "none";
+        card.style.cursor = "grabbing";
+      }
+
+      function onPointerMove(e) {
+        if (!dragging) return;
+        if (e.pointerId !== pointerId) return;
+        dx = e.clientX - startX;
+        dy = e.clientY - startY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) didDrag = true;
+        const card = topCard();
+        if (!card) return;
+        const rot = dx / 14; // gentle tilt with the drag direction
+        card.style.transform =
+          "translate3d(" + dx + "px, " + dy * 0.4 + "px, 0) rotate(" + rot + "deg) scale(1)";
+      }
+
+      function onPointerUp(e) {
+        if (!dragging) return;
+        if (e.pointerId !== pointerId) return;
+        dragging = false;
+        const card = topCard();
+        if (!card) return;
+        try { card.releasePointerCapture(pointerId); } catch (_) {}
+        card.style.cursor = "";
+        const threshold = Math.min(160, (root.clientWidth || 320) * 0.22);
+        if (Math.abs(dx) > threshold) {
+          advance(dx > 0 ? 1 : -1);
+        } else if (!didDrag) {
+          // Treat as a tap on the top card.
+          advance(0);
+        } else {
+          // Snap back to resting.
+          applyResting();
+        }
+        pointerId = null;
+      }
+
+      deck.addEventListener("pointerdown", onPointerDown);
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", () => advance(0));
+      }
+
+      // Keyboard a11y on the deck.
+      deck.setAttribute("tabindex", "0");
+      deck.setAttribute("role", "button");
+      deck.setAttribute("aria-label", "Snapchat Games preview deck. Press Enter or Space to show the next game.");
+      deck.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
+          e.preventDefault();
+          advance(1);
+        } else if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          advance(-1);
+        }
+      });
+
+      applyResting();
+    }
+  })();
+</script>
+
+<style>
+  .card-stack {
+    position: relative;
+    width: 100%;
+    max-width: var(--cs-max-w, 440px);
+    aspect-ratio: var(--cs-aspect, 0.95 / 1.08);
+    margin: 0 auto 0 0;
+    isolation: isolate;
+    /* Give the throw room without clipping the next pointer events. */
+    overflow: visible;
+    touch-action: pan-y; /* let vertical page scroll through; we own horizontal */
+  }
+  @media (max-width: 900px) {
+    .card-stack {
+      margin-inline: auto;
+      max-width: min(var(--cs-max-w, 440px), 84%);
+    }
+  }
+  @media (max-width: 1100px) and (min-width: 901px) {
+    .card-stack { max-width: min(var(--cs-max-w, 440px), 92%); margin-inline: auto; }
+  }
+
+  .card-stack__deck {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    outline: none;
+  }
+  .card-stack__deck:focus-visible {
+    outline: 2px solid var(--brand-primary-2, #A9C7DC);
+    outline-offset: 8px;
+    border-radius: 28px;
+  }
+
+  .card-stack__card {
+    position: absolute;
+    /* Anchor the deck to the upper portion of the container so the
+       cards behind have visible Y headroom to peek below the top one. */
+    top: 0;
+    left: 50%;
+    width: var(--cs-item-w, 74%);
+    aspect-ratio: var(--cs-this-aspect, var(--cs-item-aspect, 9 / 19.5));
+    border-radius: 28px;
+    overflow: hidden;
+    background: #0c0d11;
+    box-shadow:
+      0 24px 40px rgba(20, 22, 28, 0.22),
+      0 8px 16px rgba(20, 22, 28, 0.10);
+    transform-origin: 50% 50%;
+    /* Initial transform is overridden by JS immediately on mount. The
+       left:50% + translateX(-50%) here centers each card horizontally
+       before the script applies its resting pose. */
+    transform: translate3d(-50%, 0, 0);
+    will-change: transform, opacity, filter;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  /* Compose the centering offset with whatever JS sets. We do this by
+     parenting the centering translate on a pseudo-element instead, but
+     CSS can't reach that cleanly. Easier: have JS write transforms
+     starting from the -50% centering, which we encode by setting
+     `left: 50%` and `margin-left` mathematically through the width
+     variable. */
+  .card-stack__card {
+    margin-left: calc(var(--cs-item-w, 74%) / -2);
+    left: 50%;
+  }
+  .card-stack__card video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: inherit;
+    pointer-events: none; /* drag/tap should land on the card, not the video */
+  }
+  .card-stack__card.is-top {
+    box-shadow:
+      0 36px 60px rgba(20, 22, 28, 0.30),
+      0 14px 24px rgba(20, 22, 28, 0.14);
+  }
+  .card-stack__card.is-top:active { cursor: grabbing; }
+
+  /* Idle hint — top card gently rocks side-to-side until the first
+     swipe/tap. The animation runs on a wrapper transform so it doesn't
+     fight with the JS-controlled transform. We use a CSS variable
+     `--hint-x` and `--hint-rot` set via @keyframes, composed into the
+     resting transform via translate/rotate adjacency. Simpler approach:
+     toggle a class on the deck and run a keyframe on the top card. */
+  @keyframes card-stack-hint {
+    0%, 100% { box-shadow: 0 36px 60px rgba(20, 22, 28, 0.30), 0 14px 24px rgba(20, 22, 28, 0.14); }
+    50% { box-shadow: 0 36px 60px rgba(20, 22, 28, 0.30), 0 14px 24px rgba(20, 22, 28, 0.14), 0 0 0 6px rgba(20, 22, 28, 0.04); }
+  }
+  .card-stack:not(.is-advanced) .card-stack__card.is-top {
+    animation: card-stack-hint 2200ms ease-in-out 600ms 3;
+  }
+
+  /* Swipe affordance — passive hint for users who DON'T hover the deck.
+     When the cursor enters the deck, the custom cursor morphs into a
+     "Swipe" pill (see CustomCursor.astro) and the affordance fades out
+     because the cursor IS the affordance at that point. */
+  .card-stack__next {
+    position: absolute;
+    left: 100%;
+    top: 72%;
+    transform: translate(8px, -50%);
+    z-index: 50;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    background: transparent;
+    border: 0;
+    padding: 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.35;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary, #6b6b72);
+    cursor: pointer;
+    transition: opacity 220ms var(--ease-out), color 200ms var(--ease-out), transform 240ms var(--ease-out);
+  }
+  .card-stack__next:focus-visible {
+    outline: 2px solid var(--brand-primary-2, #A9C7DC);
+    outline-offset: 6px;
+    border-radius: 6px;
+  }
+  .card-stack__next-arrow {
+    width: 90px;
+    aspect-ratio: 648 / 446;
+    display: block;
+    /* Mask the PNG and fill with currentColor so the arrow matches the
+       label's text color exactly (no opacity tint, no contrast hack). */
+    background-color: currentColor;
+    -webkit-mask: var(--cs-arrow-src) center / contain no-repeat;
+    mask: var(--cs-arrow-src) center / contain no-repeat;
+    /* Thicken the strokes with stacked 0-blur drop-shadows of
+       currentColor — each shadow extends the silhouette 1.5px outward
+       in one direction; chaining four directions effectively dilates
+       the line into a much heavier weight. */
+    filter:
+      drop-shadow(1.6px 0 0 currentColor)
+      drop-shadow(-1.6px 0 0 currentColor)
+      drop-shadow(0 1.6px 0 currentColor)
+      drop-shadow(0 -1.6px 0 currentColor);
+    user-select: none;
+    /* Flip vertically, rotate 90° clockwise, then nudge 24px left and
+       8px up (previous -16, -0 plus another -8, -8). */
+    transform: translate(-24px, -8px) rotate(90deg) scaleY(-1);
+    transform-origin: 50% 50%;
+  }
+  .card-stack__next-label {
+    text-align: center;
+    white-space: normal;
+    text-transform: lowercase;
+  }
+
+  /* Hide the affordance while the user is hovering the deck (the
+     cursor-morphed "Swipe" pill replaces it). The selector targets
+     [data-deck]:hover and its following sibling, the [data-next] button. */
+  [data-deck]:hover ~ .card-stack__next {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Permanent hide once the user has actually shuffled — the .is-advanced
+     flag is set on the card-stack root in advance(). */
+  .card-stack.is-advanced .card-stack__next {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Narrow desktop / tablet (901–1339px): the right-of-deck arrow has
+     no room next to the text column. Fall back to a compact horizontal
+     pill below the deck so the affordance is still discoverable. */
+  @media (max-width: 1339px) and (min-width: 901px) {
+    .card-stack__next {
+      left: 50%;
+      top: auto;
+      bottom: -2px;
+      transform: translateX(-50%);
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(20, 22, 28, 0.08);
+      border-radius: 999px;
+      padding: 7px 14px;
+      color: var(--text-secondary, #2a2a2f);
+      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
+    }
+    .card-stack__next-arrow { display: none; }
+    .card-stack__next-label {
+      font-size: 0;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+    .card-stack__next-label::before {
+      content: "↑  swipe or tap to shuffle";
+      font-size: 11px;
+    }
+  }
+
+  /* Mobile / touch (≤ 900px): no hint. Touch users swipe instinctively. */
+  @media (max-width: 900px) {
+    .card-stack__next { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-stack__card { transition: opacity 220ms ease-out !important; }
+  }
+</style>

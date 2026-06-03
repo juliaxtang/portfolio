@@ -212,10 +212,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       reverse
       id="snapchat-games"
     >
-      <VideoStack
-        items={[...snapchatGamesStackItems]}
-        {...snapchatGamesStackProps}
-      />
+      <div data-cursor-bg="light">
+        <VideoStack
+          items={[...snapchatGamesStackItems]}
+          {...snapchatGamesStackProps}
+        />
+      </div>
     </Showcase>
   </FadeIn>
 
@@ -233,16 +235,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       accent={topicChats.accent}
       id="topic-chats"
     >
-      <MediaParallax
-        src="/projects/topic-chats/topic-chat-sizzle.mp4"
-        aspect="9 / 16"
-        maxWidth="324px"
-        label="Topic Chats feature sizzle reel"
-      />
+      <div data-cursor-bg="dark">
+        <MediaParallax
+          src="/projects/topic-chats/topic-chat-sizzle.mp4"
+          aspect="9 / 16"
+          maxWidth="324px"
+          label="Topic Chats feature sizzle reel"
+        />
+      </div>
     </Showcase>
   </FadeIn>
 
-  <div id="tappy-cloud">
+  <div id="tappy-cloud" data-cursor-bg="dark">
     <FadeIn>
       <TappyCloudShowcase reverse />
     </FadeIn>
@@ -287,7 +291,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   </FadeIn>
 
   <FadeIn>
-    <FestivalModeShowcase reverse />
+    <div data-cursor-bg="dark">
+      <FestivalModeShowcase reverse />
+    </div>
   </FadeIn>
 
   <div class="home-footer-spacer" aria-hidden="true"></div>

@@ -82,10 +82,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         <FadeIn delay={220}>
           <div class="v2-hero__meta">
             <p>
-              Currently building social experiences at <a class="hero-co hero-co--snap" href="#snapchat-games"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a> with Cursor and Claude.
+              Currently building social experiences at <a class="hero-co hero-co--snap" href="#snapchat-games" data-cursor="scroll-pill"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a> with Cursor and Claude.
             </p>
             <p>
-              Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
+              Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud" data-cursor="scroll-pill"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
             </p>
             <p>
               Tinkering with AI on the side. <span class="v2-hero__meta-secondary">(AI projects coming soon!)</span>
@@ -260,7 +260,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         <MediaParallax
           src="/projects/topic-chats/topic-chat-sizzle.mp4"
           aspect="9 / 16"
-          maxWidth="324px"
+          maxWidth="356px"
           label="Topic Chats feature sizzle reel"
         />
       </div>
@@ -329,6 +329,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   @media (max-width: 720px) {
     .home-footer-spacer { height: var(--s-10); }
+  }
+
+  /* Tappy Cloud's staggered columns make the section visually taller
+     than the others, so give it extra breathing room from the topic-chats
+     section above and the app-redesign section below. */
+  :global(#tappy-cloud) :global(.showcase) {
+    padding-block: var(--s-32);
+  }
+  @media (max-width: 720px) {
+    :global(#tappy-cloud) :global(.showcase) {
+      padding-block: var(--s-16);
+    }
   }
 
   .v2-hero {

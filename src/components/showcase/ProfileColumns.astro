@@ -198,46 +198,49 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
           const traveled = vh - rect.top;
           const progress = Math.min(Math.max(traveled / total, 0), 1);
 
-          // Both columns travel the same pixel distance so they feel
-          // synchronized. The right column starts pre-scrolled by
-          // `rightOffset`, so the bottleneck for "doesn't run out of strip"
-          // is the right column. We cap travel at its available range, and
-          // both columns translate by that same amount.
-          //
-          // When `cards` is set: each column shows a fixed number of
-          // whole cards (showCards) out of a taller strip (cards total),
-          // so the image is taller than the column window by exactly
-          // (cards - showCards) * cardH. Parallax the IMAGES inside the
-          // overflow-hidden columns through that extra range in
-          // opposite directions — left col content drifts up as the
-          // section travels through the viewport, right col content
-          // drifts down, crossing at progress=0.5. The column boxes
-          // themselves stay pinned so nothing overshoots the section
-          // padding into adjacent showcases. Easing curves the swing
-          // toward the middle so the two columns feel like they're
-          // breathing past each other rather than racing edge-to-edge.
+          // When `cards` is set: image strips are anchored at the top
+          // (left col) or bottom (right col) of their column window so
+          // that exactly `showCards` whole cards are visible at all
+          // times — no half-card slivers at the edges. The parallax is
+          // applied to the WHOLE COLUMN boxes (not the images inside),
+          // so the cluster gently drifts past the page as it scrolls
+          // through the viewport. Left and right columns drift in
+          // opposite directions, so they breathe past each other while
+          // both keeping their 3-card composition intact. The pc root
+          // wrapper has overflow:visible so this column drift can extend
+          // a few px past the section bounds without clipping.
           const ch = cardHeight();
           cols.forEach((col, i) => {
             const img = imgs[i];
-            col.style.transform = "";
             if (img && ch > 0) {
               const showN = showCards > 0
                 ? Math.min(showCards, cards || showCards)
                 : Math.max(2, Math.floor(col.clientHeight / ch));
-              const extraCards = Math.max((cards || showN) - showN, 0);
-              const range = extraCards * ch;
-              // Smooth ease so each column lingers near its midpoint
-              // instead of sliding linearly past it.
+              const totalCards = cards || showN;
+              const extraCards = Math.max(totalCards - showN, 0);
+              const overflow = extraCards * ch;
+              // Left col image anchors at top → shows cards 1..showN.
+              // Right col image anchors at bottom → shows the LAST showN
+              // cards (e.g. cards extra+1..total). This gives the
+              // two-column mosaic a different card mix without ever
+              // exposing a half-card.
+              const imgY = i === 0 ? 0 : -overflow;
+              img.style.transform = `translate3d(0, ${imgY.toFixed(2)}px, 0)`;
+
+              // Column parallax: drift the whole column box up/down by a
+              // fraction of one card height as the section travels
+              // through the viewport. Left col drifts up, right drifts
+              // down, so they slide past each other. Cosine ease so the
+              // motion lingers near its midpoint instead of racing
+              // edge-to-edge.
+              const driftRange = ch * 0.35;
               const eased = 0.5 - 0.5 * Math.cos(Math.PI * progress);
-              const direction = i === 0 ? 1 : -1;
-              // Left col: image starts at top (y=0, showing cards 1..N)
-              // and drifts up to -range (showing cards extra+1..total).
-              // Right col mirrors: starts at -range and drifts down to 0.
-              const base = i === 0 ? 0 : -range;
-              const y = base + direction * -eased * range;
-              img.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+              const direction = i === 0 ? -1 : 1;
+              const colY = (eased - 0.5) * 2 * driftRange * direction;
+              col.style.transform = `translate3d(0, ${colY.toFixed(2)}px, 0)`;
               return;
             }
+            col.style.transform = "";
             if (!img) return;
             const colH = col.clientHeight;
             const imgH = img.clientHeight;

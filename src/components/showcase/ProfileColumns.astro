@@ -37,6 +37,22 @@ interface Props {
    *  text column is shorter than this, the cluster keeps this height
    *  so adjacent showcase heroes can be roughly the same vertical size. */
   minHeight?: string;
+  /** Number of evenly-sized profile cards stacked in each strip image.
+   *  When set, the visible window height is snapped down to an integer
+   *  multiple of cardH so the top and bottom edges always land on a card
+   *  boundary — no half-card slivers show. The columns become static
+   *  (no parallax) so the alignment holds throughout the entire scroll. */
+  cards?: number;
+  /** Vertical offset between the two columns (CSS length). Implements a
+   *  masonry-style stagger: the right column sits this far lower than
+   *  the left, so the two columns' card rows don't line up. Only honored
+   *  when `cards` is set; ignored otherwise. */
+  offsetRight?: string;
+  /** Number of cards to show per column. When set, each column locks to
+   *  this many cards regardless of available height (the section grows
+   *  to fit). When omitted, snaps down to the largest whole-card
+   *  multiple that fits inside the matched/min height. */
+  showCards?: number;
 }
 const {
   left,
@@ -48,6 +64,9 @@ const {
   altLeft = "",
   altRight = "",
   minHeight,
+  cards,
+  offsetRight: offsetRightPx,
+  showCards,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -64,14 +83,17 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
   id={id}
   data-speed={speed}
   data-right-offset={rightOffset}
-  style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};${minHeight ? `--pc-min-h:${minHeight};` : ""}`}
+  data-cards={cards}
+  data-show-cards={showCards}
+  data-offset-right={offsetRightPx}
+  style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};${minHeight ? `--pc-min-h:${minHeight};` : ""}${offsetRightPx ? `--pc-offset-right:${offsetRightPx};` : ""}`}
   data-min-height={minHeight}
 >
   <div class="profile-cols__col">
-    <img src={resolve(left)} alt={altLeft} loading="lazy" draggable="false" data-img />
+    <img src={resolve(left)} alt={altLeft} loading="eager" draggable="false" data-img />
   </div>
   <div class="profile-cols__col">
-    <img src={resolve(right)} alt={altRight} loading="lazy" draggable="false" data-img />
+    <img src={resolve(right)} alt={altRight} loading="eager" draggable="false" data-img />
   </div>
 </div>
 
@@ -88,8 +110,31 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
       document.querySelectorAll(".profile-cols").forEach((root) => {
         const speed = parseFloat(root.dataset.speed || "1.0");
         const rightOffset = parseFloat(root.dataset.rightOffset || "0.32");
+        const cards = parseInt(root.dataset.cards || "0", 10);
+        const showCards = parseInt(root.dataset.showCards || "0", 10);
+        const offsetRight = root.dataset.offsetRight || "";
         const cols = Array.from(root.querySelectorAll(".profile-cols__col"));
         const imgs = cols.map((c) => c.querySelector("[data-img]"));
+        // Compute the right-column vertical stagger in pixels. Accepts
+        // raw numbers (interpreted as px) and px-suffixed strings. When
+        // `cards` and `offsetRight` are both set, the section grows by
+        // this amount and each column locks to N*cardH, staggered.
+        function offsetRightPx() {
+          if (!offsetRight) return 0;
+          const n = parseFloat(offsetRight);
+          return isFinite(n) ? n : 0;
+        }
+
+        // When `cards` is set, snap the column height down to an integer
+        // multiple of the per-card height so the visible edges always
+        // land on a card boundary. Computed from the first img once it
+        // has a measurable clientHeight (post-load).
+        function cardHeight() {
+          if (!cards || cards < 2) return 0;
+          const img = imgs[0];
+          if (!img || img.clientHeight <= 0) return 0;
+          return img.clientHeight / cards;
+        }
 
         // Lock height to the sibling text column so the asset sits flush
         // with the case-study info on the desktop two-column layout.
@@ -101,11 +146,30 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
           // text sits below the hero so heights aren't meant to align.
           const twoCol = window.matchMedia("(min-width: 901px)").matches;
           if (twoCol && text && text.clientHeight > 0) {
-            const h = Math.max(text.clientHeight, minHeight);
+            let h = Math.max(text.clientHeight, minHeight);
+            const ch = cardHeight();
+            const off = offsetRightPx();
+            if (ch > 0) {
+              // When `showCards` is set, lock each column to exactly
+              // that many cards regardless of the matched/min height
+              // (the section grows to fit). Otherwise snap down to the
+              // largest whole-card multiple that fits inside the target
+              // height. Floor of 2 cards so the strip never collapses
+              // to a single tile.
+              const n = showCards > 0
+                ? Math.min(showCards, cards || showCards)
+                : Math.max(2, Math.floor((h - off) / ch));
+              const colH = n * ch;
+              cols.forEach((c) => (c.style.height = colH + "px"));
+              h = colH + off;
+            } else {
+              cols.forEach((c) => (c.style.height = ""));
+            }
             root.style.height = h + "px";
             root.dataset.matched = "true";
           } else {
             root.style.height = "";
+            cols.forEach((c) => (c.style.height = ""));
             root.dataset.matched = "false";
           }
         };
@@ -139,9 +203,29 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
           // `rightOffset`, so the bottleneck for "doesn't run out of strip"
           // is the right column. We cap travel at its available range, and
           // both columns translate by that same amount.
+          //
+          // When `cards` is set: each column shows a fixed number of
+          // whole cards (no internal image translation), and the
+          // parallax is applied to the COLUMNS themselves — left and
+          // right drift in opposite directions as the section travels
+          // through the viewport, crossing at progress=0.5. The cards
+          // inside each column never get cut off because the strip
+          // image stays pinned; only the column box translates on the
+          // page. Range stays small so cols don't overshoot the
+          // section's padding into adjacent showcases.
+          const ch = cardHeight();
+          const PARALLAX_RANGE = 36;
           cols.forEach((col, i) => {
             const img = imgs[i];
+            if (img && ch > 0) img.style.transform = "translate3d(0, 0, 0)";
+            if (ch > 0) {
+              const direction = i === 0 ? -1 : 1;
+              const y = direction * (progress - 0.5) * 2 * PARALLAX_RANGE;
+              col.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+              return;
+            }
             if (!img) return;
+            col.style.transform = "";
             const colH = col.clientHeight;
             const imgH = img.clientHeight;
             const extra = Math.max(imgH - colH, 0);
@@ -155,10 +239,12 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
         const onScroll = () => {
           if (!raf) raf = requestAnimationFrame(update);
         };
-        // Recompute on image load too — clientHeight is 0 until then.
+        // Recompute on image load too — clientHeight is 0 until then,
+        // which also means cardHeight() returns 0 and the initial
+        // matchHeight() call had no card data to snap against.
         imgs.forEach((img) => {
           if (img && !img.complete) {
-            img.addEventListener("load", update, { once: true });
+            img.addEventListener("load", () => { matchHeight(); update(); }, { once: true });
           }
         });
         window.addEventListener("scroll", onScroll, { passive: true });
@@ -191,18 +277,19 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
     position: relative;
     overflow: hidden;
     border-radius: var(--r-lg);
-    /* Subtle top/bottom fade so the strip dissolves into the page
-       without looking foggy — fully opaque through most of the column,
-       a short soft fade only at the very edges. */
-    --mask: linear-gradient(
-      to bottom,
-      transparent 0%,
-      #000 6%,
-      #000 94%,
-      transparent 100%
-    );
-    -webkit-mask-image: var(--mask);
-            mask-image: var(--mask);
+    /* No mask fade — the rounded column corners give a clean end to the
+       strip, so whatever card sits at the top/bottom edge reads as the
+       last card in the column instead of dissolving into the page. */
+  }
+  /* Masonry stagger: when an offset is set on the root, the left column
+     anchors to the top of the section and the right column anchors to
+     the bottom — the section's extra height equals the offset, so the
+     two columns end up vertically displaced by exactly that amount. */
+  .profile-cols[style*="--pc-offset-right"] .profile-cols__col:first-child {
+    align-self: start;
+  }
+  .profile-cols[style*="--pc-offset-right"] .profile-cols__col:last-child {
+    align-self: end;
   }
 
   .profile-cols__col img {

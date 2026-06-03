@@ -25,6 +25,13 @@
       <path d="M6 5h5v5" />
     </svg>
   </div>
+  <div class="cursor__scroll-pill" aria-hidden="true">
+    <span class="cursor__scroll-pill-label">Jump to it</span>
+    <svg class="cursor__scroll-pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M8 3v9" />
+      <path d="M4 9l4 4 4-4" />
+    </svg>
+  </div>
 </div>
 
 <script is:inline>
@@ -118,7 +125,8 @@
       // rotation/stretch so the artwork rides upright with the mouse
       // instead of swaying behind the lerped position.
       const carryingMedia = cursor.classList.contains("is-media")
-        || cursor.classList.contains("is-press-pill");
+        || cursor.classList.contains("is-press-pill")
+        || cursor.classList.contains("is-scroll-pill");
       if (carryingMedia) {
         cx = mx;
         cy = my;
@@ -244,6 +252,10 @@
       return el && el.closest && el.closest(".showcase__press-link");
     }
 
+    function isScrollPill(el) {
+      return el && el.closest && el.closest("[data-cursor='scroll-pill']");
+    }
+
     // The cursor carries the hover-revealed artwork itself. Cloning into
     // .cursor__media sidesteps the stacking-context / containing-block
     // traps caused by ancestor transforms (e.g. .fade-in) that prevent
@@ -313,6 +325,7 @@
         showMedia(reveal);
       }
       if (isPressPill(e.target)) cursor.classList.add("is-press-pill");
+      if (isScrollPill(e.target)) cursor.classList.add("is-scroll-pill");
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
@@ -331,6 +344,7 @@
         showMedia(stillIn);
       }
       if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
+      if (!isScrollPill(e.relatedTarget)) cursor.classList.remove("is-scroll-pill");
     });
 
     // Click ripple + hold-to-expand. On press the ring scales up
@@ -586,6 +600,77 @@
     transform: translateX(0);
   }
   .cursor.on-dark.is-press-pill .cursor__pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* Cursor-morphed "Jump to it" scroll pill — appears over in-page anchor
+     links (e.g. the hero Snap/Tinder callouts) so the down arrow signals
+     that the click will autoscroll the page to the matching section. */
+  .cursor__scroll-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__scroll-pill-label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 260ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
+  }
+  .cursor__scroll-pill-arrow {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: translateY(-3px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
+  }
+  .cursor.is-scroll-pill .cursor__dot,
+  .cursor.is-scroll-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+  .cursor.is-scroll-pill .cursor__scroll-pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-scroll-pill .cursor__scroll-pill-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .cursor.is-scroll-pill .cursor__scroll-pill-arrow {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .cursor.on-dark.is-scroll-pill .cursor__scroll-pill {
     background: var(--text-inverse, #FDFCFA);
     color: var(--text-primary);
   }

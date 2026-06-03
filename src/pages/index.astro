@@ -116,8 +116,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       </div>
     </div>
 
-    <a class="v2-hero__scroll" href="#work" aria-label="Scroll to see my work">
-      <span class="v2-hero__scroll-label">Scroll to see my work</span>
+    <a class="v2-hero__scroll" href="#work" aria-label="See my work">
+      <span class="v2-hero__scroll-label">See my work</span>
       <svg
         class="v2-hero__scroll-chevron"
         viewBox="0 0 24 24"
@@ -870,18 +870,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      margin so it tucks closer to the headline instead of hugging the
      viewport edge. */
   .hero-reveal__item--tinder-superlike {
-    width: clamp(220px, 24vw, 360px);
-    left: 12%;
+    width: clamp(180px, 17vw, 260px);
+    left: 2%;
     top: 10%;
     transform-origin: 30% 70%;
     rotate: -8deg;
   }
   /* Tinder phone: small enough that the full screen reads in one
-     glance, pulled inward from the right edge to feel more composed. */
+     glance, pulled inward from the right edge to feel more composed,
+     and lifted so it clears the AI meta paragraph below. */
   .hero-reveal__item--tinder-phone {
     width: clamp(150px, 14vw, 220px);
     right: 12%;
-    top: 12%;
+    top: 4%;
   }
   /* Under the desktop breakpoint the hero is single column and short.
      Hide the reveal imagery to avoid overlapping the stacked text. */

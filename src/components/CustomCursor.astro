@@ -25,6 +25,16 @@
       <path d="M6 5h5v5" />
     </svg>
   </div>
+  <div class="cursor__copy-pill" aria-hidden="true">
+    <span class="cursor__copy-pill-label" data-state="idle">Copy email</span>
+    <span class="cursor__copy-pill-label" data-state="done">Copied!</span>
+  </div>
+  <div class="cursor__external-arrow" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 17L17 7" />
+      <path d="M9 7h8v8" />
+    </svg>
+  </div>
   <div class="cursor__scroll-pill" aria-hidden="true">
     <span class="cursor__scroll-pill-label">Jump to it</span>
     <svg class="cursor__scroll-pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -126,7 +136,9 @@
       // instead of swaying behind the lerped position.
       const carryingMedia = cursor.classList.contains("is-media")
         || cursor.classList.contains("is-press-pill")
-        || cursor.classList.contains("is-scroll-pill");
+        || cursor.classList.contains("is-scroll-pill")
+        || cursor.classList.contains("is-copy-pill")
+        || cursor.classList.contains("is-external-arrow");
       if (carryingMedia) {
         cx = mx;
         cy = my;
@@ -256,6 +268,14 @@
       return el && el.closest && el.closest("[data-cursor='scroll-pill']");
     }
 
+    function isCopyEmail(el) {
+      return el && el.closest && el.closest("[data-cursor='copy-email']");
+    }
+
+    function isExternal(el) {
+      return el && el.closest && el.closest("[data-cursor='external']");
+    }
+
     // The cursor carries the hover-revealed artwork itself. Cloning into
     // .cursor__media sidesteps the stacking-context / containing-block
     // traps caused by ancestor transforms (e.g. .fade-in) that prevent
@@ -326,6 +346,8 @@
       }
       if (isPressPill(e.target)) cursor.classList.add("is-press-pill");
       if (isScrollPill(e.target)) cursor.classList.add("is-scroll-pill");
+      if (isCopyEmail(e.target)) cursor.classList.add("is-copy-pill");
+      if (isExternal(e.target)) cursor.classList.add("is-external-arrow");
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
@@ -345,6 +367,11 @@
       }
       if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
       if (!isScrollPill(e.relatedTarget)) cursor.classList.remove("is-scroll-pill");
+      if (!isCopyEmail(e.relatedTarget)) {
+        cursor.classList.remove("is-copy-pill");
+        cursor.classList.remove("is-copy-done");
+      }
+      if (!isExternal(e.relatedTarget)) cursor.classList.remove("is-external-arrow");
     });
 
     // Click ripple + hold-to-expand. On press the ring scales up
@@ -671,6 +698,137 @@
     transform: translateY(0);
   }
   .cursor.on-dark.is-scroll-pill .cursor__scroll-pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* Cursor-morphed "Copy email" pill — appears over the email button in
+     the top-right social icons. Same expand-from-dot motion as the press
+     pill. Two stacked labels (idle / done) crossfade once a copy lands so
+     the same pill says "Copied!" before the cursor leaves. */
+  .cursor__copy-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__copy-pill-label {
+    display: inline-block;
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 200ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+  /* Stack the two labels so the pill width is set by the longer one and
+     stays steady while they crossfade. */
+  .cursor__copy-pill {
+    display: inline-grid;
+    grid-template-columns: 1fr;
+  }
+  .cursor.is-copy-pill .cursor__dot,
+  .cursor.is-copy-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+  .cursor.is-copy-pill .cursor__copy-pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-copy-pill .cursor__copy-pill-label[data-state="idle"] {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 260ms;
+  }
+  .cursor.is-copy-pill.is-copy-done .cursor__copy-pill-label[data-state="idle"] {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition-delay: 0ms;
+  }
+  .cursor.is-copy-pill.is-copy-done .cursor__copy-pill-label[data-state="done"] {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 60ms;
+  }
+  .cursor.on-dark.is-copy-pill .cursor__copy-pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* Cursor-morphed up-right arrow — appears over external links (LinkedIn)
+     to signal the click leaves the site in a new tab. Same dot-to-pill
+     expansion bezier so the morph feels consistent with the others. */
+  .cursor__external-arrow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 36px;
+    margin-left: -18px;
+    margin-top: -18px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.2);
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 480ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__external-arrow svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    transform: translate(-2px, 2px) scale(0.6);
+    transition:
+      opacity 200ms var(--ease-out) 160ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 160ms;
+  }
+  .cursor.is-external-arrow .cursor__dot,
+  .cursor.is-external-arrow .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+  .cursor.is-external-arrow .cursor__external-arrow {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .cursor.is-external-arrow .cursor__external-arrow svg {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  .cursor.on-dark.is-external-arrow .cursor__external-arrow {
     background: var(--text-inverse, #FDFCFA);
     color: var(--text-primary);
   }

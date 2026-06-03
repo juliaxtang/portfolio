@@ -1,0 +1,325 @@
+---
+/**
+ * FloatingCellInteractions — drag + click-to-focus + 3D tilt for any
+ * element marked with `data-floating-cell`. Mounted once globally from
+ * BaseLayout so it covers both PhoneVideoParallax (.phone-video__cell)
+ * and MediaParallax (.media-parallax__cell).
+ *
+ * Behavior:
+ *   - Drag: pointerdown + move past a small threshold sets --drag-x /
+ *     --drag-y custom properties; the cell's CSS transform composes
+ *     those with the existing parallax/rotation so the cell follows the
+ *     cursor.
+ *   - Click (no drag): morphs the cell to a centered, scaled-up "focused"
+ *     view via a width inflation (so the source PNG re-rasters at high
+ *     resolution) plus a translate. No backdrop overlay; the rest of
+ *     the page stays visible behind.
+ *   - Mouse move while focused: drives a 3D tilt (rotateX / rotateY)
+ *     that follows the cursor for parallax depth.
+ *   - Click again on the focused cell, or click outside, or Esc —
+ *     animates back to the resting transform.
+ *
+ * Centering is bulletproofed by caching each cell's REST layout
+ * measurements (w, h, offsetLeft, offsetTop) on init. Cells positioned
+ * with right/bottom have offset values that depend on current width /
+ * height, so reading live during a focus transition lands off-center.
+ * The cache is refreshed on resize (or after any unfocus completes).
+ */
+---
+
+<script is:inline>
+  (function () {
+    if (typeof window === "undefined") return;
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+
+    function init() {
+      const DRAG_THRESHOLD = 4;
+      const FOCUS_DURATION = 520;
+      let focused = null;
+
+      // ---- Rest-measurement cache --------------------------------------
+      // Cells positioned with right/bottom have offsetLeft/offsetTop that
+      // depend on their (possibly animating) width/height. Caching the
+      // values when the cell is at rest avoids off-center focus targets.
+      const restCache = new WeakMap();
+      function captureRest(cell) {
+        if (cell.classList.contains("is-focused")) return;
+        if (cell.style.getPropertyValue("--focus-width")) return;
+        restCache.set(cell, {
+          w: cell.offsetWidth,
+          h: cell.offsetHeight,
+          offsetLeft: cell.offsetLeft,
+          offsetTop: cell.offsetTop,
+        });
+      }
+      function rest(cell) {
+        return restCache.get(cell);
+      }
+      // Prime the cache once cells have laid out.
+      requestAnimationFrame(function () {
+        document.querySelectorAll("[data-floating-cell]").forEach(captureRest);
+      });
+      // Refresh on resize, but only for cells currently at rest.
+      let resizeRaf = 0;
+      window.addEventListener("resize", function () {
+        if (resizeRaf) cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(function () {
+          resizeRaf = 0;
+          document.querySelectorAll("[data-floating-cell]").forEach(captureRest);
+          // If a cell is currently focused, recompute its center for the
+          // new viewport.
+          if (focused) {
+            const cell = focused;
+            // Temporarily unfocus to refresh, then refocus.
+            cell.classList.remove("is-focused");
+            requestAnimationFrame(function () { focusCell(cell); });
+          }
+        });
+      });
+
+      // ---- Cursor pill helpers ---------------------------------------
+      function groupOf(cell) {
+        return cell.closest("[data-floating-cell-group]");
+      }
+      function swapCursorPill(toShrink, cell) {
+        const cursor = document.getElementById("cursor");
+        if (!cursor) return;
+        const showingDrag = cursor.classList.contains("is-drag-pill");
+        const showingShrink = cursor.classList.contains("is-shrink-pill");
+        const showingExpand = cursor.classList.contains("is-expand-pill");
+        if (!showingDrag && !showingShrink && !showingExpand) return;
+        if (toShrink) {
+          cursor.classList.add("is-shrink-pill");
+          cursor.classList.remove("is-drag-pill");
+          cursor.classList.remove("is-expand-pill");
+        } else {
+          const group = cell ? groupOf(cell) : null;
+          const introduced = group && group.classList.contains("cells-introduced");
+          cursor.classList.remove("is-shrink-pill");
+          cursor.classList.toggle("is-expand-pill", !!introduced);
+          cursor.classList.toggle("is-drag-pill", !introduced);
+        }
+      }
+
+      // Per-project pill rotation. Each genuine cell mouseleave toggles
+      // the introduced flag on the group; phantom leaves during focus
+      // animations are ignored via a 600ms grace window.
+      const focusChangeAt = new WeakMap();
+      function recordFocusChange(cell) {
+        const g = groupOf(cell);
+        if (g) focusChangeAt.set(g, Date.now());
+      }
+      function flipPillStateOnLeave(cell) {
+        const group = groupOf(cell);
+        if (!group) return;
+        if (cell.classList.contains("is-focused")) return;
+        const last = focusChangeAt.get(group) || 0;
+        if (Date.now() - last < 600) return;
+        group.classList.toggle("cells-introduced");
+      }
+
+      // ---- Per-cell setup -------------------------------------------
+      document.querySelectorAll("[data-floating-cell]").forEach(setupCell);
+
+      function setupCell(cell) {
+        let pointerId = null;
+        let startX = 0, startY = 0;
+        let baseX = 0, baseY = 0;
+        let didDrag = false;
+        let active = false;
+
+        cell.addEventListener("pointerdown", function (e) {
+          if (focused === cell) {
+            // Click on the focused cell shrinks it back.
+            e.stopPropagation();
+            unfocusCell(cell);
+            return;
+          }
+          if (e.button !== undefined && e.button !== 0) return;
+          if (e.pointerType === "touch") return;
+          active = true;
+          didDrag = false;
+          pointerId = e.pointerId;
+          startX = e.clientX;
+          startY = e.clientY;
+          baseX = parseFloat(cell.style.getPropertyValue("--drag-x")) || 0;
+          baseY = parseFloat(cell.style.getPropertyValue("--drag-y")) || 0;
+          cell.setPointerCapture(pointerId);
+          cell.classList.add("is-grabbing");
+          cell.style.setProperty("--drag-transition", "none");
+          e.preventDefault();
+        });
+
+        cell.addEventListener("pointermove", function (e) {
+          if (!active || e.pointerId !== pointerId) return;
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+          if (!didDrag && Math.hypot(dx, dy) > DRAG_THRESHOLD) didDrag = true;
+          cell.style.setProperty("--drag-x", (baseX + dx).toFixed(1) + "px");
+          cell.style.setProperty("--drag-y", (baseY + dy).toFixed(1) + "px");
+        });
+
+        function endDrag(e) {
+          if (!active) return;
+          if (e && e.pointerId !== pointerId) return;
+          active = false;
+          if (pointerId !== null) {
+            try { cell.releasePointerCapture(pointerId); } catch (_) {}
+            pointerId = null;
+          }
+          cell.classList.remove("is-grabbing");
+          cell.style.removeProperty("--drag-transition");
+          if (!didDrag) focusCell(cell);
+        }
+        cell.addEventListener("pointerup", endDrag);
+        cell.addEventListener("pointercancel", endDrag);
+
+        cell.addEventListener("mouseleave", function () {
+          flipPillStateOnLeave(cell);
+        });
+
+        cell.addEventListener("click", function (e) {
+          if (didDrag) {
+            e.preventDefault();
+            e.stopPropagation();
+            didDrag = false;
+          }
+        }, true);
+      }
+
+      // ---- 3D tilt ---------------------------------------------------
+      let tiltRaf = 0;
+      let tiltTargetX = 0, tiltTargetY = 0;
+      let tiltCurX = 0, tiltCurY = 0;
+      const TILT_MAX = 12;
+      const TILT_EASE = 0.14;
+      function onTiltMove(e) {
+        if (!focused) return;
+        focused.classList.add("is-tilting");
+        const r = focused.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const halfW = Math.max(r.width / 2, window.innerWidth / 2);
+        const halfH = Math.max(r.height / 2, window.innerHeight / 2);
+        const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / halfW));
+        const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / halfH));
+        tiltTargetY = nx * TILT_MAX;
+        tiltTargetX = -ny * TILT_MAX;
+        if (!tiltRaf) tiltRaf = requestAnimationFrame(tiltStep);
+      }
+      function tiltStep() {
+        tiltRaf = 0;
+        if (!focused) { tiltCurX = 0; tiltCurY = 0; return; }
+        tiltCurX += (tiltTargetX - tiltCurX) * TILT_EASE;
+        tiltCurY += (tiltTargetY - tiltCurY) * TILT_EASE;
+        focused.style.setProperty("--tilt-x", tiltCurX.toFixed(2) + "deg");
+        focused.style.setProperty("--tilt-y", tiltCurY.toFixed(2) + "deg");
+        if (Math.abs(tiltTargetX - tiltCurX) > 0.05 || Math.abs(tiltTargetY - tiltCurY) > 0.05) {
+          tiltRaf = requestAnimationFrame(tiltStep);
+        }
+      }
+      function stopTilt(cell) {
+        cell.classList.remove("is-tilting");
+        tiltTargetX = 0;
+        tiltTargetY = 0;
+        tiltCurX = 0;
+        tiltCurY = 0;
+      }
+
+      // ---- Focus / unfocus ------------------------------------------
+      function focusCell(cell) {
+        if (focused && focused !== cell) unfocusCell(focused);
+        const op = cell.offsetParent;
+        if (!op) return;
+        const opRect = op.getBoundingClientRect();
+        const r = rest(cell);
+        if (!r || !r.w || !r.h) {
+          // Cache miss — fall back to a live read, hoping the cell is
+          // at rest. Repopulate the cache while we're here.
+          captureRest(cell);
+          const r2 = rest(cell);
+          if (!r2 || !r2.w) return;
+          return doFocus(cell, op, opRect, r2);
+        }
+        return doFocus(cell, op, opRect, r);
+      }
+
+      function doFocus(cell, op, opRect, r) {
+        const w = r.w;
+        const h = r.h;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const layoutCx = opRect.left + r.offsetLeft + w / 2;
+        const layoutCy = opRect.top + r.offsetTop + h / 2;
+        const targetW = Math.min(vw * 0.78, vh * 0.78 * (w / h));
+        const targetH = targetW * (h / w);
+        const scale = Math.max(1, Math.min(targetW / w, targetH / h, 3.2));
+        const newW = w * scale;
+        const newH = h * scale;
+        // When the cell's width inflates, its layout center shifts —
+        // direction depends on which edge it's anchored to. Left/top
+        // anchored: center moves AWAY from origin (right/down) by Δ/2,
+        // so subtract Δ/2. Right/bottom anchored: center moves TOWARD
+        // origin (left/up), so add Δ/2.
+        // Anchor info comes from the data-anchor-x / data-anchor-y attrs
+        // since getComputedStyle resolves both left and right to pixel
+        // values and can't tell us which was authored.
+        const xSign = cell.dataset.anchorX === "right" ? +1 : -1;
+        const ySign = cell.dataset.anchorY === "bottom" ? +1 : -1;
+        const fdx = vw / 2 - layoutCx + xSign * (newW - w) / 2;
+        const fdy = vh / 2 - layoutCy + ySign * (newH - h) / 2;
+        cell.style.setProperty("--focus-dx", fdx.toFixed(1) + "px");
+        cell.style.setProperty("--focus-dy", fdy.toFixed(1) + "px");
+        cell.style.setProperty("--focus-width", newW.toFixed(1) + "px");
+        // The CSS rule for .is-focused carries !important on the
+        // width/transform/max-width so it reliably wins specificity
+        // against per-modifier rules (.phone-video__cell--quiz etc.)
+        // AND lets transitions animate the entry AND exit smoothly
+        // when the class is added or removed.
+        cell.classList.add("is-focused");
+        focused = cell;
+        recordFocusChange(cell);
+        document.addEventListener("mousemove", onTiltMove);
+        swapCursorPill(true, cell);
+      }
+
+      function unfocusCell(cell) {
+        document.removeEventListener("mousemove", onTiltMove);
+        stopTilt(cell);
+        cell.classList.remove("is-focused");
+        recordFocusChange(cell);
+        swapCursorPill(false, cell);
+        // Hold the inline focus vars during the reverse transition.
+        // Clear them once the animation settles AND refresh the rest
+        // cache (in case viewport changed while focused).
+        setTimeout(function () {
+          if (!cell.classList.contains("is-focused")) {
+            cell.style.removeProperty("--focus-dx");
+            cell.style.removeProperty("--focus-dy");
+            cell.style.removeProperty("--focus-width");
+            cell.style.removeProperty("--tilt-x");
+            cell.style.removeProperty("--tilt-y");
+            captureRest(cell);
+          }
+        }, FOCUS_DURATION);
+        if (focused === cell) focused = null;
+      }
+
+      // Dismiss focused cell on outside click.
+      document.addEventListener("pointerdown", function (e) {
+        if (!focused) return;
+        if (focused.contains(e.target)) return;
+        unfocusCell(focused);
+      }, true);
+
+      // Esc also dismisses.
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && focused) unfocusCell(focused);
+      });
+    }
+  })();
+</script>

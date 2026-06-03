@@ -8,9 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "prep": "node interview-prep/server.mjs",
-    "dev:prep": "concurrently -n astro,prep -c blue,magenta \"npm run dev\" \"npm run prep\""
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.2.0",
@@ -21,8 +19,5 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
-  "devDependencies": {
-    "concurrently": "^9.2.1",
-    "puppeteer": "^25.0.4"
-  }
+  "devDependencies": {}
 }

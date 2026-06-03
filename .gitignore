@@ -35,7 +35,3 @@ Thumbs.db
 
 # stray local files
 Untitled
-
-# interview-prep tool — role data lives in a private submodule
-# (juliaxtang/interview-prep), mounted at interview-prep/roles/.
-# Nothing to ignore here anymore.

@@ -53,20 +53,146 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
     <link rel="icon" href="/favicon.png" type="image/png" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Pre-paint gate check. Runs before <body> renders so the gate is
+         never visible to readers who already unlocked (avoids a flash of
+         the password card on every internal nav). The full SiteGate
+         script still runs and handles unlock/error states. -->
+    <script is:inline>
+      try {
+        if (sessionStorage.getItem("site-unlocked") === "1") {
+          document.documentElement.setAttribute("data-unlocked", "");
+        }
+      } catch (e) {}
+    </script>
+    <style is:inline>
+      html[data-unlocked] .gate { display: none !important; }
+    </style>
+
     <!-- Phosphor Icons (free, MIT) — single source of truth for glyphs.
          Mirrors style-guide.html so prod and the spec stay in lock-step. -->
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1" is:inline></script>
-  </head>
+
+    <!-- Page transition: main fades out before internal navigation and
+         fades in on arrival. Header / SideRail live outside <main> and
+         re-render identically on the next page so they read as persistent
+         across the swap. Inline early so the initial paint starts hidden
+         (no flash of un-transitioned content). -->
+    <style is:inline>
+      main[data-page-transition] {
+        opacity: 0;
+        transform: translateY(10px);
+        filter: blur(4px);
+        will-change: opacity, transform, filter;
+      }
+      main[data-page-transition].is-entered {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition:
+          opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 560ms cubic-bezier(0.16, 1, 0.3, 1),
+          filter 360ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      main[data-page-transition].is-leaving {
+        opacity: 0;
+        transform: translateY(-8px);
+        filter: blur(4px);
+        transition:
+          opacity 260ms cubic-bezier(0.4, 0, 1, 1),
+          transform 260ms cubic-bezier(0.4, 0, 1, 1),
+          filter 260ms cubic-bezier(0.4, 0, 1, 1);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        main[data-page-transition],
+        main[data-page-transition].is-entered,
+        main[data-page-transition].is-leaving {
+          opacity: 1;
+          transform: none;
+          filter: none;
+          transition: none;
+        }
+      }
+    </style>
   <body>
     <CursorAurora />
     <Header />
     <SideRail />
-    <main>
+    <main data-page-transition>
       <slot />
     </main>
     <Footer />
     <SiteGate />
     <CustomCursor />
+
+    <!-- Page-transition controller. On click of any same-origin link
+         (excluding modifier-clicks, new-tab targets, hash-only links,
+         downloads, and the resume PDF), fade <main> out, then navigate.
+         On arrival, swap `is-entered` on the next frame so the CSS
+         transition runs from the inline starting state. Handles
+         bfcache restore (pageshow.persisted) so back/forward doesn't
+         strand <main> in the leaving state. -->
+    <script is:inline>
+      (function () {
+        var main = document.querySelector("main[data-page-transition]");
+        if (!main) return;
+
+        // Enter: kick off on the next frame so the transition runs.
+        function reveal() {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              main.classList.remove("is-leaving");
+              main.classList.add("is-entered");
+            });
+          });
+        }
+        reveal();
+
+        // bfcache restore — page comes back already painted, so the
+        // leaving class would freeze <main> invisible. Reset state.
+        window.addEventListener("pageshow", function (e) {
+          if (e.persisted) {
+            main.classList.remove("is-leaving");
+            main.classList.add("is-entered");
+          }
+        });
+
+        var LEAVE_MS = 260;
+        var navigating = false;
+
+        function shouldIntercept(a, e) {
+          if (!a || !a.href) return false;
+          if (e.defaultPrevented) return false;
+          if (e.button !== 0) return false;
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+          if (a.target && a.target !== "" && a.target !== "_self") return false;
+          if (a.hasAttribute("download")) return false;
+          var url;
+          try { url = new URL(a.href, location.href); } catch (_) { return false; }
+          if (url.origin !== location.origin) return false;
+          // Hash-only on same page → let browser scroll natively.
+          if (url.pathname === location.pathname && url.search === location.search && url.hash) return false;
+          // Same URL with no hash → nothing to do.
+          if (url.href === location.href) return false;
+          // PDFs and other downloads → open natively.
+          if (/\.(pdf|zip|png|jpe?g|webp|gif|mp4|mov|webm)$/i.test(url.pathname)) return false;
+          return url;
+        }
+
+        document.addEventListener("click", function (e) {
+          if (navigating) return;
+          var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+          var url = shouldIntercept(a, e);
+          if (!url) return;
+          e.preventDefault();
+          navigating = true;
+          main.classList.remove("is-entered");
+          main.classList.add("is-leaving");
+          setTimeout(function () {
+            location.href = url.href;
+          }, LEAVE_MS);
+        }, true);
+      })();
+    </script>
 
     <!-- Fade-in observer. Runs on every page load (every nav is a full
          document load now that ClientRouter view transitions are gone)

@@ -350,12 +350,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
 
   .v2-hero__eyebrow {
-    font-family: var(--font-sans);
-    font-size: clamp(15px, 1.3vw, 17px);
-    font-weight: 400;
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 500;
     line-height: 1.55;
-    letter-spacing: 0;
-    color: var(--text-secondary, var(--text-primary));
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
     margin: 0;
   }
 

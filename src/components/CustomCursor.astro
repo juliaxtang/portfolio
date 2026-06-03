@@ -17,6 +17,7 @@
 <div class="cursor" id="cursor" aria-hidden="true">
   <div class="cursor__dot"></div>
   <div class="cursor__ring"></div>
+  <div class="cursor__media" id="cursor-media" aria-hidden="true"></div>
   <div class="cursor__pill" aria-hidden="true">
     <span class="cursor__pill-label">Read about it</span>
     <svg class="cursor__pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -219,23 +220,87 @@
      // preview image, a caption list, etc.) hide the cursor so the
      // reveal IS the cursor — no double-stamp of a dot over the artwork.
      function ownsHoverReveal(el) {
-       return el && el.closest && el.closest("[data-cursor='hide'], .pill, .prose-out--preview");
+       return el && el.closest && el.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx");
      }
 
     function isPressPill(el) {
       return el && el.closest && el.closest(".showcase__press-link");
     }
 
+    // The cursor carries the hover-revealed artwork itself. Cloning into
+    // .cursor__media sidesteps the stacking-context / containing-block
+    // traps caused by ancestor transforms (e.g. .fade-in) that prevent
+    // the original art from escaping to the viewport.
+    const media = document.getElementById("cursor-media");
+    const MEDIA_SOURCE_SEL = ".pill-photo, .fx-photo, .prose-out__preview";
+    function getMediaSource(trigger) {
+      return trigger && trigger.querySelector
+        ? trigger.querySelector(MEDIA_SOURCE_SEL)
+        : null;
+    }
+    let mediaSourceKey = null;
+    function showMedia(trigger) {
+      if (!media) return;
+      const src = getMediaSource(trigger);
+      if (!src) return;
+      // Use the trigger element itself as the cache key — same trigger
+      // re-entered should not rebuild the clone.
+      if (mediaSourceKey === trigger) return;
+      mediaSourceKey = trigger;
+      media.innerHTML = "";
+      const clone = src.cloneNode(true);
+      clone.removeAttribute("id");
+      clone.classList.add("cursor__media-art");
+      media.appendChild(clone);
+      cursor.classList.add("is-media");
+    }
+    function clearMedia() {
+      if (!media) return;
+      mediaSourceKey = null;
+      media.innerHTML = "";
+      cursor.classList.remove("is-media");
+    }
+
     document.addEventListener("mouseover", function (e) {
       if (isInteractive(e.target)) cursor.classList.add("is-interactive");
-      if (ownsHoverReveal(e.target)) cursor.classList.add("is-hidden");
+      const reveal = e.target && e.target.closest
+        ? e.target.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx")
+        : null;
+      if (reveal) {
+        cursor.classList.add("is-hidden");
+        // Seed cursor coords from the entry event so the revealed image
+        // attaches at the actual entry point instead of the stale last
+        // position (which can be far away after a sessionStorage restore
+        // or a still pointer).
+        if (typeof e.clientX === "number") {
+          mx = e.clientX;
+          my = e.clientY;
+          cx = mx;
+          cy = my;
+          cursor.style.transform =
+            "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
+          document.documentElement.style.setProperty("--cursor-x", mx + "px");
+          document.documentElement.style.setProperty("--cursor-y", my + "px");
+        }
+        showMedia(reveal);
+      }
       if (isPressPill(e.target)) cursor.classList.add("is-press-pill");
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
       // Only drop the state if we've fully left interactive territory.
       if (!isInteractive(e.relatedTarget)) cursor.classList.remove("is-interactive");
-      if (!ownsHoverReveal(e.relatedTarget)) cursor.classList.remove("is-hidden");
+      const stillIn = e.relatedTarget && e.relatedTarget.closest
+        ? e.relatedTarget.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx")
+        : null;
+      if (!stillIn) {
+        cursor.classList.remove("is-hidden");
+        clearMedia();
+      } else {
+        // Moved into a different reveal trigger — rebuild the clone for
+        // the new source if the trigger changed.
+        showMedia(stillIn);
+      }
       if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
     });
 
@@ -279,6 +344,40 @@
   html.has-custom-cursor,
   html.has-custom-cursor * {
     cursor: none !important;
+  }
+
+  /* Cursor-portal media — the cursor's .cursor__media slot holds a deep
+     clone of the hover-revealed artwork. Override the source's at-rest
+     positioning so the clone renders at the cursor regardless of where
+     its original sits in the document (the source can be trapped inside
+     a transformed ancestor; the clone is not). */
+  .cursor__media {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
+    transform-origin: 50% 50%;
+    transition:
+      opacity 220ms var(--ease-out),
+      transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cursor.is-media .cursor__media {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .cursor__media .cursor__media-art {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    display: block !important;
+    opacity: 1 !important;
+    transform: rotate(var(--tilt, 0deg)) !important;
+    transition: none !important;
+    pointer-events: none !important;
   }
 </style>
 

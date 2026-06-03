@@ -73,6 +73,31 @@ interface Props {
    *  Used to give a single card a stronger brand backdrop without changing
    *  the rest of the page rhythm. */
   bgImage?: string;
+  /** Optional override for the gap between stat columns. CSS length
+   *  (e.g. "20px" or "var(--s-5)"). Defaults to var(--s-8). */
+  statsGap?: string;
+  /** Optional override for the stats grid max-width. CSS length
+   *  (e.g. "32ch"). Defaults to 46ch. Narrowing this shrinks every
+   *  column proportionally. */
+  statsMaxWidth?: string;
+  /** When true, pull the text column toward the hero column instead of
+   *  centering each inside its grid cell. Useful when the hero artwork
+   *  is visually heavy and the gap reads too wide. */
+  tightHero?: boolean;
+  /** Inverse of tightHero: pushes the text column away from the hero,
+   *  hugging the outer edge of its grid cell. Useful when the gap reads
+   *  too tight and centering doesn't give enough breathing room. */
+  pushTextOut?: boolean;
+  /** Optional override for the text column max-width. CSS length
+   *  (e.g. "500px"). Defaults to 440px. */
+  textMaxWidth?: string;
+  /** Optional override for the gap between the text column and the hero
+   *  column inside .showcase__inner. CSS length (e.g. "var(--s-10)").
+   *  Defaults to var(--s-6). */
+  innerGap?: string;
+  /** Optional override for the stat value font-size. CSS length
+   *  (e.g. "24px"). Defaults to clamp(22px, 2vw, 28px). */
+  statsValueFontSize?: string;
 }
 const {
   companyLogo,
@@ -91,6 +116,13 @@ const {
   id,
   comingSoon = false,
   bgImage,
+  statsGap,
+  statsMaxWidth,
+  tightHero = false,
+  pushTextOut = false,
+  textMaxWidth,
+  innerGap,
+  statsValueFontSize,
 } = Astro.props;
 const resolvedBgImage = bgImage && (bgImage.startsWith("http")
   ? bgImage
@@ -109,14 +141,14 @@ const resolvedLogo = companyLogo && (companyLogo.startsWith("http") || companyLo
 const meta = [role].filter(Boolean) as string[];
 ---
 
-<section class={"showcase" + (reverse ? " showcase--reverse" : "") + (resolvedBgImage ? " showcase--has-bg-image" : "")} style={accentStyle} id={id}>
+<section class={"showcase" + (reverse ? " showcase--reverse" : "") + (resolvedBgImage ? " showcase--has-bg-image" : "") + (tightHero ? " showcase--tight-hero" : "") + (pushTextOut ? " showcase--push-text-out" : "")} style={accentStyle} id={id}>
   {resolvedBgImage && (
     <div class="showcase__bg" aria-hidden="true">
       <img src={resolvedBgImage} alt="" loading="lazy" />
     </div>
   )}
-  <div class="showcase__inner">
-    <div class="showcase__text">
+  <div class="showcase__inner" style={innerGap ? `gap:${innerGap};` : undefined}>
+    <div class="showcase__text" style={textMaxWidth ? `max-width:${textMaxWidth};` : undefined}>
       {(resolvedLogo || companyName) && (
         <div class="showcase__brand">
           {resolvedLogo && (
@@ -145,7 +177,7 @@ const meta = [role].filter(Boolean) as string[];
         </div>
       )}
       {stats.length > 0 && (
-        <ul class="showcase__stats-grid" style={`--stat-cols:${stats.length};`}>
+        <ul class="showcase__stats-grid" style={`--stat-cols:${stats.map(s => `minmax(0, ${(s as any).colFr ?? 1}fr)`).join(" ")};${statsGap ? `--stat-gap:${statsGap};` : ""}${statsMaxWidth ? `--stats-max-width:${statsMaxWidth};` : ""}${statsValueFontSize ? `--stat-value-fs:${statsValueFontSize};` : ""}`}>
           {stats.map((s) => (
             <li class="showcase__stat-cell">
               <span class="showcase__stat-value">{s.value}</span>
@@ -191,8 +223,10 @@ const meta = [role].filter(Boolean) as string[];
                       rel="noopener noreferrer"
                       aria-label={`Read ${logo.alt}${logo.suffix ? " " + logo.suffix : ""} article`}
                     >
-                      {img}
-                      {logo.suffix && <span class="showcase__press-suffix">{logo.suffix}</span>}
+                      <span class="showcase__press-content">
+                        {img}
+                        {logo.suffix && <span class="showcase__press-suffix">{logo.suffix}</span>}
+                      </span>
                     </a>
                   ) : (
                     <>
@@ -218,7 +252,6 @@ const meta = [role].filter(Boolean) as string[];
     --cs-accent: var(--brand-primary);
     padding-block: var(--s-20);
     position: relative;
-    isolation: isolate;
   }
   .showcase::before {
     /* Soft brand-color cloud contained within the section so adjacent
@@ -227,7 +260,7 @@ const meta = [role].filter(Boolean) as string[];
     position: absolute;
     inset: 0;
     background: radial-gradient(55% 65% at 50% 50%, color-mix(in srgb, var(--cs-accent) 18%, transparent) 0%, transparent 50%);
-    z-index: -1;
+    z-index: 0;
     pointer-events: none;
   }
   @media (max-width: 720px) {
@@ -242,7 +275,7 @@ const meta = [role].filter(Boolean) as string[];
   .showcase__bg {
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     overflow: hidden;
     pointer-events: none;
   }
@@ -262,6 +295,8 @@ const meta = [role].filter(Boolean) as string[];
      as one centered band rather than a left-flush text + centered
      image (which made the page feel off-balance). */
   .showcase__inner {
+    position: relative;
+    z-index: 1;
     max-width: 1080px;
     margin: 0 auto;
     padding: 0 var(--s-6);
@@ -272,6 +307,34 @@ const meta = [role].filter(Boolean) as string[];
   }
   .showcase--reverse .showcase__text { order: 2; }
   .showcase--reverse .showcase__hero { order: 1; }
+  /* tightHero: pull the text column toward the hero column. On non-reverse,
+     text sits on the left and hero on the right, so we push text to the
+     right edge of its cell and hero to the left of its cell. Mirror for
+     reverse. */
+  .showcase--tight-hero .showcase__inner {
+    gap: var(--s-2);
+  }
+  .showcase--tight-hero:not(.showcase--reverse) .showcase__text {
+    margin-inline: auto 0;
+  }
+  .showcase--tight-hero:not(.showcase--reverse) .showcase__hero {
+    justify-self: start;
+  }
+  .showcase--tight-hero.showcase--reverse .showcase__text {
+    margin-inline: 0 auto;
+  }
+  .showcase--tight-hero.showcase--reverse .showcase__hero {
+    justify-self: end;
+  }
+  /* pushTextOut: opposite of tightHero — push the text column to the far
+     edge of its cell (away from the hero) for more visual breathing room
+     without changing the cell positions. */
+  .showcase--push-text-out:not(.showcase--reverse) .showcase__text {
+    margin-inline: 0 auto;
+  }
+  .showcase--push-text-out.showcase--reverse .showcase__text {
+    margin-inline: auto 0;
+  }
 
   .showcase__text {
     max-width: 440px;
@@ -292,7 +355,7 @@ const meta = [role].filter(Boolean) as string[];
     display: flex;
     align-items: center;
     gap: var(--s-2);
-    margin: 0 0 var(--s-2);
+    margin: 0 0 var(--s-4);
   }
   .showcase__logo {
     height: clamp(14px, 1.28vw, 18px);
@@ -321,7 +384,7 @@ const meta = [role].filter(Boolean) as string[];
     line-height: 1.1;
     letter-spacing: -0.01em;
     color: var(--text-primary);
-    margin: 0 0 var(--s-2);
+    margin: 0 0 var(--s-5);
   }
   .showcase__title-link {
     color: inherit;
@@ -333,11 +396,11 @@ const meta = [role].filter(Boolean) as string[];
     font-size: clamp(14px, 1.15vw, 15px);
     line-height: 1.65;
     color: var(--text-secondary);
-    margin: 0 0 var(--s-6);
+    margin: 0 0 var(--s-8);
     max-width: 40ch;
   }
   .showcase__tagline p {
-    margin: 0 0 var(--s-3);
+    margin: 0 0 var(--s-4);
   }
   .showcase__tagline p:last-child {
     margin-bottom: 0;
@@ -351,22 +414,50 @@ const meta = [role].filter(Boolean) as string[];
   .showcase__stats-grid {
     list-style: none;
     margin: 0 0 var(--s-6);
-    padding: var(--s-3) 0 0;
-    border-top: 1px solid var(--border-subtle, rgba(20, 22, 28, 0.08));
+    padding: 0 0 var(--s-6);
+    position: relative;
     display: grid;
-    grid-template-columns: repeat(var(--stat-cols, 3), minmax(0, 1fr));
-    gap: var(--s-4);
+    grid-template-columns: var(--stat-cols, minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr));
+    gap: var(--stat-gap, var(--s-8));
     /* font-size and max-width match the tagline so the 40ch measure
        resolves to the same pixel width and the divider line above the
        metrics aligns exactly with the prose block edge. The value/label
        children set their own font-size so this only affects ch math. */
     font-size: clamp(14px, 1.15vw, 15px);
-    max-width: 40ch;
+    max-width: var(--stats-max-width, 46ch);
+  }
+  .showcase__stats-grid:has(~ .showcase__press)::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0.5px;
+    background: linear-gradient(
+      90deg,
+      #C5DCEA 0%,
+      #DCD2E8 25%,
+      #F4D9CC 50%,
+      #DCD2E8 75%,
+      #C5DCEA 100%
+    );
+    background-size: 200% 100%;
+    animation: showcase-stats-border-shimmer 9s linear infinite;
+    border-radius: 1px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  @keyframes showcase-stats-border-shimmer {
+    from { background-position: 0% 50%; }
+    to { background-position: 200% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .showcase__stats-grid::before { animation: none; }
   }
   .showcase__stat-cell {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 8px;
     min-width: 0;
   }
   .showcase__stat-value {
@@ -374,9 +465,10 @@ const meta = [role].filter(Boolean) as string[];
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
-    font-size: clamp(20px, 1.8vw, 24px);
+    font-size: var(--stat-value-fs, clamp(22px, 2vw, 28px));
     letter-spacing: -0.014em;
     line-height: 1.1;
+    white-space: nowrap;
   }
   .showcase__stat-label {
     color: var(--text-tertiary);
@@ -389,7 +481,7 @@ const meta = [role].filter(Boolean) as string[];
        themselves also glue their final two words with NBSP as a fallback. */
     min-height: calc(1.35em * 2);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     text-wrap: pretty;
   }
   @media (max-width: 520px) {
@@ -406,7 +498,7 @@ const meta = [role].filter(Boolean) as string[];
 
   /* Press: no label, smaller logos, quieter row. Reads as a caption. */
   .showcase__press {
-    margin: var(--s-8) 0 0;
+    margin: var(--s-4) 0 0;
   }
   .showcase__press-logos {
     list-style: none;
@@ -414,12 +506,12 @@ const meta = [role].filter(Boolean) as string[];
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
     gap: var(--s-2) var(--s-3);
   }
   .showcase__press-logos li {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
   }
   .showcase__press-suffix {
     font-family: var(--font-sans);
@@ -437,7 +529,7 @@ const meta = [role].filter(Boolean) as string[];
     opacity: 1;
   }
   .showcase__press-logos img {
-    height: 12px;
+    height: 16px;
     width: auto;
     object-fit: contain;
     display: block;
@@ -446,10 +538,15 @@ const meta = [role].filter(Boolean) as string[];
   }
   .showcase__press-logos img:hover { opacity: 1; }
   .showcase__press-link {
+    position: relative;
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     line-height: 0;
     transition: transform var(--dur-normal) var(--ease-out);
+  }
+  .showcase__press-content {
+    display: inline-flex;
+    align-items: center;
   }
   .showcase__press-link:hover img,
   .showcase__press-link:focus-visible img {

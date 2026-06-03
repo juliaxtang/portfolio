@@ -445,10 +445,8 @@ const hobbies = [
     height: auto;
     display: block;
   }
-  .fx:hover .fx-photo {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) rotate(var(--tilt, -4deg)) scale(1);
-  }
+  /* The hover-revealed photo is rendered as a clone inside the
+     custom cursor (.cursor__media), so the original stays invisible. */
 
   .fx--film,
   .fx--clio {
@@ -765,19 +763,8 @@ const hobbies = [
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-subtle);
   }
-  .pill:hover .pill-photo,
-  .pill:focus-visible .pill-photo {
-    opacity: 1;
-    transform: translate(-50%, -50%) rotate(var(--tilt, 0deg)) scale(1);
-  }
-  /* Lift the polaroid off the pill and pin it to the cursor while
-     hovering — the image becomes the cursor. */
-  .pill:hover .pill-photo {
-    position: fixed;
-    left: var(--cursor-x, 50%);
-    top: var(--cursor-y, 50%);
-    bottom: auto;
-  }
+  /* The hover-revealed polaroid is rendered as a clone inside the
+     custom cursor (.cursor__media), so the original stays invisible. */
 
   .about-cta {
     margin-top: 0;

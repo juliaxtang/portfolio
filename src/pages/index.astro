@@ -206,6 +206,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       title={snapchatGames.title}
       tagline={snapchatGames.tagline}
       stats={snapchatGames.stats}
+      statsGap="var(--s-3)"
+      statsMaxWidth="36ch"
       ctaHref="/product-design/snapchat-games"
       ctaLabel="See how it scaled"
       accent={snapchatGames.accent}
@@ -267,6 +269,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         { value: "↑ 0.3%", label: "Days Active" },
         { value: "↑ 0.9%", label: "Likes Sent" },
       ]}
+      statsGap="var(--s-3)"
+      statsMaxWidth="36ch"
       ctaHref="https://techcrunch.com/2023/11/20/tinder-redesigns-profile-pages-with-prompts-info-tags-and-quiz/"
       ctaLabel="See press coverage"
       press={[

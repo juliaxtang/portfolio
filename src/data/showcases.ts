@@ -15,6 +15,9 @@
 export interface ShowcaseStat {
   value: string;
   label: string;
+  /** Optional grid-track weight for this stat's column. Defaults to 1.
+   *  Use to make one stat column narrower or wider than its siblings. */
+  colFr?: number;
 }
 
 export interface PressLogo {
@@ -52,7 +55,7 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     ],
     stats: [
       { value: "30M", label: "Games DAU" },
-      { value: "↑ 2.9M", label: "Additional Snaps sent, full-scale estimate" },
+      { value: "↑ 2.9M", label: "Snaps sent", colFr: 1.3 },
       { value: "↑ 120%", label: "Game Video Posts on iOS" },
     ],
     accent: "#FFFC00",
@@ -77,15 +80,11 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       {
         src: "/projects/festival-mode/techcrunch-dark-logo.png",
         alt: "TechCrunch",
-        height: 18,
         href: "https://techcrunch.com/2025/11/18/snapchat-rolls-out-topic-chats-for-public-conversations/",
       },
       {
         src: "/projects/topic-chats/Snap_Inc.-Logo-trim.png",
         alt: "Snap, Inc.",
-        height: 13,
-        nudgeY: 2,
-        wrapNudgeY: -2,
         suffix: "Newsroom",
         href: "https://newsroom.snap.com/topic-chats-internets-most-active-group-chats",
       },
@@ -102,9 +101,9 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       "I led the six-month effort to build Tappy Cloud, the backend-driven system and internal design tool (TaCo) that turned profiles into something teams could test, configure, and personalize per user.",
     ],
     stats: [
-      { value: "↑ 20%", label: "More likes sent across all experiments" },
-      { value: "$50–110M", label: "In revenue lift, attributed" },
-      { value: "50+", label: "Tappy experiments launched on TaCo" },
+      { value: "↑ 20%", label: "Likes sent across all experiments", colFr: 0.75 },
+      { value: "$50–110M", label: "Attributed revenue lift" },
+      { value: "100+", label: "Tappy experiments launched with TaCo", colFr: 0.85 },
     ],
     accent: "#FD297C",
   },
@@ -128,28 +127,21 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
       {
         src: "/projects/festival-mode/mashable-dark-logo.png",
         alt: "Mashable",
-        height: 12,
         href: "https://mashable.com/article/tinder-festival-mode",
       },
       {
         src: "/projects/festival-mode/engadget-dark-logo.png",
         alt: "Engadget",
-        height: 20,
-        nudgeY: 2,
         href: "https://www.engadget.com/tinder-festival-mode-returns-163640137.html",
       },
       {
         src: "/projects/festival-mode/techcrunch-dark-logo.png",
         alt: "TechCrunch",
-        height: 18,
-        nudgeY: 3,
         href: "https://techcrunch.com/2022/04/14/tinder-adds-a-festival-mode-for-making-connections-ahead-of-concerts-and-events/",
       },
       {
         src: "/projects/festival-mode/dailymail-dark-logo.png",
         alt: "Daily Mail",
-        height: 18,
-        nudgeY: 4,
         href: "https://www.dailymail.com/sciencetech/article-10719027/Tinder-launches-FESTIVAL-MODE-lets-singletons-match-fellow-festivalgoers.html",
       },
     ],

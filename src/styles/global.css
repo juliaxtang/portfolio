@@ -161,27 +161,14 @@ a.prose-out:hover {
   height: auto;
   display: block;
 }
-.prose-out--preview:hover .prose-out__preview,
-.prose-out--preview:focus-visible .prose-out__preview {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(var(--tilt, -3deg)) scale(1);
-}
-/* Detach the preview from its trigger and pin it to the cursor while
-   hovering — the image becomes the cursor. */
-.prose-out--preview:hover .prose-out__preview {
-  position: fixed;
-  left: var(--cursor-x, 50%);
-  top: var(--cursor-y, 50%);
-  bottom: auto;
-}
+/* Original preview stays invisible; CustomCursor clones it into
+   .cursor__media on hover so the artwork follows the cursor and
+   escapes any transformed-ancestor containing block. */
 @media (prefers-reduced-motion: reduce) {
   .prose-out__preview {
     transition: opacity 200ms ease;
   }
-  .prose-out--preview:hover .prose-out__preview,
-  .prose-out--preview:focus-visible .prose-out__preview {
-    transform: translate(-50%, -50%) rotate(var(--tilt, -3deg));
-  }
+  /* Reduced motion: cursor-portal clone still appears via opacity. */
 }
 
 /* Equal-height stat tiles stacked vertically — use as a wrapper inside a

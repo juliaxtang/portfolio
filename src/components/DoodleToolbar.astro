@@ -147,7 +147,13 @@
        the keyboard hint below the bar (desktop only). --doodle-bar-scale
        drives the prompted-state grow-up effect. */
     left: 50%;
-    transform: translateX(-50%) scale(var(--doodle-bar-scale, 1));
+    transform: translateX(-50%)
+      translate3d(var(--doodle-melt-x, 0px), var(--doodle-melt-y, 0px), 0)
+      scale(
+        calc(
+          var(--doodle-bar-scale, 1) * (1 - 0.08 * var(--doodle-melt, 0))
+        )
+      );
     transform-origin: 50% 100%;
     bottom: calc(
       var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px))
@@ -165,9 +171,30 @@
     -webkit-backdrop-filter: blur(8px);
     transition:
       bottom var(--dur-normal) var(--ease-out),
-      transform var(--dur-normal) var(--ease-out),
       box-shadow var(--dur-normal) var(--ease-out),
-      border-color var(--dur-normal) var(--ease-out);
+      border-color var(--dur-normal) var(--ease-out),
+      opacity var(--dur-normal) var(--ease-out),
+      backdrop-filter var(--dur-normal) var(--ease-out);
+  }
+
+  /* Footer melt: scroll pulls the bar into the footer row (transform only,
+     no transition) so it tracks the finger; shadow and halo soften as it
+     settles between the brand line and the contact block. */
+  .doodle[data-melt] .doodle__bar {
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .doodle[data-melt-full] .doodle__bar {
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .doodle[data-melt] .doodle__hint--esc,
+  .doodle[data-melt] .doodle__hint--prompt {
+    display: none !important;
+    opacity: 0;
   }
 
   /* Armed (draw mode on) and prompted (AI col is being hovered) both
@@ -336,7 +363,8 @@
     position: fixed;
     z-index: 200;
     left: 50%;
-    transform: translateX(-50%) translateY(4px);
+    transform: translateX(-50%) translateY(4px)
+      translate3d(var(--doodle-melt-x, 0px), var(--doodle-melt-y, 0px), 0);
     bottom: var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px));
     pointer-events: none;
     display: none;
@@ -372,7 +400,8 @@
   .doodle[data-prompted]:not([data-active]) .doodle__hint--prompt {
     display: inline-flex;
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0)
+      translate3d(var(--doodle-melt-x, 0px), var(--doodle-melt-y, 0px), 0);
   }
 
   /* Mobile: no Esc / D keys, so neither hint nor the bar's lift should
@@ -648,41 +677,105 @@
       if (document.body) ro.observe(document.body);
     }
 
-    // Clearance: keep the bar floating above any element that would
-    // collide with its bottom-center resting line. Two collision sources:
-    //   - The hero scroll chevron at the top of the homepage (only on
-    //     /; only visible at the top of the page before scroll).
-    //   - The site footer at the bottom of every page.
-    // Both are at bottom-center too, so the bar lifts to sit above
-    // whichever is currently intruding into the bottom strip of the
-    // viewport. Whichever overlap is larger wins; if neither overlaps,
-    // the bar returns to its CSS default (24px from the bottom).
+    // Clearance + footer melt share one scroll pass. The hero chevron still
+    // lifts the bar when it intrudes; the footer is handled by melting the
+    // bar into the footer row instead of floating above it.
     var BASE_GAP = 24;
     var CLEARANCE_GAP = 16;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function barLiftPx() {
+      if (root.hasAttribute("data-active") || root.hasAttribute("data-prompted")) {
+        if (window.matchMedia("(max-width: 720px)").matches) return 0;
+        return 36;
+      }
+      return 0;
+    }
+
+    function stickyAnchorY() {
+      var vh = window.innerHeight;
+      var bottom = BASE_GAP;
+      var custom = getComputedStyle(root).getPropertyValue("--doodle-bottom").trim();
+      if (custom) bottom = parseFloat(custom) || bottom;
+      return vh - bottom - barLiftPx() - bar.offsetHeight / 2;
+    }
+
     function updateClearance() {
       var vh = window.innerHeight;
       var maxOverlap = 0;
-      [".site-footer", ".v2-hero__scroll"].forEach(function (sel) {
-        var el = document.querySelector(sel);
-        if (!el) return;
-        var rect = el.getBoundingClientRect();
-        // Skip elements that are entirely above the viewport (already
-        // scrolled past) or invisible.
-        if (rect.bottom <= 0 || rect.width === 0 || rect.height === 0) return;
-        // How far the element's top edge intrudes above the viewport
-        // bottom. Positive = intruding, negative = still below the fold.
-        var overlap = vh - rect.top;
-        if (overlap > maxOverlap) maxOverlap = overlap;
-      });
+      var scroll = document.querySelector(".v2-hero__scroll");
+      if (scroll) {
+        var rect = scroll.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.width > 0 && rect.height > 0) {
+          var overlap = vh - rect.top;
+          if (overlap > maxOverlap) maxOverlap = overlap;
+        }
+      }
       if (maxOverlap > BASE_GAP) {
         root.style.setProperty("--doodle-bottom", (maxOverlap + CLEARANCE_GAP) + "px");
       } else {
         root.style.removeProperty("--doodle-bottom");
       }
     }
-    updateClearance();
-    window.addEventListener("scroll", updateClearance, { passive: true });
-    window.addEventListener("resize", updateClearance);
+
+    function updateFooterMelt() {
+      var footer = document.querySelector(".site-footer");
+      var inner = footer && footer.querySelector(".footer-inner");
+      if (!footer || !inner) {
+        root.style.setProperty("--doodle-melt", "0");
+        root.style.setProperty("--doodle-melt-x", "0px");
+        root.style.setProperty("--doodle-melt-y", "0px");
+        root.removeAttribute("data-melt");
+        root.removeAttribute("data-melt-full");
+        return;
+      }
+
+      var vh = window.innerHeight;
+      var vw = window.innerWidth;
+      var fr = footer.getBoundingClientRect();
+      var ir = inner.getBoundingClientRect();
+      if (fr.width === 0 || fr.height === 0) return;
+
+      var meltStart = vh * 0.9;
+      var meltEnd = vh * 0.5;
+      var t = 0;
+      if (fr.top < meltStart) {
+        t = (meltStart - fr.top) / (meltStart - meltEnd);
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+      }
+      if (reduceMotion) t = t > 0.5 ? 1 : 0;
+
+      root.style.setProperty("--doodle-melt", String(t));
+      if (t > 0.02) root.setAttribute("data-melt", "");
+      else root.removeAttribute("data-melt");
+      if (t > 0.98) root.setAttribute("data-melt-full", "");
+      else root.removeAttribute("data-melt-full");
+
+      var targetX = ir.left + ir.width / 2;
+      var targetY = ir.top + ir.height / 2;
+      var anchorY = stickyAnchorY();
+      var meltX = (targetX - vw / 2) * t;
+      var meltY = (targetY - anchorY) * t;
+
+      root.style.setProperty("--doodle-melt-x", meltX.toFixed(1) + "px");
+      root.style.setProperty("--doodle-melt-y", meltY.toFixed(1) + "px");
+    }
+
+    function updateBarPosition() {
+      updateClearance();
+      updateFooterMelt();
+    }
+    updateBarPosition();
+    window.addEventListener("scroll", updateBarPosition, { passive: true });
+    window.addEventListener("resize", updateBarPosition);
+    if (window.MutationObserver) {
+      var meltObs = new MutationObserver(updateBarPosition);
+      meltObs.observe(root, {
+        attributes: true,
+        attributeFilter: ["data-active", "data-prompted"],
+      });
+    }
 
     svg.addEventListener("pointerdown", function (e) {
       if (state.tool === "draw") startDraw(e);

@@ -21,14 +21,10 @@ interface Props {
 }
 const { variant = "fixed" } = Astro.props;
 
-// The fixed top-right variant only carries the "Let's get in touch!"
-// lede on /about — every other page keeps just the two icons so the
-// header reads as a quiet utility. The footer variant always shows the
-// lede, and the inline mobile-header variant never does (no room).
-const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
-const isAbout = pathname === "/about" || pathname.startsWith("/about/");
-const showLede =
-  variant === "footer" || (variant === "fixed" && isAbout);
+// The fixed top-right and inline header variants show only the two
+// icons so the header stays a quiet utility. The footer variant shows
+// the lede when contact links scroll into view.
+const showLede = variant === "footer";
 ---
 
 <div class:list={["social-icons", `social-icons--${variant}`]} aria-label="Contact links">

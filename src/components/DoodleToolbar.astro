@@ -620,9 +620,20 @@
     // the page have somewhere to live. Recomputes on resize and after
     // images / fade-ins shift the layout. ResizeObserver picks up the
     // long-tail layout shifts that scroll/resize don't fire for.
+    //
+    // Measure body.scrollHeight (and viewport) only. The canvas is
+    // position: absolute with no positioned ancestor, so it anchors to
+    // the initial containing block (html) and its bottom edge counts
+    // toward documentElement.scrollHeight but NOT body.scrollHeight.
+    // Including documentElement.scrollHeight here created a one-way
+    // ratchet: the first time the canvas measured taller than the
+    // body content (e.g. a transient layout shift during image / font
+    // load), html.scrollHeight reflected the inflated canvas, the next
+    // run read that value back, and the canvas locked at a height that
+    // sat below the footer as visible empty space (~80px at the tablet
+    // breakpoint where the bug surfaced).
     function syncCanvasHeight() {
       var h = Math.max(
-        document.documentElement.scrollHeight,
         document.body ? document.body.scrollHeight : 0,
         window.innerHeight
       );

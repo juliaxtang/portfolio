@@ -45,6 +45,32 @@
   <div class="cursor__swipe-pill" aria-hidden="true">
     <span class="cursor__swipe-pill-label">Swipe to shuffle</span>
   </div>
+  <div class="cursor__drag-pill" aria-hidden="true">
+    <svg class="cursor__drag-pill-arrows" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 8h10" />
+      <path d="M5 5L2 8l3 3" />
+      <path d="M11 5l3 3-3 3" />
+    </svg>
+    <span class="cursor__drag-pill-label">Drag to move</span>
+  </div>
+  <div class="cursor__expand-pill" aria-hidden="true">
+    <svg class="cursor__expand-pill-arrows" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 7L2 2" />
+      <path d="M2 5V2h3" />
+      <path d="M9 9l5 5" />
+      <path d="M14 11v3h-3" />
+    </svg>
+    <span class="cursor__expand-pill-label">Click to expand</span>
+  </div>
+  <div class="cursor__shrink-pill" aria-hidden="true">
+    <svg class="cursor__shrink-pill-arrows" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M2 2L7 7" />
+      <path d="M7 4V7H4" />
+      <path d="M14 14L9 9" />
+      <path d="M9 12V9H12" />
+    </svg>
+    <span class="cursor__shrink-pill-label">Click to shrink</span>
+  </div>
 </div>
 
 <script is:inline>
@@ -170,7 +196,10 @@
         || cursor.classList.contains("is-scroll-pill")
         || cursor.classList.contains("is-copy-pill")
         || cursor.classList.contains("is-external-arrow")
-        || cursor.classList.contains("is-swipe-pill");
+        || cursor.classList.contains("is-swipe-pill")
+        || cursor.classList.contains("is-drag-pill")
+        || cursor.classList.contains("is-expand-pill")
+        || cursor.classList.contains("is-shrink-pill");
       if (carryingMedia) {
         cx = mx;
         cy = my;
@@ -316,6 +345,15 @@
       return el && el.closest && el.closest("[data-cursor='swipe-pill']");
     }
 
+    function isDragPill(el) {
+      return el && el.closest && el.closest("[data-cursor='drag-pill']");
+    }
+
+    function isShrinkPillTarget(el) {
+      const cell = el && el.closest && el.closest("[data-floating-cell]");
+      return cell && cell.classList.contains("is-focused") ? cell : null;
+    }
+
     // The cursor carries the hover-revealed artwork itself. Cloning into
     // .cursor__media sidesteps the stacking-context / containing-block
     // traps caused by ancestor transforms (e.g. .fade-in) that prevent
@@ -389,6 +427,23 @@
       if (isCopyEmail(e.target)) cursor.classList.add("is-copy-pill");
       if (isExternal(e.target)) cursor.classList.add("is-external-arrow");
       if (isSwipePill(e.target)) cursor.classList.add("is-swipe-pill");
+      if (isDragPill(e.target)) {
+        if (isShrinkPillTarget(e.target)) {
+          cursor.classList.add("is-shrink-pill");
+          cursor.classList.remove("is-drag-pill");
+          cursor.classList.remove("is-expand-pill");
+        } else {
+          // Per-project hover alternation: first hover (drag), then on
+          // every subsequent hover (expand). Toggled via the group's
+          // "cells-introduced" class on each cell mouseleave.
+          const cellEl = e.target.closest && e.target.closest("[data-floating-cell]");
+          const group = cellEl && cellEl.closest("[data-floating-cell-group]");
+          const introduced = group && group.classList.contains("cells-introduced");
+          cursor.classList.toggle("is-expand-pill", !!introduced);
+          cursor.classList.toggle("is-drag-pill", !introduced);
+          cursor.classList.remove("is-shrink-pill");
+        }
+      }
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
@@ -414,6 +469,11 @@
       }
       if (!isExternal(e.relatedTarget)) cursor.classList.remove("is-external-arrow");
       if (!isSwipePill(e.relatedTarget)) cursor.classList.remove("is-swipe-pill");
+      if (!isDragPill(e.relatedTarget)) {
+        cursor.classList.remove("is-drag-pill");
+        cursor.classList.remove("is-expand-pill");
+        cursor.classList.remove("is-shrink-pill");
+      }
     });
 
     // Click ripple + hold-to-expand. On press the ring scales up
@@ -740,6 +800,214 @@
     transform: translateY(0);
   }
   .cursor.on-dark.is-scroll-pill .cursor__scroll-pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* "Drag or click" pill for interactive floating cells. Same expand-from-
+     dot motion as the scroll pill but with a horizontal-arrows glyph that
+     hints at the drag affordance. */
+  .cursor__drag-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__drag-pill-label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 260ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
+  }
+  .cursor__drag-pill-arrows {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: translateX(3px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
+  }
+  .cursor.is-drag-pill .cursor__dot,
+  .cursor.is-drag-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 240ms var(--ease-out);
+  }
+  .cursor.is-drag-pill .cursor__drag-pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-drag-pill .cursor__drag-pill-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .cursor.is-drag-pill .cursor__drag-pill-arrows {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .cursor.on-dark.is-drag-pill .cursor__drag-pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* "Click to expand" pill — swaps in for the drag pill after the viewer
+     has hovered a project's cell at least once. Outward corner brackets
+     hint at the zoom-up affordance. */
+  .cursor__expand-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__expand-pill-arrows {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 220ms var(--ease-out) 260ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
+  }
+  .cursor__expand-pill-label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
+  }
+  .cursor.is-expand-pill .cursor__dot,
+  .cursor.is-expand-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 160ms var(--ease-out), transform 240ms var(--ease-out);
+  }
+  .cursor.is-expand-pill .cursor__expand-pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-expand-pill .cursor__expand-pill-arrows {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .cursor.is-expand-pill .cursor__expand-pill-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .cursor.on-dark.is-expand-pill .cursor__expand-pill {
+    background: var(--text-inverse, #FDFCFA);
+    color: var(--text-primary);
+  }
+
+  /* "Click to shrink" pill — shown while a cell is focused. Inward
+     arrows signal the dismiss action. */
+  .cursor__shrink-pill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translate(-50%, -50%) scale(0.05, 0.55);
+    transform-origin: 50% 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--text-primary);
+    color: var(--text-inverse, #FDFCFA);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 640ms cubic-bezier(0.34, 1.45, 0.64, 1);
+  }
+  .cursor__shrink-pill-arrows {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity 220ms var(--ease-out) 260ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
+  }
+  .cursor__shrink-pill-label {
+    display: inline-block;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
+  }
+  .cursor.is-shrink-pill .cursor__dot,
+  .cursor.is-shrink-pill .cursor__ring {
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 160ms var(--ease-out), transform 240ms var(--ease-out);
+  }
+  .cursor.is-shrink-pill .cursor__shrink-pill {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1, 1);
+  }
+  .cursor.is-shrink-pill .cursor__shrink-pill-arrows {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .cursor.is-shrink-pill .cursor__shrink-pill-label {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .cursor.on-dark.is-shrink-pill .cursor__shrink-pill {
     background: var(--text-inverse, #FDFCFA);
     color: var(--text-primary);
   }

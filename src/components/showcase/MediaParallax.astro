@@ -32,6 +32,15 @@ interface Props {
   as?: "video" | "image";
   /** Override the badge width (CSS value). Defaults to clamp(128px, 37%, 190px). */
   badgeWidth?: string;
+  /** Floating "evidence" cell anchored to the upper-left of the media. */
+  cellLeftSrc?: string;
+  cellLeftAlt?: string;
+  /** Optional CSS width override for the left cell. */
+  cellLeftWidth?: string;
+  /** Floating "evidence" cell anchored to the lower-right of the media. */
+  cellRightSrc?: string;
+  cellRightAlt?: string;
+  cellRightWidth?: string;
 }
 
 const {
@@ -46,6 +55,12 @@ const {
   radius = "var(--r-lg)",
   as,
   badgeWidth,
+  cellLeftSrc,
+  cellLeftAlt = "",
+  cellLeftWidth,
+  cellRightSrc,
+  cellRightAlt = "",
+  cellRightWidth,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -63,7 +78,8 @@ const isVideo =
   class="media-parallax"
   data-phone-range={phoneRange}
   data-badge-range={badgeRange}
-  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};${badgeWidth ? `--mp-badge-w:${badgeWidth};` : ""}`}
+  data-floating-cell-group={cellLeftSrc || cellRightSrc ? "" : undefined}
+  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};${badgeWidth ? `--mp-badge-w:${badgeWidth};` : ""}${cellLeftWidth ? `--mp-cell-l-w:${cellLeftWidth};` : ""}${cellRightWidth ? `--mp-cell-r-w:${cellRightWidth};` : ""}`}
 >
   <div class={"media-parallax__media" + (isVideo ? " media-parallax__media--clip" : " media-parallax__media--free")}>
     {isVideo ? (
@@ -94,6 +110,33 @@ const isVideo =
       alt={badgeAlt}
       draggable="false"
       loading="lazy"
+    />
+  )}
+  {cellLeftSrc && (
+    <img
+      class="media-parallax__cell media-parallax__cell--left"
+      src={resolve(cellLeftSrc)}
+      alt={cellLeftAlt}
+      draggable="false"
+      loading="lazy"
+      data-floating-cell
+      data-cursor="drag-pill"
+      data-cursor-bg="light"
+      data-anchor-x="left"
+      data-anchor-y="top"
+    />
+  )}
+  {cellRightSrc && (
+    <img
+      class="media-parallax__cell media-parallax__cell--right"
+      src={resolve(cellRightSrc)}
+      alt={cellRightAlt}
+      draggable="false"
+      loading="lazy"
+      data-floating-cell
+      data-cursor="drag-pill"
+      data-anchor-x="right"
+      data-anchor-y="bottom"
     />
   )}
 </div>
@@ -134,6 +177,8 @@ const isVideo =
           const centered = progress - 0.5;
           root.style.setProperty("--phone-y", (-centered * phoneRange).toFixed(1) + "px");
           root.style.setProperty("--badge-y", (-centered * badgeRange).toFixed(1) + "px");
+          root.style.setProperty("--cell-l-y", (centered * 40).toFixed(1) + "px");
+          root.style.setProperty("--cell-r-y", (-centered * 55).toFixed(1) + "px");
         };
         const onScroll = () => {
           if (!raf) raf = requestAnimationFrame(update);
@@ -164,6 +209,8 @@ const isVideo =
     --phone-tilt: 0deg;
     --badge-spin: 0deg;
     --badge-scale: 1;
+    --cell-l-y: 0px;
+    --cell-r-y: 0px;
   }
 
   .media-parallax__media {
@@ -248,14 +295,98 @@ const isVideo =
     box-shadow: 0 18px 36px rgba(0, 0, 0, 0.28);
   }
 
+  .media-parallax__cell {
+    position: absolute;
+    height: auto;
+    z-index: 2;
+    /* Rounded edges clip the source asset so each cell reads as its own
+       card regardless of whether the PNG has its own corner rounding. */
+    border-radius: 18px;
+    filter: drop-shadow(0 18px 36px rgba(60, 30, 120, 0.18))
+            drop-shadow(0 4px 10px rgba(60, 30, 120, 0.10));
+    will-change: transform;
+    transition: var(--drag-transition,
+                  transform 620ms var(--ease-out)),
+                filter 620ms var(--ease-out);
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .media-parallax__cell.is-grabbing { cursor: grabbing; }
+  .media-parallax__cell--left {
+    /* Tucked into the media's upper-left corner: most of the cell sits
+       outside the video frame with a small overlap (~60px) into the
+       corner so the scoreboard reads as bumping the video's edge. */
+    top: clamp(10px, 4%, 50px);
+    left: clamp(-260px, -47%, -180px);
+    width: var(--mp-cell-l-w, clamp(220px, 68%, 310px));
+    --rot: -5deg;
+    transform: translate3d(var(--drag-x, 0px),
+                           calc(var(--cell-l-y) + var(--drag-y, 0px)),
+                           0)
+               rotate(var(--rot));
+  }
+  .media-parallax__cell--right {
+    /* Anchored lower-right, sits mostly outside the media's right edge. */
+    bottom: clamp(40px, 9%, 80px);
+    right: clamp(-200px, -42%, -130px);
+    width: var(--mp-cell-r-w, clamp(180px, 54%, 240px));
+    --rot: 6deg;
+    transform: translate3d(var(--drag-x, 0px),
+                           calc(var(--cell-r-y) + var(--drag-y, 0px)),
+                           0)
+               rotate(var(--rot));
+  }
+
+  /* Focused (click-to-zoom) state — width inflates for crisp raster,
+     rotateX/rotateY drive 3D tilt on mouse-move. */
+  .media-parallax__cell.is-focused {
+    /* !important — see PhoneVideoParallax.astro for the rationale. */
+    width: var(--focus-width, 100%) !important;
+    max-width: none !important;
+    max-height: none !important;
+    transform: perspective(1200px)
+               translate3d(var(--focus-dx, 0px), var(--focus-dy, 0px), 0)
+               rotateX(var(--tilt-x, 0deg))
+               rotateY(var(--tilt-y, 0deg)) !important;
+    transform-style: flat;
+    backface-visibility: hidden;
+    transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+                width 520ms cubic-bezier(0.22, 1, 0.36, 1),
+                filter 520ms var(--ease-out);
+    z-index: 50;
+    filter: drop-shadow(0 22px 44px rgba(20, 16, 40, 0.18))
+            drop-shadow(0 4px 10px rgba(20, 16, 40, 0.10));
+    cursor: zoom-out;
+  }
+  .media-parallax__cell.is-tilting {
+    transition: transform 80ms linear,
+                filter 520ms var(--ease-out) !important;
+  }
+
+  @media (max-width: 720px) {
+    .media-parallax__cell--left {
+      left: clamp(-110px, -22%, -60px);
+      width: var(--mp-cell-l-w, clamp(170px, 56%, 230px));
+    }
+    .media-parallax__cell--right {
+      right: clamp(-90px, -18%, -50px);
+      width: var(--mp-cell-r-w, clamp(150px, 46%, 200px));
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .media-parallax__media,
-    .media-parallax__badge {
+    .media-parallax__badge,
+    .media-parallax__cell {
       transform: none !important;
       transition: none !important;
     }
     .media-parallax:hover .media-parallax__media,
-    .media-parallax:hover .media-parallax__badge {
+    .media-parallax:hover .media-parallax__badge,
+    .media-parallax:hover .media-parallax__cell {
       transform: none !important;
     }
   }

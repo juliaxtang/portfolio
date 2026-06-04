@@ -108,7 +108,7 @@ const hobbies = [
                 As an internet kid, I taught myself HTML to deck out my Neopets profile with <img class="glitter-inline" src={`${base}/about/glittergraphics.gif`} alt="glitter graphics" /> (shoutout to the <span class="fx fx--neopets"
                   ><span class="fx-photo fx-photo--bare fx-photo--wide" style="--tilt:0deg" aria-hidden="true"><img
                     src={`${base}/about/neopets.jpg`} alt="" loading="lazy" /></span
-                  >Neopets HTML guide</span>). My taste was ... questionable. But the love for making digital things stuck.
+                  >Neopets HTML guide</span>). My taste was "..." questionable. But the love for making digital things stuck.
               </p>
             </FadeIn>
           </div>
@@ -264,8 +264,9 @@ const hobbies = [
   .about-row:last-child { margin-bottom: 0; }
   .about-row--reverse { /* portrait on the right */ }
   .about-row__text {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
+    max-width: 380px;
   }
   /* Each paragraph in the two-up column is wrapped in a FadeIn div, so
      the `:last-child` test has to target the outer wrapper. Without
@@ -404,8 +405,8 @@ const hobbies = [
   }
 
   .about-body {
-    font-size: 17px;
-    line-height: 1.6;
+    font-size: clamp(20px, 2vw, 24px);
+    line-height: 1.5;
     color: var(--text-primary);
     margin: 0 0 var(--s-5);
     /* Let the browser rebalance the last 1–2 lines so we don't end up

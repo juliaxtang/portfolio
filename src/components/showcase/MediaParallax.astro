@@ -425,21 +425,29 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
   }
 
   @media (max-width: 720px) {
+    /* Reserve room above + below for the cells that anchor outside the
+       phone, so neither end of the media block crowds the surrounding
+       text. */
+    .media-parallax[data-floating-cell-group] {
+      padding-top: clamp(72px, 14vw, 120px);
+      padding-bottom: clamp(48px, 10vw, 88px);
+    }
     /* Mobile: pull the floating cells fully clear of the phone so they
        stop covering the main video. Left cell anchors above the phone,
-       right cell anchors below. Both stay tappable and animate into a
-       focused, centered view on tap. */
+       right cell anchors below the phone with a tight clearance so it
+       doesn't crash into the project eyebrow / title that follow. Both
+       stay tappable and animate into a focused, centered view on tap. */
     .media-parallax__cell--left {
-      top: -16%;
+      top: -14%;
       left: -2%;
-      width: var(--mp-cell-l-w, clamp(180px, 70%, 260px));
+      width: var(--mp-cell-l-w, clamp(170px, 64%, 240px));
       --rot: -4deg;
     }
     .media-parallax__cell--right {
       top: auto;
-      bottom: -14%;
-      right: -4%;
-      width: var(--mp-cell-r-w, clamp(180px, 70%, 260px));
+      bottom: -6%;
+      right: -8%;
+      width: var(--mp-cell-r-w, clamp(160px, 58%, 220px));
       --rot: 5deg;
     }
   }
@@ -451,28 +459,28 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
      gutters and stay on screen. */
   @media (max-width: 520px) {
     .media-parallax[data-floating-cell-group] {
-      max-width: min(var(--mp-max-w, 396px), 84%);
+      max-width: min(var(--mp-max-w, 396px), 82%);
     }
     .media-parallax__cell--left {
-      top: -14%;
+      top: -12%;
       left: -2%;
-      width: var(--mp-cell-l-w, clamp(180px, 78%, 280px));
+      width: var(--mp-cell-l-w, clamp(170px, 68%, 240px));
     }
     .media-parallax__cell--right {
-      bottom: -12%;
-      right: -4%;
-      width: var(--mp-cell-r-w, clamp(180px, 70%, 250px));
+      bottom: -4%;
+      right: -10%;
+      width: var(--mp-cell-r-w, clamp(160px, 62%, 220px));
     }
   }
   @media (max-width: 380px) {
     .media-parallax[data-floating-cell-group] {
-      max-width: min(var(--mp-max-w, 396px), 82%);
+      max-width: min(var(--mp-max-w, 396px), 80%);
     }
     .media-parallax__cell--left {
-      width: var(--mp-cell-l-w, clamp(170px, 76%, 240px));
+      width: var(--mp-cell-l-w, clamp(160px, 64%, 220px));
     }
     .media-parallax__cell--right {
-      width: var(--mp-cell-r-w, clamp(160px, 68%, 220px));
+      width: var(--mp-cell-r-w, clamp(150px, 58%, 200px));
     }
   }
 

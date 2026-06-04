@@ -442,6 +442,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   }
 
   @media (max-width: 720px) {
+    /* Reserve headroom + footroom for the cells anchored outside the
+       phone so they don't bleed into surrounding text. */
+    .phone-video {
+      padding-top: clamp(64px, 13vw, 110px);
+      padding-bottom: clamp(40px, 9vw, 80px);
+    }
     /* Mobile: clear the phone so the device reads first, then the
        floating cells. Prompt sits in the top-left gutter (mostly above
        the phone); quiz sits in the bottom-right gutter (mostly below). */
@@ -452,9 +458,9 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: -8%;
-      right: -6%;
-      width: clamp(170px, 62%, 230px);
+      bottom: -2%;
+      right: -10%;
+      width: clamp(160px, 56%, 220px);
       --rot: 6deg;
     }
   }

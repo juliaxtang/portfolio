@@ -439,6 +439,62 @@ const polaroidItems = [
   })();
 </script>
 
+<script is:inline>
+  // Touch tap-to-reveal for the hover-only image cues that would
+  // otherwise live in the custom cursor: .fx-photo polaroids under
+  // "film"/"Neopets HTML guide", .prose-out__preview behind "The Lego
+  // Movie 2", and the .exp-row / .cred-row--reveal art on the right
+  // column. Adds .is-revealed to the closest container on tap; tapping
+  // a second time (or anywhere outside) clears it. No-op on hover-
+  // capable devices — the cursor portal handles those.
+  (function () {
+    const coarse = window.matchMedia(
+      "(hover: none), (pointer: coarse), (max-width: 720px)"
+    ).matches;
+    if (!coarse) return;
+
+    const SELECTORS = ".fx, .prose-out, .exp-row, .cred-row--reveal";
+    function init() {
+      document.querySelectorAll(SELECTORS).forEach(function (el) {
+        // Make the container focusable / tappable. The .fx / .prose-out
+        // are inline spans wrapping body text, so we don't add role=button
+        // (that would break inline accessibility); just listen for clicks.
+        el.addEventListener("click", function (e) {
+          // Let inline links inside the reveal target keep their default
+          // behavior. .cred-link--reveal IS the link, so we still toggle
+          // for that and let the user tap the link separately for the
+          // outbound action via the visible Webby/credit text.
+          if (
+            !el.classList.contains("cred-row--reveal") &&
+            e.target.closest &&
+            e.target.closest("a")
+          ) return;
+          e.preventDefault();
+          const wasOpen = el.classList.contains("is-revealed");
+          document.querySelectorAll(SELECTORS + ".is-revealed").forEach(function (other) {
+            if (other !== el) other.classList.remove("is-revealed");
+          });
+          el.classList.toggle("is-revealed", !wasOpen);
+        });
+      });
+
+      // Outside tap collapses any open reveal.
+      document.addEventListener("click", function (e) {
+        const inTrigger = e.target.closest && e.target.closest(SELECTORS);
+        if (inTrigger) return;
+        document.querySelectorAll(SELECTORS + ".is-revealed").forEach(function (el) {
+          el.classList.remove("is-revealed");
+        });
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>
+
 <style>
   .about-canvas {
     position: relative;
@@ -1226,34 +1282,76 @@ const polaroidItems = [
 
   /* Touch devices: the cursor-portal images can't fire without a real
      mouse, so the .fx-photo polaroids and .prose-out__preview previews
-     for "film", "Neopets HTML guide", and "The Lego Movie 2" are
-     entirely invisible on phones/tablets. Promote each one to an inline
-     block that renders directly below its trigger word so the
-     image-as-context is reachable. Widths cap to the column so a
-     polaroid doesn't bleed off-canvas. */
-  @media (hover: none), (pointer: coarse) {
+     for "film", "Neopets HTML guide", and "The Lego Movie 2" stay
+     hidden by default and reveal as an inline block only when the user
+     taps the trigger word. JS toggles a `.is-revealed` class on the
+     ancestor .fx / .prose-out / .exp-row / .cred-row--reveal; tapping a
+     second time (or anywhere else) hides them again. Widths cap to the
+     column so a polaroid doesn't bleed off-canvas. */
+  @media (hover: none), (pointer: coarse), (max-width: 720px) {
     .fx { display: inline; }
     .fx-photo,
     .prose-out__preview {
       position: static;
-      display: block;
-      opacity: 1 !important;
+      display: none;
+      opacity: 0;
       transform: rotate(var(--tilt, 0deg));
       pointer-events: auto;
-      margin: var(--s-3) auto var(--s-4);
+      margin: 0;
       max-width: min(260px, 100%);
       width: 100%;
+    }
+    .fx.is-revealed .fx-photo,
+    .prose-out.is-revealed .prose-out__preview,
+    .exp-row.is-revealed .fx-photo,
+    .cred-row--reveal.is-revealed .fx-photo {
+      display: block;
+      opacity: 1 !important;
+      position: static;
+      transform: rotate(var(--tilt, 0deg)) !important;
+      margin: var(--s-3) auto var(--s-4);
+      animation: fxPhotoRevealIn var(--dur-normal) var(--ease-out);
+      /* Inline widths up to 680px (the Whip Media Webby art) blow out
+         the mobile column. !important is the only way past the inline
+         style attribute the markup carries. */
+      width: 100% !important;
+      max-width: min(280px, 100%);
+    }
+    .exp-row.is-revealed .fx-photo {
+      max-width: min(320px, 100%);
+    }
+    /* Side-by-side image pairs collapse to a vertical stack on touch
+       so neither image gets clipped by the column edge. */
+    .exp-row.is-revealed .exp-pair {
+      flex-direction: column;
+      gap: var(--s-3);
+      width: 100% !important;
+      height: auto !important;
+    }
+    .exp-row.is-revealed .exp-pair img {
+      width: 100% !important;
+      height: auto !important;
     }
     .fx-photo--wide,
     .prose-out__preview--wide {
       max-width: min(320px, 100%);
     }
-    .prose-out__preview {
+    .prose-out.is-revealed .prose-out__preview {
       padding: 8px 8px 28px;
     }
-    .prose-out__preview--bare {
+    .prose-out.is-revealed .prose-out__preview--bare {
       padding: 0;
     }
+    /* Tap affordance: the trigger word reads as interactive. The fx /
+       prose-out spans already carry an underline; bump it on touch
+       and add a subtle dotted underline cue so users know to tap. */
+    .fx, .prose-out {
+      cursor: pointer;
+    }
+  }
+  @keyframes fxPhotoRevealIn {
+    from { opacity: 0; transform: translateY(8px) rotate(var(--tilt, 0deg)); }
+    to   { opacity: 1; transform: translateY(0)   rotate(var(--tilt, 0deg)); }
   }
 
   /* === Hobby pills (removed — replaced by the PolaroidStack

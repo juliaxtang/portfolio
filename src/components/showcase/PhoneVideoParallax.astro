@@ -137,10 +137,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       id={`${id}-drag-arrow`}
       from={`#${id} .phone-video__drag-hint-label`}
       to={`#${id} .phone-video__cell--quiz`}
-      fromAnchor="bottom-right"
-      toAnchor="right-center"
+      fromAnchor="right-center"
+      toAnchor="outside-right-center"
       path="curve-drag-phone"
       padding={12}
+      fromPadding={22}
+      toPadding={12}
       thickness={2.5}
       color="var(--text-tertiary, #6b6b72)"
       persistent

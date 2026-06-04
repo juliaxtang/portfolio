@@ -43,6 +43,10 @@ interface Props {
   boundTo?: string;
   boundGap?: number;
   padding?: number;
+  /** Offset for the tail only; defaults to `padding`. */
+  fromPadding?: number;
+  /** Inset for the tip only; defaults to `padding`. */
+  toPadding?: number;
   color?: string;
   thickness?: number;
   liftCompensation?: number;
@@ -69,6 +73,8 @@ const {
   boundTo = "",
   boundGap = 16,
   padding = 12,
+  fromPadding,
+  toPadding,
   color = "var(--text-secondary)",
   thickness = 2,
   liftCompensation = 0,
@@ -98,6 +104,8 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   data-to-anchor={toAnchor}
   data-path={path}
   data-padding={padding}
+  data-from-padding={fromPadding ?? padding}
+  data-to-padding={toPadding ?? padding}
   data-lift-px={liftCompensation}
   data-lift-sel={liftActiveSelector ?? ""}
   data-persistent={persistent ? "true" : ""}
@@ -193,10 +201,19 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
       /* Tail (isEnd false): pad outside the box. Tip (isEnd true): pad
          outside on top/bottom; on left/right use inward offset so the
          arrowhead clears the edge (e.g. deck right face, toolbar top). */
+      const outside = parts.indexOf("outside") >= 0;
       if (parts.indexOf("left") >= 0) {
-        x = isEnd ? rect.left + p : rect.left - p;
+        x = isEnd
+          ? outside
+            ? rect.left - p
+            : rect.left + p
+          : rect.left - p;
       } else if (parts.indexOf("right") >= 0) {
-        x = isEnd ? rect.right - p : rect.right + p;
+        x = isEnd
+          ? outside
+            ? rect.right + p
+            : rect.right - p
+          : rect.right + p;
       }
       if (parts.indexOf("top") >= 0) {
         y = rect.top - p;
@@ -248,6 +265,8 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
       const fromAnchor = arrow.dataset.fromAnchor || "bottom-center";
       const toAnchor = arrow.dataset.toAnchor || "top-center";
       const padding = parseFloat(arrow.dataset.padding) || 0;
+      const fromPadding = parseFloat(arrow.dataset.fromPadding) || padding;
+      const toPadding = parseFloat(arrow.dataset.toPadding) || padding;
       const liftPx = parseFloat(arrow.dataset.liftPx) || 0;
       const liftActiveSel = arrow.dataset.liftSel;
       const persistent = arrow.dataset.persistent === "true";
@@ -326,7 +345,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
           fr.width === 0 && fr.height === 0 && fr.left === 0 && fr.top === 0;
         if (fromGone) return;
 
-        const start = anchorPoint(fr, fromAnchor, padding, false);
+        const start = anchorPoint(fr, fromAnchor, fromPadding, false);
         let sx = start.x;
         let sy = start.y;
 
@@ -400,7 +419,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
             lift = liftPx;
           }
         }
-        const end = anchorPoint(tr, toAnchor, padding, true);
+        const end = anchorPoint(tr, toAnchor, toPadding, true);
         tx = end.x;
         ty = end.y - lift;
 
@@ -431,26 +450,31 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
           backX = sx + 0.85 * dx;
           backY = sy + 0.85 * dy;
         } else if (pathMode === "curve-drag-phone") {
-          /* App Redesign: tail by “expand”, tip at quiz right-center; wide
-             arc bowing right (red-path reference), then into the card. */
+          /* App Redesign: bow to the right; when tail and tip share x,
+             use a modest east bulge + vertical sweep (not off-screen). */
           const span = Math.hypot(dx, dy) || 1;
-          const lead = Math.max(52, span * 0.12);
-          const bow = Math.max(105, span * 0.5, Math.abs(sx - tx) * 0.75);
-          const peakX = Math.max(sx, tx) + bow;
-          c1x = sx + lead;
-          c1y = sy + 0.05 * dy;
-          c2x = peakX;
-          c2y = sy + 0.5 * dy;
-          if (c2x < tx + 36) c2x = tx + 36;
-          shaft.setAttribute(
-            "d",
-            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
-            " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
-            ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
-            ", " + tx.toFixed(1) + " " + ty.toFixed(1)
+          const horiz = Math.abs(dx);
+          const bowOut = Math.min(
+            92,
+            Math.max(58, span * 0.26, horiz * 1.6)
           );
-          backX = c2x;
-          backY = c2y;
+          const midX = (sx + tx) * 0.5;
+          const peakX = midX + bowOut;
+          const peakY = sy + dy * 0.42;
+          const lead = Math.max(56, span * 0.12);
+          const ax = tx + Math.max(44, span * 0.08);
+          const ay = ty - Math.min(20, Math.abs(dy) * 0.1);
+          const d =
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " C " + (sx + lead).toFixed(1) + " " + (sy + dy * 0.02).toFixed(1) +
+            ", " + peakX.toFixed(1) + " " + (peakY - bowOut * 0.35).toFixed(1) +
+            ", " + peakX.toFixed(1) + " " + peakY.toFixed(1) +
+            " C " + peakX.toFixed(1) + " " + (peakY + bowOut * 0.4).toFixed(1) +
+            ", " + ax.toFixed(1) + " " + ay.toFixed(1) +
+            ", " + tx.toFixed(1) + " " + ty.toFixed(1);
+          shaft.setAttribute("d", d);
+          backX = ax;
+          backY = ay;
         } else if (pathMode === "curve-drag-media") {
           /* Topic Chats hint: curve rises from label toward upper-left cell. */
           c1x = sx + 0.42 * dx;

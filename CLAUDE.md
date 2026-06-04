@@ -142,3 +142,22 @@ looks like.
 [src/content/projects/festival-mode.mdx](src/content/projects/festival-mode.mdx).
 It uses every component except `<Video>` and `<Quote>`, and shows the
 typical rhythm: Overview → Background → Strategy → Design → Outcomes.
+
+## Git workflow
+
+The full setup → merge → cleanup loop lives in
+[.cursor/skills/feature-worktree/SKILL.md](.cursor/skills/feature-worktree/SKILL.md)
+and auto-applies whenever a session is about to make non-trivial code
+changes. Read that skill at the start of any feature, bug-fix, or
+redesign session and follow it end-to-end.
+
+Quick reference if you're not loading the skill:
+
+- Feature work happens on a dedicated branch in its own worktree
+  (`git worktree add ../portfolio-<slug> -b <slug> main`), not on `main`.
+- After a branch is merged into `origin/main`, ALWAYS clean up in the
+  same turn: stop any dev server, `git worktree remove <path>`,
+  `git branch -d <branch>`, `git push origin --delete <branch>`.
+- Commit messages on `main` are a single long paragraph explaining what
+  AND why, no bullet lists, no em dashes. Bring branches in with
+  `git merge --no-ff` so the merge commit is preserved in the graph.

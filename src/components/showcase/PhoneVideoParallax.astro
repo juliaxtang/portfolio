@@ -90,7 +90,7 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       loading="lazy"
     />
   </div>
-  <span class="phone-video__badge-wrap fx" tabindex="0" aria-label={badgeAlt}>
+  <span class="phone-video__badge-wrap" aria-hidden="true">
     <img
       class="phone-video__badge"
       src={resolve(badgeSrc)}
@@ -98,14 +98,6 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       draggable="false"
       loading="lazy"
     />
-    <span class="fx-photo phone-video__badge-preview" style="--tilt:-4deg" aria-hidden="true">
-      <img
-        src={resolve(frameSrc)}
-        alt=""
-        draggable="false"
-        loading="lazy"
-      />
-    </span>
   </span>
   {promptSrc && (
     <img
@@ -307,31 +299,13 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     height: auto;
     z-index: 2;
     display: block;
-    cursor: pointer;
+    pointer-events: none;
   }
   .phone-video__badge-wrap .phone-video__badge {
     position: static;
     top: auto;
     right: auto;
     width: 100%;
-  }
-  /* Hover-revealed preview of the app redesign phone graphic, cloned by
-     the custom cursor on hover so it floats attached to the pointer.
-     Hidden in place (the cloned copy is what the viewer sees). */
-  .phone-video__badge-preview {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    width: 220px;
-    pointer-events: none;
-    opacity: 0 !important;
-    transform: translateX(-50%) rotate(var(--tilt, 0deg));
-    z-index: 5;
-  }
-  .phone-video__badge-preview img {
-    width: 100%;
-    display: block;
-    filter: drop-shadow(0 18px 30px rgba(60, 30, 120, 0.18));
   }
 
   .phone-video__badge {
@@ -453,6 +427,41 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     }
   }
 
+  /* Small viewports: the phone otherwise fills the column (too tall to see
+     the project copy in one screen) and the floating cards spill off the
+     edges. Shrink the phone so the copy is visible, and crucially pull the
+     cards' bleed inward: a card that bleeds -22% of the phone width can only
+     stay on-screen when the phone is ≤~69% wide, so at these larger phone
+     sizes the bleed has to tighten or the cards get clipped at the edges. */
+  @media (max-width: 520px) {
+    .phone-video { max-width: min(348px, 80%); }
+    /* The badge's 128px min floor made it huge relative to the shrunk
+       phone (it stopped scaling down with the device and overpowered the
+       composition). Let it scale with the phone here so it reads as an
+       accent in the corner, not the focal point. */
+    .phone-video__badge-wrap,
+    .phone-video__badge {
+      width: clamp(82px, 38%, 150px);
+    }
+    .phone-video__cell--prompt {
+      left: clamp(-56px, -12%, -30px);
+      width: clamp(150px, 50%, 200px);
+    }
+    .phone-video__cell--quiz {
+      right: clamp(-52px, -12%, -28px);
+      width: clamp(140px, 46%, 185px);
+    }
+  }
+  @media (max-width: 380px) {
+    .phone-video { max-width: min(348px, 74%); }
+    .phone-video__cell--prompt {
+      left: clamp(-40px, -13%, -22px);
+    }
+    .phone-video__cell--quiz {
+      right: clamp(-40px, -13%, -20px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .phone-video__phone,
     .phone-video__badge,
@@ -560,8 +569,18 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       letter-spacing: 0.04em;
     }
     .phone-video__drag-hint-label::before {
-      content: "↕ drag the cards to move them";
+      content: "↕ drag cards to move, click to expand";
       font-size: 11px;
+    }
+  }
+
+  /* Stacked layout (≤900px): the text column sits directly under the phone,
+     so the hint's usual spot just below the graphic collides with it. Float
+     it above the cards instead. */
+  @media (max-width: 900px) {
+    .phone-video__drag-hint {
+      top: -34px;
+      bottom: auto;
     }
   }
 </style>

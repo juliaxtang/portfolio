@@ -142,30 +142,44 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
         const text = showcase ? showcase.querySelector(".showcase__text") : null;
         const minHeight = parseFloat(root.dataset.minHeight || "0");
         const matchHeight = () => {
-          // Only match in two-column mode — when stacked vertically, the
-          // text sits below the hero so heights aren't meant to align.
+          // On desktop the cluster height is matched to the sibling text
+          // column; when stacked (mobile) there's no sibling to match, so
+          // we just lock to the configured number of whole cards.
           const twoCol = window.matchMedia("(min-width: 901px)").matches;
-          if (twoCol && text && text.clientHeight > 0) {
-            let h = Math.max(text.clientHeight, minHeight);
-            const ch = cardHeight();
-            const off = offsetRightPx();
-            if (ch > 0) {
-              // When `showCards` is set, lock each column to exactly
-              // that many cards regardless of the matched/min height
-              // (the section grows to fit). Otherwise snap down to the
-              // largest whole-card multiple that fits inside the target
-              // height. Floor of 2 cards so the strip never collapses
-              // to a single tile.
-              const n = showCards > 0
+          const ch = cardHeight();
+          const off = offsetRightPx();
+          if (ch > 0) {
+            // When `showCards` is set, lock each column to exactly that many
+            // cards. On desktop, when it isn't set, snap down to the largest
+            // whole-card multiple that fits the matched/min height.
+            let n;
+            if (twoCol && text && text.clientHeight > 0) {
+              const h = Math.max(text.clientHeight, minHeight);
+              n = showCards > 0
                 ? Math.min(showCards, cards || showCards)
                 : Math.max(2, Math.floor((h - off) / ch));
-              const colH = n * ch;
-              cols.forEach((c) => (c.style.height = colH + "px"));
-              h = colH + off;
             } else {
-              cols.forEach((c) => (c.style.height = ""));
+              // Stacked (mobile): give the columns a real height. Without it
+              // the absolutely-positioned strip images leave the grid rows
+              // at 0 height and the whole cluster renders blank.
+              n = showCards > 0 ? Math.min(showCards, cards || showCards) : (cards || 3);
             }
-            root.style.height = h + "px";
+            const colH = n * ch;
+            cols.forEach((c) => (c.style.height = colH + "px"));
+            if (twoCol) {
+              // Desktop two-column layout adds the masonry offset to the
+              // root height; the column drift breathes inside that buffer.
+              root.style.height = (colH + off) + "px";
+              root.style.alignContent = "";
+            } else {
+              // Stacked (mobile): reserve a drift buffer above and below the
+              // cards (equal to the max column drift) and center the row
+              // inside it, so the parallax can still run without the bottom
+              // card pushing over the title below. Zero when motion reduced.
+              const drift = reduced ? 0 : ch * 0.2;
+              root.style.height = (colH + drift * 2) + "px";
+              root.style.alignContent = "center";
+            }
             root.dataset.matched = "true";
           } else {
             root.style.height = "";
@@ -210,6 +224,12 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
           // wrapper has overflow:visible so this column drift can extend
           // a few px past the section bounds without clipping.
           const ch = cardHeight();
+          // Column-box parallax drift runs on both layouts. On the stacked
+          // (mobile) layout matchHeight reserves a buffer above/below the
+          // cards (and centers the row in it) so a downward drift can't push
+          // the bottom card over the title below; mobile also uses a gentler
+          // drift magnitude that fits inside that buffer.
+          const twoCol = window.matchMedia("(min-width: 901px)").matches;
           cols.forEach((col, i) => {
             const img = imgs[i];
             if (img && ch > 0) {
@@ -233,7 +253,9 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
               // down, so they slide past each other. Cosine ease so the
               // motion lingers near its midpoint instead of racing
               // edge-to-edge.
-              const driftRange = ch * 0.35;
+              // Desktop drifts a full 0.35 card-height; mobile uses a gentler
+              // 0.2 that fits inside the buffer reserved by matchHeight.
+              const driftRange = ch * (twoCol ? 0.35 : 0.2);
               const eased = 0.5 - 0.5 * Math.cos(Math.PI * progress);
               const direction = i === 0 ? -1 : 1;
               const colY = (eased - 0.5) * 2 * driftRange * direction;

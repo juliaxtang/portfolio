@@ -325,7 +325,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </Showcase>
   </FadeIn>
 
-  <div id="tappy-cloud" data-cursor-bg="dark" style="transform: translateX(-40px);">
+  <div id="tappy-cloud" data-cursor-bg="dark">
     <FadeIn class="fade-in--showcase">
       <TappyCloudShowcase reverse />
     </FadeIn>
@@ -390,6 +390,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   @media (max-width: 720px) {
     .home-footer-spacer { height: var(--s-16); }
+  }
+
+  /* Desktop-only decorative nudge: the staggered Dynamic Profiles columns
+     read better pulled slightly left into the gutter. Below the desktop
+     breakpoint the section fills the column, so the shift would push its
+     left edge (eyebrow, logo, title) off-canvas — drop it there. */
+  :global(#tappy-cloud) {
+    transform: translateX(-40px);
+  }
+  @media (max-width: 1023px) {
+    :global(#tappy-cloud) {
+      transform: none;
+    }
   }
 
   /* Tappy Cloud's staggered columns make the section visually taller

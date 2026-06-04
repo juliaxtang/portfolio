@@ -1,87 +1,60 @@
 ---
 /**
  * Arrow — a hand-drawn-style arrow that points from one element to
- * another. The shaft is a single cubic bezier with both endpoints
- * pinned to a vertical tangent, so the arrow always reads as flowing
- * down out of the source and landing as a clean down-arrow at the tip.
+ * another. The shaft is a single cubic bezier (or straight line) with
+ * endpoints pinned via getBoundingClientRect(), recomputed on scroll,
+ * resize, and font-load. The SVG is portaled to <body> on init.
  *
- * Path coordinates are computed in viewport space at runtime via
- * getBoundingClientRect() of the `from` and `to` elements, then
- * recomputed on every scroll, resize, font-load, and load event so the
- * arrow stays glued to live layout. The SVG itself is a full-viewport
- * canvas (no viewBox; user units = CSS pixels) and is portaled to
- * <body> on init so its position: fixed escapes any ancestor with a
- * containing-block trap (e.g. main with `will-change: transform`).
+ * Path modes:
+ *   vertical-s (default) — S-curve, vertical tangents at both ends
+ *   straight — line between anchors
+ *   straight-horizontal — same Y as the from anchor; tip X from the to
+ *     anchor (level line between two elements)
+ *   horizontal-left — level line from the from anchor straight left; tip
+ *     is not pinned to `to`. Optional `length` (px) and `boundTo` + `boundGap`
+ *     stop the tip before a graphic (e.g. games deck)
+ *   vertical-down — plumb line: tail at from anchor, tip at `to`; tip X
+ *     matches tail X (centered under the from box when using bottom-center)
+ *   curve-drag-phone — cubic tuned to match the App Redesign drag-to-move
+ *     PNG (masked arrow on PhoneVideoParallax)
+ *   curve-drag-media — cubic tuned to match the Topic Chats drag hint
+ *     (masked arrow on MediaParallax, curve points up toward cells)
  *
- * Visibility is class-driven: the SVG opacity 0 by default, fades in +
- * draws when `.is-pointing` is added. If a `trigger` selector is
- * provided, the component wires its own hover-to-show on that
- * element. Otherwise the caller toggles `.is-pointing` directly.
- *
- * Hidden under 720px (the meta-stack-on-mobile breakpoint elsewhere on
- * the site) since hover-driven wayfinding doesn't apply on touch.
- *
- * Multiple instances per page are safe — each gets a unique
- * `data-arrow-id` and the inline script's init loop is idempotent.
- *
- * Usage:
- *   <Arrow from=".source-text" to=".target-bar" />
- *   <Arrow
- *     from=".v2-hero__doodle-link"
- *     to=".doodle__bar"
- *     trigger=".v2-hero__meta-col--ai"
- *     padding={12}
- *     color="var(--brand-secondary-2)"
- *     thickness={2.5}
- *     liftCompensation={36}
- *     liftActiveSelector="[data-prompted], [data-active]"
- *   />
- *
- * Props:
- *   from               required CSS selector for the start element
- *   to                 required CSS selector for the end element (tip)
- *   trigger            optional CSS selector; when present, hovering
- *                      this element toggles `.is-pointing` on the
- *                      arrow with built-in scroll-bounds-check so the
- *                      arrow closes when the cursor scrolls off the
- *                      trigger without moving
- *   padding            px breathing room at BOTH ends — distance
- *                      below the `from` element's bottom edge to the
- *                      shaft's start, AND distance from the tip up to
- *                      the `to` element's top edge. Default 12.
- *   color              any CSS color value. Default `var(--text-
- *                      secondary)` which auto-flips between light and
- *                      dark mode via the design tokens. Pass a CSS
- *                      variable for theme-aware custom colors, or a
- *                      hex / rgb for fixed colors.
- *   thickness          stroke width in px (default 2). Applies to
- *                      both shaft and arrowhead. Bump up for chunkier
- *                      hand-drawn marks; below 1.5 starts to look thin
- *                      against the page's body text.
- *   liftCompensation   px to compensate for an upward shift the `to`
- *                      element undergoes when activated (e.g. a
- *                      toolbar that lifts when prompted). Combined
- *                      with `liftActiveSelector`, the path is computed
- *                      against the eventual lifted position regardless
- *                      of when the path is computed (default 0)
- *   liftActiveSelector when set, the lift compensation is only applied
- *                      if no ancestor of `to` matches this selector
- *                      (i.e. the lift hasn't been triggered yet); when
- *                      omitted with a non-zero liftCompensation, the
- *                      compensation is always applied
- *   id                 unique id for this arrow; auto-generated if
- *                      omitted (use to target a specific instance)
+ * Visibility:
+ *   With `trigger`, hover shows the arrow (default doodle pattern).
+ *   With `persistent`, the arrow is shown whenever hide rules allow.
+ *   `watchRoot` + `hideWhen` mirror existing CSS affordance hide logic.
  */
 
 interface Props {
   from: string;
-  to: string;
+  /** Omit when using horizontal-left (tip is computed, not anchored). */
+  to?: string;
   trigger?: string;
+  /** Anchor on the from element. Default bottom-center. */
+  fromAnchor?: string;
+  /** Anchor on the to element. Default top-center. */
+  toAnchor?: string;
+  /** vertical-s | straight | straight-horizontal | horizontal-left | vertical-down | curve-drag-phone | curve-drag-media */
+  path?: string;
+  /** horizontal-left: max shaft length in px (default 160). */
+  length?: number;
+  /** horizontal-left: do not draw past this element's right edge + boundGap. */
+  boundTo?: string;
+  boundGap?: number;
   padding?: number;
   color?: string;
   thickness?: number;
   liftCompensation?: number;
   liftActiveSelector?: string;
+  /** When true, arrow is visible (drawn) without a hover trigger. */
+  persistent?: boolean;
+  /** Root element for hide-rule listeners (e.g. ".card-stack"). */
+  watchRoot?: string;
+  /** Comma-separated hide rules: deck-hover, root-class:is-advanced, root-class:is-interacted, cell-hover */
+  hideWhen?: string;
+  /** Hide arrow below this viewport width (matches showcase pill breakpoints). */
+  hideBelowWidth?: number;
   id?: string;
 }
 
@@ -89,11 +62,21 @@ const {
   from,
   to,
   trigger,
+  fromAnchor = "bottom-center",
+  toAnchor = "top-center",
+  path = "vertical-s",
+  length = 160,
+  boundTo = "",
+  boundGap = 16,
   padding = 12,
   color = "var(--text-secondary)",
   thickness = 2,
   liftCompensation = 0,
   liftActiveSelector,
+  persistent = false,
+  watchRoot = "",
+  hideWhen = "",
+  hideBelowWidth = 0,
   id,
 } = Astro.props;
 
@@ -102,15 +85,25 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
 ---
 
 <svg
-  class="hand-arrow"
+  class:list={["hand-arrow", persistent && "hand-arrow--persistent"]}
   style={inlineStyle}
   data-arrow-id={arrowId}
   data-from={from}
-  data-to={to}
+  data-to={to ?? ""}
+  data-length={length}
+  data-bound-to={boundTo}
+  data-bound-gap={boundGap}
   data-trigger={trigger ?? ""}
+  data-from-anchor={fromAnchor}
+  data-to-anchor={toAnchor}
+  data-path={path}
   data-padding={padding}
   data-lift-px={liftCompensation}
   data-lift-sel={liftActiveSelector ?? ""}
+  data-persistent={persistent ? "true" : ""}
+  data-watch-root={watchRoot}
+  data-hide-when={hideWhen}
+  data-hide-below={hideBelowWidth || ""}
   aria-hidden="true"
   focusable="false"
 >
@@ -141,18 +134,13 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
 </svg>
 
 <style is:global>
-  /* Marked is:global because the SVG is portaled to <body> at runtime,
-     which would otherwise drop out of the component's scoped styles.
-     Also lets a single rule cover all instances on the page.
-     `color` and `--hand-arrow-stroke-width` come in via inline style
-     on the SVG element so they can be configured per instance. */
   .hand-arrow {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 50;
+    z-index: 200;
     opacity: 0;
     overflow: visible;
     transition: opacity 240ms var(--ease-out);
@@ -165,7 +153,6 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   .hand-arrow__shaft {
     transition: stroke-dashoffset 720ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* Wings emerge after the shaft lands; delay matches shaft duration. */
   .hand-arrow__head {
     transition: stroke-dashoffset 200ms cubic-bezier(0.22, 1, 0.36, 1) 720ms;
   }
@@ -175,9 +162,13 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   .hand-arrow.is-pointing path {
     stroke-dashoffset: 0;
   }
+  /* Persistent showcase hints start visible once path is ready. */
+  .hand-arrow.hand-arrow--persistent.is-pointing path {
+    stroke-dashoffset: 0;
+  }
 
   @media (max-width: 720px) {
-    .hand-arrow {
+    .hand-arrow:not(.hand-arrow--persistent) {
       display: none;
     }
   }
@@ -193,6 +184,55 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
 
 <script is:inline>
   (() => {
+    function anchorPoint(rect, anchor, pad, isEnd) {
+      const a = anchor || "bottom-center";
+      const p = pad || 0;
+      const parts = a.split("-");
+      let x = rect.left + rect.width / 2;
+      let y = rect.top + rect.height / 2;
+      /* Tail (isEnd false): pad outside the box. Tip (isEnd true): pad
+         outside on top/bottom; on left/right use inward offset so the
+         arrowhead clears the edge (e.g. deck right face, toolbar top). */
+      if (parts.indexOf("left") >= 0) {
+        x = isEnd ? rect.left + p : rect.left - p;
+      } else if (parts.indexOf("right") >= 0) {
+        x = isEnd ? rect.right - p : rect.right + p;
+      }
+      if (parts.indexOf("top") >= 0) {
+        y = rect.top - p;
+      } else if (parts.indexOf("bottom") >= 0) {
+        y = rect.bottom + p;
+      }
+      return { x: x, y: y };
+    }
+
+    function setHeads(heads, tx, ty, backX, backY) {
+      const bdx = backX - tx;
+      const bdy = backY - ty;
+      const blen = Math.hypot(bdx, bdy);
+      if (blen === 0) return;
+      const ux = bdx / blen;
+      const uy = bdy / blen;
+      const wlen = 18;
+      const ang = (25 * Math.PI) / 180;
+      const ca = Math.cos(ang);
+      const sa = Math.sin(ang);
+      const w1x = tx + wlen * (ux * ca - uy * sa);
+      const w1y = ty + wlen * (ux * sa + uy * ca);
+      const w2x = tx + wlen * (ux * ca + uy * sa);
+      const w2y = ty + wlen * (-ux * sa + uy * ca);
+      heads[0].setAttribute(
+        "d",
+        "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
+        " L " + w1x.toFixed(1) + " " + w1y.toFixed(1)
+      );
+      heads[1].setAttribute(
+        "d",
+        "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
+        " L " + w2x.toFixed(1) + " " + w2y.toFixed(1)
+      );
+    }
+
     function init() {
       document
         .querySelectorAll("[data-arrow-id]:not([data-arrow-ready])")
@@ -205,40 +245,152 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
       const fromSel = arrow.dataset.from;
       const toSel = arrow.dataset.to;
       const triggerSel = arrow.dataset.trigger;
+      const fromAnchor = arrow.dataset.fromAnchor || "bottom-center";
+      const toAnchor = arrow.dataset.toAnchor || "top-center";
       const padding = parseFloat(arrow.dataset.padding) || 0;
       const liftPx = parseFloat(arrow.dataset.liftPx) || 0;
       const liftActiveSel = arrow.dataset.liftSel;
+      const persistent = arrow.dataset.persistent === "true";
+      const watchRootSel = arrow.dataset.watchRoot || "";
+      const hideRules = (arrow.dataset.hideWhen || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const hideBelow = parseInt(arrow.dataset.hideBelow || "0", 10);
 
-      const fromEl = fromSel && document.querySelector(fromSel);
-      const toEl = toSel && document.querySelector(toSel);
+      /* Scope anchors to this showcase instance before portaling to body. */
+      const scopeRoot =
+        arrow.closest("[data-card-stack]") ||
+        arrow.closest(".phone-video") ||
+        arrow.closest(".media-parallax");
+      const watchRoot =
+        scopeRoot ||
+        (watchRootSel ? document.querySelector(watchRootSel) : null);
+
+      function resolveTarget(sel) {
+        if (!sel) return null;
+        if (scopeRoot) {
+          /* ID selectors (#pvp-…) still need document scope. */
+          if (sel.charAt(0) === "#") {
+            const id = sel.match(/^#([^\s.#>+~[,]+)/);
+            if (id && scopeRoot.id === id[1]) {
+              const rest = sel.slice(id[0].length).trim();
+              if (!rest) return scopeRoot;
+              const inner = scopeRoot.querySelector(rest);
+              if (inner) return inner;
+            }
+          } else {
+            const inner = scopeRoot.querySelector(sel);
+            if (inner) return inner;
+          }
+        }
+        return document.querySelector(sel);
+      }
+
+      const pathMode = arrow.dataset.path || "vertical-s";
+      const boundToSel = arrow.dataset.boundTo || "";
+      const boundGap = parseFloat(arrow.dataset.boundGap) || 0;
+      const horizLength = parseFloat(arrow.dataset.length) || 160;
+
+      const fromEl = resolveTarget(fromSel);
+      const toEl = toSel ? resolveTarget(toSel) : null;
+      const boundEl = boundToSel ? resolveTarget(boundToSel) : null;
       const triggerEl = triggerSel
         ? document.querySelector(triggerSel)
         : null;
       const shaft = arrow.querySelector(".hand-arrow__shaft");
       const heads = arrow.querySelectorAll(".hand-arrow__head");
 
-      if (!fromEl || !toEl || !shaft || heads.length < 2) return;
+      if (!fromEl || !shaft || heads.length < 2) return;
+      if (
+        pathMode !== "horizontal-left" &&
+        pathMode !== "vertical-down" &&
+        !toEl
+      ) {
+        return;
+      }
+      if (pathMode === "vertical-down" && !toEl) return;
 
-      // Portal to <body> so position: fixed anchors to the viewport.
-      // Ancestors with `will-change: transform` (e.g. <main> on this
-      // site) make themselves containing blocks for fixed descendants
-      // and would trap the arrow inside their scrollable box.
       if (arrow.parentElement !== document.body) {
         document.body.appendChild(arrow);
       }
 
       function updatePath() {
+        if (hideBelow && window.matchMedia("(max-width: " + hideBelow + "px)").matches) {
+          arrow.classList.remove("is-pointing");
+          return;
+        }
+
         const fr = fromEl.getBoundingClientRect();
+        const fromGone =
+          fr.width === 0 && fr.height === 0 && fr.left === 0 && fr.top === 0;
+        if (fromGone) return;
+
+        const start = anchorPoint(fr, fromAnchor, padding, false);
+        let sx = start.x;
+        let sy = start.y;
+
+        let tx;
+        let ty;
+        let dx;
+        let dy;
+        let c1x, c1y, c2x, c2y;
+        let backX, backY;
+
+        if (pathMode === "horizontal-left") {
+          /* Tail at from (e.g. left of label); tip extends straight left. */
+          ty = sy;
+          tx = sx - horizLength;
+          if (boundEl) {
+            const br = boundEl.getBoundingClientRect();
+            const cap = br.right + boundGap;
+            if (tx < cap) tx = cap;
+          }
+          if (tx >= sx - 8) return;
+          dx = tx - sx;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " L " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = tx + 0.85 * (sx - tx);
+          backY = sy;
+          setHeads(heads, tx, ty, backX, backY);
+          return;
+        }
+
+        if (pathMode === "vertical-down") {
+          const tr = toEl.getBoundingClientRect();
+          const toGone =
+            tr.width === 0 && tr.height === 0 && tr.left === 0 && tr.top === 0;
+          if (toGone) return;
+          /* Plumb line under the hint; tip lands on the target edge below
+             the tail (Topic Chats scoreboard under the label). */
+          tx = sx;
+          const top = anchorPoint(tr, "top-center", padding, true);
+          const bottom = anchorPoint(tr, "bottom-center", padding, true);
+          let ty = top.y;
+          if (top.y <= sy + 8) {
+            if (bottom.y > sy + 8) ty = bottom.y;
+            else ty = sy + Math.max(48, tr.height * 0.35);
+          }
+          if (Math.abs(ty - sy) < 8) return;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " L " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = sx;
+          backY = sy + 0.85 * (ty - sy);
+          setHeads(heads, tx, ty, backX, backY);
+          return;
+        }
+
         const tr = toEl.getBoundingClientRect();
-        if (fr.width === 0 || tr.width === 0) return;
+        const toGone =
+          tr.width === 0 && tr.height === 0 && tr.left === 0 && tr.top === 0;
+        if (toGone) return;
 
-        // Start: bottom-center of the source element, offset down by
-        // `padding` so the shaft doesn't sit flush against the text.
-        const sx = fr.left + fr.width / 2;
-        const sy = fr.bottom + padding;
-
-        // Tip: top-center of the target, offset up by `padding` (with
-        // optional lift compensation if the target shifts on activation).
         let lift = 0;
         if (liftPx > 0) {
           if (liftActiveSel) {
@@ -248,100 +400,206 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
             lift = liftPx;
           }
         }
-        const tx = tr.left + tr.width / 2;
-        const ty = tr.top - lift - padding;
+        const end = anchorPoint(tr, toAnchor, padding, true);
+        tx = end.x;
+        ty = end.y - lift;
 
-        const dx = tx - sx;
-        const dy = ty - sy;
+        dx = tx - sx;
+        dy = ty - sy;
 
-        // Single cubic with both controls at the vertical midpoint —
-        // c1 directly below start, c2 directly above tip — so the
-        // tangents at both endpoints are purely vertical. Yields a
-        // clean symmetric S-curve with no inflection wobble.
-        const c1x = sx;
-        const c1y = sy + 0.5 * dy;
-        const c2x = tx;
-        const c2y = ty - 0.5 * dy;
+        if (pathMode === "straight-horizontal") {
+          ty = sy;
+          tx = end.x;
+          dx = tx - sx;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " L " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = sx + 0.85 * dx;
+          backY = sy;
+        } else if (pathMode === "straight") {
+          c1x = sx;
+          c1y = sy;
+          c2x = tx;
+          c2y = ty;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " L " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = sx + 0.85 * dx;
+          backY = sy + 0.85 * dy;
+        } else if (pathMode === "curve-drag-phone") {
+          /* App Redesign: tail by “expand”, tip at quiz right-center; wide
+             arc bowing right (red-path reference), then into the card. */
+          const span = Math.hypot(dx, dy) || 1;
+          const lead = Math.max(52, span * 0.12);
+          const bow = Math.max(105, span * 0.5, Math.abs(sx - tx) * 0.75);
+          const peakX = Math.max(sx, tx) + bow;
+          c1x = sx + lead;
+          c1y = sy + 0.05 * dy;
+          c2x = peakX;
+          c2y = sy + 0.5 * dy;
+          if (c2x < tx + 36) c2x = tx + 36;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
+            ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
+            ", " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = c2x;
+          backY = c2y;
+        } else if (pathMode === "curve-drag-media") {
+          /* Topic Chats hint: curve rises from label toward upper-left cell. */
+          c1x = sx + 0.42 * dx;
+          c1y = sy + 0.02 * dy;
+          c2x = tx - 0.08 * Math.abs(dx);
+          c2y = sy + 0.38 * dy;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
+            ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
+            ", " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = c2x;
+          backY = c2y;
+        } else {
+          c1x = sx;
+          c1y = sy + 0.5 * dy;
+          c2x = tx;
+          c2y = ty - 0.5 * dy;
+          shaft.setAttribute(
+            "d",
+            "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+            " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
+            ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
+            ", " + tx.toFixed(1) + " " + ty.toFixed(1)
+          );
+          backX = c2x;
+          backY = c2y;
+        }
 
-        shaft.setAttribute(
-          "d",
-          "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
-          " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
-          ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
-          ", " + tx.toFixed(1) + " " + ty.toFixed(1)
-        );
-
-        // Wings emerge from the tip outward, splayed ±25° from the
-        // shaft's back-tangent (the vector from tip back toward c2).
-        const bdx = c2x - tx;
-        const bdy = c2y - ty;
-        const blen = Math.hypot(bdx, bdy);
-        if (blen === 0) return;
-        const ux = bdx / blen;
-        const uy = bdy / blen;
-        const wlen = 18;
-        const ang = (25 * Math.PI) / 180;
-        const ca = Math.cos(ang);
-        const sa = Math.sin(ang);
-
-        const w1x = tx + wlen * (ux * ca - uy * sa);
-        const w1y = ty + wlen * (ux * sa + uy * ca);
-        const w2x = tx + wlen * (ux * ca + uy * sa);
-        const w2y = ty + wlen * (-ux * sa + uy * ca);
-
-        heads[0].setAttribute(
-          "d",
-          "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
-          " L " + w1x.toFixed(1) + " " + w1y.toFixed(1)
-        );
-        heads[1].setAttribute(
-          "d",
-          "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
-          " L " + w2x.toFixed(1) + " " + w2y.toFixed(1)
-        );
+        setHeads(heads, tx, ty, backX, backY);
       }
 
-      // Initial render + recompute on viewport / layout changes
-      // (rAF-throttled so scroll bursts coalesce to one paint per frame).
-      updatePath();
+      function shouldHide() {
+        if (hideBelow && window.matchMedia("(max-width: " + hideBelow + "px)").matches) {
+          return true;
+        }
+        if (!watchRoot) return false;
+        for (let i = 0; i < hideRules.length; i++) {
+          const rule = hideRules[i];
+          if (rule === "deck-hover") {
+            const deck = watchRoot.querySelector("[data-deck]");
+            if (deck && deck.matches(":hover")) return true;
+          } else if (rule === "cell-hover") {
+            if (watchRoot.querySelector(".phone-video__cell:hover, .media-parallax__cell:hover")) {
+              return true;
+            }
+          } else if (rule === "cell-active") {
+            if (
+              watchRoot.querySelector(
+                ".phone-video__cell.is-grabbing, .phone-video__cell.is-focused, .media-parallax__cell.is-grabbing, .media-parallax__cell.is-focused"
+              )
+            ) {
+              return true;
+            }
+          } else if (rule.indexOf("root-class:") === 0) {
+            const cls = rule.slice("root-class:".length);
+            if (cls && watchRoot.classList.contains(cls)) return true;
+          }
+        }
+        return false;
+      }
+
+      let triggerActive = false;
+
+      function syncVisible() {
+        if (shouldHide()) {
+          arrow.classList.remove("is-pointing");
+          return;
+        }
+        updatePath();
+        if (persistent || triggerActive) {
+          arrow.classList.add("is-pointing");
+        } else {
+          arrow.classList.remove("is-pointing");
+        }
+      }
+
       let pathRaf = 0;
       const schedulePath = () => {
         if (pathRaf) return;
         pathRaf = requestAnimationFrame(() => {
           pathRaf = 0;
-          updatePath();
+          syncVisible();
         });
       };
+
+      syncVisible();
       window.addEventListener("resize", schedulePath);
       window.addEventListener("scroll", schedulePath, { passive: true });
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(updatePath);
+        document.fonts.ready.then(syncVisible);
       }
-      window.addEventListener("load", updatePath);
+      window.addEventListener("load", syncVisible);
 
-      // Optional built-in trigger handling: hover the trigger to show.
-      // External callers can still toggle .is-pointing manually if they
-      // want different driving logic.
+      if (watchRoot) {
+        watchRoot.querySelectorAll("img, video").forEach((media) => {
+          if (media.tagName === "VIDEO") {
+            if (media.readyState < 2) {
+              media.addEventListener("loadeddata", schedulePath, { once: true });
+            }
+          } else if (!media.complete) {
+            media.addEventListener("load", schedulePath, { once: true });
+          }
+        });
+        if (typeof ResizeObserver !== "undefined") {
+          const ro = new ResizeObserver(schedulePath);
+          ro.observe(watchRoot);
+        }
+      }
+
+      if (watchRoot && hideRules.length) {
+        const deck = watchRoot.querySelector("[data-deck]");
+        if (deck) {
+          deck.addEventListener("mouseenter", schedulePath);
+          deck.addEventListener("mouseleave", schedulePath);
+        }
+        watchRoot.querySelectorAll(
+          ".phone-video__cell, .media-parallax__cell"
+        ).forEach((cell) => {
+          cell.addEventListener("mouseenter", schedulePath);
+          cell.addEventListener("mouseleave", schedulePath);
+          cell.addEventListener("pointerdown", schedulePath);
+        });
+        const mo = new MutationObserver(schedulePath);
+        mo.observe(watchRoot, {
+          attributes: true,
+          attributeFilter: ["class"],
+          subtree: true,
+        });
+      }
+
       if (triggerEl) {
         const onEnter = () => {
-          updatePath();
-          arrow.classList.add("is-pointing");
+          triggerActive = true;
+          syncVisible();
         };
         const onLeave = () => {
-          arrow.classList.remove("is-pointing");
+          triggerActive = false;
+          if (!persistent) syncVisible();
         };
         triggerEl.addEventListener("mouseenter", onEnter);
         triggerEl.addEventListener("mouseleave", onLeave);
+        triggerEl.addEventListener("focusin", onEnter);
         triggerEl.addEventListener("focusout", (e) => {
           if (!triggerEl.contains(e.relatedTarget)) onLeave();
         });
 
-        // Scroll-bounds check: browsers don't reliably fire mouseleave
-        // when an element scrolls out from under a stationary cursor.
-        // Read --cursor-x / --cursor-y published by CustomCursor on
-        // <html>; if the cursor is no longer inside the trigger's
-        // viewport rect after a scroll, close the arrow. Falls back
-        // to closing on any scroll if those vars aren't populated.
         let scrollRaf = 0;
         const checkOnScroll = () => {
           scrollRaf = 0;
@@ -355,7 +613,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
               cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
             if (inside) return;
           }
-          onLeave();
+          if (!persistent) onLeave();
         };
         window.addEventListener(
           "scroll",
@@ -365,6 +623,8 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
           },
           { passive: true }
         );
+      } else if (!persistent) {
+        arrow.classList.remove("is-pointing");
       }
     }
 
@@ -373,5 +633,6 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
     } else {
       init();
     }
+    document.addEventListener("hand-arrow:refresh", init);
   })();
 </script>

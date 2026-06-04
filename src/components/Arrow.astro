@@ -1,0 +1,377 @@
+---
+/**
+ * Arrow — a hand-drawn-style arrow that points from one element to
+ * another. The shaft is a single cubic bezier with both endpoints
+ * pinned to a vertical tangent, so the arrow always reads as flowing
+ * down out of the source and landing as a clean down-arrow at the tip.
+ *
+ * Path coordinates are computed in viewport space at runtime via
+ * getBoundingClientRect() of the `from` and `to` elements, then
+ * recomputed on every scroll, resize, font-load, and load event so the
+ * arrow stays glued to live layout. The SVG itself is a full-viewport
+ * canvas (no viewBox; user units = CSS pixels) and is portaled to
+ * <body> on init so its position: fixed escapes any ancestor with a
+ * containing-block trap (e.g. main with `will-change: transform`).
+ *
+ * Visibility is class-driven: the SVG opacity 0 by default, fades in +
+ * draws when `.is-pointing` is added. If a `trigger` selector is
+ * provided, the component wires its own hover-to-show on that
+ * element. Otherwise the caller toggles `.is-pointing` directly.
+ *
+ * Hidden under 720px (the meta-stack-on-mobile breakpoint elsewhere on
+ * the site) since hover-driven wayfinding doesn't apply on touch.
+ *
+ * Multiple instances per page are safe — each gets a unique
+ * `data-arrow-id` and the inline script's init loop is idempotent.
+ *
+ * Usage:
+ *   <Arrow from=".source-text" to=".target-bar" />
+ *   <Arrow
+ *     from=".v2-hero__doodle-link"
+ *     to=".doodle__bar"
+ *     trigger=".v2-hero__meta-col--ai"
+ *     padding={12}
+ *     color="var(--brand-secondary-2)"
+ *     thickness={2.5}
+ *     liftCompensation={36}
+ *     liftActiveSelector="[data-prompted], [data-active]"
+ *   />
+ *
+ * Props:
+ *   from               required CSS selector for the start element
+ *   to                 required CSS selector for the end element (tip)
+ *   trigger            optional CSS selector; when present, hovering
+ *                      this element toggles `.is-pointing` on the
+ *                      arrow with built-in scroll-bounds-check so the
+ *                      arrow closes when the cursor scrolls off the
+ *                      trigger without moving
+ *   padding            px breathing room at BOTH ends — distance
+ *                      below the `from` element's bottom edge to the
+ *                      shaft's start, AND distance from the tip up to
+ *                      the `to` element's top edge. Default 12.
+ *   color              any CSS color value. Default `var(--text-
+ *                      secondary)` which auto-flips between light and
+ *                      dark mode via the design tokens. Pass a CSS
+ *                      variable for theme-aware custom colors, or a
+ *                      hex / rgb for fixed colors.
+ *   thickness          stroke width in px (default 2). Applies to
+ *                      both shaft and arrowhead. Bump up for chunkier
+ *                      hand-drawn marks; below 1.5 starts to look thin
+ *                      against the page's body text.
+ *   liftCompensation   px to compensate for an upward shift the `to`
+ *                      element undergoes when activated (e.g. a
+ *                      toolbar that lifts when prompted). Combined
+ *                      with `liftActiveSelector`, the path is computed
+ *                      against the eventual lifted position regardless
+ *                      of when the path is computed (default 0)
+ *   liftActiveSelector when set, the lift compensation is only applied
+ *                      if no ancestor of `to` matches this selector
+ *                      (i.e. the lift hasn't been triggered yet); when
+ *                      omitted with a non-zero liftCompensation, the
+ *                      compensation is always applied
+ *   id                 unique id for this arrow; auto-generated if
+ *                      omitted (use to target a specific instance)
+ */
+
+interface Props {
+  from: string;
+  to: string;
+  trigger?: string;
+  padding?: number;
+  color?: string;
+  thickness?: number;
+  liftCompensation?: number;
+  liftActiveSelector?: string;
+  id?: string;
+}
+
+const {
+  from,
+  to,
+  trigger,
+  padding = 12,
+  color = "var(--text-secondary)",
+  thickness = 2,
+  liftCompensation = 0,
+  liftActiveSelector,
+  id,
+} = Astro.props;
+
+const arrowId = id ?? `arrow-${Math.random().toString(36).slice(2, 9)}`;
+const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;`;
+---
+
+<svg
+  class="hand-arrow"
+  style={inlineStyle}
+  data-arrow-id={arrowId}
+  data-from={from}
+  data-to={to}
+  data-trigger={trigger ?? ""}
+  data-padding={padding}
+  data-lift-px={liftCompensation}
+  data-lift-sel={liftActiveSelector ?? ""}
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    class="hand-arrow__shaft"
+    pathLength="100"
+    fill="none"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    class="hand-arrow__head"
+    pathLength="100"
+    fill="none"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    class="hand-arrow__head"
+    pathLength="100"
+    fill="none"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
+
+<style is:global>
+  /* Marked is:global because the SVG is portaled to <body> at runtime,
+     which would otherwise drop out of the component's scoped styles.
+     Also lets a single rule cover all instances on the page.
+     `color` and `--hand-arrow-stroke-width` come in via inline style
+     on the SVG element so they can be configured per instance. */
+  .hand-arrow {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    overflow: visible;
+    transition: opacity 240ms var(--ease-out);
+  }
+  .hand-arrow path {
+    stroke-width: var(--hand-arrow-stroke-width, 2px);
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  .hand-arrow__shaft {
+    transition: stroke-dashoffset 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Wings emerge after the shaft lands; delay matches shaft duration. */
+  .hand-arrow__head {
+    transition: stroke-dashoffset 200ms cubic-bezier(0.22, 1, 0.36, 1) 720ms;
+  }
+  .hand-arrow.is-pointing {
+    opacity: 1;
+  }
+  .hand-arrow.is-pointing path {
+    stroke-dashoffset: 0;
+  }
+
+  @media (max-width: 720px) {
+    .hand-arrow {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hand-arrow path {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    function init() {
+      document
+        .querySelectorAll("[data-arrow-id]:not([data-arrow-ready])")
+        .forEach(setupArrow);
+    }
+
+    function setupArrow(arrow) {
+      arrow.setAttribute("data-arrow-ready", "");
+
+      const fromSel = arrow.dataset.from;
+      const toSel = arrow.dataset.to;
+      const triggerSel = arrow.dataset.trigger;
+      const padding = parseFloat(arrow.dataset.padding) || 0;
+      const liftPx = parseFloat(arrow.dataset.liftPx) || 0;
+      const liftActiveSel = arrow.dataset.liftSel;
+
+      const fromEl = fromSel && document.querySelector(fromSel);
+      const toEl = toSel && document.querySelector(toSel);
+      const triggerEl = triggerSel
+        ? document.querySelector(triggerSel)
+        : null;
+      const shaft = arrow.querySelector(".hand-arrow__shaft");
+      const heads = arrow.querySelectorAll(".hand-arrow__head");
+
+      if (!fromEl || !toEl || !shaft || heads.length < 2) return;
+
+      // Portal to <body> so position: fixed anchors to the viewport.
+      // Ancestors with `will-change: transform` (e.g. <main> on this
+      // site) make themselves containing blocks for fixed descendants
+      // and would trap the arrow inside their scrollable box.
+      if (arrow.parentElement !== document.body) {
+        document.body.appendChild(arrow);
+      }
+
+      function updatePath() {
+        const fr = fromEl.getBoundingClientRect();
+        const tr = toEl.getBoundingClientRect();
+        if (fr.width === 0 || tr.width === 0) return;
+
+        // Start: bottom-center of the source element, offset down by
+        // `padding` so the shaft doesn't sit flush against the text.
+        const sx = fr.left + fr.width / 2;
+        const sy = fr.bottom + padding;
+
+        // Tip: top-center of the target, offset up by `padding` (with
+        // optional lift compensation if the target shifts on activation).
+        let lift = 0;
+        if (liftPx > 0) {
+          if (liftActiveSel) {
+            const lifted = toEl.closest(liftActiveSel);
+            lift = lifted ? 0 : liftPx;
+          } else {
+            lift = liftPx;
+          }
+        }
+        const tx = tr.left + tr.width / 2;
+        const ty = tr.top - lift - padding;
+
+        const dx = tx - sx;
+        const dy = ty - sy;
+
+        // Single cubic with both controls at the vertical midpoint —
+        // c1 directly below start, c2 directly above tip — so the
+        // tangents at both endpoints are purely vertical. Yields a
+        // clean symmetric S-curve with no inflection wobble.
+        const c1x = sx;
+        const c1y = sy + 0.5 * dy;
+        const c2x = tx;
+        const c2y = ty - 0.5 * dy;
+
+        shaft.setAttribute(
+          "d",
+          "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
+          " C " + c1x.toFixed(1) + " " + c1y.toFixed(1) +
+          ", " + c2x.toFixed(1) + " " + c2y.toFixed(1) +
+          ", " + tx.toFixed(1) + " " + ty.toFixed(1)
+        );
+
+        // Wings emerge from the tip outward, splayed ±25° from the
+        // shaft's back-tangent (the vector from tip back toward c2).
+        const bdx = c2x - tx;
+        const bdy = c2y - ty;
+        const blen = Math.hypot(bdx, bdy);
+        if (blen === 0) return;
+        const ux = bdx / blen;
+        const uy = bdy / blen;
+        const wlen = 18;
+        const ang = (25 * Math.PI) / 180;
+        const ca = Math.cos(ang);
+        const sa = Math.sin(ang);
+
+        const w1x = tx + wlen * (ux * ca - uy * sa);
+        const w1y = ty + wlen * (ux * sa + uy * ca);
+        const w2x = tx + wlen * (ux * ca + uy * sa);
+        const w2y = ty + wlen * (-ux * sa + uy * ca);
+
+        heads[0].setAttribute(
+          "d",
+          "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
+          " L " + w1x.toFixed(1) + " " + w1y.toFixed(1)
+        );
+        heads[1].setAttribute(
+          "d",
+          "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
+          " L " + w2x.toFixed(1) + " " + w2y.toFixed(1)
+        );
+      }
+
+      // Initial render + recompute on viewport / layout changes
+      // (rAF-throttled so scroll bursts coalesce to one paint per frame).
+      updatePath();
+      let pathRaf = 0;
+      const schedulePath = () => {
+        if (pathRaf) return;
+        pathRaf = requestAnimationFrame(() => {
+          pathRaf = 0;
+          updatePath();
+        });
+      };
+      window.addEventListener("resize", schedulePath);
+      window.addEventListener("scroll", schedulePath, { passive: true });
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(updatePath);
+      }
+      window.addEventListener("load", updatePath);
+
+      // Optional built-in trigger handling: hover the trigger to show.
+      // External callers can still toggle .is-pointing manually if they
+      // want different driving logic.
+      if (triggerEl) {
+        const onEnter = () => {
+          updatePath();
+          arrow.classList.add("is-pointing");
+        };
+        const onLeave = () => {
+          arrow.classList.remove("is-pointing");
+        };
+        triggerEl.addEventListener("mouseenter", onEnter);
+        triggerEl.addEventListener("mouseleave", onLeave);
+        triggerEl.addEventListener("focusout", (e) => {
+          if (!triggerEl.contains(e.relatedTarget)) onLeave();
+        });
+
+        // Scroll-bounds check: browsers don't reliably fire mouseleave
+        // when an element scrolls out from under a stationary cursor.
+        // Read --cursor-x / --cursor-y published by CustomCursor on
+        // <html>; if the cursor is no longer inside the trigger's
+        // viewport rect after a scroll, close the arrow. Falls back
+        // to closing on any scroll if those vars aren't populated.
+        let scrollRaf = 0;
+        const checkOnScroll = () => {
+          scrollRaf = 0;
+          if (!arrow.classList.contains("is-pointing")) return;
+          const html = document.documentElement;
+          const cx = parseFloat(html.style.getPropertyValue("--cursor-x"));
+          const cy = parseFloat(html.style.getPropertyValue("--cursor-y"));
+          if (Number.isFinite(cx) && Number.isFinite(cy)) {
+            const r = triggerEl.getBoundingClientRect();
+            const inside =
+              cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
+            if (inside) return;
+          }
+          onLeave();
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (scrollRaf) return;
+            scrollRaf = requestAnimationFrame(checkOnScroll);
+          },
+          { passive: true }
+        );
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
+  })();
+</script>

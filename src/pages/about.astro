@@ -91,73 +91,174 @@ const hobbies = [
       <div class="about-body-stack">
         <div class="about-row">
           <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
-            <div class="portrait portrait--inline">
-              <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+            <div class="portrait-wrap__inner">
+              <div class="portrait portrait--inline">
+                <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
+              </div>
             </div>
           </div>
 
-          <div class="about-row__text">
-            <FadeIn delay={240}>
+          <div class="fade-in about-row__text about-note" style="transition-delay: 240ms">
+            <div class="about-note__inner">
               <p class="about-body">
                 I'm a Staff Product Designer at <span class="co-wrap"><strong class="co co--snap"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snap</strong>,</span> based in LA, where I present product strategy to the CEO weekly.
               </p>
-            </FadeIn>
 
-            <FadeIn delay={240}>
               <p class="about-body">
-                As an internet kid, I taught myself HTML to deck out my Neopets profile with <img class="glitter-inline" src={`${base}/about/glittergraphics.gif`} alt="glitter graphics" /> (shoutout to the <span class="fx fx--neopets"
+                As an internet kid, I taught myself HTML to deck out my Neopets profile with <span class="glitter" aria-label="glitter graphics"><span class="glitter__text">glitter graphics</span><img class="glitter__gif" src={`${base}/about/glittergraphics.gif`} alt="" aria-hidden="true" loading="lazy" /></span> (shoutout to the <span class="fx fx--neopets"
                   ><span class="fx-photo fx-photo--bare fx-photo--wide" style="--tilt:0deg" aria-hidden="true"><img
                     src={`${base}/about/neopets.jpg`} alt="" loading="lazy" /></span
-                  >Neopets HTML guide</span>). My taste was "..." questionable. But the love for making digital things stuck.
+                  >Neopets HTML guide</span>). My taste was<span class="ellipsis">. . .</span>questionable. But the love for making digital things stuck.
               </p>
-            </FadeIn>
-          </div>
-        </div>
 
-        <div class="about-row about-row--reverse">
-          <div class="about-row__text">
-            <FadeIn delay={240}>
               <p class="about-body">
                 Before product design, I studied <span class="fx fx--film"
                   ><span class="fx-photo" style="--tilt:-5deg" aria-hidden="true"><img
                     src={`${base}/about/film.png`} alt="" loading="lazy" /></span
-                  >film</span> at USC. I got my start in design working at an
-                agency on major film marketing campaigns, including my award-winning work on <a
-                  class="prose-out prose-out--preview"
-                  href="https://www.thetangentagency.com/projects/lego-movie-2"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                ><span
-                  class="prose-out__preview prose-out__preview--bare prose-out__preview--wide"
-                  style="--tilt:0deg; width:656px"
-                  aria-hidden="true"
-                ><img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" /></span><em>The
-                  Lego Movie 2</em></a>.
+                  >film</span> at USC, which gave me a deep appreciation for visual storytelling.
               </p>
-            </FadeIn>
 
-            <FadeIn delay={240}>
               <p class="about-body">
-                Mostly, I just love making things. Sometimes small, just for me. Sometimes a feature that solves a real problem. Sometimes quieter, the kind that exists to make you feel a particular way. The reasons change. The instinct doesn't.
+                Overall, I just love making and tinkering with things, whether it's fun side projects just for me, or fully scaled features for millions.
               </p>
-            </FadeIn>
-
-            <FadeIn delay={320}>
-              <div class="about-cta">
-                <a href={`${base}/#work`} class="cta-btn">
-                  Check out my work!
-                  <span class="cta-arrow" aria-hidden="true">↗</span>
-                </a>
-              </div>
-            </FadeIn>
-          </div>
-
-          <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
-            <div class="portrait portrait--inline portrait--inline-alt">
-              <img src={`${base}/about/julia%202.JPG`} alt="Second portrait of Julia Tang" loading="lazy" />
             </div>
           </div>
         </div>
+
+        <section class="exp" aria-label="Experience">
+          <FadeIn>
+            <p class="t-eyebrow about-eyebrow">Experience</p>
+          </FadeIn>
+
+          <ol class="exp-list" role="list">
+            <FadeIn delay={80}>
+              <li class="exp-row" data-cursor="hide">
+                <span class="exp-co-name">Snap Inc.</span>
+                <div class="exp-role">
+                  <p class="exp-role-title">Staff Product Designer</p>
+                  <p class="exp-role-desc">Owning design for Camera, AR, Messaging, and Growth, plus new product verticals like Games and Topic Chats.</p>
+                </div>
+                <p class="exp-dates">2024 — Now</p>
+                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:-2deg; width: 260px;" aria-hidden="true">
+                  <img src={`${base}/about/snapchat-hero.gif`} alt="" loading="lazy" />
+                </span>
+              </li>
+            </FadeIn>
+
+            <FadeIn delay={120}>
+              <li class="exp-row" data-cursor="hide">
+                <span class="exp-co-name">Tinder</span>
+                <div class="exp-role">
+                  <p class="exp-role-title">Senior Product Designer</p>
+                  <p class="exp-role-desc">Owned the Swipe Stack and user discovery profiles. Introduced dynamic profiles to Tinder and led 0 to 1 discovery experiences.</p>
+                </div>
+                <p class="exp-dates">2021 — 2024</p>
+                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:3deg; width: 260px;" aria-hidden="true">
+                  <img src={`${base}/about/tinder-hero.gif`} alt="" loading="lazy" />
+                </span>
+              </li>
+            </FadeIn>
+
+            <FadeIn delay={160}>
+              <li class="exp-row" data-cursor="hide">
+                <span class="exp-co-name">Whip Media</span>
+                <div class="exp-role">
+                  <p class="exp-role-title">UX Designer</p>
+                  <p class="exp-role-desc">Designed Whip Media Marketplace 0 to 1 and led UX for TV Time, the consumer mobile app, doubling monthly active users during my tenure.</p>
+                </div>
+                <p class="exp-dates">2019 — 2021</p>
+                <span class="fx-photo fx-photo--bare exp-reveal-art exp-reveal-art--bare" style="--tilt:-2deg; width: 300px;" aria-hidden="true">
+                  <img src={`${base}/projects/tv-time-onboarding/hero-2.webp`} alt="" loading="lazy" />
+                </span>
+              </li>
+            </FadeIn>
+
+            <FadeIn delay={200}>
+              <li class="exp-row" data-cursor="hide">
+                <span class="exp-co-name">Tangent Agency</span>
+                <div class="exp-role">
+                  <p class="exp-role-title">Graphic &amp; Motion Designer</p>
+                  <p class="exp-role-desc">Multi-format creative storytelling for marketing campaigns across major film and television releases.</p>
+                </div>
+                <p class="exp-dates">2018 — 2019</p>
+                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:2deg; width: 420px;" aria-hidden="true">
+                  <img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" />
+                </span>
+              </li>
+            </FadeIn>
+          </ol>
+        </section>
+
+        <section class="cred cred--solo" aria-label="Awards">
+          <div class="cred-col">
+            <FadeIn>
+              <p class="t-eyebrow about-eyebrow">Awards</p>
+            </FadeIn>
+            <FadeIn delay={80}>
+              <ul class="cred-list" role="list">
+                <li class="cred-row">
+                  <a class="cred-link" href="https://winners.webbyawards.com/2023" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                    <span class="cred-body">
+                      <span class="cred-title">Webby Award</span>
+                      <span class="cred-sub">Whip Media Marketplace</span>
+                    </span>
+                    <span class="cred-meta">2023</span>
+                  </a>
+                </li>
+                <li class="cred-row cred-row--reveal" data-cursor="hide">
+                  <div class="cred-body">
+                    <p class="cred-title">10-Year Hackathon Winner</p>
+                    <p class="cred-sub">Tinder App Redesign</p>
+                    <span class="fx-photo fx-photo--bare cred-reveal-phone" style="--tilt:-3deg; width: 200px;" aria-hidden="true">
+                      <span class="cred-phone">
+                        <span class="cred-phone__screen">
+                          <video
+                            src={`${base}/projects/tinder-app-redesign/sparks-recording.mp4`}
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            preload="metadata"
+                            aria-hidden="true"
+                          ></video>
+                        </span>
+                        <img class="cred-phone__frame" src={`${base}/projects/tinder-app-redesign/phone-frame.png`} alt="" aria-hidden="true" draggable="false" loading="lazy" />
+                      </span>
+                    </span>
+                  </div>
+                  <p class="cred-meta">2022</p>
+                </li>
+                <li class="cred-row">
+                  <a class="cred-link" href="https://winners.webbyawards.com/2021/apps-software-immersive/general-apps/entertainment-sports/167683/tv-time" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                    <span class="cred-body">
+                      <span class="cred-title">People's Choice Webby</span>
+                      <span class="cred-sub">TV Time</span>
+                    </span>
+                    <span class="cred-meta">2021</span>
+                  </a>
+                </li>
+                <li class="cred-row">
+                  <a class="cred-link" href="https://www.thetangentagency.com/projects/lego-movie-2" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                    <span class="cred-body">
+                      <span class="cred-title">Platinum AVA, Silver Clio</span>
+                      <span class="cred-sub">The Lego Movie 2</span>
+                    </span>
+                    <span class="cred-meta">2019</span>
+                  </a>
+                </li>
+              </ul>
+            </FadeIn>
+          </div>
+        </section>
+
+        <FadeIn delay={120}>
+          <div class="about-cta about-cta--standalone">
+            <a href={`${base}/#work`} class="cta-btn">
+              Check out my work!
+              <span class="cta-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </FadeIn>
       </div>
 
     </article>
@@ -224,13 +325,163 @@ const hobbies = [
   })();
 </script>
 
+<script is:inline>
+  // Subtle scroll parallax for the portrait + note. Both elements get a
+  // --parallax-y CSS var driven by their proximity to the viewport
+  // center. Portrait and note drift in opposite directions at small
+  // magnitudes so the composition feels alive without yanking the eye.
+  (function () {
+    const row = document.querySelector(".about-row");
+    if (!row) return;
+    const portrait = row.querySelector(".portrait-wrap__inner");
+    const note = row.querySelector(".about-note__inner");
+    if (!portrait || !note) return;
+
+    let ticking = false;
+    function update() {
+      const r = row.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      // Skip when fully offscreen to avoid pointless writes.
+      if (r.bottom < -200 || r.top > vh + 200) {
+        ticking = false;
+        return;
+      }
+      // Normalize to -1..1 by the row's center vs the viewport center.
+      const center = r.top + r.height / 2;
+      let progress = (center - vh / 2) / (vh / 2);
+      if (progress < -1) progress = -1;
+      if (progress > 1) progress = 1;
+      // Portrait drifts up slightly as the row passes through, note
+      // drifts down — opposite small offsets give a layered feel.
+      portrait.style.setProperty("--parallax-y", (progress * -14).toFixed(2) + "px");
+      note.style.setProperty("--parallax-y", (progress * 10).toFixed(2) + "px");
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+  })();
+</script>
+
+<script is:inline>
+  // Per-character jitter for the handwritten note. Each printable
+  // character becomes an inline-block span with a small random rotation
+  // and vertical offset so the line doesn't sit on a perfect baseline.
+  // Whitespace is left alone (preserves natural word wrap). Inline media
+  // (.glitter-inline img, .fx-photo polaroids, prose-out previews) is
+  // skipped so the cursor-portal artwork stays intact.
+  (function () {
+    const root = document.querySelector(".about-note");
+    if (!root) return;
+    const SKIP = new Set(["IMG", "VIDEO", "PICTURE", "SOURCE", "SVG"]);
+    const SKIP_CLASS = ["fx-photo", "prose-out__preview", "pill-photo", "glitter-inline", "ellipsis"];
+
+    function isSkipped(el) {
+      if (!el || el.nodeType !== 1) return false;
+      if (SKIP.has(el.tagName)) return true;
+      if (el.classList) {
+        for (const c of SKIP_CLASS) if (el.classList.contains(c)) return true;
+      }
+      return false;
+    }
+
+    function jitter(node) {
+      const kids = Array.from(node.childNodes);
+      for (const ch of kids) {
+        if (ch.nodeType === 3) {
+          // Text node
+          const text = ch.textContent;
+          if (!text || !text.trim()) continue;
+          const frag = document.createDocumentFragment();
+          for (const c of text) {
+            if (c === " " || c === "\n" || c === "\t") {
+              frag.appendChild(document.createTextNode(c));
+            } else {
+              const span = document.createElement("span");
+              span.className = "hwc";
+              const r = (Math.random() * 4 - 2).toFixed(2); // ±2deg
+              const y = (Math.random() * 2.2 - 1.1).toFixed(2); // ±1.1px
+              span.style.setProperty("--r", r + "deg");
+              span.style.setProperty("--y", y + "px");
+              span.textContent = c;
+              frag.appendChild(span);
+            }
+          }
+          ch.replaceWith(frag);
+        } else if (ch.nodeType === 1) {
+          if (isSkipped(ch)) continue;
+          jitter(ch);
+        }
+      }
+    }
+
+    root.querySelectorAll(".about-body").forEach(jitter);
+  })();
+</script>
+
 <style>
   .about-canvas {
     position: relative;
     isolation: isolate;
   }
 
-  .about { padding-top: var(--s-16); position: relative; }
+  /* Lock the polaroid mats and the handwritten-note canvas to their
+     light-mode treatment regardless of the page theme. Photographs and
+     handwritten paper read as physical artifacts pinned to the canvas,
+     so they shouldn't flip to dark surfaces when the rest of the site
+     does. */
+  .portrait,
+  .fx-photo,
+  .pill-photo img {
+    background: #FFFFFF !important;
+    border-color: #EAE6DF !important;
+  }
+  /* Every text node inside the handwritten note stays dark ink, even
+     for inline emphasis (.co, .fx--film, .fx--neopets, .prose-out, etc.)
+     or any link/hover state that would otherwise pull from theme tokens
+     and flip pale in dark mode. */
+  .about-note,
+  .about-note *,
+  [data-theme="dark"] .about-note,
+  [data-theme="dark"] .about-note * {
+    color: #15171C !important;
+  }
+  /* .fx-photo--bare deliberately drops the polaroid frame — keep that
+     transparent treatment intact. */
+  .fx-photo--bare,
+  .cursor__media .fx-photo--bare {
+    background: none !important;
+    border: none !important;
+  }
+
+  .about {
+    padding-top: var(--s-24);
+    position: relative;
+    max-width: 940px;
+    --about-shift: clamp(0px, 3vw, 48px);
+  }
+  /* Shared inward shift: header elements (eyebrow, title, pills) and the
+     scrapbook row all start at the same x-position so the headline reads
+     as flush-left with the portrait's left edge. */
+  .about-eyebrow,
+  .about-title,
+  .pill-row,
+  .about-row { padding-left: var(--about-shift); }
+  /* Nested eyebrows (Experience / Awards section headers) already
+     inherit the shift via their parent section's padding-left — reset
+     so they don't double-pad off-grid. */
+  .exp .about-eyebrow,
+  .cred .about-eyebrow { padding-left: 0; }
+  @media (max-width: 760px) {
+    .about { --about-shift: 0px; }
+  }
   @media (max-width: 720px) {
     .about { padding-top: var(--s-10); }
   }
@@ -240,7 +491,7 @@ const hobbies = [
      pills. Portrait floats inside so body wraps next to it, then continues
      full-width below the float (no empty space under the portrait). */
   .about-body-stack {
-    margin-top: var(--s-4);
+    margin-top: var(--s-12);
   }
   .about-body-stack::after {
     content: "";
@@ -254,12 +505,12 @@ const hobbies = [
   .about-row {
     display: flex;
     align-items: center;
-    gap: var(--s-10);
+    gap: var(--s-5);
     /* Scale the row-to-row gap fluidly with viewport width — narrower
        viewports get a tighter rhythm (so stacked text doesn't look
        stranded between paragraphs) while the big-canvas layout still
        gets the generous --s-10 breathing room. */
-    margin-bottom: clamp(var(--s-5), 3.2vw, var(--s-10));
+    margin-bottom: clamp(var(--s-10), 5vw, var(--s-20));
   }
   .about-row:last-child { margin-bottom: 0; }
   .about-row--reverse { /* portrait on the right */ }
@@ -288,10 +539,21 @@ const hobbies = [
     position: relative;
     z-index: 1;
   }
+  /* Inner wrapper carries the scroll-parallax translate — no transition
+     so scroll updates paint instantly. The outer .portrait-wrap keeps
+     its .fade-in entry transitions intact. */
+  .portrait-wrap__inner {
+    display: block;
+    transform: translate3d(0, var(--parallax-y, 0), 0);
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portrait-wrap__inner { transform: none; }
+  }
   /* Opening portrait: render the image at its natural aspect so the
      full body is in frame, not just the face. */
   .about-row:first-child .portrait-wrap {
-    width: 320px;
+    width: 352px;
   }
   .about-row:first-child .portrait img {
     aspect-ratio: auto;
@@ -402,6 +664,194 @@ const hobbies = [
      as a single voice, not a resume summary + body. */
   .about-body-stack :global(.below-portrait) {
     clear: left;
+  }
+
+  /* Handwritten note treatment for the intro narrative — the prose
+     column reads like a personal letter on paper, sitting next to the
+     polaroid portrait. Drop a paper texture at
+     /public/about/paper-texture.png and it'll layer over the warm
+     beige fallback below. */
+  /* Scrapbook composition: the polaroid portrait sits on top, the
+     handwritten note slides behind it so the page reads like a page
+     from a journal with a photo tucked over a letter. */
+  .about-note {
+    position: relative;
+    z-index: 1;
+    flex: 0 1 auto;
+    max-width: 520px;
+    background-color: #FFFFFF;
+    /* Crumpled grid-paper photo Julia provided. Layer a translucent
+       white over the texture to lift its overall brightness and soften
+       its contrast — the crumple + grid still read through but the
+       shadows are gentler. */
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)),
+      url("/about/paper-texture.avif");
+    background-size: 100% 100%, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
+    padding: var(--s-10) var(--s-10) var(--s-10) 92px;
+    margin-left: -60px;
+    border-radius: var(--r-md);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 22px 44px -22px rgba(40, 40, 60, 0.18),
+      0 6px 14px -4px rgba(40, 40, 60, 0.08);
+    transform: rotate(-1.2deg);
+    transform-origin: 50% 50%;
+    transition:
+      transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 520ms var(--ease-out);
+  }
+  /* Single-artifact fade-in: override .fade-in's translateY+scale entry
+     so the note rotates in as one piece (don't fight the -1.2deg rest
+     transform). Paragraphs inside ride along with the parent. */
+  .about-note.fade-in {
+    opacity: 0;
+    transform: rotate(-1.2deg) translateY(28px) scale(0.97);
+    filter: blur(4px);
+  }
+  .about-note.fade-in.is-visible {
+    opacity: 1;
+    transform: rotate(-1.2deg) scale(1);
+    filter: blur(0);
+  }
+  .about-note.fade-in.is-visible:hover {
+    transform: rotate(0.4deg) translateY(-4px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 34px 60px -22px rgba(40, 40, 60, 0.28),
+      0 10px 22px -6px rgba(40, 40, 60, 0.14);
+  }
+  /* Inner wrapper carries the scroll-parallax translate. No transition
+     here, so scroll updates paint instantly — no lag/jitter from a
+     transform tween chasing the scroll position. */
+  .about-note__inner {
+    display: block;
+    transform: translate3d(0, var(--parallax-y, 0), 0);
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .about-note { transition: none; }
+    .about-note.fade-in.is-visible:hover { transform: rotate(-1.2deg); }
+    .about-note__inner { transform: none; }
+  }
+  /* Portrait floats over the note. */
+  .about-row:first-child .portrait-wrap {
+    position: relative;
+    z-index: 2;
+  }
+  .about-note .about-body {
+    font-family: var(--font-hand);
+    font-weight: 400;
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.1;
+    letter-spacing: -0.07em;
+    word-spacing: 0.14em;
+    /* Lock to the light-mode ink color regardless of theme — the
+       handwritten note's paper is always white, so the writing should
+       always read as dark ink, not flip pale in dark mode. */
+    color: #15171C;
+  }
+  /* Snap (and any other .co callout) defaults to inline-flex with a
+     `gap` that spaces every flex child — including the per-character
+     jitter spans we wrap text into. Inside the note, override to plain
+     inline so the letters of "Snap" sit at the same tracking as the
+     rest of the script, and nudge the logo image manually. */
+  .about-note .about-body .co {
+    display: inline;
+    gap: 0;
+    padding: 0;
+    white-space: nowrap;
+  }
+  .about-note .about-body .co img {
+    height: 0.62em;
+    max-width: none;
+    margin-right: 0.08em;
+    transform: translateY(0.08em);
+  }
+  /* Per-character jitter — JS wraps each printable char in .hwc and
+     stamps a small random rotation + vertical offset via inline vars so
+     letters don't all sit on the same baseline at the same angle. */
+  .about-note .about-body .hwc {
+    display: inline-block;
+    transform: translateY(var(--y, 0)) rotate(var(--r, 0));
+    transform-origin: 50% 80%;
+  }
+  /* The Snap company name and other inline emphasis ride the
+     handwritten font too, but the inline logo image keeps its size. */
+  .about-note .about-body .co {
+    font-family: inherit;
+    font-weight: 400;
+  }
+  .about-note .about-body strong {
+    font-weight: 400;
+  }
+  /* Spaced ellipsis ". . ." for the "My taste was [...] questionable"
+     pause. Resets the note's tight letter-spacing so the dots breathe,
+     and adds horizontal padding so it doesn't crash into the words on
+     either side. */
+  .about-note .about-body .ellipsis {
+    display: inline-block;
+    letter-spacing: -0.18em;
+    padding: 0 0.4em;
+    text-decoration: none;
+    background: none;
+  }
+
+  /* Inside the handwritten note, the powder-blue brand underline gets
+     visually lost against the blue grid-paper lines. Use a warm coral
+     that contrasts the grid, and thicken the line so it reads at the
+     larger handwriting size. */
+  .about-note {
+    /* Deeper-blue colored-pencil underline — uses --brand-primary-2,
+       the pressed state of powder blue from the style guide. Tonal
+       with the grid lines but a step darker so it reads as drawn ON
+       the paper instead of fading into it. */
+    --note-underline: var(--brand-primary-2);
+    --note-underline-wash: var(--brand-wash);
+  }
+  /* Inside the note, draw the emphasis underline with text-decoration
+     so it sits right at the letter baseline. Descenders like y and g
+     naturally cross the line, giving it a hand-drawn underline feel
+     instead of a perfectly clean rule. The hover wash is layered as
+     background-image, which doesn't fight the decoration. */
+  .about-note .about-body .co,
+  .about-note .about-body strong,
+  .about-note .about-body .fx--film,
+  .about-note .about-body .fx--neopets,
+  .about-note .about-body .prose-out {
+    text-decoration: underline;
+    text-decoration-color: var(--note-underline);
+    text-decoration-thickness: 2px;
+    text-underline-offset: -2px;
+    background-image: linear-gradient(var(--note-underline-wash), var(--note-underline-wash));
+    background-size: 100% 0;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 280ms var(--ease-out);
+  }
+  .about-note .about-body .co:hover,
+  .about-note .about-body .fx--film:hover,
+  .about-note .about-body .fx--neopets:hover,
+  .about-note .about-body .prose-out:hover {
+    background-size: 100% 100%;
+  }
+  /* Homemade Apple is dense and italicized by nature; the inline polaroid
+     captions, .fx underlines, and prose-out links inherit the script too.
+     Bump their kerning slightly so they don't crowd adjacent words. */
+  .about-note .about-body .fx,
+  .about-note .about-body .fx--film,
+  .about-note .about-body .fx--neopets,
+  .about-note .about-body .prose-out {
+    font-family: inherit;
+  }
+  @media (max-width: 760px) {
+    .about-note {
+      padding: var(--s-6);
+      margin-left: 0;
+      transform: none;
+    }
   }
 
   .about-body {
@@ -528,7 +978,7 @@ const hobbies = [
 
   .fx--film,
   .fx--clio {
-    font-weight: 600;
+    font-weight: 400;
     color: var(--text-primary);
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;
@@ -562,6 +1012,38 @@ const hobbies = [
     width: auto;
     margin: 0 0.1em;
   }
+
+  /* Glitter swap — by default the words "glitter graphics" read inline
+     with the same brand underline as other emphasis words. On hover the
+     text fades out and the looping GIF fades in over the same footprint
+     so the line never reflows. */
+  .glitter {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+  }
+  .glitter__text {
+    display: inline-block;
+    color: #15171C;
+    text-decoration: underline;
+    text-decoration-color: var(--note-underline, var(--brand-primary));
+    text-decoration-thickness: 2px;
+    text-underline-offset: -2px;
+    transition: opacity 220ms var(--ease-out);
+  }
+  .glitter__gif {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 220ms var(--ease-out);
+  }
+  .glitter:hover .glitter__text { opacity: 0; }
+  .glitter:hover .glitter__gif { opacity: 1; }
 
   /* Keep .fx--neopets as plain inline so the link wraps with the
      surrounding sentence instead of being treated as an inline-block
@@ -688,7 +1170,7 @@ const hobbies = [
   /* Outbound prose links — match the fx-- words: brand underline fills to a
      full wash on hover so the whole word highlights. */
   .prose-out {
-    font-weight: 600;
+    font-weight: 400;
     color: var(--text-primary);
     text-decoration: none;
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
@@ -808,7 +1290,7 @@ const hobbies = [
   .pill-row {
     list-style: none;
     margin: 0 0 var(--s-8);
-    padding: 0;
+    padding: 0 0 0 var(--about-shift);
     display: flex;
     flex-wrap: nowrap;
     gap: var(--s-3);
@@ -851,6 +1333,20 @@ const hobbies = [
   .pill:active {
     transform: translateY(0);
     background: var(--bg-sunken);
+  }
+  /* Dark-mode pills sit on a near-black canvas, so the default
+     --bg-surface (also dark) made them disappear. Pull them up to the
+     elevated surface, strengthen the border, and use the brand wash on
+     hover for visible feedback. `:global()` keeps Astro from scoping
+     the html-level [data-theme] attribute. */
+  :global([data-theme="dark"]) .pill {
+    background: var(--bg-elevated);
+    border-color: var(--border-default);
+  }
+  :global([data-theme="dark"]) .pill:hover,
+  :global([data-theme="dark"]) .pill:focus-visible {
+    background: var(--brand-wash-soft);
+    border-color: var(--text-secondary);
   }
 
   .pill-emoji {
@@ -964,6 +1460,247 @@ const hobbies = [
   .about-cta {
     margin-top: var(--s-6);
     margin-bottom: 0;
+  }
+  .about-cta--standalone {
+    margin-top: var(--s-12);
+    padding-left: var(--about-shift);
+    display: flex;
+    justify-content: center;
+  }
+
+  /* === Experience grid === */
+  .exp {
+    margin-top: clamp(var(--s-10), 6vw, var(--s-16));
+    padding-left: var(--about-shift);
+    text-align: left;
+  }
+  .exp .about-eyebrow { margin-bottom: var(--s-5); }
+
+  .exp-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .exp-row {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.05fr) minmax(0, 2.4fr) auto;
+    align-items: baseline;
+    gap: var(--s-6);
+    padding: var(--s-5) var(--s-3);
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: var(--r-xs);
+    transition: background-color var(--dur-normal) var(--ease-out);
+  }
+  .exp-row:hover {
+    background-color: var(--brand-wash-soft);
+  }
+
+  .exp-co-name {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+    color: var(--text-primary);
+  }
+
+  .exp-role { min-width: 0; }
+  .exp-role-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+  .exp-role-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .exp-dates {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    margin: 0;
+    justify-self: end;
+  }
+
+  @media (max-width: 760px) {
+    .exp-row {
+      grid-template-columns: 1fr;
+      gap: var(--s-2);
+      padding: var(--s-5) var(--s-2);
+    }
+    .exp-dates { justify-self: start; }
+  }
+
+  /* Cursor-portal reveal art (cloned via .cursor__media). Force a uniform
+     rounded corner on all four sides; some source GIFs ship with
+     transparent top corners and square bottom corners, so we clip both
+     the wrapper and the img to the same radius. */
+  .exp-reveal-art,
+  .cursor__media .exp-reveal-art {
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--bg-surface);
+  }
+  .exp-reveal-art img,
+  .cursor__media .exp-reveal-art img {
+    border-radius: inherit;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* For sources whose subject is already a framed device on a transparent
+     ground (e.g. the TV Time onboarding phone duo), drop the rounded card
+     so the phone silhouettes float against the page instead of sitting in
+     a white tile that crops their corners. */
+  .exp-reveal-art--bare,
+  .cursor__media .exp-reveal-art--bare {
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+  }
+  .exp-reveal-art--bare img,
+  .cursor__media .exp-reveal-art--bare img {
+    border-radius: 0;
+  }
+
+  /* Phone-framed video reveal (Tinder hackathon row). Mirrors the
+     PhoneVideoParallax composition on the homepage at a smaller scale:
+     a looping video sits inside a transparent phone-frame PNG. The
+     outer .fx-photo wrapper carries an explicit transparent reset so
+     the .fx-photo--bare inherited shadow/background doesn't tile a
+     card behind the phone silhouette. */
+  .cred-reveal-phone,
+  .cursor__media .cred-reveal-phone {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow: visible;
+  }
+  .cred-phone {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1114 / 2268;
+  }
+  .cred-phone__screen {
+    position: absolute;
+    top: 1.94%;
+    bottom: 1.94%;
+    left: 4.49%;
+    right: 4.49%;
+    overflow: hidden;
+    border-radius: 13.46% / 6.61%;
+    background: #000;
+    z-index: 0;
+  }
+  .cred-phone__screen video {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    display: block;
+  }
+  .cred-phone__frame {
+    position: absolute;
+    inset: 2px 0 0 0;
+    width: 100%;
+    height: calc(100% - 2px);
+    object-fit: fill;
+    pointer-events: none;
+    z-index: 1;
+    filter: drop-shadow(0 18px 30px rgba(60, 30, 120, 0.18));
+  }
+
+  /* === Awards === */
+  .cred {
+    margin-top: clamp(var(--s-8), 5vw, var(--s-12));
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s-10);
+    padding-left: var(--about-shift);
+    text-align: left;
+  }
+  .cred--solo {
+    grid-template-columns: 1fr;
+  }
+  .cred-col .about-eyebrow { margin-bottom: var(--s-4); }
+  .cred-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .cred-row {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .cred-row > .cred-body,
+  .cred-row > .cred-meta {
+    /* unlinked rows: inline grid like links below */
+  }
+  .cred-row:not(:has(.cred-link)) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--s-2);
+  }
+  .cred-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: var(--s-3) var(--s-2);
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--r-xs);
+    transition: background-color var(--dur-normal) var(--ease-out);
+  }
+  .cred-link:hover {
+    background-color: var(--brand-wash-soft);
+  }
+  .cred-link .cred-title,
+  .cred-link .cred-sub,
+  .cred-link .cred-meta {
+    display: block;
+  }
+  .cred-body { min-width: 0; }
+  .cred-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 2px;
+    line-height: 1.3;
+  }
+  .cred-sub {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+  .cred-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    margin: 0;
+  }
+  @media (max-width: 760px) {
+    .cred {
+      grid-template-columns: 1fr;
+      gap: var(--s-8);
+    }
   }
   /* Push the article away from the page footer now that the CTA lives
      inside the bottom row instead of being the article's own block. */

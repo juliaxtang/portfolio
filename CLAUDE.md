@@ -154,9 +154,24 @@ redesign session and follow it end-to-end.
 Quick reference if you're not loading the skill:
 
 - Feature work happens on a dedicated branch in its own worktree
-  (`git worktree add ../portfolio-<slug> -b <slug> main`), not on `main`.
+  (`git worktree add .claude/worktrees/<slug> -b <slug> main`), nested
+  inside the project so Cursor's `Git: Open Worktree in New Window`
+  picker sees it. `.claude/` is gitignored so worktrees never travel.
+- After creating the worktree, run `node scripts/setup-worktree.mjs`
+  inside it to bootstrap `.vscode/settings.json` (window title + color)
+  and `.vscode/tasks.json` (dev server auto-starts on folder open). Then
+  open the worktree in its own Cursor window via
+  `Cmd-Shift-P -> Git: Open Worktree in New Window` (or
+  `cursor .claude/worktrees/<slug>` from a terminal) so the code, the
+  agent chat, and Simple Browser preview live together.
+- Dev ports are deterministic per branch via
+  [scripts/worktree-port.mjs](scripts/worktree-port.mjs): `main` is
+  always `4321`, every other branch is hashed into `4400-4999`. Override
+  any time with `PORT=<n> npm run dev`. Don't pin a port in
+  `astro.config.mjs` or `package.json`; the resolver handles it.
 - After a branch is merged into `origin/main`, ALWAYS clean up in the
-  same turn: stop any dev server, `git worktree remove <path>`,
+  same turn: stop any dev server,
+  `git worktree remove .claude/worktrees/<slug>`,
   `git branch -d <branch>`, `git push origin --delete <branch>`.
 - Commit messages on `main` are a single long paragraph explaining what
   AND why, no bullet lists, no em dashes. Bring branches in with

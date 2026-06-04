@@ -6,9 +6,13 @@ description: Sets up a dedicated git worktree, branch, and Astro dev server befo
 # Feature worktree flow
 
 Julia's standing pattern for this repo: every meaningful change happens in
-its own worktree under `/Users/jtang7/portfolio-<slug>/`, branched from
-`main`, merged back via a `--no-ff` merge commit, and cleaned up the same
-turn the merge happens.
+its own worktree under `/Users/jtang7/portfolio/.claude/worktrees/<slug>/`,
+branched from `main`, merged back via a `--no-ff` merge commit, and cleaned
+up the same turn the merge happens. Nesting worktrees under the project
+folder (not as siblings) keeps them visible to Cursor's
+`Git: Open Worktree in New Window` picker and matches the convention used
+by `~/.claude/commands/worktree.md`. `.claude/` is already gitignored so
+the worktree never travels.
 
 ## When to apply
 
@@ -34,25 +38,52 @@ of guessing.
 
 1. Pick a kebab-case slug from the task. Keep it short and topical:
    `bug-fixes`, `hero-redesign`, `add-festival-mode`, `cleanup-cursor`.
-2. Create the worktree + branch from `main`, install deps, and start the
-   dev server in the background:
+2. Create the worktree + branch from `main`, install deps, bootstrap the
+   per-window Cursor identity, and start the dev server in the background:
 
    ```bash
    cd /Users/jtang7/portfolio
-   git worktree add ../portfolio-<slug> -b <slug> main
-   cd ../portfolio-<slug>
+   git worktree add .claude/worktrees/<slug> -b <slug> main
+   cd .claude/worktrees/<slug>
    npm install
+   node scripts/setup-worktree.mjs
    npm run dev
    ```
 
-   `npm run dev` should be backgrounded (block_until_ms: 0) so the agent
-   doesn't sit on it. Astro picks the next free port if 4321 is taken;
-   surface the actual local URL from the terminal output.
+   `setup-worktree.mjs` writes `.vscode/settings.json` (deterministic
+   title-bar text + color) and `.vscode/tasks.json` (auto-starts the dev
+   server on folder open). `.vscode/` is gitignored so this is local
+   only.
 
-3. Report back to the user with the worktree path, the branch name, and
-   the dev URL so they can open it in Cursor's Simple Browser.
+   `npm run dev` should be backgrounded (block_until_ms: 0). The port is
+   resolved deterministically from the branch name by
+   `scripts/worktree-port.mjs`, so a given branch always boots on the
+   same URL (e.g. `visual/festival-mode` -> `4808`, `doodle-usability` ->
+   `4556`). `main` stays on `4321` for muscle memory. The actual URL is
+   printed by both scripts; surface it from the terminal output if there
+   is any doubt.
 
-4. Make all subsequent edits inside the worktree until the work is
+3. Open the worktree in its own Cursor window so the code, the agent
+   chat, and the live preview all live in one labeled, color-coded
+   window. From inside the main `portfolio` Cursor window:
+   `Cmd-Shift-P` -> `Git: Open Worktree in New Window` -> pick `<slug>`.
+   Equivalent from any terminal:
+
+   ```bash
+   cursor /Users/jtang7/portfolio/.claude/worktrees/<slug>
+   ```
+
+   The first time a worktree opens, Cursor asks whether to allow the
+   `folderOpen` task. Say yes once per folder. The dev server then auto
+   starts on every subsequent open. Inside the new window:
+   `Cmd-Shift-P` -> `Simple Browser: Show` -> the dev URL, then drag the
+   tab to the right editor group. Cursor remembers the layout, so this
+   is one-time per worktree.
+
+4. Report back to the user with the worktree path, the branch name, and
+   the dev URL.
+
+5. Make all subsequent edits inside the worktree until the work is
    merged. Do not edit files in `/Users/jtang7/portfolio` directly while
    the feature branch is in flight.
 
@@ -99,7 +130,7 @@ push succeeds, in the same agent turn:
 
    ```bash
    cd /Users/jtang7/portfolio
-   git worktree remove /Users/jtang7/portfolio-<slug>
+   git worktree remove .claude/worktrees/<slug>
    git branch -d <slug>
    git push origin --delete <slug>
    ```
@@ -110,7 +141,7 @@ push succeeds, in the same agent turn:
    sandbox:
 
    ```bash
-   rm -rf /Users/jtang7/portfolio-<slug>
+   rm -rf /Users/jtang7/portfolio/.claude/worktrees/<slug>
    ```
 
    Then re-run the `git branch -d` and `git push origin --delete`

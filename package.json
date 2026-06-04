@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
+    "dev": "PORT=${PORT:-$(node scripts/worktree-port.mjs)} astro dev",
+    "start": "PORT=${PORT:-$(node scripts/worktree-port.mjs)} astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

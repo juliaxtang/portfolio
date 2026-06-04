@@ -360,11 +360,14 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
   .media-parallax__cell.is-grabbing { cursor: grabbing; }
   .media-parallax__cell--left {
     /* Tucked into the media's upper-left corner: most of the cell sits
-       outside the video frame with a small overlap (~60px) into the
-       corner so the scoreboard reads as bumping the video's edge. */
+       outside the video frame with a small overlap into the corner so
+       the scoreboard reads as bumping the video's edge. Leftward bleed
+       capped at ~100px because the Showcase grid with tightHero only
+       opens ~90–120px of gutter between the text column and the media
+       column on a 1640px inner; anything beyond crashes into the copy. */
     top: clamp(10px, 4%, 50px);
-    left: clamp(-260px, -47%, -180px);
-    width: var(--mp-cell-l-w, clamp(220px, 68%, 310px));
+    left: clamp(-100px, -22%, -60px);
+    width: var(--mp-cell-l-w, clamp(220px, 64%, 290px));
     --rot: -5deg;
     transform: translate3d(var(--drag-x, 0px),
                            calc(var(--cell-l-y) + var(--drag-y, 0px)),
@@ -372,10 +375,12 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
                rotate(var(--rot));
   }
   .media-parallax__cell--right {
-    /* Anchored lower-right, sits mostly outside the media's right edge. */
+    /* Anchored lower-right, mostly outside the media's right edge. Same
+       constraint as the left cell so the live-activity card never sweeps
+       past the viewport edge at typical laptop widths. */
     bottom: clamp(40px, 9%, 80px);
-    right: clamp(-200px, -42%, -130px);
-    width: var(--mp-cell-r-w, clamp(180px, 54%, 240px));
+    right: clamp(-90px, -20%, -50px);
+    width: var(--mp-cell-r-w, clamp(180px, 52%, 230px));
     --rot: 6deg;
     transform: translate3d(var(--drag-x, 0px),
                            calc(var(--cell-r-y) + var(--drag-y, 0px)),
@@ -409,18 +414,33 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
                 filter 520ms var(--ease-out) !important;
   }
 
-  /* Narrow-desktop + tablet band: the full desktop bleed (-47% / -42% of
-     the media) pushes the floating cards past the viewport edges here (the
-     two-column media sits close to the right edge, and the stacked tablet
-     layout centers a wider media), clipping the scoreboard / live-activity
-     cards. Pull them in to a moderate bleed so the cards stay fully on
-     screen; the dramatic wide-desktop bleed is preserved above 1180px. */
-  @media (min-width: 721px) and (max-width: 1180px) {
+  /* Narrow desktop / tablet (721–1280px): the full desktop side bleed
+     (-47% / -42% of the media) crashes into the project copy on the left
+     and the viewport edge on the right because (a) tightHero pulls the
+     text and media columns together so the gutter between them effectively
+     collapses to the var(--s-6) column gap, and (b) the media-parallax
+     itself is narrower at these viewports. Switch to the mobile-style
+     top/bottom anchored layout (cell-left peeks above the media, cell-right
+     hangs below) so the cards never sweep horizontally into the surrounding
+     text or off the viewport. Same headroom / footroom reservation as the
+     ≤720px rule so neither end of the media block crowds the project copy. */
+  @media (min-width: 721px) and (max-width: 1280px) {
+    .media-parallax[data-floating-cell-group] {
+      padding-top: clamp(56px, 8vw, 96px);
+      padding-bottom: clamp(40px, 7vw, 80px);
+    }
     .media-parallax__cell--left {
-      left: clamp(-150px, -30%, -100px);
+      top: -12%;
+      left: -2%;
+      width: var(--mp-cell-l-w, clamp(190px, 60%, 250px));
+      --rot: -4deg;
     }
     .media-parallax__cell--right {
-      right: clamp(-120px, -26%, -84px);
+      top: auto;
+      bottom: -6%;
+      right: -8%;
+      width: var(--mp-cell-r-w, clamp(180px, 56%, 230px));
+      --rot: 5deg;
     }
   }
 

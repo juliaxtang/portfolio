@@ -384,11 +384,14 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   .phone-video__cell.is-grabbing { cursor: grabbing; }
   .phone-video__cell--prompt {
     /* Tucked into the phone's upper-left corner: card's right edge sits
-       just inside the phone's left edge so the prompt reads as a Tinder
-       comment bubble sticking out of the top of the profile. */
+       inside the phone's left edge so the prompt reads as a Tinder
+       comment bubble sticking out of the profile's edge. The desktop
+       leftward bleed (-140 to -200px) only fits when the Showcase has a
+       wide gutter between the text and phone columns — at narrow desktop
+       widths a separate media query below repositions the cell. */
     top: clamp(10px, 4%, 50px);
-    left: clamp(-200px, -48%, -140px);
-    width: clamp(200px, 66%, 280px);
+    left: clamp(-110px, -30%, -70px);
+    width: clamp(200px, 64%, 270px);
     --rot: -5deg;
     transform: translate3d(var(--drag-x, 0px),
                            calc(var(--prompt-y) + var(--drag-y, 0px)),
@@ -396,10 +399,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
                rotate(var(--rot));
   }
   .phone-video__cell--quiz {
-    /* Anchored lower-right, mostly outside the phone's right edge. */
+    /* Anchored lower-right, mostly outside the phone's right edge. The
+       narrow-desktop media query below tightens this so the quiz never
+       overflows the viewport at typical laptop widths (1024-1280px). */
     bottom: clamp(50px, 12%, 110px);
-    right: clamp(-170px, -38%, -110px);
-    width: clamp(230px, 74%, 320px);
+    right: clamp(-100px, -26%, -60px);
+    width: clamp(220px, 68%, 290px);
     --rot: 6deg;
     transform: translate3d(var(--drag-x, 0px),
                            calc(var(--quiz-y) + var(--drag-y, 0px)),
@@ -439,6 +444,33 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   .phone-video__cell.is-tilting {
     transition: transform 80ms linear,
                 filter 520ms var(--ease-out) !important;
+  }
+
+  /* Narrow desktop / tablet (721–1280px): the Showcase column gap shrinks
+     so the desktop side-bleed (prompt -140/-200px left, quiz -110/-170px
+     right) crashes into the project copy on the left and clips the viewport
+     on the right. Switch to the mobile-style top/bottom anchored layout so
+     each cell peeks out of the phone's top-left / bottom-right corner with
+     a small horizontal offset instead of a deep side bleed. Same headroom
+     padding reservation as the ≤720px rule so the cells never overlap the
+     surrounding copy. */
+  @media (max-width: 1440px) and (min-width: 721px) {
+    .phone-video {
+      padding-top: clamp(56px, 8vw, 96px);
+      padding-bottom: clamp(36px, 6vw, 72px);
+    }
+    .phone-video__cell--prompt {
+      top: -6%;
+      left: -4%;
+      width: clamp(190px, 60%, 240px);
+      --rot: -5deg;
+    }
+    .phone-video__cell--quiz {
+      bottom: -2%;
+      right: -8%;
+      width: clamp(190px, 58%, 240px);
+      --rot: 6deg;
+    }
   }
 
   @media (max-width: 720px) {

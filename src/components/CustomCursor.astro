@@ -176,12 +176,17 @@
     let lastAngle = 0;
     let rafId = 0;
 
-    function onMove(e) {
+    function syncPointer(e) {
+      if (typeof e.clientX !== "number" || typeof e.clientY !== "number") return;
       mx = e.clientX;
       my = e.clientY;
       document.documentElement.style.setProperty("--cursor-x", mx + "px");
       document.documentElement.style.setProperty("--cursor-y", my + "px");
       if (!rafId) tick();
+    }
+
+    function onMove(e) {
+      syncPointer(e);
     }
 
     function tick() {
@@ -216,6 +221,7 @@
         || cursor.classList.contains("is-drag-pill")
         || cursor.classList.contains("is-expand-pill")
         || cursor.classList.contains("is-shrink-pill")
+        || cursor.classList.contains("is-grabbing")
         // Doodle draw mode shows a pencil icon; the comet-tail stretch
         // would shear the pencil's strokes and read as a glitch.
         || document.documentElement.hasAttribute("data-doodle-active");
@@ -251,6 +257,13 @@
     }
 
     window.addEventListener("mousemove", onMove, { passive: true });
+    // Pointer capture on draggable decks/cells retargets events away from
+    // the hit-tested element; mousemove can stop updating while the
+    // pointer still moves. Keep the custom cursor in sync via pointermove.
+    window.addEventListener("pointermove", function (e) {
+      if (e.pointerType === "touch") return;
+      syncPointer(e);
+    }, { passive: true });
 
     // Persist the last pointer position so it survives internal navigation.
     // pagehide fires on both unload and bfcache stash, which is what we
@@ -397,6 +410,12 @@
       return el && el.closest && el.closest("[data-cursor='drag-pill']");
     }
 
+    function isDragSurface(el) {
+      if (!el || !el.closest) return false;
+      if (isSwipePill(el) || isDragPill(el)) return true;
+      return !!el.closest("[data-floating-cell], [data-deck]");
+    }
+
     function isShrinkPillTarget(el) {
       const cell = el && el.closest && el.closest("[data-floating-cell]");
       return cell && cell.classList.contains("is-focused") ? cell : null;
@@ -478,8 +497,10 @@
       }
       if (isCopyEmail(e.target)) cursor.classList.add("is-copy-pill");
       if (isExternal(e.target)) cursor.classList.add("is-external-arrow");
-      if (isSwipePill(e.target)) cursor.classList.add("is-swipe-pill");
-      if (isDragPill(e.target)) {
+      if (!cursor.classList.contains("is-grabbing") && isSwipePill(e.target)) {
+        cursor.classList.add("is-swipe-pill");
+      }
+      if (!cursor.classList.contains("is-grabbing") && isDragPill(e.target)) {
         if (isShrinkPillTarget(e.target)) {
           cursor.classList.add("is-shrink-pill");
           cursor.classList.remove("is-drag-pill");
@@ -554,6 +575,49 @@
       cursor.classList.remove("is-pressed");
       spawnRipple();
     });
+
+    const DRAG_PILL_CLASSES = [
+      "is-swipe-pill",
+      "is-drag-pill",
+      "is-expand-pill",
+      "is-shrink-pill",
+    ];
+    function clearDragPillClasses() {
+      for (let i = 0; i < DRAG_PILL_CLASSES.length; i++) {
+        cursor.classList.remove(DRAG_PILL_CLASSES[i]);
+      }
+    }
+    function applyDragPillClasses(el) {
+      if (!el) return;
+      if (isSwipePill(el)) cursor.classList.add("is-swipe-pill");
+      if (isDragPill(el)) {
+        if (isShrinkPillTarget(el)) {
+          cursor.classList.add("is-shrink-pill");
+        } else {
+          const cellEl = el.closest && el.closest("[data-floating-cell]");
+          const group = cellEl && cellEl.closest("[data-floating-cell-group]");
+          const introduced = group && group.classList.contains("cells-introduced");
+          cursor.classList.toggle("is-expand-pill", !!introduced);
+          cursor.classList.toggle("is-drag-pill", !introduced);
+        }
+      }
+    }
+
+    function endGrab() {
+      cursor.classList.remove("is-grabbing");
+      let under = null;
+      try { under = document.elementFromPoint(mx, my); } catch (_) {}
+      applyDragPillClasses(under);
+    }
+    document.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "touch") return;
+      if (!isDragSurface(e.target)) return;
+      syncPointer(e);
+      clearDragPillClasses();
+      cursor.classList.add("is-grabbing");
+    }, { passive: true });
+    document.addEventListener("pointerup", endGrab);
+    document.addEventListener("pointercancel", endGrab);
 
     // Astro scopes component CSS via a data-astro-cid-* attribute. Copy
     // that attribute onto dynamically-created children so the scoped
@@ -802,6 +866,39 @@
   }
   .cursor.is-pressed:not(.is-interactive) .cursor__ring {
     opacity: 1;
+  }
+
+  /* Active drag/swipe — collapse the hover pill back into the open ring
+     (click-and-drag affordance) while the pointer is down. */
+  .cursor.is-grabbing .cursor__swipe-pill,
+  .cursor.is-grabbing .cursor__drag-pill,
+  .cursor.is-grabbing .cursor__expand-pill,
+  .cursor.is-grabbing .cursor__shrink-pill {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15, 0.4);
+    transition:
+      opacity 120ms var(--ease-out),
+      transform 200ms var(--ease-out);
+  }
+  .cursor.is-grabbing .cursor__dot {
+    opacity: 0;
+    transform: scale(0);
+    transition:
+      transform 180ms var(--ease-out),
+      opacity 120ms var(--ease-out);
+  }
+  .cursor.is-grabbing .cursor__ring {
+    opacity: 1;
+    transform: scale(1.05);
+    border-color: var(--brand-primary);
+    transition:
+      transform 220ms var(--ease-out),
+      opacity 120ms var(--ease-out),
+      border-color 180ms var(--ease-out);
+  }
+  .cursor.is-grabbing.is-pressed .cursor__ring {
+    transform: scale(1.5);
+    border-color: var(--brand-primary-2, #A9C7DC);
   }
 
   /* Cursor-morphed "Read about it" pill — replaces the dot/ring when
@@ -1385,6 +1482,41 @@
   .cursor.on-dark.is-swipe-pill .cursor__swipe-pill {
     background: #FDFCFA;
     color: #15171C;
+  }
+
+  /* Drag/swipe press — pill hover classes can still be on the cursor
+     node; these rules must win over the pill states above. */
+  .cursor.is-grabbing .cursor__swipe-pill,
+  .cursor.is-grabbing .cursor__drag-pill,
+  .cursor.is-grabbing .cursor__expand-pill,
+  .cursor.is-grabbing .cursor__shrink-pill,
+  .cursor.is-grabbing.is-swipe-pill .cursor__swipe-pill,
+  .cursor.is-grabbing.is-drag-pill .cursor__drag-pill,
+  .cursor.is-grabbing.is-expand-pill .cursor__expand-pill,
+  .cursor.is-grabbing.is-shrink-pill .cursor__shrink-pill {
+    opacity: 0 !important;
+    transform: translate(-50%, -50%) scale(0.12, 0.35) !important;
+  }
+  .cursor.is-grabbing .cursor__dot,
+  .cursor.is-grabbing.is-swipe-pill .cursor__dot,
+  .cursor.is-grabbing.is-drag-pill .cursor__dot,
+  .cursor.is-grabbing.is-expand-pill .cursor__dot,
+  .cursor.is-grabbing.is-shrink-pill .cursor__dot {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+  }
+  .cursor.is-grabbing .cursor__ring,
+  .cursor.is-grabbing.is-swipe-pill .cursor__ring,
+  .cursor.is-grabbing.is-drag-pill .cursor__ring,
+  .cursor.is-grabbing.is-expand-pill .cursor__ring,
+  .cursor.is-grabbing.is-shrink-pill .cursor__ring {
+    opacity: 1 !important;
+    transform: scale(1.05) !important;
+    border-color: var(--brand-primary) !important;
+  }
+  .cursor.is-grabbing.is-pressed .cursor__ring {
+    transform: scale(1.5) !important;
+    border-color: var(--brand-primary-2, #A9C7DC) !important;
   }
 
   /* Ripple — spawned on mouseup, expands and fades. */

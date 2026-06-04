@@ -125,7 +125,6 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   />
   <path
     class="hand-arrow__head"
-    pathLength="100"
     fill="none"
     stroke="currentColor"
     stroke-linecap="round"
@@ -133,7 +132,6 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   />
   <path
     class="hand-arrow__head"
-    pathLength="100"
     fill="none"
     stroke="currentColor"
     stroke-linecap="round"
@@ -162,6 +160,9 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
     transition: stroke-dashoffset 720ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .hand-arrow__head {
+    /* Natural length (no pathLength attr) so chevron tips meet the shaft. */
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
     transition: stroke-dashoffset 200ms cubic-bezier(0.22, 1, 0.36, 1) 720ms;
   }
   .hand-arrow.is-pointing {
@@ -248,6 +249,19 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
         "M " + tx.toFixed(1) + " " + ty.toFixed(1) +
         " L " + w2x.toFixed(1) + " " + w2y.toFixed(1)
       );
+    }
+
+    /* Tip + tangent from the drawn shaft so the chevron meets the curve
+       (layout anchors can disagree with the last pixel of a cubic). */
+    function alignHeadToShaft(shaft, heads) {
+      const len = shaft.getTotalLength();
+      if (len < 2) return;
+      const tangentSpan = Math.min(42, Math.max(16, len * 0.09));
+      const endLen = len;
+      const backLen = Math.max(0, endLen - tangentSpan);
+      const tip = shaft.getPointAtLength(endLen);
+      const back = shaft.getPointAtLength(backLen);
+      setHeads(heads, tip.x, tip.y, back.x, back.y);
     }
 
     function init() {
@@ -372,9 +386,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
             "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
             " L " + tx.toFixed(1) + " " + ty.toFixed(1)
           );
-          backX = tx + 0.85 * (sx - tx);
-          backY = sy;
-          setHeads(heads, tx, ty, backX, backY);
+          alignHeadToShaft(shaft, heads);
           return;
         }
 
@@ -399,9 +411,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
             "M " + sx.toFixed(1) + " " + sy.toFixed(1) +
             " L " + tx.toFixed(1) + " " + ty.toFixed(1)
           );
-          backX = sx;
-          backY = sy + 0.85 * (ty - sy);
-          setHeads(heads, tx, ty, backX, backY);
+          alignHeadToShaft(shaft, heads);
           return;
         }
 
@@ -506,7 +516,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
           backY = c2y;
         }
 
-        setHeads(heads, tx, ty, backX, backY);
+        alignHeadToShaft(shaft, heads);
       }
 
       function shouldHide() {

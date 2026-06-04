@@ -359,8 +359,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         // prompt-only behavior even at desktop widths.
         const trigger = aiCol.querySelector("[data-doodle-trigger]");
         const pencilBtn = doodle.querySelector('[data-tool="draw"]');
+        let promptTimer = 0;
+        function showPrompt() {
+          doodle.setAttribute("data-prompted", "");
+          aiCol.dispatchEvent(new MouseEvent("mouseenter"));
+          if (promptTimer) window.clearTimeout(promptTimer);
+          promptTimer = window.setTimeout(() => {
+            doodle.removeAttribute("data-prompted");
+            aiCol.dispatchEvent(new MouseEvent("mouseleave"));
+            promptTimer = 0;
+          }, 4000);
+        }
         if (trigger && pencilBtn) {
-          let promptTimer = 0;
           trigger.addEventListener("click", (e) => {
             e.preventDefault();
             const canHover =
@@ -370,19 +380,32 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
               pencilBtn.click();
               return;
             }
-            // Touch: show the arrow + halo, then auto-clear after a
-            // beat so the next tap on the bar isn't visually crowded.
-            // Dispatching mouseenter activates the Arrow component's
-            // trigger handler (it listens for mouseenter on aiCol),
-            // and data-prompted activates the toolbar halo.
-            doodle.setAttribute("data-prompted", "");
-            aiCol.dispatchEvent(new MouseEvent("mouseenter"));
-            if (promptTimer) window.clearTimeout(promptTimer);
-            promptTimer = window.setTimeout(() => {
-              doodle.removeAttribute("data-prompted");
-              aiCol.dispatchEvent(new MouseEvent("mouseleave"));
-              promptTimer = 0;
-            }, 4000);
+            // Touch: surface the arrow + halo. Stop propagation so the
+            // column-wide tap handler below doesn't also fire and toggle
+            // the prompt back off.
+            e.stopPropagation();
+            showPrompt();
+          });
+        }
+
+        // On touch, tapping ANYWHERE in the AI column (not just the
+        // inline "doodle tool I vibecoded" link) should surface the
+        // arrow pointing down to the toolbar. This mirrors what hover
+        // does on desktop, since the column is the only hero meta col
+        // that stays interactive on mobile (Snap / Tinder are inert).
+        // Match the same media-query envelope the rest of the touch
+        // surfaces use so a desktop-emulated mobile viewport still
+        // exercises this code path.
+        const isTouchSurface = window.matchMedia(
+          "(hover: none), (pointer: coarse), (max-width: 720px)"
+        ).matches;
+        if (isTouchSurface) {
+          aiCol.style.cursor = "pointer";
+          aiCol.addEventListener("click", (e) => {
+            // Inline link inside the column has its own handler that
+            // already calls showPrompt — don't double-fire here.
+            if (trigger && trigger.contains(e.target)) return;
+            showPrompt();
           });
         }
       }

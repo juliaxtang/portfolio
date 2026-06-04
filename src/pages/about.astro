@@ -1053,12 +1053,15 @@ const hobbies = [
     position: absolute;
     left: 50%;
     top: 50%;
-    /* Lift the GIF off the text bounding box so it can render taller
-       than a single line, making the glitter art readable at hover. */
-    height: 2.6em;
+    /* Match the in-flow line size so the GIF reads as a swap for the
+       text, not as an oversized graphic that overflows the column. The
+       1.55em / -0.15em pairing mirrors the always-on .glitter-inline
+       sizing used elsewhere in the paragraph, with a small bump so the
+       GIF reads a touch wider than the underlying text footprint. */
+    height: 1.0em;
     width: auto;
-    max-width: none;
-    transform: translate(-50%, -50%);
+    max-width: 110%;
+    transform: translate(-50%, calc(-50% - 0.15em));
     transform-origin: 50% 50%;
     pointer-events: none;
     opacity: 0;

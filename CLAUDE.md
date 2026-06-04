@@ -142,3 +142,37 @@ looks like.
 [src/content/projects/festival-mode.mdx](src/content/projects/festival-mode.mdx).
 It uses every component except `<Video>` and `<Quote>`, and shows the
 typical rhythm: Overview → Background → Strategy → Design → Outcomes.
+
+## Git workflow
+
+The full setup → merge → cleanup loop lives in
+[.cursor/skills/feature-worktree/SKILL.md](.cursor/skills/feature-worktree/SKILL.md)
+and auto-applies whenever a session is about to make non-trivial code
+changes. Read that skill at the start of any feature, bug-fix, or
+redesign session and follow it end-to-end.
+
+Quick reference if you're not loading the skill:
+
+- Feature work happens on a dedicated branch in its own worktree
+  (`git worktree add .claude/worktrees/<slug> -b <slug> main`), nested
+  inside the project so Cursor's `Git: Open Worktree in New Window`
+  picker sees it. `.claude/` is gitignored so worktrees never travel.
+- After creating the worktree, run `node scripts/setup-worktree.mjs`
+  inside it to bootstrap `.vscode/settings.json` (window title + color)
+  and `.vscode/tasks.json` (dev server auto-starts on folder open). Then
+  open the worktree in its own Cursor window via
+  `Cmd-Shift-P -> Git: Open Worktree in New Window` (or
+  `cursor .claude/worktrees/<slug>` from a terminal) so the code, the
+  agent chat, and Simple Browser preview live together.
+- Dev ports are deterministic per branch via
+  [scripts/worktree-port.mjs](scripts/worktree-port.mjs): `main` is
+  always `4321`, every other branch is hashed into `4400-4999`. Override
+  any time with `PORT=<n> npm run dev`. Don't pin a port in
+  `astro.config.mjs` or `package.json`; the resolver handles it.
+- After a branch is merged into `origin/main`, ALWAYS clean up in the
+  same turn: stop any dev server,
+  `git worktree remove .claude/worktrees/<slug>`,
+  `git branch -d <branch>`, `git push origin --delete <branch>`.
+- Commit messages on `main` are a single long paragraph explaining what
+  AND why, no bullet lists, no em dashes. Bring branches in with
+  `git merge --no-ff` so the merge commit is preserved in the graph.

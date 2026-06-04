@@ -36,7 +36,12 @@
         aria-haspopup="true"
         aria-expanded="false"
         style="--c:#A9C7DC"
-      ></button>
+      >
+        <!-- The visible color disk lives inside the button so the entire
+             button area (sized to match the other toolbar buttons) is the
+             tap target, not just the small disk. -->
+        <span class="doodle__color-dot" aria-hidden="true"></span>
+      </button>
       <div
         class="doodle__palette"
         role="radiogroup"
@@ -67,6 +72,19 @@
         <path d="M6 7v12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V7"/>
       </svg>
     </button>
+  </div>
+
+  <!--
+    Desktop-only hints that surface the keyboard shortcuts. Mobile users
+    don't have Esc or D, so both are hidden under 720px and the bar's
+    accompanying lift is suppressed there too. The two hints share styling
+    and position; only one shows at a time (active beats prompted).
+  -->
+  <div class="doodle__hint doodle__hint--prompt" aria-hidden="true">
+    Press <kbd>D</kbd> to doodle
+  </div>
+  <div class="doodle__hint doodle__hint--esc" aria-hidden="true">
+    Press <kbd>Esc</kbd> to exit
   </div>
 </div>
 
@@ -124,10 +142,17 @@
     position: fixed;
     /* Bottom-center on every breakpoint. JS sets --doodle-bottom on
        scroll so the bar lifts above the hero scroll chevron at the top
-       of the page and above the footer at the bottom. */
+       of the page and above the footer at the bottom. --doodle-bar-lift
+       is added on activation / prompted-from-AI-col so there's room for
+       the keyboard hint below the bar (desktop only). --doodle-bar-scale
+       drives the prompted-state grow-up effect. */
     left: 50%;
-    transform: translateX(-50%);
-    bottom: var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px));
+    transform: translateX(-50%) scale(var(--doodle-bar-scale, 1));
+    transform-origin: 50% 100%;
+    bottom: calc(
+      var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px))
+      + var(--doodle-bar-lift, 0px)
+    );
     display: flex;
     align-items: center;
     gap: var(--s-1);
@@ -138,24 +163,64 @@
     box-shadow: var(--shadow-md);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    transition: bottom var(--dur-normal) var(--ease-out);
+    transition:
+      bottom var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-out),
+      box-shadow var(--dur-normal) var(--ease-out),
+      border-color var(--dur-normal) var(--ease-out);
   }
 
-  .doodle__btn {
+  /* Armed (draw mode on) and prompted (AI col is being hovered) both
+     ring the bar in the active brush color so the highlight matches the
+     pen. Active uses --doodle-brush-color set by JS on every color pick;
+     resting fallback is --brand-primary-2 so the halo still reads if the
+     var hasn't been set yet. Both states also lift the bar on desktop
+     to make room for the keyboard hint underneath (suppressed on mobile
+     by a media query below). Prompted additionally scales the bar up. */
+  .doodle[data-active] .doodle__bar,
+  .doodle[data-prompted] .doodle__bar {
+    border-color: var(--doodle-brush-color, var(--brand-primary-2));
+    box-shadow:
+      var(--shadow-md),
+      0 0 0 4px color-mix(in srgb, var(--doodle-brush-color, var(--brand-primary-2)) 38%, transparent);
+  }
+  .doodle[data-active] .doodle__bar {
+    --doodle-bar-lift: 36px;
+  }
+  .doodle[data-prompted] .doodle__bar {
+    --doodle-bar-lift: 36px;
+    --doodle-bar-scale: 1.06;
+  }
+
+  /* All bar buttons share a 40px hitbox so a tap anywhere inside a
+     section lands the action — not just on the icon glyph. */
+  .doodle__btn,
+  .doodle__color-trigger {
     appearance: none;
     border: 0;
     background: transparent;
-    color: var(--icon-secondary);
-    width: 28px;
-    height: 28px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--r-full);
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
   }
-  .doodle__btn:hover { background: var(--bg-sunken); color: var(--icon-primary); }
+  .doodle__btn { color: var(--icon-secondary); }
+  /* Icons scale up alongside the bigger 40px hitbox so a stroked pencil
+     or trash glyph carries the same visual weight as the 22px color
+     disk next to it. The SVGs still ship at width=16 in markup, but CSS
+     wins on rendered size. */
+  .doodle__btn svg {
+    width: 22px;
+    height: 22px;
+  }
+  .doodle__btn:hover,
+  .doodle__color-trigger:hover { background: var(--bg-sunken); }
+  .doodle__btn:hover { color: var(--icon-primary); }
   .doodle__btn.is-active {
     background: var(--brand-wash);
     color: var(--text-primary);
@@ -166,47 +231,49 @@
     fill: currentColor;
     stroke: none;
   }
-  .doodle__btn:focus-visible {
+  .doodle__btn:focus-visible,
+  .doodle__color-trigger:focus-visible {
     outline: 2px solid var(--brand-primary-2);
     outline-offset: 2px;
   }
 
   .doodle__divider {
     width: 1px;
-    height: 18px;
+    height: 22px;
     background: var(--border-subtle);
     margin: 0 2px;
   }
 
-  /* Active-color trigger: a single swatch the visitor taps to reveal the
-     full palette. Keeps the resting toolbar small and avoids parading
-     every option until it's actually needed. */
+  /* Active-color trigger: the visitor taps anywhere in the section to
+     reveal the full palette. The visible disk is an inner span so the
+     entire 40x40 button is the tap target, matching the other sections. */
   .doodle__color {
     position: relative;
     display: inline-flex;
     align-items: center;
-    padding: 0 2px;
   }
-  .doodle__color-trigger {
-    appearance: none;
-    border: 1.5px solid transparent;
-    background: var(--c, #A9C7DC);
-    width: 20px;
-    height: 20px;
+  .doodle__color-dot {
+    display: block;
+    width: 22px;
+    height: 22px;
     border-radius: var(--r-full);
-    padding: 0;
-    cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.10), 0 0 0 1.5px var(--bg-surface);
-    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+    background: var(--c, #A9C7DC);
+    box-shadow:
+      inset 0 0 0 1px rgba(20, 22, 28, 0.10),
+      0 0 0 1.5px var(--bg-surface);
+    transition:
+      transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur-fast) var(--ease);
+    pointer-events: none;
   }
-  .doodle__color-trigger:hover { transform: scale(1.08); }
-  .doodle__color-trigger[aria-expanded="true"] {
+  .doodle__color-trigger:hover .doodle__color-dot {
+    transform: scale(1.08);
+  }
+  .doodle__color-trigger[aria-expanded="true"] .doodle__color-dot {
     transform: scale(1.04);
-    box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.10), 0 0 0 2px var(--text-primary);
-  }
-  .doodle__color-trigger:focus-visible {
-    outline: 2px solid var(--brand-primary-2);
-    outline-offset: 2px;
+    box-shadow:
+      inset 0 0 0 1px rgba(20, 22, 28, 0.10),
+      0 0 0 2px var(--text-primary);
   }
 
   /* Drop-up palette: vertical column of swatches that floats above the
@@ -256,8 +323,80 @@
     outline-offset: 2px;
   }
 
+  /* Keyboard hints fade in under the bar. Two variants share styling:
+       --prompt: "Press D to doodle" — shown while the AI hero column
+                 is being hovered, before the tool is armed.
+       --esc:    "Press Esc to exit" — shown while draw mode is active.
+     Anchored to the same --doodle-bottom as the bar so they follow the
+     same hero/footer clearance, and the bar's --doodle-bar-lift creates
+     a deterministic gap above. Hidden on mobile via a media query
+     below. Active beats prompted: if the tool is on, the prompt hint
+     is suppressed even if the AI column is also hovered. */
+  .doodle__hint {
+    position: fixed;
+    z-index: 200;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    bottom: var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px));
+    pointer-events: none;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-full);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+    opacity: 0;
+    transition:
+      opacity var(--dur-normal) var(--ease-out),
+      transform var(--dur-normal) var(--ease-out),
+      bottom var(--dur-normal) var(--ease-out);
+  }
+  .doodle__hint kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1;
+    padding: 2px 5px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-xs);
+    background: var(--bg-sunken);
+    color: var(--text-primary);
+  }
+  .doodle[data-active] .doodle__hint--esc,
+  .doodle[data-prompted]:not([data-active]) .doodle__hint--prompt {
+    display: inline-flex;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Mobile: no Esc / D keys, so neither hint nor the bar's lift should
+     appear. The bar still gets its halo so the active state still reads. */
+  @media (max-width: 720px) {
+    .doodle[data-active] .doodle__bar,
+    .doodle[data-prompted] .doodle__bar {
+      --doodle-bar-lift: 0px;
+    }
+    .doodle[data-prompted] .doodle__bar {
+      --doodle-bar-scale: 1;
+    }
+    .doodle__hint--esc,
+    .doodle__hint--prompt {
+      display: none !important;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .doodle__btn, .doodle__swatch { transition: none; }
+    .doodle__btn,
+    .doodle__color-trigger,
+    .doodle__color-dot,
+    .doodle__swatch { transition: none; }
+    .doodle__hint { transition: opacity var(--dur-fast) linear; }
   }
 
   @media print {
@@ -309,6 +448,18 @@
       }
     }
 
+    function broadcastBrushColor() {
+      // Surface the active brush color regardless of tool state so the
+      // toolbar halo, the hover highlight on the AI hero column, and any
+      // other downstream styles can tint to match the pen even before
+      // the user has armed draw mode.
+      document.documentElement.style.setProperty(
+        "--doodle-brush-color",
+        resolveColor(state.color)
+      );
+    }
+    broadcastBrushColor();
+
     function setTool(next) {
       state.tool = next;
       if (next) root.setAttribute("data-active", next);
@@ -334,6 +485,7 @@
       if (colorTrigger) {
         colorTrigger.style.setProperty("--c", resolveColor(hex));
       }
+      broadcastBrushColor();
       broadcastCursor();
     }
 
@@ -359,20 +511,41 @@
       true
     );
 
-    // Escape always disarms draw mode and closes the palette. Gives a
-    // reliable way out when the bottom-corner toolbar feels small to hit.
+    function isTypingTarget(t) {
+      // Skip the shortcut when the user is in a text input / textarea /
+      // contenteditable so typing the letter "d" inside copy fields
+      // doesn't surprise-arm the brush.
+      if (!t || !t.matches) return false;
+      return t.matches(
+        "input, textarea, select, [contenteditable], [contenteditable='true']"
+      );
+    }
+
     document.addEventListener("keydown", function (e) {
-      if (e.key !== "Escape") return;
-      var didSomething = false;
-      if (palette && !palette.hidden) {
-        setPaletteOpen(false);
-        didSomething = true;
+      // Escape disarms draw mode and closes the palette. Reliable way
+      // out when the bottom-corner toolbar feels small to hit.
+      if (e.key === "Escape") {
+        var didSomething = false;
+        if (palette && !palette.hidden) {
+          setPaletteOpen(false);
+          didSomething = true;
+        }
+        if (state.tool) {
+          setTool(null);
+          didSomething = true;
+        }
+        if (didSomething) e.preventDefault();
+        return;
       }
-      if (state.tool) {
-        setTool(null);
-        didSomething = true;
+
+      // D arms draw mode. Bail on modifier combos (Cmd-D bookmarks the
+      // page, Ctrl-D in browsers, etc.) and on inputs / contenteditables.
+      if ((e.key === "d" || e.key === "D") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (isTypingTarget(e.target)) return;
+        if (state.tool === "draw") return;
+        setTool("draw");
+        e.preventDefault();
       }
-      if (didSomething) e.preventDefault();
     });
 
     function syncStrokeFlag() {
@@ -447,9 +620,20 @@
     // the page have somewhere to live. Recomputes on resize and after
     // images / fade-ins shift the layout. ResizeObserver picks up the
     // long-tail layout shifts that scroll/resize don't fire for.
+    //
+    // Measure body.scrollHeight (and viewport) only. The canvas is
+    // position: absolute with no positioned ancestor, so it anchors to
+    // the initial containing block (html) and its bottom edge counts
+    // toward documentElement.scrollHeight but NOT body.scrollHeight.
+    // Including documentElement.scrollHeight here created a one-way
+    // ratchet: the first time the canvas measured taller than the
+    // body content (e.g. a transient layout shift during image / font
+    // load), html.scrollHeight reflected the inflated canvas, the next
+    // run read that value back, and the canvas locked at a height that
+    // sat below the footer as visible empty space (~80px at the tablet
+    // breakpoint where the bug surfaced).
     function syncCanvasHeight() {
       var h = Math.max(
-        document.documentElement.scrollHeight,
         document.body ? document.body.scrollHeight : 0,
         window.innerHeight
       );

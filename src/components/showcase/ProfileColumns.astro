@@ -86,7 +86,6 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
   data-cards={cards}
   data-show-cards={showCards}
   data-offset-right={offsetRightPx}
-  data-floating-cell-group=""
   style={`--pc-aspect:${aspect};--pc-max-w:${maxWidth};${minHeight ? `--pc-min-h:${minHeight};` : ""}${offsetRightPx ? `--pc-offset-right:${offsetRightPx};` : ""}`}
   data-min-height={minHeight}
 >
@@ -205,19 +204,6 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
               overlay.className = "profile-cols__card";
               overlay.style.top = bodyTopInCol + "px";
               overlay.style.height = bodyH + "px";
-              // Aspect ratio matches the card body's native dimensions
-              // (derived as BODY_FRAC of the per-slot height in the
-              // source) so when focus mode inflates --focus-width, the
-              // height auto-inflates proportionally and the bg-image
-              // stays un-stretched. Reading from img.naturalWidth /
-              // .naturalHeight makes this resilient to swapping in a
-              // higher-resolution source: as long as the new strip
-              // keeps the same per-card composition, the fractions
-              // stay valid and no code change is needed.
-              const natW = img.naturalWidth || 375;
-              const natH = img.naturalHeight || 2504;
-              const natBodyH = (natH / cards) * BODY_FRAC;
-              overlay.style.aspectRatio = natW + " / " + natBodyH.toFixed(2);
               overlay.style.borderRadius = radius + "px";
               overlay.style.backgroundImage = "url('" + img.src + "')";
               overlay.style.backgroundSize = "100% " + stripH + "px";
@@ -227,18 +213,6 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
               // with the overlay's rounded clip without any gap area
               // bleeding into the visible region.
               overlay.style.backgroundPosition = "0 " + (-bodyTopInStrip) + "px";
-              overlay.setAttribute("role", "button");
-              overlay.setAttribute("aria-label", "Expand profile card");
-              // Hook into the global FloatingCellInteractions system so
-              // each card gets drag, click-to-focus, and 3D tilt parity
-              // with the other projects' floating cells. Anchor is
-              // top-left (overlays use `top` + implicit left:0 + 100%
-              // width) so the focus-center math expands toward bottom-
-              // right of the resting box.
-              overlay.setAttribute("data-floating-cell", "");
-              overlay.setAttribute("data-cursor", "drag-pill");
-              overlay.setAttribute("data-anchor-x", "left");
-              overlay.setAttribute("data-anchor-y", "top");
               layer.appendChild(overlay);
             }
           });
@@ -494,55 +468,9 @@ const id = "pc-" + Math.random().toString(36).slice(2, 9);
       0 14px 24px -10px rgba(20, 22, 28, 0.18);
     z-index: 5;
   }
-  /* While a card is being dragged, suppress the hover lift so the
-     drag transform isn't fighting a scale. */
-  :global(.profile-cols__card.is-grabbing),
-  :global(.profile-cols__card.is-grabbing:hover) {
-    transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0);
-    box-shadow:
-      0 28px 56px -16px rgba(20, 22, 28, 0.30),
-      0 12px 22px -10px rgba(20, 22, 28, 0.18);
-    cursor: grabbing;
-    z-index: 6;
-  }
-  /* Focus state — the card detaches from its slot, inflates to a centered
-     hero size, and gets a perspective-tilt that follows the cursor. The
-     !important matches the pattern used by MediaParallax / PhoneVideoParallax
-     so the focus rule wins specificity over the per-card hover scale and
-     the inline transform that drag mode sets. */
-  :global(.profile-cols__card.is-focused) {
-    width: var(--focus-width, 100%) !important;
-    /* Release the inline height so aspect-ratio (375/604) drives the
-       height proportionally as width inflates. Without this, the card
-       stays at its resting body height and the bg-image gets stretched. */
-    height: auto !important;
-    max-width: none !important;
-    max-height: none !important;
-    transform: perspective(1200px)
-               translate3d(var(--focus-dx, 0px), var(--focus-dy, 0px), 0)
-               rotateX(var(--tilt-x, 0deg))
-               rotateY(var(--tilt-y, 0deg)) !important;
-    transform-style: flat;
-    backface-visibility: hidden;
-    transition:
-      transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
-      width 520ms cubic-bezier(0.22, 1, 0.36, 1),
-      height 520ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 520ms var(--ease-out) !important;
-    box-shadow:
-      0 32px 80px -20px rgba(20, 16, 40, 0.34),
-      0 10px 24px -8px rgba(20, 16, 40, 0.18);
-    z-index: 60;
-    cursor: zoom-out;
-  }
-  :global(.profile-cols__card.is-tilting) {
-    transition: transform 80ms linear,
-                box-shadow 520ms var(--ease-out) !important;
-  }
   /* When a sibling overlay is being hovered, the others slightly recede
-     so the lifted card reads cleanly. Subtle, not jarring. Skip when
-     a card is focused so the lifted card doesn't push others around. */
-  :global(.profile-cols__cards:hover .profile-cols__card:not(:hover):not(.is-focused)) {
+     so the lifted card reads cleanly. Subtle, not jarring. */
+  :global(.profile-cols__cards:hover .profile-cols__card:not(:hover)) {
     transform: scale(0.985);
     transition:
       transform 360ms cubic-bezier(0.22, 1, 0.36, 1);

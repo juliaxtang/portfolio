@@ -262,7 +262,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     // first case study on the page — same behavior the "See my work"
     // cursor pill is advertising. Inner <a> clicks pass through to
     // their own href so the existing scroll targets still work.
+    //
+    // The whole interaction is desktop-only: on touch/no-hover devices
+    // the column reveal images don't render and the column reads as
+    // plain prose, so a tap shouldn't surprise-scroll the page either.
     (() => {
+      const canHover = window.matchMedia("(hover: hover)").matches;
+      if (!canHover) return;
       const targets = [
         { sel: ".v2-hero__meta-col--snap", href: "#snapchat-games" },
         { sel: ".v2-hero__meta-col--tinder", href: "#tappy-cloud" },
@@ -344,19 +350,62 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           { passive: true }
         );
 
-        // "doodle tool I vibecoded" → arm draw mode. We don't reach
-        // into the toolbar's IIFE-scoped state; instead we synthesise
-        // a click on the existing pencil button, which the toolbar's
-        // own click handler interprets exactly the same as a real tap
-        // on the bar. No-op if the tool is already armed so a stray
-        // tap doesn't toggle draw mode off mid-doodle.
+        // "doodle tool I vibecoded" → arm draw mode on desktop; on
+        // touch / no-hover devices we instead surface the arrow and
+        // toolbar halo (data-prompted), since the user can't see the
+        // hover affordance otherwise. They tap the toolbar itself to
+        // actually arm the pencil. The hover-capable check uses the
+        // (hover: hover) media query so phones / tablets get the
+        // prompt-only behavior even at desktop widths.
         const trigger = aiCol.querySelector("[data-doodle-trigger]");
         const pencilBtn = doodle.querySelector('[data-tool="draw"]');
+        let promptTimer = 0;
+        function showPrompt() {
+          doodle.setAttribute("data-prompted", "");
+          aiCol.dispatchEvent(new MouseEvent("mouseenter"));
+          if (promptTimer) window.clearTimeout(promptTimer);
+          promptTimer = window.setTimeout(() => {
+            doodle.removeAttribute("data-prompted");
+            aiCol.dispatchEvent(new MouseEvent("mouseleave"));
+            promptTimer = 0;
+          }, 4000);
+        }
         if (trigger && pencilBtn) {
           trigger.addEventListener("click", (e) => {
             e.preventDefault();
-            if (pencilBtn.classList.contains("is-active")) return;
-            pencilBtn.click();
+            const canHover =
+              window.matchMedia("(hover: hover)").matches;
+            if (canHover) {
+              if (pencilBtn.classList.contains("is-active")) return;
+              pencilBtn.click();
+              return;
+            }
+            // Touch: surface the arrow + halo. Stop propagation so the
+            // column-wide tap handler below doesn't also fire and toggle
+            // the prompt back off.
+            e.stopPropagation();
+            showPrompt();
+          });
+        }
+
+        // On touch, tapping ANYWHERE in the AI column (not just the
+        // inline "doodle tool I vibecoded" link) should surface the
+        // arrow pointing down to the toolbar. This mirrors what hover
+        // does on desktop, since the column is the only hero meta col
+        // that stays interactive on mobile (Snap / Tinder are inert).
+        // Match the same media-query envelope the rest of the touch
+        // surfaces use so a desktop-emulated mobile viewport still
+        // exercises this code path.
+        const isTouchSurface = window.matchMedia(
+          "(hover: none), (pointer: coarse), (max-width: 720px)"
+        ).matches;
+        if (isTouchSurface) {
+          aiCol.style.cursor = "pointer";
+          aiCol.addEventListener("click", (e) => {
+            // Inline link inside the column has its own handler that
+            // already calls showPrompt — don't double-fire here.
+            if (trigger && trigger.contains(e.target)) return;
+            showPrompt();
           });
         }
       }
@@ -1217,9 +1266,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   /* Below 1000px width the hero is tighter; keep the scroll cursor pill on
      Snap/Tinder hover but hide the decorative project imagery so the
-     field does not get too busy. */
-  @media (max-width: 999px) {
-    .hero-reveal { display: none; }
+     field does not get too busy. Also hide on any no-hover/coarse-pointer
+     device so a phone-sized tablet (≥1000px) doesn't get the always-on
+     reveal state that touch's sticky :hover would otherwise produce. */
+  @media (max-width: 999px), (hover: none), (pointer: coarse) {
+    .hero-reveal { display: none !important; }
+    /* The columns aren't tappable affordances on touch (the JS skips
+       binding the scroll handler under (hover: hover)) so drop the
+       pointer cursor too. */
+    .v2-hero__meta-col--snap,
+    .v2-hero__meta-col--tinder {
+      cursor: default;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal,

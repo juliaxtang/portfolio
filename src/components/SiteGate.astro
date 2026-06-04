@@ -98,9 +98,14 @@ const password = "2026";
     border: 1px solid var(--border-default);
     border-radius: var(--r-full);
     font: inherit;
-    font-size: 14px;
+    /* 16px prevents iOS Safari from zooming the page when the field
+       gains focus. Smaller sizes trigger the auto-zoom. */
+    font-size: 16px;
     background: var(--bg-surface);
     color: var(--text-primary);
+  }
+  @media (min-width: 480px) {
+    .gate__input { font-size: 14px; }
   }
   /* The default --border-default in dark mode (#33373F) is too close to
      the card surface (#15171C) to read as a discrete field. Lift it. */

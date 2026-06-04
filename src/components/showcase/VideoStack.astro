@@ -118,7 +118,12 @@ const resolve = (p: string) =>
         },
         { threshold: 0.1 }
       );
-      document.querySelectorAll(".video-stack video").forEach((v) => observer.observe(v));
+      document.querySelectorAll(".video-stack video").forEach((v) => {
+        v.muted = true;
+        v.playsInline = true;
+        v.play().catch(() => {});
+        observer.observe(v);
+      });
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;

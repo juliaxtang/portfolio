@@ -159,6 +159,7 @@
         let baseX = 0, baseY = 0;
         let didDrag = false;
         let active = false;
+        let touchPending = false;
 
         cell.addEventListener("pointerdown", function (e) {
           if (focused === cell) {
@@ -168,7 +169,13 @@
             return;
           }
           if (e.button !== undefined && e.button !== 0) return;
-          if (e.pointerType === "touch") return;
+          if (e.pointerType === "touch") {
+            // Touch: skip drag entirely so the gesture doesn't fight
+            // page scroll. The native click that fires on tap-release
+            // focuses the cell via the click listener below.
+            touchPending = true;
+            return;
+          }
           active = true;
           didDrag = false;
           pointerId = e.pointerId;
@@ -215,6 +222,17 @@
             e.preventDefault();
             e.stopPropagation();
             didDrag = false;
+            return;
+          }
+          if (touchPending) {
+            // Touch tap — pointerdown bailed, so this click is the
+            // only signal the user wanted to focus / unfocus.
+            touchPending = false;
+            if (focused === cell) {
+              unfocusCell(cell);
+            } else {
+              focusCell(cell);
+            }
           }
         }, true);
       }

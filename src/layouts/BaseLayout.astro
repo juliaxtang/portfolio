@@ -9,6 +9,7 @@ import CustomCursor from "../components/CustomCursor.astro";
 import FloatingCellInteractions from "../components/showcase/FloatingCellInteractions.astro";
 import SiteGate from "../components/SiteGate.astro";
 import DoodleToolbar from "../components/DoodleToolbar.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
   title: string;
@@ -140,6 +141,7 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
     <CustomCursor />
     <FloatingCellInteractions />
     <DoodleToolbar />
+    <ThemeToggle variant="bubble" />
 
     <!-- Page-transition controller. On click of any same-origin link
          (excluding modifier-clicks, new-tab targets, hash-only links,
@@ -208,6 +210,70 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
             location.href = url.href;
           }, LEAVE_MS);
         }, true);
+      })();
+    </script>
+
+    <!-- Global video autoplay enforcer. Every <video> on the site is
+         intended to be muted, looping, and autoplaying inline — but
+         Chrome mobile (and Safari under low-power mode) sometimes
+         refuse to honor just the autoplay attribute. This script
+         walks every video in the DOM, sets the muted/playsInline/loop
+         properties imperatively (attribute-only declarations don't
+         always survive hydration on iOS Safari), kicks off .play()
+         eagerly, and re-arms playback when each video scrolls back
+         into view. A MutationObserver picks up videos added later
+         (case-study Hero rendered after page transition, e.g.). -->
+    <script is:inline>
+      (function () {
+        if (typeof window === "undefined") return;
+        var wired = new WeakSet();
+        var io = window.IntersectionObserver
+          ? new IntersectionObserver(
+              function (entries) {
+                entries.forEach(function (e) {
+                  if (e.isIntersecting && e.target.paused) {
+                    e.target.play().catch(function () {});
+                  }
+                });
+              },
+              { threshold: 0.05 }
+            )
+          : null;
+        function wire(v) {
+          if (wired.has(v)) return;
+          wired.add(v);
+          v.muted = true;
+          v.playsInline = true;
+          v.loop = true;
+          v.setAttribute("muted", "");
+          v.setAttribute("playsinline", "");
+          v.setAttribute("loop", "");
+          v.setAttribute("autoplay", "");
+          v.play().catch(function () {});
+          if (io) io.observe(v);
+        }
+        function scan(root) {
+          (root || document).querySelectorAll("video").forEach(wire);
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", function () { scan(); }, { once: true });
+        } else {
+          scan();
+        }
+        if (window.MutationObserver) {
+          var mo = new MutationObserver(function (mutations) {
+            for (var i = 0; i < mutations.length; i++) {
+              var added = mutations[i].addedNodes;
+              for (var j = 0; j < added.length; j++) {
+                var n = added[j];
+                if (n.nodeType !== 1) continue;
+                if (n.tagName === "VIDEO") wire(n);
+                else if (n.querySelectorAll) n.querySelectorAll("video").forEach(wire);
+              }
+            }
+          });
+          mo.observe(document.documentElement, { childList: true, subtree: true });
+        }
       })();
     </script>
 

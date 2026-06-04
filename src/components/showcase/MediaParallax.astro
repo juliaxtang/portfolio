@@ -162,7 +162,7 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
         persistent
         watchRoot={`#${id}`}
         hideWhen="cell-hover,cell-active,root-class:is-interacted"
-        hideBelowWidth={0}
+        hideBelowWidth={720}
       />
     </>
   )}
@@ -185,7 +185,12 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
         },
         { threshold: 0.1 }
       );
-      document.querySelectorAll(".media-parallax video").forEach((v) => observer.observe(v));
+      document.querySelectorAll(".media-parallax video").forEach((v) => {
+        v.muted = true;
+        v.playsInline = true;
+        v.play().catch(() => {});
+        observer.observe(v);
+      });
 
       // Flag root as .is-interacted once any floating cell receives a
       // pointer / touch / click — permanently hides the drag-to-move hint.
@@ -420,13 +425,30 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
   }
 
   @media (max-width: 720px) {
+    /* Reserve room above + below for the cells that anchor outside the
+       phone, so neither end of the media block crowds the surrounding
+       text. */
+    .media-parallax[data-floating-cell-group] {
+      padding-top: clamp(72px, 14vw, 120px);
+      padding-bottom: clamp(48px, 10vw, 88px);
+    }
+    /* Mobile: pull the floating cells fully clear of the phone so they
+       stop covering the main video. Left cell anchors above the phone,
+       right cell anchors below the phone with a tight clearance so it
+       doesn't crash into the project eyebrow / title that follow. Both
+       stay tappable and animate into a focused, centered view on tap. */
     .media-parallax__cell--left {
-      left: clamp(-110px, -22%, -60px);
-      width: var(--mp-cell-l-w, clamp(170px, 56%, 230px));
+      top: -14%;
+      left: -2%;
+      width: var(--mp-cell-l-w, clamp(170px, 64%, 240px));
+      --rot: -4deg;
     }
     .media-parallax__cell--right {
-      right: clamp(-90px, -18%, -50px);
-      width: var(--mp-cell-r-w, clamp(150px, 46%, 200px));
+      top: auto;
+      bottom: -6%;
+      right: -8%;
+      width: var(--mp-cell-r-w, clamp(160px, 58%, 220px));
+      --rot: 5deg;
     }
   }
 
@@ -437,12 +459,28 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
      gutters and stay on screen. */
   @media (max-width: 520px) {
     .media-parallax[data-floating-cell-group] {
-      max-width: min(var(--mp-max-w, 396px), 78%);
+      max-width: min(var(--mp-max-w, 396px), 82%);
+    }
+    .media-parallax__cell--left {
+      top: -12%;
+      left: -2%;
+      width: var(--mp-cell-l-w, clamp(170px, 68%, 240px));
+    }
+    .media-parallax__cell--right {
+      bottom: -4%;
+      right: -10%;
+      width: var(--mp-cell-r-w, clamp(160px, 62%, 220px));
     }
   }
   @media (max-width: 380px) {
     .media-parallax[data-floating-cell-group] {
-      max-width: min(var(--mp-max-w, 396px), 74%);
+      max-width: min(var(--mp-max-w, 396px), 80%);
+    }
+    .media-parallax__cell--left {
+      width: var(--mp-cell-l-w, clamp(160px, 64%, 220px));
+    }
+    .media-parallax__cell--right {
+      width: var(--mp-cell-r-w, clamp(150px, 58%, 200px));
     }
   }
 
@@ -529,5 +567,9 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
     .media-parallax__drag-hint-label::before {
       content: none;
     }
+  }
+  /* Touch / mobile: no drag, no hint. The cells are tap-to-focus. */
+  @media (max-width: 720px) {
+    .media-parallax__drag-hint { display: none !important; }
   }
 </style>

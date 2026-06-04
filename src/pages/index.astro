@@ -73,12 +73,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
               stroke-linejoin="round"
               aria-hidden="true"
               focusable="false"
-            ><path d="M9 11 V 7 a 2 2 0 0 1 4 0 v 9"/><path d="M13 7 V 5 a 2 2 0 0 1 4 0 v 11"/><path d="M17 7 V 6 a 2 2 0 0 1 4 0 v 11"/><path d="M21 9 V 8 a 2 2 0 0 1 4 0 v 9 c 0 6.5 -5 10 -10 10 -5.5 0 -10 -3.5 -10 -9 a 2 2 0 0 1 3.4 -1.4 l 1.6 1.4"/></svg></span><span class="v2-hero__hint"><span
-              class="v2-hero__handwriting"
-              style={`--handwriting-mask: url('${base}/hi-im-julia-hand.png'); --handwriting-mask-2x: url('${base}/hi-im-julia-hand@2x.png')`}
-              role="img"
-              aria-label="Hi, I'm Julia."
-            ></span><span class="v2-hero__avatar" aria-hidden="true"><img src={`${base}/julia-avatar.png`} alt="" class="v2-hero__avatar-img" /><span class="v2-hero__avatar-wave v2-hero__avatar-wave--1"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span><span class="v2-hero__avatar-wave v2-hero__avatar-wave--2"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span><span class="v2-hero__avatar-wave v2-hero__avatar-wave--3"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span></span></span></p>
+            ><path d="M9 11 V 7 a 2 2 0 0 1 4 0 v 9"/><path d="M13 7 V 5 a 2 2 0 0 1 4 0 v 11"/><path d="M17 7 V 6 a 2 2 0 0 1 4 0 v 11"/><path d="M21 9 V 8 a 2 2 0 0 1 4 0 v 9 c 0 6.5 -5 10 -10 10 -5.5 0 -10 -3.5 -10 -9 a 2 2 0 0 1 3.4 -1.4 l 1.6 1.4"/></svg></span><span class="v2-hero__hint"><span class="v2-hero__tight">Hi</span>, <span class="v2-hero__tight">I'm</span> <span class="v2-hero__name"><span class="v2-hero__kern-j">J</span>ulia<svg
+              class="v2-hero__squiggle"
+              viewBox="0 0 120 12"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              focusable="false"
+            ><path d="M2 7 C 14 1, 26 11, 38 6 S 62 1, 74 7 S 98 11, 118 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg></span>.<span class="v2-hero__avatar" aria-hidden="true"><img src={`${base}/julia-avatar.png`} alt="" class="v2-hero__avatar-img" /><span class="v2-hero__avatar-wave v2-hero__avatar-wave--1"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span><span class="v2-hero__avatar-wave v2-hero__avatar-wave--2"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span><span class="v2-hero__avatar-wave v2-hero__avatar-wave--3"><svg viewBox="0 0 100 16" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" focusable="false"><path d="M2 8 C 12 0, 22 16, 32 8 S 52 0, 62 8 S 82 16, 98 8" /></svg></span></span></span></p>
         </FadeIn>
 
         <FadeIn delay={120}>
@@ -214,7 +215,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       const eyebrow = document.querySelector(".v2-hero__eyebrow");
       const path = document.querySelector(".v2-hero__squiggle path");
       const hand = document.querySelector(".v2-hero__wave-hand");
-      if (!eyebrow || !hand) return;
+      if (!eyebrow || !path || !hand) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       const DRAW_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
@@ -223,7 +224,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       const ERASE_MS = 700;
 
       function drawIn() {
-        if (!path) return;
         // Reset to invisible-before-draw, then transition to drawn.
         path.style.animation = "none";
         path.style.transition = "none";
@@ -235,7 +235,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       }
 
       function eraseOut() {
-        if (!path) return;
         path.style.animation = "none";
         path.style.transition = "stroke-dashoffset " + ERASE_MS + "ms " + ERASE_EASE;
         path.style.strokeDashoffset = "-120";
@@ -249,11 +248,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       }
 
       eyebrow.addEventListener("mouseenter", () => {
-        if (path) drawIn();
+        drawIn();
         replayWave();
       });
       eyebrow.addEventListener("mouseleave", () => {
-        if (path) eraseOut();
+        eraseOut();
       });
     })();
 
@@ -626,55 +625,26 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
 
   .v2-hero__eyebrow {
+    font-family: var(--font-hand);
     font-size: clamp(28px, 2.6vw, 40px);
     font-weight: 400;
     line-height: 1.1;
     letter-spacing: -0.05em;
+    text-transform: none;
     color: var(--text-secondary);
     margin: 0;
     display: inline-flex;
     align-items: baseline;
-    gap: 0;
-    transition: color 0.35s var(--ease);
-  }
-  /* Sized to the old Julias Scratch eyebrow: cap height = 1em, phrase
-     width matches "Hi, I'm Julia." at -0.05em tracking (scan artboard
-     is much wider, so we fit the mask box rather than native aspect). */
-  .v2-hero__handwriting {
-    display: inline-block;
-    height: 1em;
-    width: 8.35em;
-    color: inherit;
-    background-color: currentColor;
-    transition: color 0.35s var(--ease), background-color 0.35s var(--ease);
-    transform: translateY(0.05em);
-    mask-image: var(--handwriting-mask);
-    mask-size: 100% 100%;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-mode: alpha;
-    -webkit-mask-image: var(--handwriting-mask);
-    -webkit-mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    vertical-align: baseline;
-    flex-shrink: 0;
-  }
-  @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx) {
-    .v2-hero__handwriting {
-      mask-image: var(--handwriting-mask-2x);
-      -webkit-mask-image: var(--handwriting-mask-2x);
-    }
-  }
-  :global([data-theme="dark"]) .v2-hero__eyebrow {
-    color: var(--text-secondary);
-  }
-  :global([data-theme="dark"]) .v2-hero__handwriting {
-    color: var(--text-secondary);
-    background-color: currentColor;
+    font-feature-settings: "calt" 0, "liga" 0, "dlig" 0;
   }
   .v2-hero__hint {
     vertical-align: baseline;
+  }
+  .v2-hero__tight {
+    letter-spacing: -0.05em;
+  }
+  .v2-hero__kern-j {
+    margin-right: -0.08em;
   }
   .v2-hero__wave-hand {
     width: 0.78em;
@@ -781,6 +751,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
        seconds, then settles to rest at 0°. */
     animation: hero-wave-pendulum 4200ms cubic-bezier(0.36, 0, 0.64, 1) 600ms 1 both;
   }
+  .v2-hero__name {
+    position: relative;
+    display: inline-block;
+    color: inherit;
+  }
+  .v2-hero__squiggle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.22em;
+    width: 100%;
+    height: 0.4em;
+    color: var(--brand-primary, currentColor);
+    pointer-events: none;
+    overflow: visible;
+  }
+  .v2-hero__squiggle path {
+    stroke-dasharray: 120;
+    stroke-dashoffset: 120;
+    /* Delay 900ms → draw in 900ms → hold → erase L-to-R, ends at 4500ms total. */
+    animation: hero-squiggle-intro 3600ms linear 900ms 1 both;
+  }
+
   /* Slide in once on load and stay — no exit. */
   @keyframes hero-wave-slide {
     0%   { width: 0;      margin-right: 0;       opacity: 0; transform: translateX(-6px) scale(0.85); }
@@ -821,9 +814,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     100%  { transform: scaleX(-1) rotate(0deg); }
   }
 
+  /* Squiggle: draws in L-to-R (0→25%), holds (25→75%), then erases
+     L-to-R (75→100%) so the line reads as continuing on rather than
+     rewinding. Total active duration = 3600ms; with the 900ms delay
+     the whole sequence ends at 4500ms. */
+  @keyframes hero-squiggle-intro {
+    0%   { stroke-dashoffset: 120;  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+    25%  { stroke-dashoffset: 0;    animation-timing-function: linear; }
+    75%  { stroke-dashoffset: 0;    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1); }
+    100% { stroke-dashoffset: -120; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .v2-hero__wave,
-    .v2-hero__wave-hand {
+    .v2-hero__wave-hand,
+    .v2-hero__squiggle path {
       animation: none;
     }
   }

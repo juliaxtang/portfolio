@@ -15,8 +15,10 @@
 ---
 
 <div class="cursor" id="cursor" aria-hidden="true">
-  <div class="cursor__dot"></div>
-  <div class="cursor__ring"></div>
+  <div class="cursor__motion">
+    <div class="cursor__dot"></div>
+    <div class="cursor__ring"></div>
+  </div>
   <div class="cursor__media" id="cursor-media" aria-hidden="true"></div>
   <div class="cursor__pill" aria-hidden="true">
     <span class="cursor__pill-label">Read about it</span>
@@ -153,6 +155,11 @@
     } catch (_) {}
     let cx = mx;
     let cy = my;
+    // The dot+ring live inside .cursor__motion so the comet-tail
+    // rotation/scale stays scoped to them and never leaks onto the
+    // sibling pill/media nodes (which must remain upright at the cursor
+    // position regardless of recent motion direction).
+    const motion = cursor.querySelector(".cursor__motion");
     // Apply the initial transform so the cursor renders at the restored
     // position immediately, instead of flashing at (0,0) until the first
     // mousemove.
@@ -215,13 +222,20 @@
       if (carryingMedia) {
         cx = mx;
         cy = my;
-        cursor.style.transform =
-          "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
-      } else {
-        cursor.style.transform =
-          "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0) " +
-          "rotate(" + lastAngle.toFixed(4) + "rad) " +
-          "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+      }
+      // Parent always carries translate only — pills and cloned media
+      // are siblings of .cursor__motion and must stay upright. Comet-tail
+      // rotation/scale is scoped to the motion wrapper.
+      cursor.style.transform =
+        "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
+      if (motion) {
+        if (carryingMedia) {
+          motion.style.transform = "";
+        } else {
+          motion.style.transform =
+            "rotate(" + lastAngle.toFixed(4) + "rad) " +
+            "scale(" + sx.toFixed(3) + "," + sy.toFixed(3) + ")";
+        }
       }
       // Expose the cursor position as CSS variables so hover-revealed
       // images can attach themselves to the cursor (the image becomes
@@ -587,6 +601,19 @@
      somehow mounts the element. */
   @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
     .cursor { display: none; }
+  }
+
+  /* Comet-tail wrapper — only the dot and ring rotate/stretch with the
+     pointer's motion direction. Pills and cloned media are siblings of
+     this element so they stay upright no matter how lastAngle was set. */
+  .cursor__motion {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    will-change: transform;
   }
 
   .cursor__dot,

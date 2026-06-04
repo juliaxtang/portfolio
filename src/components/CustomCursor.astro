@@ -36,14 +36,18 @@
     </svg>
   </div>
   <div class="cursor__scroll-pill" aria-hidden="true">
-    <span class="cursor__scroll-pill-label">Jump to it</span>
+    <span class="cursor__scroll-pill-label">See my work</span>
     <svg class="cursor__scroll-pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M8 3v9" />
       <path d="M4 9l4 4 4-4" />
     </svg>
   </div>
   <div class="cursor__swipe-pill" aria-hidden="true">
-    <span class="cursor__swipe-pill-label">Swipe to shuffle</span>
+    <span class="cursor__swipe-pill-label">Swipe</span>
+    <svg class="cursor__swipe-pill-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 8h10" />
+      <path d="M9 4l4 4-4 4" />
+    </svg>
   </div>
   <div class="cursor__drag-pill" aria-hidden="true">
     <svg class="cursor__drag-pill-arrows" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -677,7 +681,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 12px 16px;
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -745,7 +749,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 12px 16px;
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -816,7 +820,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 12px 16px;
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -887,7 +891,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 12px 16px;
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -955,7 +959,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 12px 16px;
     border-radius: 999px;
     background: var(--text-primary);
     color: var(--text-inverse, #FDFCFA);
@@ -1026,7 +1030,7 @@
     grid-template-columns: minmax(0, 1fr);
     align-items: center;
     justify-items: center;
-    padding: 6px 12px;
+    padding: 12px 16px;
     box-sizing: content-box;
     width: var(--cp-w-idle, max-content);
     max-width: var(--cp-w-idle, none);
@@ -1189,6 +1193,21 @@
     transition:
       opacity 220ms var(--ease-out) 260ms,
       transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 260ms;
+  }
+  .cursor__swipe-pill-arrow {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-left: 6px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition:
+      opacity 220ms var(--ease-out) 320ms,
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1) 320ms;
+  }
+  .cursor.is-swipe-pill .cursor__swipe-pill-arrow {
+    opacity: 1;
+    transform: translateX(0);
   }
   .cursor.is-swipe-pill .cursor__dot,
   .cursor.is-swipe-pill .cursor__ring {

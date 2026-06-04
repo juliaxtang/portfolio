@@ -66,6 +66,7 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   data-phone-range={phoneRange}
   data-badge-range={badgeRange}
   data-floating-cell-group
+  style={`--pv-arrow-src:url('${base}/projects/tinder-app-redesign/drag-to-move.png');`}
 >
   <div class="phone-video__phone">
     <div class="phone-video__screen">
@@ -132,6 +133,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       data-anchor-y="bottom"
     />
   )}
+  {(promptSrc || quizSrc) && (
+    <span class="phone-video__drag-hint" aria-hidden="true">
+      <span class="phone-video__drag-hint-label">drag to move<br />or click to expand</span>
+      <span class="phone-video__drag-hint-arrow"></span>
+    </span>
+  )}
 </div>
 
 <script is:inline>
@@ -152,6 +159,20 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
         { threshold: 0.1 }
       );
       document.querySelectorAll(".phone-video video").forEach((v) => observer.observe(v));
+
+      // First-interaction flag — once any floating cell receives a
+      // pointerdown / click / touchstart, mark the .phone-video root
+      // so the "drag to move" hint stays hidden going forward.
+      document.querySelectorAll(".phone-video").forEach((root) => {
+        function flag() {
+          root.classList.add("is-interacted");
+        }
+        root.querySelectorAll(".phone-video__cell").forEach((cell) => {
+          cell.addEventListener("pointerdown", flag, { once: true });
+          cell.addEventListener("touchstart", flag, { once: true, passive: true });
+          cell.addEventListener("click", flag, { once: true });
+        });
+      });
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
@@ -363,10 +384,11 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   }
   .phone-video__cell.is-grabbing { cursor: grabbing; }
   .phone-video__cell--prompt {
-    /* Anchored upper-left, mostly outside the phone's left edge so the
-       prompt's text stays readable without covering the match screen. */
-    top: clamp(80px, 20%, 170px);
-    left: clamp(-170px, -38%, -110px);
+    /* Tucked into the phone's upper-left corner: card's right edge sits
+       just inside the phone's left edge so the prompt reads as a Tinder
+       comment bubble sticking out of the top of the profile. */
+    top: clamp(10px, 4%, 50px);
+    left: clamp(-200px, -48%, -140px);
     width: clamp(200px, 66%, 280px);
     --rot: -5deg;
     transform: translate3d(var(--drag-x, 0px),
@@ -377,8 +399,8 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   .phone-video__cell--quiz {
     /* Anchored lower-right, mostly outside the phone's right edge. */
     bottom: clamp(50px, 12%, 110px);
-    right: clamp(-140px, -32%, -90px);
-    width: clamp(180px, 58%, 250px);
+    right: clamp(-170px, -38%, -110px);
+    width: clamp(230px, 74%, 320px);
     --rot: 6deg;
     transform: translate3d(var(--drag-x, 0px),
                            calc(var(--quiz-y) + var(--drag-y, 0px)),
@@ -442,6 +464,104 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     .phone-video:hover .phone-video__badge,
     .phone-video:hover .phone-video__cell {
       transform: none !important;
+    }
+  }
+
+  /* "drag to move" affordance — uses the purpose-made drag-to-move.png
+     curved arrow on the right of the phone, with the label nestled in
+     the arrow's upper-right curve. Fades out while a cell is hovered
+     and permanently hides via .is-interacted after first interaction. */
+  .phone-video__drag-hint {
+    position: absolute;
+    top: calc(32% + 60px);
+    right: -232px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    color: var(--text-tertiary, #6b6b72);
+    z-index: 3;
+    transition: opacity 220ms var(--ease-out, ease-out);
+  }
+  .phone-video__drag-hint-label {
+    font-family: var(--font-hand);
+    font-size: 24px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: var(--text-secondary, #5A5D66);
+    white-space: nowrap;
+  }
+  .phone-video__drag-hint-arrow {
+    display: block;
+    width: 80px;
+    aspect-ratio: 1 / 1.1;
+    flex-shrink: 0;
+    /* Mask the PNG and fill with currentColor so the arrow's stroke can
+       be dilated to match the games swipe arrow. Same 8-direction stack. */
+    background-color: currentColor;
+    color: var(--text-tertiary, #6b6b72);
+    -webkit-mask: var(--pv-arrow-src) center / contain no-repeat;
+    mask: var(--pv-arrow-src) center / contain no-repeat;
+    filter:
+      drop-shadow(2.4px 0 0 currentColor)
+      drop-shadow(-2.4px 0 0 currentColor)
+      drop-shadow(0 2.4px 0 currentColor)
+      drop-shadow(0 -2.4px 0 currentColor)
+      drop-shadow(1.7px 1.7px 0 currentColor)
+      drop-shadow(-1.7px 1.7px 0 currentColor)
+      drop-shadow(1.7px -1.7px 0 currentColor)
+      drop-shadow(-1.7px -1.7px 0 currentColor);
+    /* Horizontally mirrored, nudged 8px left + 40px down, rotated 25° CW. */
+    transform: translate(-20px, 52px) rotate(25deg) scaleX(-1);
+    transform-origin: 50% 50%;
+  }
+  /* Hide while hovering any floating cell — the cursor pill replaces it. */
+  .phone-video:has(.phone-video__cell:hover) .phone-video__drag-hint,
+  .phone-video:has(.phone-video__cell.is-grabbing) .phone-video__drag-hint,
+  .phone-video:has(.phone-video__cell.is-focused) .phone-video__drag-hint {
+    opacity: 0;
+  }
+  /* Permanent hide after first interaction (set in JS via .is-interacted). */
+  .phone-video.is-interacted .phone-video__drag-hint {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Narrow desktop / tablet / mobile (≤ 1339px): the right-of-phone
+     hint has no room next to the text column, so fold it into a compact
+     horizontal pill below the deck — same pattern as the games
+     VideoCardStack swipe affordance. */
+  @media (max-width: 1339px) {
+    .phone-video__drag-hint {
+      left: 50%;
+      top: auto;
+      bottom: -2px;
+      right: auto;
+      transform: translateX(-50%);
+      flex-direction: row;
+      align-items: center;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(20, 22, 28, 0.08);
+      border-radius: 999px;
+      padding: 7px 14px;
+      color: var(--text-secondary, #2a2a2f);
+      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
+    }
+    .phone-video__drag-hint-arrow { display: none; }
+    .phone-video__drag-hint-label {
+      font-family: var(--font-mono, inherit);
+      font-size: 0;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+    }
+    .phone-video__drag-hint-label::before {
+      content: "↕ drag the cards to move them";
+      font-size: 11px;
     }
   }
 </style>

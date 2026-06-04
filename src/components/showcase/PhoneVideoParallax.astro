@@ -90,7 +90,7 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       loading="lazy"
     />
   </div>
-  <span class="phone-video__badge-wrap fx" tabindex="0" aria-label={badgeAlt}>
+  <span class="phone-video__badge-wrap" aria-hidden="true">
     <img
       class="phone-video__badge"
       src={resolve(badgeSrc)}
@@ -98,14 +98,6 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       draggable="false"
       loading="lazy"
     />
-    <span class="fx-photo phone-video__badge-preview" style="--tilt:-4deg" aria-hidden="true">
-      <img
-        src={resolve(frameSrc)}
-        alt=""
-        draggable="false"
-        loading="lazy"
-      />
-    </span>
   </span>
   {promptSrc && (
     <img
@@ -307,7 +299,7 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     height: auto;
     z-index: 2;
     display: block;
-    cursor: pointer;
+    pointer-events: none;
   }
   .phone-video__badge-wrap .phone-video__badge {
     position: static;
@@ -315,25 +307,6 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     right: auto;
     width: 100%;
   }
-  /* Hover-revealed preview of the app redesign phone graphic, cloned by
-     the custom cursor on hover so it floats attached to the pointer.
-     Hidden in place (the cloned copy is what the viewer sees). */
-  .phone-video__badge-preview {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    width: 220px;
-    pointer-events: none;
-    opacity: 0 !important;
-    transform: translateX(-50%) rotate(var(--tilt, 0deg));
-    z-index: 5;
-  }
-  .phone-video__badge-preview img {
-    width: 100%;
-    display: block;
-    filter: drop-shadow(0 18px 30px rgba(60, 30, 120, 0.18));
-  }
-
   .phone-video__badge {
     position: absolute;
     /* Dropped down a bit so it overlaps the phone's upper-right edge

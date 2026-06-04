@@ -11,6 +11,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FadeIn from "../components/FadeIn.astro";
 import HeroGrid from "../components/HeroGrid.astro";
+import Arrow from "../components/Arrow.astro";
 import Showcase from "../components/showcase/Showcase.astro";
 import PhoneVideoParallax from "../components/showcase/PhoneVideoParallax.astro";
 import VideoCardStack from "../components/showcase/VideoCardStack.astro";
@@ -107,20 +108,34 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
         </FadeIn>
 
         <FadeIn delay={220}>
-          <div class="v2-hero__meta" data-cursor="scroll-pill" data-meta-scroll>
-            <p class="v2-hero__meta-col v2-hero__meta-col--snap">
+          <div class="v2-hero__meta" data-meta-scroll>
+            <p class="v2-hero__meta-col v2-hero__meta-col--snap" data-cursor="scroll-pill">
               Currently building social experiences at <a class="hero-co hero-co--snap" href="#snapchat-games"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snapchat</a> with Cursor and Claude.
             </p>
-            <p class="v2-hero__meta-col v2-hero__meta-col--tinder">
+            <p class="v2-hero__meta-col v2-hero__meta-col--tinder" data-cursor="scroll-pill">
               Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
             </p>
             <p class="v2-hero__meta-col v2-hero__meta-col--ai">
-              Tinkering with AI on the side. <span class="v2-hero__meta-secondary">AI projects coming soon. In the meantime, have some fun with this doodle tool!</span>
+              Tinkering with AI on the side. <span class="v2-hero__meta-secondary">AI projects coming soon. In the meantime, have fun with this <button type="button" class="v2-hero__doodle-link" data-doodle-trigger>doodle tool I vibecoded</button>.</span>
             </p>
           </div>
         </FadeIn>
       </div>
     </div>
+
+    <!--
+      Hand-drawn arrow from the "doodle tool I vibecoded" link down to
+      the doodle toolbar. Visibility, path math, and animation are all
+      handled by the Arrow component itself; we only pass the start /
+      end / trigger selectors and the toolbar's lift compensation.
+    -->
+    <Arrow
+      from=".v2-hero__doodle-link"
+      to=".doodle__bar"
+      trigger=".v2-hero__meta-col--ai"
+      liftCompensation={36}
+      liftActiveSelector="[data-prompted], [data-active]"
+    />
   </section>
 
   <script is:inline>
@@ -263,6 +278,93 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           const target = document.querySelector(href);
           if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
         });
+      }
+    })();
+
+    // AI meta column → doodle prompt. Hovering the third column flags
+    // the doodle root with `data-prompted`, which the toolbar reads to
+    // scale up, tint its halo to the active brush color, and surface
+    // the "Press D to doodle" hint underneath. The hint and lift are
+    // desktop-only at the CSS layer, so this stays hands-off on touch.
+    //
+    // The arrow itself (visibility, path math, animation) lives in the
+    // <Arrow> component above; this IIFE only handles the doodle-side
+    // state hookups. The click handler on the inline "doodle tool I
+    // vibecoded" button arms draw mode directly — on mobile this is
+    // the only available entry point (no hover, no D key); on desktop
+    // it's a bonus path alongside the keyboard shortcut.
+    //
+    // Deferred to DOMContentLoaded because <DoodleToolbar /> is rendered
+    // by BaseLayout AFTER <main>, so [data-doodle] doesn't exist yet
+    // while this script is parsed inside <main>.
+    (() => {
+      function init() {
+        const aiCol = document.querySelector(".v2-hero__meta-col--ai");
+        const doodle = document.querySelector("[data-doodle]");
+        if (!aiCol || !doodle) return;
+
+        const onEnter = () => doodle.setAttribute("data-prompted", "");
+        const onLeave = () => doodle.removeAttribute("data-prompted");
+        aiCol.addEventListener("mouseenter", onEnter);
+        aiCol.addEventListener("mouseleave", onLeave);
+        // Drop the prompted state when focus leaves the column too,
+        // so Tab-out doesn't strand the halo.
+        aiCol.addEventListener("focusout", (e) => {
+          if (!aiCol.contains(e.relatedTarget)) onLeave();
+        });
+
+        // Scroll bounds check: the toolbar halo / lift / "Press D"
+        // hint should drop the moment the AI column scrolls out from
+        // under a stationary cursor, even without a mouseleave. Reads
+        // --cursor-x / --cursor-y published by CustomCursor on <html>
+        // (set on every mousemove). Falls back to closing on any
+        // scroll if those vars aren't populated. The Arrow component
+        // does the same check for its own visibility, so the halo +
+        // arrow stay in lockstep.
+        let scrollRaf = 0;
+        const checkOnScroll = () => {
+          scrollRaf = 0;
+          if (!doodle.hasAttribute("data-prompted")) return;
+          const html = document.documentElement;
+          const cx = parseFloat(html.style.getPropertyValue("--cursor-x"));
+          const cy = parseFloat(html.style.getPropertyValue("--cursor-y"));
+          if (Number.isFinite(cx) && Number.isFinite(cy)) {
+            const r = aiCol.getBoundingClientRect();
+            const inside =
+              cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
+            if (inside) return;
+          }
+          onLeave();
+        };
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (scrollRaf) return;
+            scrollRaf = requestAnimationFrame(checkOnScroll);
+          },
+          { passive: true }
+        );
+
+        // "doodle tool I vibecoded" → arm draw mode. We don't reach
+        // into the toolbar's IIFE-scoped state; instead we synthesise
+        // a click on the existing pencil button, which the toolbar's
+        // own click handler interprets exactly the same as a real tap
+        // on the bar. No-op if the tool is already armed so a stray
+        // tap doesn't toggle draw mode off mid-doodle.
+        const trigger = aiCol.querySelector("[data-doodle-trigger]");
+        const pencilBtn = doodle.querySelector('[data-tool="draw"]');
+        if (trigger && pencilBtn) {
+          trigger.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (pencilBtn.classList.contains("is-active")) return;
+            pencilBtn.click();
+          });
+        }
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init, { once: true });
+      } else {
+        init();
       }
     })();
   </script>
@@ -823,30 +925,62 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     display: block;
     margin-top: 0.5em;
   }
-  /* Doodle-tool highlight on hover of the AI meta column. Targets the
-     global .doodle toolbar (lives in the page chrome when present);
-     when the third hero column is hovered, the toolbar pops with a
-     soft scale + outline + brand-tinted glow so the user can spot it. */
-  :global(.doodle) {
+  /* The doodle toolbar's prompted-state styling (scale, halo, "Press D
+     to doodle" hint) lives in DoodleToolbar.astro and is driven by the
+     `data-prompted` attribute that the script above sets on the doodle
+     root while this column is hovered. */
+
+  /* Pulled-out phrase that names the easter egg. Rendered as a <button>
+     so it's a real interactive control (keyboard, screen reader, native
+     click), but reset to inline text styling so it flows in the
+     sentence. At rest it carries the same hairline brand underline used
+     for fx-- words elsewhere on the site; on column hover (or :active
+     during a tap on mobile) the underline fills into a soft brand wash
+     so the phrase reads as the destination the arrow is pointing to. */
+  .v2-hero__doodle-link {
+    appearance: none;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    cursor: pointer;
+    display: inline;
+    background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 1px;
+    padding-bottom: 1px;
+    border-radius: var(--r-xs);
     transition:
-      transform 320ms var(--ease-out),
-      box-shadow 320ms var(--ease-out),
-      outline-color 320ms var(--ease-out);
-    outline: 2px solid transparent;
-    outline-offset: 6px;
-    border-radius: 14px;
+      background-size 280ms var(--ease-out),
+      background-image 280ms var(--ease-out);
   }
-  .v2-hero:has(.v2-hero__meta-col--ai:hover) :global(.doodle),
-  .v2-hero:has(.v2-hero__meta-col--ai :focus-visible) :global(.doodle) {
-    transform: scale(1.08);
-    outline-color: var(--brand-primary-2, var(--brand-primary, #A9C7DC));
-    box-shadow:
-      0 0 0 6px rgba(169, 199, 220, 0.18),
-      0 18px 40px -18px rgba(20, 22, 28, 0.25);
+  .v2-hero__meta-col--ai:hover .v2-hero__doodle-link,
+  .v2-hero__meta-col--ai:focus-within .v2-hero__doodle-link,
+  .v2-hero__doodle-link:hover,
+  .v2-hero__doodle-link:focus-visible,
+  /* :active is the reliable mobile tap-feedback hook (sticky-hover is
+     unreliable across iOS/Android). Pairs with the JS click handler
+     below to give a brief wash flash on tap before the toolbar takes
+     over. */
+  .v2-hero__doodle-link:active {
+    background-image: linear-gradient(var(--brand-wash-soft), var(--brand-wash-soft));
+    background-size: 100% 100%;
   }
-  @media (prefers-reduced-motion: reduce) {
-    :global(.doodle) { transition: none; }
+  .v2-hero__doodle-link:focus-visible {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 3px;
   }
+
+  /* The hand-drawn arrow's styling lives in <Arrow> (src/components/
+     Arrow.astro) — global so the SVG can be portaled to <body> at
+     runtime without losing scope. The component handles its own
+     visibility, animation, and viewport-tracking path math. */
+
   @media (max-width: 720px) {
     .v2-hero__meta {
       grid-template-columns: 1fr;

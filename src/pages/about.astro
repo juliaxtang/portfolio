@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FadeIn from "../components/FadeIn.astro";
 import HeroGrid from "../components/HeroGrid.astro";
+import PolaroidStack from "../components/PolaroidStack.astro";
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -15,29 +16,48 @@ const greetings = [
   { lang: "Japanese", hi: "こんにちは" },
 ];
 
-const hobbies = [
+// Stack of personal polaroids that replaces the old hobby pill row. The
+// portrait of Julia is the top card so the page still opens with her
+// face; behind it, the four interest photos peek out and shuffle through
+// on swipe / tap. Annotations and captions are styled like handwritten
+// notes scribbled on the matte / over the photo.
+const polaroidItems = [
   {
-    emoji: "🐈‍⬛",
-    label: "Cat mom",
-    photo: `${base}/about/cat-mom.JPG`,
-    tilt: 5,
+    src: `${base}/about/julia.jpg`,
+    alt: "Portrait of Julia Tang",
+    position: "50% 30%",
+    tilt: 0,
+    caption: "Swipe to learn more about me",
+    scribble: "arrow" as const,
   },
   {
-    emoji: "🤿",
-    label: "Scuba diver",
-    photo: `${base}/about/scuba-diving.JPG`,
-    tilt: -5,
+    src: `${base}/about/cat-mom.JPG`,
+    alt: "Julia's two cats curled up on a bed",
+    position: "50% 50%",
+    caption: "My two cats",
+    annotations: [
+      { label: "Poe",   top: "22%", left: "73%", tilt: -7 },
+      { label: "Mocha", top: "48%", left: "48%", tilt: 4 },
+    ],
   },
   {
-    emoji: "🏂",
-    label: "Snowboarder",
-    photo: `${base}/about/snowboarding.JPG`,
-    tilt: 4,
+    src: `${base}/about/scuba-diving.JPG`,
+    alt: "Julia in scuba gear underwater",
+    position: "50% 50%",
+    caption: "Newly certified!",
   },
   {
-    emoji: "🌐",
-    label: "Language learner",
-    captionList: ["Mandarin", "French", "Spanish", "Japanese", "English"],
+    src: `${base}/about/snowboarding.JPG`,
+    alt: "Julia snowboarding down a mountain",
+    position: "50% 40%",
+    caption: "If not oceans, then it's mountains",
+    scribble: "mountain" as const,
+  },
+  {
+    src: `${base}/about/languagelearning.png`,
+    alt: "Julia's handwritten language-learning notebook",
+    position: "30% 50%",
+    bullets: ["Mandarin", "English", "French", "Spanish", "Japanese"],
   },
 ];
 ---
@@ -62,43 +82,12 @@ const hobbies = [
       </FadeIn>
 
       <FadeIn delay={160}>
-        <ul class="pill-row" aria-label="Outside of work">
-          {hobbies.map((h) => (
-            <li>
-              <span class="pill" tabindex="0">
-                {h.photo && (
-                  <span
-                    class="pill-photo"
-                    style={`--tilt:${h.tilt}deg`}
-                    aria-hidden="true"
-                  >
-                    <img src={h.photo} alt="" loading="lazy" />
-                  </span>
-                )}
-                {h.captionList && (
-                  <ul class="pill-caption" aria-hidden="true">
-                    {h.captionList.map((item) => <li>{item}</li>)}
-                  </ul>
-                )}
-                <span class="pill-emoji" aria-hidden="true">{h.emoji}</span>
-                <span class="pill-label">{h.label}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </FadeIn>
-
-      <div class="about-body-stack">
-        <div class="about-row">
-          <div class="fade-in portrait-wrap" style="transition-delay: 240ms">
-            <div class="portrait-wrap__inner">
-              <div class="portrait portrait--inline">
-                <img src={`${base}/about/julia.jpg`} alt="Portrait of Julia Tang" loading="eager" />
-              </div>
-            </div>
+        <div class="about-stack-row">
+          <div class="about-stack-row__photos">
+            <PolaroidStack items={polaroidItems} width="320px" />
           </div>
 
-          <div class="fade-in about-row__text about-note" style="transition-delay: 240ms">
+          <div class="about-stack-row__text about-note">
             <div class="about-note__inner">
               <p class="about-body">
                 I'm a Staff Product Designer at <span class="co-wrap"><strong class="co co--snap"><img src={`${base}/logos/snapchat.png`} alt="" aria-hidden="true" />Snap</strong>,</span> based in LA, where I present product strategy to the CEO weekly.
@@ -124,7 +113,9 @@ const hobbies = [
             </div>
           </div>
         </div>
+      </FadeIn>
 
+      <div class="about-body-stack">
         <section class="exp" aria-label="Experience">
           <FadeIn>
             <p class="t-eyebrow about-eyebrow">Experience</p>
@@ -342,34 +333,28 @@ const hobbies = [
 </script>
 
 <script is:inline>
-  // Subtle scroll parallax for the portrait + note. Both elements get a
-  // --parallax-y CSS var driven by their proximity to the viewport
-  // center. Portrait and note drift in opposite directions at small
-  // magnitudes so the composition feels alive without yanking the eye.
+  // Subtle scroll parallax for the handwritten note — drifts down a few
+  // pixels as the row passes through the viewport center so the note
+  // feels physically tucked next to the polaroid stack instead of
+  // pinned. Photos are handled internally by PolaroidStack.
   (function () {
-    const row = document.querySelector(".about-row");
+    const row = document.querySelector(".about-stack-row");
     if (!row) return;
-    const portrait = row.querySelector(".portrait-wrap__inner");
     const note = row.querySelector(".about-note__inner");
-    if (!portrait || !note) return;
+    if (!note) return;
 
     let ticking = false;
     function update() {
       const r = row.getBoundingClientRect();
       const vh = window.innerHeight || document.documentElement.clientHeight;
-      // Skip when fully offscreen to avoid pointless writes.
       if (r.bottom < -200 || r.top > vh + 200) {
         ticking = false;
         return;
       }
-      // Normalize to -1..1 by the row's center vs the viewport center.
       const center = r.top + r.height / 2;
       let progress = (center - vh / 2) / (vh / 2);
       if (progress < -1) progress = -1;
       if (progress > 1) progress = 1;
-      // Portrait drifts up slightly as the row passes through, note
-      // drifts down — opposite small offsets give a layered feel.
-      portrait.style.setProperty("--parallax-y", (progress * -14).toFixed(2) + "px");
       note.style.setProperty("--parallax-y", (progress * 10).toFixed(2) + "px");
       ticking = false;
     }
@@ -453,9 +438,7 @@ const hobbies = [
      handwritten paper read as physical artifacts pinned to the canvas,
      so they shouldn't flip to dark surfaces when the rest of the site
      does. */
-  .portrait,
-  .fx-photo,
-  .pill-photo img {
+  .fx-photo {
     background: #FFFFFF !important;
     border-color: #EAE6DF !important;
   }
@@ -483,13 +466,12 @@ const hobbies = [
     max-width: 940px;
     --about-shift: clamp(0px, 3vw, 48px);
   }
-  /* Shared inward shift: header elements (eyebrow, title, pills) and the
+  /* Shared inward shift: header elements (eyebrow, title) and the
      scrapbook row all start at the same x-position so the headline reads
-     as flush-left with the portrait's left edge. */
+     as flush-left with the photo stack's left edge. */
   .about-eyebrow,
   .about-title,
-  .pill-row,
-  .about-row { padding-left: var(--about-shift); }
+  .about-stack-row { padding-left: var(--about-shift); }
   /* Nested eyebrows (Experience / Awards section headers) already
      inherit the shift via their parent section's padding-left — reset
      so they don't double-pad off-grid. */
@@ -503,9 +485,9 @@ const hobbies = [
   }
   .about-eyebrow { margin-bottom: var(--s-3); color: var(--text-tertiary); }
 
-  /* Body stack — paragraphs flush-left at the same edge as the title and
-     pills. Portrait floats inside so body wraps next to it, then continues
-     full-width below the float (no empty space under the portrait). */
+  /* Body stack — paragraphs flush-left at the same edge as the title.
+     The about-stack-row above (PolaroidStack + note) sits at the same
+     edge; the experience and awards sections fall in below. */
   .about-body-stack {
     margin-top: var(--s-12);
   }
@@ -515,106 +497,43 @@ const hobbies = [
     clear: both;
   }
 
-  /* Each about row pairs a portrait with a stack of paragraphs and
-     vertically centers them. The second row reverses so the portrait
-     sits on the right. Stacks vertically on narrow viewports. */
-  .about-row {
+  /* About stack row — the swipeable polaroid deck on the left, the
+     handwritten note column on the right. The note overlaps the stack
+     by a small margin so the page reads as a journal page with photos
+     tucked over a letter. Stacks vertically on narrow viewports.
+     Margin-bottom matches the old .about-row spacing so the section
+     below (Experience / Awards) keeps the same rhythm. */
+  .about-stack-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--s-5);
-    /* Scale the row-to-row gap fluidly with viewport width — narrower
-       viewports get a tighter rhythm (so stacked text doesn't look
-       stranded between paragraphs) while the big-canvas layout still
-       gets the generous --s-10 breathing room. */
+    margin-top: var(--s-12);
     margin-bottom: clamp(var(--s-10), 5vw, var(--s-20));
+    /* Headroom under the deck so the swipe-affordance pill below the
+       deck (the narrow-desktop fallback) doesn't get clipped by the
+       next section. */
+    padding-bottom: var(--s-3);
   }
-  .about-row:last-child { margin-bottom: 0; }
-  .about-row--reverse { /* portrait on the right */ }
-  .about-row__text {
+  .about-stack-row__photos {
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+  .about-stack-row__text {
     flex: 0 1 auto;
     min-width: 0;
     max-width: 380px;
   }
-  /* Each paragraph in the two-up column is wrapped in a FadeIn div, so
-     the `:last-child` test has to target the outer wrapper. Without
-     this the original rule matched every paragraph (each is the only
-     .about-body inside its FadeIn) and zeroed all the bottom margins. */
-  .about-row__text > .fade-in:last-child .about-body { margin-bottom: 0; }
+  .about-stack-row__text > .about-note__inner > .about-body:last-child {
+    margin-bottom: 0;
+  }
   @media (max-width: 760px) {
-    .about-row,
-    .about-row--reverse {
+    .about-stack-row {
       flex-direction: column;
       align-items: stretch;
-      gap: var(--s-5);
+      gap: var(--s-6);
     }
-  }
-
-  .portrait-wrap {
-    flex: 0 0 auto;
-    width: 308px;
-    position: relative;
-    z-index: 1;
-  }
-  /* Inner wrapper carries the scroll-parallax translate — no transition
-     so scroll updates paint instantly. The outer .portrait-wrap keeps
-     its .fade-in entry transitions intact. */
-  .portrait-wrap__inner {
-    display: block;
-    transform: translate3d(0, var(--parallax-y, 0), 0);
-    will-change: transform;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .portrait-wrap__inner { transform: none; }
-  }
-  /* Opening portrait: render the image at its natural aspect so the
-     full body is in frame, not just the face. */
-  .about-row:first-child .portrait-wrap {
-    width: 352px;
-  }
-  .about-row:first-child .portrait img {
-    aspect-ratio: auto;
-    object-fit: cover;
-    object-position: 50% 50%;
-  }
-  /* Secondary portrait: a touch larger than the opening portrait but
-     not overwhelming next to the two-paragraph text column. */
-  .about-row--reverse .portrait-wrap {
-    width: 340px;
-  }
-  .about-row--reverse .portrait img {
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    object-position: 50% 35%;
-  }
-  .portrait {
-    /* polaroid card — natural aspect ratio image, generous bottom matte. */
-    background: var(--bg-surface);
-    padding: 12px 12px 38px;
-    border-radius: var(--r-sm);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-subtle);
-  }
-  .portrait--inline {
-    transform: rotate(0deg);
-    transform-origin: 50% 50%;
-    transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .portrait--inline:hover {
-    transform: rotate(-2deg);
-  }
-  /* The right-column portrait tilts the other way on hover for a tiny
-     bit of asymmetry between the two rows. */
-  .portrait--inline-alt:hover {
-    transform: rotate(2deg);
-  }
-  .portrait img {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  @media (max-width: 760px) {
-    .portrait-wrap {
-      width: 220px;
+    .about-stack-row__photos {
       align-self: center;
     }
   }
@@ -684,12 +603,9 @@ const hobbies = [
 
   /* Handwritten note treatment for the intro narrative — the prose
      column reads like a personal letter on paper, sitting next to the
-     polaroid portrait. Drop a paper texture at
-     /public/about/paper-texture.png and it'll layer over the warm
-     beige fallback below. */
-  /* Scrapbook composition: the polaroid portrait sits on top, the
-     handwritten note slides behind it so the page reads like a page
-     from a journal with a photo tucked over a letter. */
+     polaroid stack. The note tucks a small distance behind the stack on
+     the left edge so the page reads as a journal page with photos
+     tucked over a letter. */
   .about-note {
     position: relative;
     z-index: 1;
@@ -752,11 +668,6 @@ const hobbies = [
     .about-note.fade-in.is-visible:hover { transform: rotate(-1.2deg); }
     .about-note__inner { transform: none; }
   }
-  /* Portrait floats over the note. */
-  .about-row:first-child .portrait-wrap {
-    position: relative;
-    z-index: 2;
-  }
   .about-note .about-body {
     font-family: var(--font-hand);
     font-weight: 400;
@@ -784,7 +695,12 @@ const hobbies = [
     height: 0.62em;
     max-width: none;
     margin-right: 0.08em;
-    transform: translateY(0.08em);
+    /* Pull the logo up so its visual middle aligns with the
+       handwriting's x-height. The handwritten letters sit a touch
+       lower than printed type, so the logo image needs a small
+       NEGATIVE translate to land on the text baseline instead of
+       hanging below it. */
+    transform: translateY(-0.06em);
   }
   /* Per-character jitter — JS wraps each printable char in .hwc and
      stamps a small random rotation + vertical offset via inline vars so
@@ -820,38 +736,56 @@ const hobbies = [
      that contrasts the grid, and thicken the line so it reads at the
      larger handwriting size. */
   .about-note {
-    /* Deeper-blue colored-pencil underline — uses --brand-primary-2,
-       the pressed state of powder blue from the style guide. Tonal
-       with the grid lines but a step darker so it reads as drawn ON
-       the paper instead of fading into it. */
-    --note-underline: var(--brand-primary-2);
+    /* Dusk-blue colored-pencil underline. #446680 lives in the style
+       guide as the dark-mode --brand-selection ("dusk blue — light
+       text reads on it"), so it's a real palette stop, not an
+       invented color. Reads as inky pen on the paper, contrasts hard
+       against the powder-blue grid so the emphasis pops instead of
+       blending into the lines. */
+    --note-underline: #446680;
     --note-underline-wash: var(--brand-wash);
+    /* Positive offset drops the rule below the baseline (was -2px). */
+    --note-underline-offset: 2px;
   }
   /* Inside the note, draw the emphasis underline with text-decoration
      so it sits right at the letter baseline. Descenders like y and g
      naturally cross the line, giving it a hand-drawn underline feel
      instead of a perfectly clean rule. The hover wash is layered as
-     background-image, which doesn't fight the decoration. */
-  .about-note .about-body .co,
-  .about-note .about-body strong,
+     background-image, which doesn't fight the decoration.
+
+     Note: Snap (.co / strong wrapper) is intentionally NOT in this
+     list. Now that Snap has no hover state in the note, an underline
+     would read as a dead affordance — the company name just rides as
+     part of the prose voice, with the inline logo doing all the
+     branding work. */
   .about-note .about-body .fx--film,
   .about-note .about-body .fx--neopets,
   .about-note .about-body .prose-out {
     text-decoration: underline;
     text-decoration-color: var(--note-underline);
     text-decoration-thickness: 2px;
-    text-underline-offset: -2px;
+    text-underline-offset: var(--note-underline-offset, 2px);
     background-image: linear-gradient(var(--note-underline-wash), var(--note-underline-wash));
     background-size: 100% 0;
     background-position: 0 100%;
     background-repeat: no-repeat;
     transition: background-size 280ms var(--ease-out);
   }
-  .about-note .about-body .co:hover,
   .about-note .about-body .fx--film:hover,
   .about-note .about-body .fx--neopets:hover,
   .about-note .about-body .prose-out:hover {
     background-size: 100% 100%;
+  }
+  /* Snap (and any other .co callout) inside the note stays static — no
+     hover wash, no company-color fill. It's part of the prose voice,
+     not an interactive chip the way the homepage hero treats it. The
+     reset below kills both the global underline-fill on .co:hover
+     and the company-specific wash (--co-wash-snap) for any .co inside
+     the note. */
+  .about-note .about-body .co:hover,
+  .about-note .about-body .co--snap:hover {
+    background-size: 100% 0;
+    background-image: linear-gradient(var(--note-underline-wash), var(--note-underline-wash));
   }
   /* Homemade Apple is dense and italicized by nature; the inline polaroid
      captions, .fx underlines, and prose-out links inherit the script too.
@@ -1044,7 +978,7 @@ const hobbies = [
     text-decoration: underline;
     text-decoration-color: var(--note-underline, var(--brand-primary));
     text-decoration-thickness: 2px;
-    text-underline-offset: -2px;
+    text-underline-offset: var(--note-underline-offset, 2px);
     transition: opacity 220ms var(--ease-out);
   }
   .glitter__gif {
@@ -1310,176 +1244,12 @@ const hobbies = [
     }
   }
 
-  /* === Hobby pills === */
-  .pill-row {
-    list-style: none;
-    margin: 0 0 var(--s-8);
-    padding: 0 0 0 var(--about-shift);
-    display: flex;
-    flex-wrap: nowrap;
-    gap: var(--s-3);
-  }
-  @media (max-width: 720px) {
-    .pill-row { flex-wrap: wrap; }
-  }
-
-  .pill {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-3);
-    padding: var(--s-3) var(--s-5);
-    border-radius: var(--r-full);
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    font-size: 14px;
-    color: var(--text-primary);
-    line-height: 1;
-    cursor: default;
-    user-select: none;
-    flex-shrink: 0;
-    transition:
-      background-color 280ms var(--ease-out),
-      border-color 280ms var(--ease-out),
-      transform 280ms var(--ease-out),
-      box-shadow 280ms var(--ease-out);
-  }
-  .pill:hover,
-  .pill:focus-visible {
-    background: var(--bg-surface);
-    border-color: var(--text-tertiary);
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px -14px rgba(20, 22, 28, 0.22);
-    outline: none;
-  }
-  /* Touch press feedback — gives a tap a brief confirmation since the
-     desktop cursor-portal photo can't fire on touch. */
-  .pill:active {
-    transform: translateY(0);
-    background: var(--bg-sunken);
-  }
-  /* Dark-mode pills sit on a near-black canvas, so the default
-     --bg-surface (also dark) made them disappear. Pull them up to the
-     elevated surface, strengthen the border, and use the brand wash on
-     hover for visible feedback. `:global()` keeps Astro from scoping
-     the html-level [data-theme] attribute. */
-  :global([data-theme="dark"]) .pill {
-    background: var(--bg-elevated);
-    border-color: var(--border-default);
-  }
-  :global([data-theme="dark"]) .pill:hover,
-  :global([data-theme="dark"]) .pill:focus-visible {
-    background: var(--brand-wash-soft);
-    border-color: var(--text-secondary);
-  }
-
-  .pill-emoji {
-    display: inline-block;
-    font-size: 18px;
-    line-height: 1;
-  }
-
-  .pill-label { font-weight: 500; white-space: nowrap; }
-
-  /* Vertical bullet list to the right of the pill on hover (used for
-     Language learning to surface the actual languages). */
-  .pill-caption {
-    position: absolute;
-    left: calc(100% + var(--s-4));
-    top: 50%;
-    pointer-events: none;
-    opacity: 0;
-    transform: translateY(-50%) translateX(-8px);
-    transition:
-      opacity 240ms var(--ease-out),
-      transform 360ms cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 5;
-    list-style: disc;
-    padding: 0 0 0 18px;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    line-height: 1.6;
-    color: var(--text-tertiary);
-    white-space: nowrap;
-  }
-  .pill-caption li::marker {
-    color: var(--text-tertiary);
-  }
-  .pill:hover .pill-caption,
-  .pill:focus-visible .pill-caption {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
-  }
-  /* Touch devices: there's no hover and the cursor-portal photo never
-     fires, so the language list would otherwise be entirely invisible.
-     Surface it inline below the pill at all times — the Language Learner
-     pill becomes a self-contained chip on mobile that already shows the
-     info a hover would have revealed. */
-  @media (hover: none), (pointer: coarse) {
-    .pill:has(.pill-caption) {
-      flex-wrap: wrap;
-      align-items: center;
-      row-gap: var(--s-2);
-      border-radius: var(--r-lg);
-      padding: var(--s-3) var(--s-5) var(--s-3);
-    }
-    .pill-caption {
-      position: static;
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-      flex-basis: 100%;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--s-1) var(--s-3);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      line-height: 1.2;
-      white-space: normal;
-    }
-    .pill-caption li { display: inline; }
-    .pill-caption li::marker { content: ""; }
-    .pill-caption li + li::before {
-      content: "·";
-      margin-right: var(--s-2);
-      opacity: 0.5;
-    }
-  }
-
-  /* Polaroid photo that floats above each pill on hover. */
-  .pill-photo {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    width: 278px;
-    pointer-events: none;
-    opacity: 0 !important;
-    transform: translateX(-50%) translateY(10px) rotate(var(--tilt, 0deg)) scale(0.9);
-    transform-origin: 50% 100%;
-    transition:
-      opacity 280ms var(--ease-out),
-      transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 5;
-  }
-  .pill-photo img {
-    width: 100%;
-    display: block;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    background: var(--bg-surface);
-    padding: 8px 8px 24px;
-    border-radius: var(--r-sm);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-subtle);
-  }
-  /* The hover-revealed polaroid is rendered as a clone inside the
-     custom cursor (.cursor__media), so the original stays invisible. */
+  /* === Hobby pills (removed — replaced by the PolaroidStack
+        in the about-stack-row above). The dead .pill / .pill-row /
+        .pill-caption / .pill-photo CSS that lived here used to back
+        the static pill row; PolaroidStack handles every interaction
+        the pills used to handle (hover-to-reveal photo, tap-to-list
+        languages) and more. === */
 
   .about-cta {
     margin-top: var(--s-6);
@@ -1857,16 +1627,10 @@ const hobbies = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .pill { transition: none; }
     .hi-ticker { transition: none; }
     .hi-word { transition: opacity 240ms ease; transform: none !important; }
-    .pill-photo,
     .prose-out__preview {
       transition: opacity 200ms ease;
-    }
-    .pill:hover .pill-photo,
-    .pill:focus-visible .pill-photo {
-      transform: translateX(-50%) rotate(var(--tilt, 0deg));
     }
     .prose-out--preview:hover .prose-out__preview,
     .prose-out--preview:focus-visible .prose-out__preview {

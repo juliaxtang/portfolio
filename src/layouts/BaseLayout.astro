@@ -8,6 +8,7 @@ import CursorAurora from "../components/CursorAurora.astro";
 import CustomCursor from "../components/CustomCursor.astro";
 import FloatingCellInteractions from "../components/showcase/FloatingCellInteractions.astro";
 import SiteGate from "../components/SiteGate.astro";
+import DoodleToolbar from "../components/DoodleToolbar.astro";
 
 interface Props {
   title: string;
@@ -54,6 +55,17 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
 
     <link rel="icon" href="/favicon.png" type="image/png" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Pre-paint theme. Read the saved choice before <body> renders so
+         dark-mode visitors don't see a light flash on every navigation. -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "dark" || t === "light") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      } catch (e) {}
+    </script>
 
     <!-- Pre-paint gate check. Runs before <body> renders so the gate is
          never visible to readers who already unlocked (avoids a flash of
@@ -127,6 +139,7 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
     <SiteGate />
     <CustomCursor />
     <FloatingCellInteractions />
+    <DoodleToolbar />
 
     <!-- Page-transition controller. On click of any same-origin link
          (excluding modifier-clicks, new-tab targets, hash-only links,

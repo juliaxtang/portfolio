@@ -7,11 +7,15 @@
  * transitions, which were removed because they silently broke ~30
  * is:inline IIFE scripts that don't support re-initialization).
  */
+import ThemeToggle from "./ThemeToggle.astro";
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 ---
 
 <aside class="site-rail" id="site-rail" data-rail-mount>
-  <a class="site-rail__wordmark" href={`${base}/`}>Julia Tang</a>
+  <div class="site-rail__brand">
+    <a class="site-rail__wordmark" href={`${base}/`}>Julia Tang</a>
+    <ThemeToggle variant="rail" />
+  </div>
 
   <nav class="site-rail__nav" aria-label="Primary">
     <div class="site-rail__items">
@@ -83,6 +87,16 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   .site-rail > * { pointer-events: auto; }
 
+  /* Wordmark at its full display size on its own line; the theme toggle
+     stacks beneath it. Keeps the brand mark prominent and gives the
+     toggle a row of its own instead of competing for horizontal space
+     in the rail's narrow column. */
+  .site-rail__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-3);
+  }
   .site-rail__wordmark {
     font-family: var(--font-display);
     font-size: clamp(24px, 2vw, 32px);

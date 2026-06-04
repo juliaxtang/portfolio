@@ -78,6 +78,13 @@
     pointer-events: none;
     opacity: var(--aurora-opacity, 1);
     transition: opacity 180ms linear;
+  }
+  /* In dark mode the same 50%-alpha pastel cloud reads as a much brighter
+     hot-spot against the near-black canvas, washing out tertiary copy and
+     thin UI lines. Drop the whole layer to a low ambient so it still hints
+     at the cursor but doesn't fight the type. */
+  :global([data-theme="dark"]) .cursor-aurora {
+    opacity: 0.22;
     background:
       radial-gradient(
         46% 56% at var(--mx, 50%) var(--my, 30%),

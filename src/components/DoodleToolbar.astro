@@ -1,0 +1,513 @@
+---
+/**
+ * Doodle easter egg. A tiny sticky pill at the bottom-left of every page
+ * lets a visitor scribble anywhere on the site. The toolbar itself is
+ * fixed, but the SVG canvas is absolute-positioned over the full document
+ * so the strokes scroll with the page (a doodle drawn next to the hero
+ * stays next to the hero when the visitor scrolls down). Doodles are
+ * ephemeral and cleared on navigation.
+ */
+---
+
+<div class="doodle" data-doodle>
+  <svg class="doodle__canvas" data-doodle-canvas aria-hidden="true"></svg>
+
+  <div class="doodle__bar" role="toolbar" aria-label="Doodle tools">
+    <button
+      type="button"
+      class="doodle__btn"
+      data-tool="draw"
+      aria-label="Draw"
+      aria-pressed="false"
+    >
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L8 18l-4 1 1-4Z"/>
+      </svg>
+    </button>
+
+    <span class="doodle__divider" aria-hidden="true"></span>
+
+    <div class="doodle__color" data-doodle-color>
+      <button
+        type="button"
+        class="doodle__color-trigger"
+        data-color-trigger
+        aria-label="Pick color"
+        aria-haspopup="true"
+        aria-expanded="false"
+        style="--c:#A9C7DC"
+      ></button>
+      <div
+        class="doodle__palette"
+        role="radiogroup"
+        aria-label="Color"
+        data-color-palette
+        hidden
+      >
+        <button type="button" class="doodle__swatch" data-color="#A9C7DC" aria-label="Powder blue" aria-pressed="true" style="--c:#A9C7DC"></button>
+        <button type="button" class="doodle__swatch" data-color="#DCD2E8" aria-label="Lavender" aria-pressed="false" style="--c:#DCD2E8"></button>
+        <button type="button" class="doodle__swatch" data-color="#E9C2B0" aria-label="Peach" aria-pressed="false" style="--c:#E9C2B0"></button>
+        <button type="button" class="doodle__swatch" data-color="#F2C94C" aria-label="Marigold" aria-pressed="false" style="--c:#F2C94C"></button>
+        <button type="button" class="doodle__swatch doodle__swatch--ink" data-color="ink" aria-label="Ink" aria-pressed="false"></button>
+      </div>
+    </div>
+
+    <span class="doodle__divider doodle__divider--clear" aria-hidden="true"></span>
+
+    <button
+      type="button"
+      class="doodle__btn doodle__btn--clear"
+      data-action="clear"
+      aria-label="Clear all"
+      title="Clear all"
+    >
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7h16"/>
+        <path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2"/>
+        <path d="M6 7v12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V7"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .doodle {
+    /* No positioning context; the bar is fixed and the canvas is
+       absolute-positioned against <body> so it scrolls with the page. */
+    pointer-events: none;
+    position: static;
+  }
+
+  .doodle__canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* JS keeps height in sync with document.documentElement.scrollHeight
+       so the drawable area covers everything you can scroll to. */
+    height: var(--doodle-canvas-h, 100vh);
+    pointer-events: none;
+    overflow: visible;
+    z-index: 199;
+  }
+  .doodle[data-active] .doodle__canvas {
+    pointer-events: auto;
+  }
+
+  /* Trash + its leading divider stay hidden until the first stroke lands,
+     then fade in. Avoids surfacing a clear-all affordance with nothing to
+     clear. Selectors stack two classes (.doodle__btn.doodle__btn--clear)
+     so they beat the bare .doodle__btn{display:inline-flex} that follows. */
+  .doodle .doodle__btn--clear,
+  .doodle .doodle__divider--clear {
+    display: none;
+  }
+  .doodle[data-has-strokes] .doodle__btn--clear {
+    display: inline-flex;
+    animation: doodleFadeIn var(--dur-normal) var(--ease-out);
+  }
+  .doodle[data-has-strokes] .doodle__divider--clear {
+    display: inline-block;
+    animation: doodleFadeIn var(--dur-normal) var(--ease-out);
+  }
+  @keyframes doodleFadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  .doodle__bar {
+    pointer-events: auto;
+    /* Must sit ABOVE .doodle__canvas (z-index 199); otherwise the canvas
+       — which captures pointer events while draw mode is on — swallows
+       clicks meant for the swatches, eraser, or trash. */
+    z-index: 201;
+    position: fixed;
+    /* Bottom-center on every breakpoint. JS sets --doodle-bottom on
+       scroll so the bar lifts above the hero scroll chevron at the top
+       of the page and above the footer at the bottom. */
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px));
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    padding: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-full);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: bottom var(--dur-normal) var(--ease-out);
+  }
+
+  .doodle__btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--icon-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+  .doodle__btn:hover { background: var(--bg-sunken); color: var(--icon-primary); }
+  .doodle__btn.is-active {
+    background: var(--brand-wash);
+    color: var(--text-primary);
+  }
+  /* When the draw button is on, fill the pencil icon so the toolbar
+     mirrors the cursor: same filled silhouette, same visual language. */
+  .doodle__btn[data-tool="draw"].is-active svg {
+    fill: currentColor;
+    stroke: none;
+  }
+  .doodle__btn:focus-visible {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 2px;
+  }
+
+  .doodle__divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border-subtle);
+    margin: 0 2px;
+  }
+
+  /* Active-color trigger: a single swatch the visitor taps to reveal the
+     full palette. Keeps the resting toolbar small and avoids parading
+     every option until it's actually needed. */
+  .doodle__color {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 2px;
+  }
+  .doodle__color-trigger {
+    appearance: none;
+    border: 1.5px solid transparent;
+    background: var(--c, #A9C7DC);
+    width: 20px;
+    height: 20px;
+    border-radius: var(--r-full);
+    padding: 0;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.10), 0 0 0 1.5px var(--bg-surface);
+    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  }
+  .doodle__color-trigger:hover { transform: scale(1.08); }
+  .doodle__color-trigger[aria-expanded="true"] {
+    transform: scale(1.04);
+    box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.10), 0 0 0 2px var(--text-primary);
+  }
+  .doodle__color-trigger:focus-visible {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 2px;
+  }
+
+  /* Drop-up palette: vertical column of swatches that floats above the
+     trigger when expanded. Centered on the trigger and pinned by the
+     bar's bottom-of-viewport anchor. */
+  .doodle__palette {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-full);
+    box-shadow: var(--shadow-md);
+    animation: doodlePopIn var(--dur-fast) var(--ease-out);
+  }
+  .doodle__palette[hidden] { display: none; }
+  @keyframes doodlePopIn {
+    from { opacity: 0; transform: translate(-50%, 6px) scale(0.94); }
+    to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+
+  .doodle__swatch {
+    appearance: none;
+    border: 1.5px solid transparent;
+    background: var(--c, var(--text-primary));
+    width: 22px;
+    height: 22px;
+    border-radius: var(--r-full);
+    padding: 0;
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(20, 22, 28, 0.08);
+    transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  }
+  .doodle__swatch--ink { background: var(--text-primary); }
+  .doodle__swatch:hover { transform: scale(1.12); }
+  .doodle__swatch[aria-pressed="true"] {
+    border-color: var(--text-primary);
+    transform: scale(1.06);
+  }
+  .doodle__swatch:focus-visible {
+    outline: 2px solid var(--brand-primary-2);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .doodle__btn, .doodle__swatch { transition: none; }
+  }
+
+  @media print {
+    .doodle { display: none; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var root = document.querySelector("[data-doodle]");
+    if (!root) return;
+    var svg = root.querySelector("[data-doodle-canvas]");
+    var bar = root.querySelector(".doodle__bar");
+    var SVG_NS = "http://www.w3.org/2000/svg";
+
+    function resolveColor(value) {
+      // "ink" tracks the live theme: dark text in light mode, cream in dark.
+      if (value === "ink") {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue("--text-primary").trim() || "#15171C";
+      }
+      return value;
+    }
+
+    var state = {
+      tool: null,
+      // Powder blue is the brand accent and reads well as a pencil tint
+      // on both light and dark canvases.
+      color: "#A9C7DC",
+      drawing: false,
+      currentPath: null,
+      points: [],
+    };
+
+    var colorTrigger = bar.querySelector("[data-color-trigger]");
+    var palette = bar.querySelector("[data-color-palette]");
+
+    function broadcastCursor() {
+      // Surface the active draw color + on/off flag on <html> so the
+      // CustomCursor component can grow the dot and tint it to the brush
+      // while doodle mode is on. Cleared when draw mode is off.
+      var html = document.documentElement;
+      if (state.tool === "draw") {
+        html.setAttribute("data-doodle-active", "");
+        html.style.setProperty("--doodle-cursor-color", resolveColor(state.color));
+      } else {
+        html.removeAttribute("data-doodle-active");
+        html.style.removeProperty("--doodle-cursor-color");
+      }
+    }
+
+    function setTool(next) {
+      state.tool = next;
+      if (next) root.setAttribute("data-active", next);
+      else root.removeAttribute("data-active");
+      bar.querySelectorAll("[data-tool]").forEach(function (b) {
+        var on = b.getAttribute("data-tool") === next;
+        b.classList.toggle("is-active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      broadcastCursor();
+    }
+
+    function setColor(hex) {
+      state.color = hex;
+      // Picking a color also flips into draw mode so it feels direct.
+      if (state.tool !== "draw") setTool("draw");
+      bar.querySelectorAll(".doodle__swatch").forEach(function (s) {
+        var on = s.getAttribute("data-color") === hex;
+        s.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      // Reflect the selection on the collapsed trigger so the bar shows
+      // the active brush at rest.
+      if (colorTrigger) {
+        colorTrigger.style.setProperty("--c", resolveColor(hex));
+      }
+      broadcastCursor();
+    }
+
+    function setPaletteOpen(open) {
+      if (!palette || !colorTrigger) return;
+      palette.hidden = !open;
+      colorTrigger.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    function togglePalette() {
+      setPaletteOpen(palette && palette.hidden);
+    }
+
+    // Close the palette when clicking anywhere outside it (including the
+    // SVG canvas while draw mode is on, which would otherwise leave it
+    // dangling open behind a stroke).
+    document.addEventListener(
+      "pointerdown",
+      function (e) {
+        if (!palette || palette.hidden) return;
+        if (e.target.closest && e.target.closest("[data-doodle-color]")) return;
+        setPaletteOpen(false);
+      },
+      true
+    );
+
+    // Escape always disarms draw mode and closes the palette. Gives a
+    // reliable way out when the bottom-corner toolbar feels small to hit.
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      var didSomething = false;
+      if (palette && !palette.hidden) {
+        setPaletteOpen(false);
+        didSomething = true;
+      }
+      if (state.tool) {
+        setTool(null);
+        didSomething = true;
+      }
+      if (didSomething) e.preventDefault();
+    });
+
+    function syncStrokeFlag() {
+      if (svg.firstChild) root.setAttribute("data-has-strokes", "");
+      else root.removeAttribute("data-has-strokes");
+    }
+
+    bar.addEventListener("click", function (e) {
+      var trigger = e.target.closest("[data-color-trigger]");
+      if (trigger) {
+        togglePalette();
+        return;
+      }
+      var btn = e.target.closest("[data-tool], [data-action], [data-color]");
+      if (!btn) return;
+      if (btn.hasAttribute("data-tool")) {
+        var t = btn.getAttribute("data-tool");
+        setTool(state.tool === t ? null : t);
+      } else if (btn.hasAttribute("data-color")) {
+        setColor(btn.getAttribute("data-color"));
+        setPaletteOpen(false);
+      } else if (btn.getAttribute("data-action") === "clear") {
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        syncStrokeFlag();
+      }
+    });
+
+    function pt(e) {
+      var r = svg.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+
+    function pathD(points) {
+      if (!points.length) return "";
+      var d = "M " + points[0].x.toFixed(1) + " " + points[0].y.toFixed(1);
+      for (var i = 1; i < points.length; i++) {
+        d += " L " + points[i].x.toFixed(1) + " " + points[i].y.toFixed(1);
+      }
+      return d;
+    }
+
+    function startDraw(e) {
+      if (state.tool !== "draw") return;
+      svg.setPointerCapture(e.pointerId);
+      state.drawing = true;
+      state.points = [pt(e)];
+      var path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("stroke", resolveColor(state.color));
+      path.setAttribute("stroke-width", "3");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      path.setAttribute("fill", "none");
+      path.setAttribute("d", pathD(state.points));
+      svg.appendChild(path);
+      state.currentPath = path;
+      syncStrokeFlag();
+    }
+
+    function moveDraw(e) {
+      if (!state.drawing || !state.currentPath) return;
+      state.points.push(pt(e));
+      state.currentPath.setAttribute("d", pathD(state.points));
+    }
+
+    function endDraw() {
+      state.drawing = false;
+      state.currentPath = null;
+      state.points = [];
+    }
+
+    // Keep the canvas as tall as the document so doodles drawn far down
+    // the page have somewhere to live. Recomputes on resize and after
+    // images / fade-ins shift the layout. ResizeObserver picks up the
+    // long-tail layout shifts that scroll/resize don't fire for.
+    function syncCanvasHeight() {
+      var h = Math.max(
+        document.documentElement.scrollHeight,
+        document.body ? document.body.scrollHeight : 0,
+        window.innerHeight
+      );
+      root.style.setProperty("--doodle-canvas-h", h + "px");
+    }
+    syncCanvasHeight();
+    window.addEventListener("resize", syncCanvasHeight);
+    window.addEventListener("load", syncCanvasHeight);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(syncCanvasHeight);
+      ro.observe(document.documentElement);
+      if (document.body) ro.observe(document.body);
+    }
+
+    // Clearance: keep the bar floating above any element that would
+    // collide with its bottom-center resting line. Two collision sources:
+    //   - The hero scroll chevron at the top of the homepage (only on
+    //     /; only visible at the top of the page before scroll).
+    //   - The site footer at the bottom of every page.
+    // Both are at bottom-center too, so the bar lifts to sit above
+    // whichever is currently intruding into the bottom strip of the
+    // viewport. Whichever overlap is larger wins; if neither overlaps,
+    // the bar returns to its CSS default (24px from the bottom).
+    var BASE_GAP = 24;
+    var CLEARANCE_GAP = 16;
+    function updateClearance() {
+      var vh = window.innerHeight;
+      var maxOverlap = 0;
+      [".site-footer", ".v2-hero__scroll"].forEach(function (sel) {
+        var el = document.querySelector(sel);
+        if (!el) return;
+        var rect = el.getBoundingClientRect();
+        // Skip elements that are entirely above the viewport (already
+        // scrolled past) or invisible.
+        if (rect.bottom <= 0 || rect.width === 0 || rect.height === 0) return;
+        // How far the element's top edge intrudes above the viewport
+        // bottom. Positive = intruding, negative = still below the fold.
+        var overlap = vh - rect.top;
+        if (overlap > maxOverlap) maxOverlap = overlap;
+      });
+      if (maxOverlap > BASE_GAP) {
+        root.style.setProperty("--doodle-bottom", (maxOverlap + CLEARANCE_GAP) + "px");
+      } else {
+        root.style.removeProperty("--doodle-bottom");
+      }
+    }
+    updateClearance();
+    window.addEventListener("scroll", updateClearance, { passive: true });
+    window.addEventListener("resize", updateClearance);
+
+    svg.addEventListener("pointerdown", function (e) {
+      if (state.tool === "draw") startDraw(e);
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (state.drawing && state.tool === "draw") moveDraw(e);
+    });
+    svg.addEventListener("pointerup", endDraw);
+    svg.addEventListener("pointercancel", endDraw);
+    svg.addEventListener("pointerleave", endDraw);
+  })();
+</script>

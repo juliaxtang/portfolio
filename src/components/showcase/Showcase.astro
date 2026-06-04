@@ -572,6 +572,13 @@ const meta = [role].filter(Boolean) as string[];
     opacity: 0.55;
     transition: opacity 200ms var(--ease-out);
   }
+  /* The press logos ship as dark-ink PNGs sized for the light canvas, so
+     in dark mode they're effectively invisible. Invert the bitmaps and
+     lift the resting opacity so they read as light marks on dark. */
+  :global([data-theme="dark"]) .showcase__press-logos img {
+    filter: invert(1) hue-rotate(180deg);
+    opacity: 0.7;
+  }
   .showcase__press-logos img:hover { opacity: 1; }
   .showcase__press-link {
     position: relative;

@@ -71,6 +71,11 @@
     </svg>
     <span class="cursor__shrink-pill-label">Click to shrink</span>
   </div>
+  <div class="cursor__pencil" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L8 18l-4 1 1-4Z"/>
+    </svg>
+  </div>
 </div>
 
 <script is:inline>
@@ -199,7 +204,10 @@
         || cursor.classList.contains("is-swipe-pill")
         || cursor.classList.contains("is-drag-pill")
         || cursor.classList.contains("is-expand-pill")
-        || cursor.classList.contains("is-shrink-pill");
+        || cursor.classList.contains("is-shrink-pill")
+        // Doodle draw mode shows a pencil icon; the comet-tail stretch
+        // would shear the pencil's strokes and read as a glitch.
+        || document.documentElement.hasAttribute("data-doodle-active");
       if (carryingMedia) {
         cx = mx;
         cy = my;
@@ -592,7 +600,7 @@
     height: 13px;
     margin-left: -6.5px;
     margin-top: -6.5px;
-    background: var(--text-primary);
+    background: #15171C;
     opacity: 0.9;
     transition:
       transform 220ms var(--ease-out),
@@ -606,7 +614,7 @@
     height: 32px;
     margin-left: -16px;
     margin-top: -16px;
-    border: 1.5px solid var(--text-primary);
+    border: 1.5px solid #15171C;
     opacity: 0;
     transform: scale(0.55);
     transition:
@@ -618,8 +626,74 @@
   /* Contrast flip — when the cursor is over a dark background, the dot
      and ring switch to the inverse text color (cream) so they stay
      visible. Triggered by JS via .on-dark on the parent. */
-  .cursor.on-dark .cursor__dot { background: var(--text-inverse, #FDFCFA); }
-  .cursor.on-dark .cursor__ring { border-color: var(--text-inverse, #FDFCFA); }
+  .cursor.on-dark .cursor__dot { background: #FDFCFA; }
+  .cursor.on-dark .cursor__ring { border-color: #FDFCFA; }
+
+  /* Pencil icon — replaces the dot/ring while doodle draw mode is on.
+     Anchored so the pencil's tip (around 4, 18 inside the 24×24 SVG)
+     lands on the actual cursor coordinate, mirroring how an OS pen
+     cursor feels. Filled with the active brush color and outlined with
+     a crisp contrast stroke (dark in light mode, cream in dark mode)
+     so the silhouette reads sharply on any canvas. */
+  .cursor__pencil {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 26px;
+    margin-left: -6px;
+    margin-top: -20px;
+    display: block;
+    color: var(--doodle-cursor-color, #15171C);
+    opacity: 0;
+    transform: scale(0.6) rotate(-10deg);
+    transform-origin: 6px 20px;
+    pointer-events: none;
+    transition:
+      opacity 180ms var(--ease-out),
+      transform 220ms var(--ease-out),
+      color 180ms var(--ease-out);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.30));
+    will-change: opacity, transform, color;
+  }
+  .cursor__pencil svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    /* CSS wins over the SVG's inline stroke="none" presentation
+       attribute, so the outline can be theme-aware without changing
+       markup. Painted around the filled shape using paint-order. */
+    stroke: #15171C;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+  }
+  :global([data-theme="dark"]) .cursor__pencil svg {
+    stroke: #FDFCFA;
+  }
+  :global([data-doodle-active]) .cursor__pencil {
+    opacity: 1;
+    transform: scale(1) rotate(-10deg);
+  }
+  /* Hide the ring while doodle mode is on — the pencil carries the
+     affordance. Keep the dot visible BUT recolor it to the brush color
+     and shrink it to a small accent: if the pencil SVG fails to paint
+     for any reason, a brush-colored dot is still a clear "draw armed"
+     signal instead of nothing. */
+  :global([data-doodle-active]) .cursor__ring {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+  }
+  :global([data-doodle-active]) .cursor__dot {
+    background: var(--doodle-cursor-color, #15171C) !important;
+    width: 6px;
+    height: 6px;
+    margin-left: -3px;
+    margin-top: -3px;
+    opacity: 0.9;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+  }
 
   .cursor.is-interactive .cursor__dot {
     transform: scale(0);
@@ -643,7 +717,7 @@
      so the visual responds to hold duration. */
   .cursor.is-pressed .cursor__ring {
     transform: scale(1.55);
-    border-color: var(--brand-primary-2, var(--text-primary));
+    border-color: var(--brand-primary-2, #15171C);
     transition:
       transform 900ms var(--ease-out),
       border-color 240ms var(--ease-out),
@@ -679,8 +753,8 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: var(--text-primary);
-    color: var(--text-inverse, #FDFCFA);
+    background: #15171C;
+    color: #FDFCFA;
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
@@ -729,8 +803,8 @@
     transform: translateX(0);
   }
   .cursor.on-dark.is-press-pill .cursor__pill {
-    background: var(--text-inverse, #FDFCFA);
-    color: var(--text-primary);
+    background: #FDFCFA;
+    color: #15171C;
   }
 
   /* Cursor-morphed "Jump to it" scroll pill — appears over in-page anchor
@@ -747,8 +821,8 @@
     gap: 6px;
     padding: 6px 12px;
     border-radius: 999px;
-    background: var(--text-primary);
-    color: var(--text-inverse, #FDFCFA);
+    background: #15171C;
+    color: #FDFCFA;
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
@@ -800,8 +874,8 @@
     transform: translateY(0);
   }
   .cursor.on-dark.is-scroll-pill .cursor__scroll-pill {
-    background: var(--text-inverse, #FDFCFA);
-    color: var(--text-primary);
+    background: #FDFCFA;
+    color: #15171C;
   }
 
   /* "Drag or click" pill for interactive floating cells. Same expand-from-
@@ -1031,8 +1105,8 @@
     width: var(--cp-w-idle, max-content);
     max-width: var(--cp-w-idle, none);
     border-radius: 999px;
-    background: var(--text-primary);
-    color: var(--text-inverse, #FDFCFA);
+    background: #15171C;
+    color: #FDFCFA;
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
@@ -1093,8 +1167,8 @@
     transition-delay: 60ms;
   }
   .cursor.on-dark.is-copy-pill .cursor__copy-pill {
-    background: var(--text-inverse, #FDFCFA);
-    color: var(--text-primary);
+    background: #FDFCFA;
+    color: #15171C;
   }
 
   /* Cursor-morphed up-right arrow — appears over external links (LinkedIn)
@@ -1109,8 +1183,8 @@
     margin-left: -18px;
     margin-top: -18px;
     border-radius: 999px;
-    background: var(--text-primary);
-    color: var(--text-inverse, #FDFCFA);
+    background: #15171C;
+    color: #FDFCFA;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1148,8 +1222,8 @@
     transform: translate(0, 0) scale(1);
   }
   .cursor.on-dark.is-external-arrow .cursor__external-arrow {
-    background: var(--text-inverse, #FDFCFA);
-    color: var(--text-primary);
+    background: #FDFCFA;
+    color: #15171C;
   }
 
   /* Cursor-morphed "Swipe" pill — appears on hover over the card-stack
@@ -1168,8 +1242,8 @@
     align-items: center;
     padding: 6px 14px;
     border-radius: 999px;
-    background: var(--text-primary);
-    color: var(--text-inverse, #FDFCFA);
+    background: #15171C;
+    color: #FDFCFA;
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 500;
@@ -1207,8 +1281,8 @@
     transform: translateX(0);
   }
   .cursor.on-dark.is-swipe-pill .cursor__swipe-pill {
-    background: var(--text-inverse, #FDFCFA);
-    color: var(--text-primary);
+    background: #FDFCFA;
+    color: #15171C;
   }
 
   /* Ripple — spawned on mouseup, expands and fades. */

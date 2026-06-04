@@ -87,6 +87,17 @@ function isActive(href: string) {
   @media (min-width: 1024px) {
     .site-header { display: none; }
   }
+  /* Tablet / large-phone band (720–1023px): the SideRail has dissolved
+     but the viewport is still wide, so the default space-between
+     distribution pushes the three sections (brand+toggle / nav / icons)
+     edge-to-edge with a ~700px dead zone between them. Cap the inner
+     content via large horizontal padding so the sections cluster toward
+     the center and the row reads as a tight nav, not a sparse banner. */
+  @media (min-width: 720px) and (max-width: 1023px) {
+    .site-header {
+      padding-inline: clamp(var(--s-8), 12vw, 160px);
+    }
+  }
   .site-header.is-scrolled {
     background: rgba(253, 252, 250, 0.8);
     backdrop-filter: saturate(140%) blur(10px);

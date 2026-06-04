@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
-"""Extract handwritten ink from a scan → cropped transparent PNG for CSS masking."""
+"""Extract handwritten ink from a scan into a cropped transparent PNG for CSS masking."""
 
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageEnhance, ImageOps
+from PIL import Image
 
+# Light pencil on office scan: letters sit in a mid-gray band; a dark smear
+# row at low thresholds must be excluded by using a luminance window only.
+BAND_BOX = (450, 1030, 1980, 1058)
+LUM_MIN = 232
+LUM_MAX = 238
 INK_RGBA = (0, 0, 0, 255)
-# Page band around the scan's text line (300dpi InstaPDF export)
-BAND_BOX = (350, 1018, 1950, 1068)
-LUM_THRESHOLD = 224
-COL_FRAC = 0.15
-ROW_FRAC = 0.2
-PADDING_PX = 4
+PADDING_PX = 2
 
 
 def main() -> None:
@@ -24,46 +24,50 @@ def main() -> None:
 
     gray = Image.open(src).convert("L")
     band = gray.crop(BAND_BOX)
-    band = ImageOps.autocontrast(band, cutoff=1)
-    band = ImageEnhance.Contrast(band).enhance(2.8)
+    rw, rh = band.size
+    rgba = Image.new("RGBA", (rw, rh), (0, 0, 0, 0))
+    rp = rgba.load()
 
-    binary = band.point(lambda p: 0 if p < LUM_THRESHOLD else 255, mode="1")
-    rw, rh = binary.size
-    px = binary.load()
-    cols = [sum(1 for y in range(rh) if px[x, y] == 0) for x in range(rw)]
-    rows = [sum(1 for x in range(rw) if px[x, y] == 0) for y in range(rh)]
-    mc, mr = max(cols), max(rows)
-    xs = [x for x, v in enumerate(cols) if v >= max(2, mc * COL_FRAC)]
-    ys = [y for y, v in enumerate(rows) if v >= max(1, mr * ROW_FRAC)]
+    for y in range(rh):
+        for x in range(rw):
+            p = band.getpixel((x, y))
+            if LUM_MIN <= p <= LUM_MAX:
+                rp[x, y] = INK_RGBA
+
+    cols = [sum(1 for y in range(rh) if rp[x, y][3] > 128) for x in range(rw)]
+    rows = [sum(1 for x in range(rw) if rp[x, y][3] > 128) for y in range(rh)]
+    xs = [x for x, v in enumerate(cols) if v >= 2]
+    ys = [y for y, v in enumerate(rows) if v >= 2]
     if not xs or not ys:
-        raise SystemExit("Could not find handwriting bounds.")
+        raise SystemExit("No handwriting found; adjust LUM_MIN/LUM_MAX.")
 
     x0 = max(0, xs[0] - PADDING_PX)
     x1 = min(rw, xs[-1] + 1 + PADDING_PX)
     y0 = max(0, ys[0] - PADDING_PX)
     y1 = min(rh, ys[-1] + 1 + PADDING_PX)
-
-    tight = band.crop((x0, y0, x1, y1))
+    tight = rgba.crop((x0, y0, x1, y1))
     cw, ch = tight.size
-    rgba = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
-    bin2 = tight.point(lambda p: 0 if p < LUM_THRESHOLD else 255, mode="1")
-    bp = bin2.load()
-    rp = rgba.load()
-    for y in range(ch):
-        for x in range(cw):
-            if bp[x, y] == 0:
-                rp[x, y] = INK_RGBA
+
+    opaque = sum(1 for y in range(ch) for x in range(cw) if tight.getpixel((x, y))[3] > 128)
+    coverage = opaque / (cw * ch)
+    row_fill = max(
+        sum(1 for x in range(cw) if tight.getpixel((x, y))[3] > 128) for y in range(ch)
+    ) / cw
+    if coverage > 0.5 or row_fill > 0.75:
+        raise SystemExit(
+            f"Mask still too solid ({coverage:.0%} opaque, {row_fill:.0%} max row). "
+            "Tune LUM_MIN/LUM_MAX or rescan with darker ink."
+        )
 
     out_dir.mkdir(parents=True, exist_ok=True)
     png_path = out_dir / f"{stem}.png"
-    rgba.save(png_path, optimize=True)
-    rgba.resize((cw * 2, ch * 2), Image.LANCZOS).save(
+    tight.save(png_path, optimize=True)
+    tight.resize((cw * 2, ch * 2), Image.LANCZOS).save(
         out_dir / f"{stem}@2x.png", optimize=True
     )
 
-    print(f"crop {cw}x{ch}")
+    print(f"crop {cw}x{ch}, opaque {coverage:.1%}, max row {row_fill:.1%}")
     print(png_path)
-    print(out_dir / f"{stem}@2x.png")
 
 
 if __name__ == "__main__":

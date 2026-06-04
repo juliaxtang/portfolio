@@ -446,93 +446,92 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
                 filter 520ms var(--ease-out) !important;
   }
 
-  /* Narrow desktop / tablet (721–1280px): the Showcase column gap shrinks
-     so the desktop side-bleed (prompt -140/-200px left, quiz -110/-170px
-     right) crashes into the project copy on the left and clips the viewport
-     on the right. Switch to the mobile-style top/bottom anchored layout so
-     each cell peeks out of the phone's top-left / bottom-right corner with
-     a small horizontal offset instead of a deep side bleed. Same headroom
-     padding reservation as the ≤720px rule so the cells never overlap the
-     surrounding copy. */
+  /* Narrow desktop / tablet (721–1440px): preserve the reference layout
+     where the prompt card hugs the phone's upper-left (mostly outside the
+     phone but with its bottom-right corner overlapping the screen) and the
+     quiz card hugs the lower-right (mostly outside, with its top-left
+     corner overlapping the screen). Bleed values are tightened versus the
+     wide-desktop variant so the cards stay within the (narrower) gutter
+     without clipping at the viewport edges. */
   @media (max-width: 1440px) and (min-width: 721px) {
     .phone-video {
-      padding-top: clamp(56px, 8vw, 96px);
-      padding-bottom: clamp(36px, 6vw, 72px);
+      padding-top: clamp(56px, 9vw, 100px);
+      padding-bottom: clamp(40px, 7vw, 80px);
+      padding-right: clamp(28px, 6%, 60px);
     }
     .phone-video__cell--prompt {
-      top: -6%;
-      left: -4%;
-      width: clamp(190px, 60%, 240px);
+      top: clamp(-28px, -6%, -8px);
+      left: clamp(-70px, -18%, -32px);
+      width: clamp(190px, 58%, 240px);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: -2%;
-      right: -8%;
+      bottom: clamp(-40px, -8%, -16px);
+      right: clamp(-70px, -18%, -36px);
       width: clamp(190px, 58%, 240px);
       --rot: 6deg;
     }
   }
 
+  /* Mobile (≤720px): same overlap pattern as the desktop reference. Cells
+     hug the phone's upper-left / lower-right corners with their majority
+     outside the phone but a meaningful corner crossing onto the screen.
+     Padding-top/bottom are tightened versus the prior "above/below" rule
+     so the cell's negative `top`/`bottom` lands close to the phone edge
+     and yields actual overlap (a deep padding pushes the cell fully off
+     the phone). Container `top` is the reference for the cell's
+     `top: <neg>`, so we keep padding small enough that prompt.bottom
+     crosses phone.top instead of falling above it. */
   @media (max-width: 720px) {
-    /* Reserve headroom + footroom for the cells anchored outside the
-       phone so they don't bleed into surrounding text. */
     .phone-video {
-      padding-top: clamp(64px, 13vw, 110px);
-      padding-bottom: clamp(40px, 9vw, 80px);
+      padding-top: clamp(36px, 10vw, 88px);
+      padding-bottom: clamp(32px, 8vw, 72px);
+      padding-right: clamp(16px, 5%, 44px);
     }
-    /* Mobile: clear the phone so the device reads first, then the
-       floating cells. Prompt sits in the top-left gutter (mostly above
-       the phone); quiz sits in the bottom-right gutter (mostly below). */
     .phone-video__cell--prompt {
-      top: -8%;
-      left: -4%;
-      width: clamp(170px, 60%, 230px);
+      top: clamp(-20px, -2vw, -4px);
+      left: clamp(-40px, -10%, -12px);
+      width: clamp(165px, 56%, 215px);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: -2%;
-      right: -10%;
-      width: clamp(160px, 56%, 220px);
+      bottom: clamp(-24px, -2.5vw, -8px);
+      right: clamp(-40px, -10%, -12px);
+      width: clamp(170px, 58%, 220px);
       --rot: 6deg;
     }
   }
 
-  /* Small viewports: the phone otherwise fills the column (too tall to see
-     the project copy in one screen) and the floating cards spill off the
-     edges. Shrink the phone so the copy is visible, and crucially pull the
-     cards' bleed inward: a card that bleeds -22% of the phone width can only
-     stay on-screen when the phone is ≤~69% wide, so at these larger phone
-     sizes the bleed has to tighten or the cards get clipped at the edges. */
+  /* Small viewports: shrink the phone so the project copy stays visible in
+     one screen, and pull the bleeds inward proportionally so the cards
+     don't clip against the viewport edge. The overlap pattern (corner
+     crossing onto the phone, majority outside) is preserved. */
   @media (max-width: 520px) {
     .phone-video { max-width: min(348px, 80%); }
-    /* The badge's 128px min floor made it huge relative to the shrunk
-       phone (it stopped scaling down with the device and overpowered the
-       composition). Let it scale with the phone here so it reads as an
-       accent in the corner, not the focal point. */
     .phone-video__badge-wrap,
     .phone-video__badge {
       width: clamp(82px, 38%, 150px);
     }
     .phone-video__cell--prompt {
-      top: -8%;
-      left: -4%;
-      width: clamp(150px, 60%, 210px);
+      top: clamp(-10px, -1vw, 4px);
+      left: -8%;
+      width: clamp(150px, 60%, 200px);
     }
     .phone-video__cell--quiz {
-      bottom: -6%;
-      right: -6%;
-      width: clamp(160px, 62%, 220px);
+      bottom: clamp(-14px, -1.5vw, 2px);
+      right: -8%;
+      width: clamp(150px, 60%, 200px);
     }
   }
   @media (max-width: 380px) {
     .phone-video { max-width: min(348px, 80%); }
     .phone-video__cell--prompt {
-      left: -2%;
-      width: clamp(150px, 58%, 200px);
+      left: -6%;
+      width: clamp(140px, 56%, 180px);
     }
     .phone-video__cell--quiz {
-      right: -4%;
-      width: clamp(150px, 58%, 200px);
+      right: -6%;
+      width: clamp(140px, 56%, 180px);
     }
   }
 

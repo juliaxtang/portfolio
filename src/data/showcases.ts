@@ -50,8 +50,10 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Staff Product Designer",
     title: "Social Games",
     tagline: [
-      "Games on Snapchat were camera filters with no product investment behind them. I saw the opportunity in the data, commissioned a research study, and designed three tests to prove out the bet.",
-      "All three landed. I got CEO buy-in to go big on Games, earned a dedicated squad, and scaled it into a proper product area with 30M daily users in less than a year.",
+      "Games on Snapchat were camera filters with no product investment behind them.",
+      "I saw the opportunity in the data, commissioned a research study, and shipped three bets tied to what we learned: a games drawer inside chat, fullscreen lens UX, and a turn-based flow that made playing with friends legible.",
+      "All three landed. I got CEO buy-in to go big on Games and earned a dedicated squad.",
+      "We scaled it into a proper product area with 30M daily users in less than a year.",
     ],
     stats: [
       { value: "30M", label: "Games DAU" },
@@ -97,8 +99,9 @@ export const showcaseContent: Record<string, ShowcaseContent> = {
     role: "Senior Product Designer",
     title: "Dynamic Profiles",
     tagline: [
-      "Every Tinder profile had the same ordering of content at the same time. Nothing was personalized. Teams wanted to test profile variants, but none of them could do so quickly without running into content collisions or inconsistent UI.",
-      "I led the six-month build of Tappy Cloud, the backend system and internal tool (TaCo) that turned the profile from a fixed template into a surface teams could test, configure, and personalize. It unlocked rapid experimentation, faster iteration on new profile elements, and UI consistency across the app.",
+      "Tinder profiles were fixed: same content order for everyone, nothing personalized.",
+      "Teams wanted to test layouts, but experiments collided and UI drifted without a shared system.",
+      "I led a six-month, four-milestone build of Tappy Cloud and TaCo, turning the profile into a backend-driven surface where teams could quickly configure, test, and integrate with ML and AI models for more personalized profiles.",
     ],
     stats: [
       { value: "↑ 20%", label: "Likes sent across all experiments", colFr: 0.75 },

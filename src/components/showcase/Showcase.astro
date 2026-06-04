@@ -421,8 +421,8 @@ const meta = [role].filter(Boolean) as string[];
   }
 
   .showcase__tagline {
-    font-size: clamp(16px, 1.2vw, 18px);
-    line-height: 1.6;
+    font-size: clamp(14px, 1.05vw, 16px);
+    line-height: 1.55;
     color: var(--text-secondary);
     margin: 0 0 var(--s-8);
     max-width: 42ch;
@@ -454,7 +454,7 @@ const meta = [role].filter(Boolean) as string[];
        resolves to the same pixel width and the divider line above the
        metrics aligns exactly with the prose block edge. The value/label
        children set their own font-size so this only affects ch math. */
-    font-size: clamp(14px, 1.15vw, 15px);
+    font-size: clamp(14px, 1.05vw, 16px);
     max-width: var(--stats-max-width, 46ch);
   }
   .showcase__stats-grid:has(~ .showcase__press)::before {
@@ -493,17 +493,17 @@ const meta = [role].filter(Boolean) as string[];
   }
   .showcase__stat-value {
     font-family: var(--font-sans);
-    font-weight: 600;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     color: var(--text-primary);
-    font-size: var(--stat-value-fs, clamp(22px, 2vw, 28px));
+    font-size: var(--stat-value-fs, clamp(24px, 2.1vw, 28px));
     letter-spacing: -0.014em;
     line-height: 1.1;
     white-space: nowrap;
   }
   .showcase__stat-label {
     color: var(--text-tertiary);
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.35;
     /* Reserve 2 label lines per cell so 1-line and 2-line labels in the
        same row occupy the same vertical band. Short labels center inside

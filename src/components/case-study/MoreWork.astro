@@ -145,7 +145,13 @@ const meta = content
 
           <h2 class="cs-more__title">{content.title}</h2>
 
-          <p class="cs-more__tagline">{content.tagline}</p>
+          {Array.isArray(content.tagline) ? (
+            <div class="cs-more__tagline">
+              {content.tagline.map((para) => <p>{para}</p>)}
+            </div>
+          ) : (
+            <p class="cs-more__tagline">{content.tagline}</p>
+          )}
 
           {content.stats.length > 0 && (
             <ul class="cs-more__stats">
@@ -401,11 +407,17 @@ const meta = content
   }
 
   .cs-more__tagline {
-    font-size: clamp(15px, 1.2vw, 17px);
+    font-size: clamp(14px, 1.05vw, 16px);
     line-height: 1.55;
     color: var(--text-primary);
     margin: 0;
     max-width: 46ch;
+  }
+  .cs-more__tagline p {
+    margin: 0 0 var(--s-4);
+  }
+  .cs-more__tagline p:last-child {
+    margin-bottom: 0;
   }
 
   .cs-more__stats {
@@ -425,7 +437,7 @@ const meta = content
   .cs-more__stat-value {
     font-family: var(--font-sans);
     font-weight: 500;
-    font-size: clamp(20px, 2vw, 26px);
+    font-size: clamp(24px, 2.1vw, 28px);
     line-height: 1.1;
     letter-spacing: -0.018em;
     font-variant-numeric: tabular-nums;
@@ -433,7 +445,7 @@ const meta = content
     margin: 0;
   }
   .cs-more__stat-label {
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.4;
     color: var(--text-secondary);
     margin: 0;

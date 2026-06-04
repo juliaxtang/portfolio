@@ -193,9 +193,16 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
+      // Smaller-viewport scale: the cells overlap the phone corners on
+      // ≤1440px, and the counter-phase drift between phone and cells
+      // (up to ±60 + ±20 = 80px combined at scroll extremes) is enough
+      // to break the visual contact and leave the cell floating above
+      // or below the phone with a gap. Scale all ranges to 0 below the
+      // breakpoint so phone + cells move together as one composition.
+      const PARALLAX_OFF_MQ = window.matchMedia("(max-width: 1440px)");
       document.querySelectorAll(".phone-video").forEach((root) => {
-        const phoneRange = parseFloat(root.dataset.phoneRange || "60");
-        const badgeRange = parseFloat(root.dataset.badgeRange || "30");
+        const phoneRangeBase = parseFloat(root.dataset.phoneRange || "60");
+        const badgeRangeBase = parseFloat(root.dataset.badgeRange || "30");
         let raf = 0;
         const update = () => {
           raf = 0;
@@ -208,15 +215,16 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
           // Map 0..1 to -0.5..+0.5 so the element is at rest mid-passage
           // and drifts symmetrically before/after.
           const centered = progress - 0.5;
-          const phoneY = -centered * phoneRange;
-          const badgeY = -centered * badgeRange;
+          const off = PARALLAX_OFF_MQ.matches ? 0 : 1;
+          const phoneY = -centered * phoneRangeBase * off;
+          const badgeY = -centered * badgeRangeBase * off;
           // CSS custom properties so the hover transform can compose with
           // the scroll-driven Y offset without one overwriting the other.
           root.style.setProperty("--phone-y", phoneY.toFixed(1) + "px");
           root.style.setProperty("--badge-y", badgeY.toFixed(1) + "px");
           // Float cells in counter-phase to the phone for an organic feel.
-          root.style.setProperty("--prompt-y", (centered * 40).toFixed(1) + "px");
-          root.style.setProperty("--quiz-y", (-centered * 55).toFixed(1) + "px");
+          root.style.setProperty("--prompt-y", (centered * 40 * off).toFixed(1) + "px");
+          root.style.setProperty("--quiz-y", (-centered * 55 * off).toFixed(1) + "px");
         };
 
         const onScroll = () => {
@@ -455,18 +463,25 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
      without clipping at the viewport edges. */
   @media (max-width: 1440px) and (min-width: 721px) {
     .phone-video {
-      padding-top: clamp(56px, 9vw, 100px);
-      padding-bottom: clamp(40px, 7vw, 80px);
+      /* Padding is zero on the vertical axes here so the cell's negative
+         top/bottom positions land directly inside the phone (overlap,
+         not gap). Any padding-top pushes the cell up by exactly that
+         amount and reintroduces the floating-above-the-phone problem.
+         The Showcase row's own margin handles separation from the
+         surrounding eyebrow + copy, so the cell extending past the
+         container's top/bottom doesn't crash into text. */
+      padding-top: 0;
+      padding-bottom: 0;
       padding-right: clamp(28px, 6%, 60px);
     }
     .phone-video__cell--prompt {
-      top: clamp(-28px, -6%, -8px);
+      top: clamp(-50px, -7vw, -16px);
       left: clamp(-70px, -18%, -32px);
       width: clamp(190px, 58%, 240px);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: clamp(-40px, -8%, -16px);
+      bottom: clamp(-50px, -7vw, -16px);
       right: clamp(-70px, -18%, -36px);
       width: clamp(190px, 58%, 240px);
       --rot: 6deg;
@@ -483,31 +498,25 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
      `top: <neg>`, so we keep padding small enough that prompt.bottom
      crosses phone.top instead of falling above it. */
   @media (max-width: 720px) {
-    /* Reserve enough vertical breathing room above and below the phone
-       for each cell to dip its corner ~25-40px onto the phone screen
-       while the rest of the cell stays inside the parent's padding band.
-       The old padding (36-88px) was barely larger than the badge so the
-       cell-prompt was visually disconnected from the phone (most of it
-       hung above the phone's top edge with no visible corner overlap),
-       and any pull-down kept the cell crashing into the eyebrow above.
-       Larger padding solves both: the phone shifts down, the cell tucks
-       onto its top-left corner cleanly, and the showcase still finishes
-       before the next section starts. */
     .phone-video {
-      padding-top: clamp(96px, 26vw, 150px);
-      padding-bottom: clamp(80px, 22vw, 130px);
+      /* Zero vertical padding — matches the narrow-desktop rule's
+         rationale: any positive padding pushes the cell out by exactly
+         that amount and reintroduces the gap-above-phone the user
+         flagged. */
+      padding-top: 0;
+      padding-bottom: 0;
       padding-right: clamp(16px, 5%, 44px);
     }
     .phone-video__cell--prompt {
-      top: clamp(10px, 3vw, 28px);
-      left: clamp(-32px, -8%, -10px);
-      width: clamp(155px, 52%, 200px);
+      top: clamp(-40px, -8vw, -16px);
+      left: clamp(-40px, -10%, -12px);
+      width: clamp(165px, 56%, 215px);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: clamp(10px, 3vw, 28px);
-      right: clamp(-32px, -8%, -10px);
-      width: clamp(160px, 54%, 205px);
+      bottom: clamp(-40px, -8vw, -16px);
+      right: clamp(-40px, -10%, -12px);
+      width: clamp(170px, 58%, 220px);
       --rot: 6deg;
     }
   }
@@ -523,12 +532,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       width: clamp(82px, 38%, 150px);
     }
     .phone-video__cell--prompt {
-      top: clamp(-10px, -1vw, 4px);
+      top: clamp(-32px, -7vw, -12px);
       left: -8%;
       width: clamp(150px, 60%, 200px);
     }
     .phone-video__cell--quiz {
-      bottom: clamp(-14px, -1.5vw, 2px);
+      bottom: clamp(-32px, -7vw, -12px);
       right: -8%;
       width: clamp(150px, 60%, 200px);
     }
@@ -608,66 +617,16 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     opacity: 0;
     pointer-events: none;
   }
-  /* Narrow desktop / tablet (721–1440px): the desktop side-text variant
-     sits at right: -232px outside the phone container and would clip
-     against the body's overflow-x: clip. Fall back to a compact pill
-     positioned just below the phone. Hide the invisible arrow sizing box
-     so the pill sizes to its label content instead of the 80px arrow
-     footprint, and hide the curved SVG arrow at the same breakpoint via
-     the Arrow component's hideBelowWidth={1440}. */
-  @media (max-width: 1440px) and (min-width: 721px) {
-    .phone-video__drag-hint {
-      left: 50%;
-      top: auto;
-      bottom: -36px;
-      right: auto;
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: calc(100% - var(--s-4));
-      flex-direction: row;
-      align-items: center;
-      gap: 0;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(20, 22, 28, 0.08);
-      border-radius: 999px;
-      padding: 7px 14px;
-      color: var(--text-secondary, #2a2a2f);
-      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
-    }
-    .phone-video__drag-hint-label {
-      font-family: var(--font-mono, inherit);
-      font-size: 0;
-      line-height: 1;
-      white-space: nowrap;
-      letter-spacing: 0.04em;
-    }
-    .phone-video__drag-hint-label::before {
-      content: "↕ drag cards to move, click to expand";
-      font-size: 11px;
-    }
-    /* Pill mode hides the invisible 80px sizing box that the arrow uses
-       in desktop mode — without this the pill stretches to label + 80px
-       rather than fitting its content. */
-    .phone-video__drag-hint-arrow {
-      display: none;
-    }
-  }
-
-  /* Stacked layout (≤900px, still above the mobile cutoff): the showcase
-     column collapses so the phone sits stacked above the text. Pill moves
-     above the phone so it doesn't collide with the copy that now flows
-     directly underneath. */
-  @media (max-width: 900px) and (min-width: 721px) {
-    .phone-video__drag-hint {
-      top: -36px;
-      bottom: auto;
-    }
-  }
-  /* Touch / mobile (≤ 720px): no drag affordance at all — cells are tap
-     to focus and the pill / arrow would only add clutter. */
-  @media (max-width: 720px) {
+  /* Smaller viewports (≤1440px): hide the drag-to-move affordance
+     entirely. The handwritten label + curved SVG arrow only fits when
+     the phone has ~232px of side gutter to its right. Below that the
+     previous fallback was a compact pill anchored above/below the phone,
+     but with the cells now overlapping the phone corners (matching the
+     desktop reference layout) the pill ends up colliding with the cells
+     or pushing the composition apart from the copy. The cursor pill on
+     hover still surfaces the affordance for desktop, and cells stay
+     tap-to-focus on touch. */
+  @media (max-width: 1440px) {
     .phone-video__drag-hint { display: none !important; }
   }
 </style>

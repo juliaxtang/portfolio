@@ -117,6 +117,42 @@ main", "push to github"):
    The `--no-ff` is required: `main` history is a sequence of merge
    commits, not a fast-forwarded line.
 
+5. Sync every other live worktree to the new `main` so no feature
+   branch silently drifts behind. Run this from the primary worktree
+   right after the push, in the same turn:
+
+   ```bash
+   MERGED_WT=/Users/jtang7/portfolio/.claude/worktrees/<slug>
+   git worktree list --porcelain | awk '/^worktree / { print $2 }' | \
+     while read -r wt; do
+       if [ "$wt" = "/Users/jtang7/portfolio" ] || [ "$wt" = "$MERGED_WT" ]; then
+         continue
+       fi
+       echo "Syncing $wt"
+       git -C "$wt" fetch origin main
+       if ! git -C "$wt" merge --no-edit origin/main; then
+         echo "  -> conflict in $wt, leave it for the user"
+         git -C "$wt" merge --abort 2>/dev/null || true
+       fi
+     done
+   ```
+
+   Notes:
+   - Covers every worktree on disk: nested ones under
+     `/Users/jtang7/portfolio/.claude/worktrees/<slug>/` (the canonical
+     location) and any leftover siblings at
+     `/Users/jtang7/portfolio-<slug>/` from before the convention
+     change. Both styles benefit from staying in sync with `main`.
+   - The primary worktree at `/Users/jtang7/portfolio` is where the
+     merge already happened, so it's skipped; the just-merged worktree
+     is about to be removed in cleanup, so it's skipped too.
+   - Each remaining worktree stays on its own feature branch; the sync
+     brings the fresh `main` into it via a merge commit. Use merge (not
+     rebase) so any pushed feature branch keeps its history.
+   - If a worktree has uncommitted changes or conflicts that block the
+     merge, `merge --abort` keeps it untouched and the path is
+     surfaced; let the user pull manually when ready.
+
 ## Cleanup workflow (mandatory, same turn as the merge)
 
 Never leave a merged branch or worktree behind. As soon as the merge
@@ -161,5 +197,7 @@ push succeeds, in the same agent turn:
   commas, colons, periods, or hyphens.
 - Use `--no-ff` merges so the branch boundary stays visible in the
   graph.
+- After every push to `main`, sync every other live worktree so no
+  feature branch silently falls behind the merged history.
 - Surface the dev URL after setup so the user can preview live; the dev
   server hot-reloads on every save.

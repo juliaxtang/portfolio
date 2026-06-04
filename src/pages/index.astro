@@ -52,9 +52,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     </div>
 
     <div class="hero-reveal hero-reveal--tinder" aria-hidden="true">
-      <div class="hero-reveal__item hero-reveal__item--tinder-superlike">
-        <img src={`${base}/projects/hero/superlike.gif`} alt="" />
-      </div>
       <div class="hero-reveal__item hero-reveal__item--tinder-phone">
         <img src={`${base}/projects/hero/tinder-phone.gif`} alt="" />
       </div>
@@ -1080,7 +1077,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
 
   /* Hover-reveal imagery layer.
-     Two groups (snap + tinder), each containing 2 project images. Hidden by
+     Two groups (snap + tinder): three Snap artifacts, two Tinder. Hidden by
      default, fade in when the matching .hero-co link is hovered. Sits behind
      the text but above the HeroGrid dot field. Pointer-events disabled so
      the imagery never intercepts cursor events targeting the text. */
@@ -1169,19 +1166,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     border-radius: 16px;
     box-shadow: 0 24px 60px -32px rgba(20, 20, 40, 0.18);
   }
-  /* Tinder SUPERLIKE: oversized sticker pulled inward from the left
-     margin so it tucks closer to the headline instead of hugging the
-     viewport edge. */
-  .hero-reveal__item--tinder-superlike {
-    /* Parked in the same upper slot as the Snapchat valentine card so the
-       two hover groups share the same compositional rhythm. */
-    width: clamp(180px, 18vw, 460px);
-    right: 50%;
-    top: -3%;
-    left: auto;
-    transform-origin: 30% 70%;
-    rotate: 8deg;
-  }
   /* Tinder phone: small enough that the full screen reads in one
      glance, pulled inward from the right edge to feel more composed,
      and lifted so it clears the AI meta paragraph below. */
@@ -1220,7 +1204,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      so they don't crash into the text band. */
   @media (max-width: 1339px) and (min-width: 1024px) {
     .hero-reveal__item--snap-valentine { top: 16%; }
-    .hero-reveal__item--tinder-superlike { top: 6%; }
   }
   /* Below 1000px width the hero is tighter; keep the scroll cursor pill on
      Snap/Tinder hover but hide the decorative project imagery so the

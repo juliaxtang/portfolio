@@ -340,6 +340,12 @@
       cursor.classList.toggle("on-dark", mode === "dark");
     }
 
+    // Decorative hover targets (e.g. Tappy profile cards) should not
+    // retint the cursor or morph it into drag/expand pills.
+    function inCursorPassive(el) {
+      return el && el.closest && el.closest("[data-cursor-passive]");
+    }
+
     // Elements that own a hover-revealed visual (a polaroid photo, a
      // preview image, a caption list, etc.) hide the cursor so the
      // reveal IS the cursor — no double-stamp of a dot over the artwork.
@@ -437,6 +443,7 @@
     }
 
     document.addEventListener("mouseover", function (e) {
+      if (inCursorPassive(e.target)) return;
       if (isInteractive(e.target)) cursor.classList.add("is-interactive");
       const reveal = e.target && e.target.closest
         ? e.target.closest("[data-cursor='hide'], .pill, .prose-out--preview, .fx")
@@ -492,6 +499,11 @@
       updateMode(e.target);
     });
     document.addEventListener("mouseout", function (e) {
+      if (inCursorPassive(e.target) && !inCursorPassive(e.relatedTarget)) {
+        updateMode(e.relatedTarget);
+        return;
+      }
+      if (inCursorPassive(e.target)) return;
       // Only drop the state if we've fully left interactive territory.
       if (!isInteractive(e.relatedTarget)) cursor.classList.remove("is-interactive");
       const stillIn = e.relatedTarget && e.relatedTarget.closest

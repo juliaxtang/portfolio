@@ -139,8 +139,12 @@ const hobbies = [
                   <p class="exp-role-desc">Owning design for Camera, AR, Messaging, and Growth, plus new product verticals like Games and Topic Chats.</p>
                 </div>
                 <p class="exp-dates">2024 — Now</p>
-                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:-2deg; width: 260px;" aria-hidden="true">
-                  <img src={`${base}/about/snapchat-hero.gif`} alt="" loading="lazy" />
+                <span class="fx-photo fx-photo--bare exp-reveal-art exp-reveal-art--bare" style="--tilt:-2deg; width: auto;" aria-hidden="true">
+                  <span class="exp-pair exp-pair--snap">
+                    <img src={`${base}/about/snapchat-camera.gif`} alt="" loading="lazy" />
+                    <img src={`${base}/about/onboarding.gif`} alt="" loading="lazy" />
+                    <img src={`${base}/about/snapchat-hero.gif`} alt="" loading="lazy" />
+                  </span>
                 </span>
               </li>
             </FadeIn>
@@ -153,7 +157,7 @@ const hobbies = [
                   <p class="exp-role-desc">Owned the Swipe Stack and user discovery profiles. Introduced dynamic profiles to Tinder and led 0 to 1 discovery experiences.</p>
                 </div>
                 <p class="exp-dates">2021 — 2024</p>
-                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:3deg; width: 260px;" aria-hidden="true">
+                <span class="fx-photo fx-photo--bare exp-reveal-art exp-reveal-art--bordered" style="--tilt:3deg; width: 234px;" aria-hidden="true">
                   <img src={`${base}/about/tinder-hero.gif`} alt="" loading="lazy" />
                 </span>
               </li>
@@ -167,7 +171,7 @@ const hobbies = [
                   <p class="exp-role-desc">Designed Whip Media Marketplace 0 to 1 and led UX for TV Time, the consumer mobile app, doubling monthly active users during my tenure.</p>
                 </div>
                 <p class="exp-dates">2019 — 2021</p>
-                <span class="fx-photo fx-photo--bare exp-reveal-art exp-reveal-art--bare" style="--tilt:-2deg; width: 300px;" aria-hidden="true">
+                <span class="fx-photo fx-photo--bare exp-reveal-art exp-reveal-art--bare" style="--tilt:-2deg; width: 420px;" aria-hidden="true">
                   <img src={`${base}/projects/tv-time-onboarding/hero-2.webp`} alt="" loading="lazy" />
                 </span>
               </li>
@@ -181,8 +185,11 @@ const hobbies = [
                   <p class="exp-role-desc">Multi-format creative storytelling for marketing campaigns across major film and television releases.</p>
                 </div>
                 <p class="exp-dates">2018 — 2019</p>
-                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:2deg; width: 420px;" aria-hidden="true">
-                  <img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" />
+                <span class="fx-photo fx-photo--bare exp-reveal-art" style="--tilt:0deg; width: auto;" aria-hidden="true">
+                  <span class="exp-pair">
+                    <img src={`${base}/about/GitS_AdvanceTicketsFacebook_1200x1200_V07 1.png`} alt="" loading="lazy" />
+                    <img src={`${base}/about/BabyGroot_Infographic_Page_7 1.png`} alt="" loading="lazy" />
+                  </span>
                 </span>
               </li>
             </FadeIn>
@@ -196,11 +203,14 @@ const hobbies = [
             </FadeIn>
             <FadeIn delay={80}>
               <ul class="cred-list" role="list">
-                <li class="cred-row">
-                  <a class="cred-link" href="https://winners.webbyawards.com/2023" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                <li class="cred-row cred-row--reveal" data-cursor="hide">
+                  <a class="cred-link cred-link--reveal" href="https://winners.webbyawards.com/2023" target="_blank" rel="noopener noreferrer">
                     <span class="cred-body">
                       <span class="cred-title">Webby Award</span>
                       <span class="cred-sub">Whip Media Marketplace</span>
+                      <span class="fx-photo fx-photo--bare cred-reveal-art" style="--tilt:-2deg; width: 520px;" aria-hidden="true">
+                        <img src={`${base}/about/wme.png`} alt="" loading="lazy" />
+                      </span>
                     </span>
                     <span class="cred-meta">2023</span>
                   </a>
@@ -228,20 +238,26 @@ const hobbies = [
                   </div>
                   <p class="cred-meta">2022</p>
                 </li>
-                <li class="cred-row">
-                  <a class="cred-link" href="https://winners.webbyawards.com/2021/apps-software-immersive/general-apps/entertainment-sports/167683/tv-time" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                <li class="cred-row cred-row--reveal" data-cursor="hide">
+                  <a class="cred-link cred-link--reveal" href="https://winners.webbyawards.com/2021/apps-software-immersive/general-apps/entertainment-sports/167683/tv-time" target="_blank" rel="noopener noreferrer">
                     <span class="cred-body">
-                      <span class="cred-title">People's Choice Webby</span>
+                      <span class="cred-title">Webby Award</span>
                       <span class="cred-sub">TV Time</span>
+                      <span class="fx-photo fx-photo--bare cred-reveal-art" style="--tilt:-2deg; width: 680px;" aria-hidden="true">
+                        <img src={`${base}/about/custom lists.png`} alt="" loading="lazy" />
+                      </span>
                     </span>
                     <span class="cred-meta">2021</span>
                   </a>
                 </li>
-                <li class="cred-row">
-                  <a class="cred-link" href="https://www.thetangentagency.com/projects/lego-movie-2" target="_blank" rel="noopener noreferrer" data-cursor="external">
+                <li class="cred-row cred-row--reveal" data-cursor="hide">
+                  <a class="cred-link cred-link--reveal" href="https://www.thetangentagency.com/projects/lego-movie-2" target="_blank" rel="noopener noreferrer">
                     <span class="cred-body">
                       <span class="cred-title">Platinum AVA, Silver Clio</span>
                       <span class="cred-sub">The Lego Movie 2</span>
+                      <span class="fx-photo fx-photo--bare cred-reveal-art" style="--tilt:2deg; width: 460px;" aria-hidden="true">
+                        <img src={`${base}/about/lego-movie-2.gif`} alt="" loading="lazy" />
+                      </span>
                     </span>
                     <span class="cred-meta">2019</span>
                   </a>
@@ -1033,14 +1049,19 @@ const hobbies = [
   }
   .glitter__gif {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
+    left: 50%;
+    top: 50%;
+    /* Lift the GIF off the text bounding box so it can render taller
+       than a single line, making the glitter art readable at hover. */
+    height: 2.6em;
+    width: auto;
+    max-width: none;
+    transform: translate(-50%, -50%);
+    transform-origin: 50% 50%;
     pointer-events: none;
     opacity: 0;
     transition: opacity 220ms var(--ease-out);
+    z-index: 5;
   }
   .glitter:hover .glitter__text { opacity: 0; }
   .glitter:hover .glitter__gif { opacity: 1; }
@@ -1572,6 +1593,65 @@ const hobbies = [
   .cursor__media .exp-reveal-art--bare img {
     border-radius: 0;
   }
+  /* Bordered variant — adds a thin edge to delineate the reveal against
+     the page when the GIF and the canvas share tone. */
+  .exp-reveal-art--bordered,
+  .cursor__media .exp-reveal-art--bordered {
+    border: 1px solid var(--border-default);
+  }
+
+  /* Tangent reveal — two campaign deliverables side by side, full bleed
+     inside the outer .exp-reveal-art card. Each image fills its half of
+     the container via object-fit: cover so the pair reads as one balanced
+     tile rather than two stacked cards. */
+  /* Generic side-by-side image pair for experience-row hover reveals.
+     Each image renders at a shared fixed height; widths follow their
+     natural aspect ratios so neither gets cropped. Container width
+     follows the contents (no fixed width on the outer .fx-photo). */
+  .exp-pair,
+  .cursor__media .exp-pair {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: max-content;
+  }
+  .exp-pair img,
+  .cursor__media .exp-pair img {
+    display: block;
+    height: 312px;
+    width: auto;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  /* Snap-specific bump — Snap reveals run a touch larger than the rest
+     because Camera + Onboarding GIFs carry more screen detail. The
+     clip-path trims a 2px sliver off the top and bottom of each frame
+     (Snapchat exports leave a hairline of bleed there) while preserving
+     the 24px rounded corners. */
+  .exp-pair--snap img,
+  .cursor__media .exp-pair--snap img {
+    height: 361px;
+    border-radius: 24px;
+    clip-path: inset(2px 0 round 24px);
+  }
+
+  /* Cred-link reveal variant — the row links out AND morphs the cursor
+     into reveal artwork. Drop the data-cursor="external" arrow in favor
+     of the cursor-portal artwork; the click still navigates. */
+  .cred-link--reveal { cursor: default; }
+  .cred-reveal-art,
+  .cursor__media .cred-reveal-art {
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--bg-surface);
+  }
+  .cred-reveal-art img,
+  .cursor__media .cred-reveal-art img {
+    border-radius: inherit;
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 
   /* Phone-framed video reveal (Tinder hackathon row). Mirrors the
      PhoneVideoParallax composition on the homepage at a smaller scale:
@@ -1653,6 +1733,13 @@ const hobbies = [
     align-items: baseline;
     gap: var(--s-4);
     padding: var(--s-3) var(--s-2);
+    border-radius: var(--r-xs);
+    transition: background-color var(--dur-normal) var(--ease-out);
+  }
+  /* Same blue brand wash on every row hover (linked rows + the
+     unlinked Hackathon reveal row + experience rows). */
+  .cred-row:not(:has(.cred-link)):hover {
+    background-color: var(--brand-wash-soft);
   }
   .cred-link {
     display: grid;

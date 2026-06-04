@@ -22,6 +22,10 @@ interface Annotation {
   tilt?: number;
   /** Override the default annotation size scaling factor. */
   scale?: number;
+  /** Show the downward pointer stroke under the label (default on). */
+  tail?: boolean;
+  /** Max width of the label box; text wraps when set (e.g. "9rem", "55%"). */
+  maxWidth?: string;
 }
 
 interface Item {
@@ -40,6 +44,14 @@ interface Item {
   annotations?: Annotation[];
   /** Initial resting tilt of the polaroid in the stack. */
   tilt?: number;
+  /** Taller bottom matte for multi-line captions (language card, etc.). */
+  matteTall?: boolean;
+  /** Card width override (e.g. "360px"); deck grows to fit the widest card. */
+  width?: string;
+  /** Outer polaroid frame ratio (e.g. "320 / 500"); overrides default and matteTall. */
+  aspectRatio?: string;
+  /** Photo window ratio (default 1 / 1.35); use a wider ratio to show more width. */
+  photoAspect?: string;
 }
 
 interface Props {
@@ -61,27 +73,78 @@ const resolve = (p: string) =>
   p.startsWith("http") || p.startsWith(base)
     ? p
     : `${base}${p.startsWith("/") ? "" : "/"}${p}`;
+
+const px = (s: string) => {
+  const m = /^([\d.]+)px$/.exec(s.trim());
+  return m ? Number(m[1]) : null;
+};
+const defaultPx = px(width) ?? 320;
+const deckPx = Math.max(
+  defaultPx,
+  ...items.map((it) => (it.width ? px(it.width) : null) ?? defaultPx),
+);
+const deckWidth = `${deckPx}px`;
 ---
 
 <div
   class="polaroid-stack"
   data-polaroid-stack
-  style={`--ps-width:${width};`}
+  style={`--ps-width:${deckWidth};`}
 >
   <div class="polaroid-stack__deck" data-deck data-cursor="swipe-pill" aria-label={label}>
     {items.map((it) => (
       <div
         class="polaroid-stack__card"
         data-card
-        style={it.tilt != null ? `--rest-tilt:${it.tilt}deg;` : ""}
+        style={(() => {
+          const cardW = it.width ?? width;
+          const cardPx = px(cardW) ?? defaultPx;
+          const centerInDeck = deckPx > cardPx;
+          return [
+            it.tilt != null ? `--rest-tilt:${it.tilt}deg;` : "",
+            centerInDeck
+              ? `width:${cardW};left:calc((100% - ${cardW}) / 2);`
+              : "",
+          ]
+            .filter(Boolean)
+            .join("");
+        })()}
       >
-        <div class="polaroid-card">
-          <div class="polaroid-photo" style={it.position ? `--photo-pos:${it.position};` : ""}>
+        <div
+          class:list={[
+            "polaroid-card",
+            it.matteTall && !it.aspectRatio && "polaroid-card--tall-matte",
+            it.aspectRatio && "polaroid-card--custom-aspect",
+          ]}
+          style={it.aspectRatio ? `--card-aspect:${it.aspectRatio};` : ""}
+        >
+          <div
+            class:list={[
+              "polaroid-photo",
+              it.photoAspect && "polaroid-photo--custom-aspect",
+            ]}
+            style={[
+              it.position ? `--photo-pos:${it.position};` : "",
+              it.photoAspect ? `--photo-aspect:${it.photoAspect};` : "",
+            ]
+              .filter(Boolean)
+              .join("")}
+          >
             <img src={resolve(it.src)} alt={it.alt} loading="lazy" draggable="false" />
             {it.annotations && it.annotations.map((a) => (
               <span
-                class="polaroid-anno"
-                style={`top:${a.top};left:${a.left};--anno-tilt:${a.tilt ?? -6}deg;--anno-scale:${a.scale ?? 1};`}
+                class:list={[
+                  "polaroid-anno",
+                  a.tail === false && "polaroid-anno--no-tail",
+                  a.maxWidth && "polaroid-anno--wrap",
+                ]}
+                style={[
+                  `top:${a.top};left:${a.left};`,
+                  `--anno-tilt:${a.tilt ?? -6}deg;--anno-scale:${a.scale ?? 1};`,
+                  a.maxWidth && `--anno-max-width:${a.maxWidth};`,
+                ]
+                  .filter(Boolean)
+                  .join("")}
                 aria-hidden="true"
               >{a.label}</span>
             ))}
@@ -381,7 +444,7 @@ const resolve = (p: string) =>
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%; /* per-item width overrides via inline style */
     transform-origin: 50% 50%;
     will-change: transform, opacity, filter;
     cursor: grab;
@@ -404,9 +467,22 @@ const resolve = (p: string) =>
        caption is. The fixed aspect = photo (1/1) + matte (~46px) over a
        320px-wide card, which keeps the photo dominant and the matte
        just tall enough for one line of handwritten caption. */
-    aspect-ratio: 320 / 450;
+    aspect-ratio: 320 / 460;
     display: flex;
     flex-direction: column;
+  }
+  /* Extra matte height without shrinking the photo crop. */
+  .polaroid-card--tall-matte {
+    aspect-ratio: 320 / 520;
+  }
+  .polaroid-card--tall-matte .polaroid-matte {
+    padding: 6px 8px 10px;
+  }
+  .polaroid-card--custom-aspect {
+    aspect-ratio: var(--card-aspect);
+  }
+  .polaroid-card--custom-aspect .polaroid-matte {
+    padding: 6px 8px 10px;
   }
   .polaroid-stack__card.is-top .polaroid-card {
     box-shadow:
@@ -421,6 +497,9 @@ const resolve = (p: string) =>
     overflow: hidden;
     background: #f3eee7;
     border-radius: 2px;
+  }
+  .polaroid-photo--custom-aspect {
+    aspect-ratio: var(--photo-aspect);
   }
   .polaroid-photo img {
     width: 100%;
@@ -464,6 +543,15 @@ const resolve = (p: string) =>
     transform-origin: 50% 0%;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   }
+  .polaroid-anno--no-tail::after {
+    display: none;
+  }
+  .polaroid-anno--wrap {
+    max-width: var(--anno-max-width);
+    white-space: normal;
+    text-align: center;
+    line-height: 1.05;
+  }
 
   .polaroid-matte {
     flex: 1 1 auto;
@@ -478,8 +566,8 @@ const resolve = (p: string) =>
   .polaroid-matte__caption {
     margin: 0;
     font-family: var(--font-hand);
-    font-weight: 500;
-    font-size: 18px;
+    font-weight: 600;
+    font-size: 20px;
     line-height: 1.0;
     letter-spacing: -0.05em;
     color: #15171C;
@@ -489,7 +577,7 @@ const resolve = (p: string) =>
     flex-wrap: wrap;
     justify-content: left;
   }
-  .polaroid-matte__text { display: inline-block; }
+  .polaroid-matte__text { display: inline-block; white-space: pre-line;}
   .polaroid-matte__doodle {
     width: 44px;
     height: 22px;

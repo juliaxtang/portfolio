@@ -34,30 +34,42 @@ const polaroidItems = [
     src: `${base}/about/cat-mom.JPG`,
     alt: "Julia's two cats curled up on a bed",
     position: "50% 50%",
-    caption: "I'm a mom of two cats. This is the closest they've ever slept together.",
+    caption: `Mom of two cats.`,
     annotations: [
       { label: "Poe",   top: "22%", left: "73%", tilt: -7 },
-      { label: "Mocha", top: "45%", left: "52%", tilt: 4 },
+      { label: "Mocha", top: "55%", left: "52%", tilt: 4 },
     ],
   },
   {
     src: `${base}/about/scuba-diving.JPG`,
     alt: "Julia in scuba gear underwater",
     position: "50% 50%",
-    caption: "Newly certified, and ready to explore. Next up: reef conservation",
+    caption: "Newly certified diver!",
   },
   {
     src: `${base}/about/snowboarding.JPG`,
     alt: "Julia snowboarding down a mountain",
     position: "50% 40%",
-    caption: "If not oceans, then it's mountains",
+    caption: "Powder chaser in the winter",
     scribble: "mountain" as const,
   },
   {
     src: `${base}/about/languagelearning.png`,
     alt: "Julia's handwritten language-learning notebook",
-    position: "30% 50%",
-    caption: "I love languages. Can speak: English, Mandarin, French. Learning: Japanese, Korean, Spanish.",
+    position: "18% 8%",
+    aspectRatio: "320 / 300",
+    photoAspect: "4 / 4.8",
+    caption: `Currently: English, Mandarin, French, Japanese, Korean, Spanish`,
+    annotations: [
+      {
+        label: "I love languages",
+        top: "60%",
+        left: "4%",
+        tilt: -25,
+        tail: false,
+        maxWidth: "7.5rem",
+      },
+    ],
   },
 ];
 ---

@@ -53,7 +53,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 
     <div class="hero-reveal hero-reveal--tinder" aria-hidden="true">
       <div class="hero-reveal__item hero-reveal__item--tinder-phone">
-        <img src={`${base}/projects/hero/tinder-phone.gif`} alt="" />
+        <img src={`${base}/projects/hero/tinder-swiping.gif`} alt="" />
       </div>
       <div class="hero-reveal__item hero-reveal__item--tinder-festival">
         <img src={`${base}/projects/hero/festival-mode-hero.gif`} alt="" />
@@ -1196,7 +1196,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   /* Festival Mode GIF: parked in the same lower-left slot as the snap
      envelope, 20% smaller so it doesn't fight the envelope's footprint. */
   .hero-reveal__item--tinder-festival {
-    width: clamp(158px, 15.8vw, 245px);
+    width: clamp(180px, 18vw, 279px);
     left: 6%;
     bottom: 7%;
     right: auto;
@@ -1205,13 +1205,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     rotate: -4deg;
   }
   .hero-reveal__item--tinder-festival img {
-    border-radius: 16px;
+    border-radius: 8px;
     border: 1px solid rgba(20, 20, 40, 0.08);
     box-shadow: 0 24px 60px -32px rgba(20, 20, 40, 0.18);
-    /* Crop the status bar at the top of the GIF (28px) and shift the image
-       up by the cropped amount so its visual anchor doesn't move. */
-    clip-path: inset(28px 0 0 0 round 16px);
-    transform: translateY(-4px);
   }
   /* Smaller-desktop viewports (1024–1339px): the hero is shorter and
      the headline sits higher, so nudge the upper-slot reveals down

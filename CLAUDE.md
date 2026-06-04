@@ -169,6 +169,11 @@ Quick reference if you're not loading the skill:
   always `4321`, every other branch is hashed into `4400-4999`. Override
   any time with `PORT=<n> npm run dev`. Don't pin a port in
   `astro.config.mjs` or `package.json`; the resolver handles it.
+- **Reserved ports — do not use:** `4322` and `4323` belong to the
+  `interview-prep` app (`~/interview-prep`), which Julia runs alongside the
+  portfolio. 4322 = side-car, 4323 = Astro dashboard. The current resolver
+  range (`4321` + `4400-4999`) already avoids these; if you ever change the
+  resolver or override with `PORT=<n>`, skip `4322` and `4323`.
 - After a branch is merged into `origin/main`, ALWAYS clean up in the
   same turn: stop any dev server,
   `git worktree remove .claude/worktrees/<slug>`,

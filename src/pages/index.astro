@@ -986,6 +986,28 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     .v2-hero__rot { transition: none; transform: none; }
   }
 
+  /* Mobile: don't reserve the tallest-statement height. The active rot
+     goes into normal flow (sizing the headline to its own content);
+     the others stay absolutely positioned and invisible so they don't
+     stack and don't break the load-time measure() pass — display:none
+     would zero out their measured height and collapse the headline
+     on every rotation cycle. A small vertical jump on rotation is
+     acceptable; the alternative was a ~100px dead zone below shorter
+     statements. */
+  @media (max-width: 1023px) {
+    .v2-hero__headline,
+    .v2-hero__headline.is-measured {
+      height: auto !important;
+      display: block;
+    }
+    .v2-hero__headline.is-measured .v2-hero__rot.is-active {
+      position: static;
+    }
+    .v2-hero__headline.is-measured .v2-hero__rot:not(.is-active) {
+      visibility: hidden;
+    }
+  }
+
   .v2-hero__meta {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));

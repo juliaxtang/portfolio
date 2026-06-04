@@ -180,12 +180,23 @@ const { variant = "inline" } = Astro.props;
        --doodle-bottom in sync with the hero/footer; we mirror the same
        value so the two stay vertically aligned. */
     left: 50%;
-    bottom: var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px));
+    /* The doodle bar is ~54px tall (40px buttons + 6px padding each side);
+       the bubble is 40px. Offset by 7px so the two share a vertical
+       center instead of a shared bottom edge. Also follow the bar's
+       lift so they rise in sync when the bar grows on activation. */
+    bottom: calc(
+      var(--doodle-bottom, max(env(safe-area-inset-bottom), 24px))
+      + var(--doodle-bar-lift, 0px)
+      + 7px
+    );
     /* The doodle bar is ~52px wide (40px icon + 6px padding each side).
        Offset the bubble to the left of it with a small gap. */
     transform: translateX(calc(-50% - 90px));
     width: 40px;
     height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-radius: var(--r-full);
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
@@ -207,22 +218,21 @@ const { variant = "inline" } = Astro.props;
     outline: 2px solid var(--brand-primary-2);
     outline-offset: 2px;
   }
-  /* Show only the icon for the OPPOSITE mode (the one tapping the
-     bubble will switch to). In light mode the bubble shows a moon
-     (tap → go dark); in dark mode it shows a sun. */
+  /* Show the icon for the CURRENT mode — sun in light, moon in dark —
+     so the bubble reads as a status indicator the visitor can also tap. */
   .theme-toggle__bubble-icon {
     display: none;
   }
-  .theme-toggle__bubble-icon--moon {
+  .theme-toggle__bubble-icon--sun {
     display: block;
-    color: var(--icon-primary);
-  }
-  :global([data-theme="dark"]) .theme-toggle__bubble-icon--moon {
-    display: none;
+    color: #F4A93C;
   }
   :global([data-theme="dark"]) .theme-toggle__bubble-icon--sun {
+    display: none;
+  }
+  :global([data-theme="dark"]) .theme-toggle__bubble-icon--moon {
     display: block;
-    color: #F4C77A;
+    color: #C5B6E8;
   }
   /* The bubble lives at the bottom-center anchor; only render it on
      mobile (matches the breakpoint where the inline pill toggle is

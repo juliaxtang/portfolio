@@ -262,7 +262,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     // first case study on the page — same behavior the "See my work"
     // cursor pill is advertising. Inner <a> clicks pass through to
     // their own href so the existing scroll targets still work.
+    //
+    // The whole interaction is desktop-only: on touch/no-hover devices
+    // the column reveal images don't render and the column reads as
+    // plain prose, so a tap shouldn't surprise-scroll the page either.
     (() => {
+      const canHover = window.matchMedia("(hover: hover)").matches;
+      if (!canHover) return;
       const targets = [
         { sel: ".v2-hero__meta-col--snap", href: "#snapchat-games" },
         { sel: ".v2-hero__meta-col--tinder", href: "#tappy-cloud" },
@@ -1241,9 +1247,18 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   /* Below 1000px width the hero is tighter; keep the scroll cursor pill on
      Snap/Tinder hover but hide the decorative project imagery so the
-     field does not get too busy. */
-  @media (max-width: 999px) {
-    .hero-reveal { display: none; }
+     field does not get too busy. Also hide on any no-hover/coarse-pointer
+     device so a phone-sized tablet (≥1000px) doesn't get the always-on
+     reveal state that touch's sticky :hover would otherwise produce. */
+  @media (max-width: 999px), (hover: none), (pointer: coarse) {
+    .hero-reveal { display: none !important; }
+    /* The columns aren't tappable affordances on touch (the JS skips
+       binding the scroll handler under (hover: hover)) so drop the
+       pointer cursor too. */
+    .v2-hero__meta-col--snap,
+    .v2-hero__meta-col--tinder {
+      cursor: default;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-reveal,

@@ -79,9 +79,15 @@ const resolve = (p: string) =>
     object-fit: contain;
     display: block;
     opacity: 0.78;
-    transition: opacity 200ms var(--ease-out);
+    transition: opacity 200ms var(--ease-out), filter 200ms var(--ease-out);
   }
   .aso__item img:hover {
     opacity: 1;
+  }
+  /* Press logos ship as dark marks for the light canvas; mirror the
+     dark-mode invert that Showcase.astro applies so this component works
+     equivalently if/when it's used on a dark surface. */
+  :global([data-theme="dark"]) .aso__item img {
+    filter: invert(1) hue-rotate(180deg);
   }
 </style>

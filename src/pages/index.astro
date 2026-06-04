@@ -288,6 +288,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
       <div data-cursor-bg="light">
         <VideoCardStack
           items={[...snapchatGamesStackItems]}
+          hintTarget="#snapchat-games .showcase__text"
+          autoShuffle
+          autoShuffleMs={4000}
         />
       </div>
     </Showcase>

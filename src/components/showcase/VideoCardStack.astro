@@ -34,6 +34,18 @@ interface Props {
   maxWidth?: string;
   /** Aspect ratio of the deck container. */
   aspect?: string;
+  /** Optional CSS selector. After mount, the "Swipe to shuffle" hint is
+   *  moved to that container (inserted as its first child) and restyled
+   *  as a compact pill so it can live above the project text column
+   *  instead of next to the deck. */
+  hintTarget?: string;
+  /** When true, the deck advances on its own every `autoShuffleMs` ms.
+   *  User interaction (drag, tap, hint click, keyboard) resets the
+   *  timer so the next auto-advance is always at least `autoShuffleMs`
+   *  after the last manual one. */
+  autoShuffle?: boolean;
+  /** Auto-shuffle interval in ms. Defaults to 4000. */
+  autoShuffleMs?: number;
 }
 
 const {
@@ -42,6 +54,9 @@ const {
   itemWidth = "89%",
   maxWidth = "380px",
   aspect = "0.46 / 1",
+  hintTarget,
+  autoShuffle = false,
+  autoShuffleMs = 4000,
 } = Astro.props;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -54,6 +69,9 @@ const resolve = (p: string) =>
 <div
   class="card-stack"
   data-card-stack
+  data-hint-target={hintTarget}
+  data-auto-shuffle={autoShuffle ? "true" : undefined}
+  data-auto-shuffle-ms={autoShuffleMs}
   style={`--cs-max-w:${maxWidth};--cs-aspect:${aspect};--cs-item-aspect:${itemAspect};--cs-item-w:${itemWidth};`}
 >
   <div class="card-stack__deck" data-deck data-cursor="swipe-pill">
@@ -125,6 +143,26 @@ const resolve = (p: string) =>
       const order = Array.from(deck.querySelectorAll("[data-card]"));
       if (!order.length) return;
 
+      // Optional: portal the "Swipe to shuffle" hint into a different
+      // container (e.g. above the project text column) and restyle it
+      // as a compact pill via the --portal modifier. The button keeps
+      // its click handler bound below; the deck:hover and is-advanced
+      // visibility is mirrored to the button via classes here so the
+      // portal'd button still responds to deck state.
+      const hintTarget = root.dataset.hintTarget
+        ? document.querySelector(root.dataset.hintTarget)
+        : null;
+      if (hintTarget && nextBtn) {
+        hintTarget.insertBefore(nextBtn, hintTarget.firstChild);
+        nextBtn.classList.add("card-stack__next--portal");
+        deck.addEventListener("pointerenter", () => {
+          nextBtn.classList.add("is-deck-hover");
+        });
+        deck.addEventListener("pointerleave", () => {
+          nextBtn.classList.remove("is-deck-hover");
+        });
+      }
+
       // Resting positions for stack indices 0..N. Tweak if more than 4
       // cards are ever shown — the offsets compound visually.
       const POSE = [
@@ -151,7 +189,7 @@ const resolve = (p: string) =>
 
       let advancing = false;
 
-      function advance(direction) {
+      function advance(direction, opts) {
         if (advancing) return;
         advancing = true;
         const top = order[0];
@@ -160,7 +198,14 @@ const resolve = (p: string) =>
           return;
         }
         const dir = direction || (Math.random() < 0.5 ? -1 : 1);
-        root.classList.add("is-advanced"); // hide idle hint after first interaction
+        // Hide idle hint after the first MANUAL interaction (drag, tap,
+        // keyboard, hint button). Auto-shuffles don't suppress the hint
+        // since the user might not have noticed they could swipe yet.
+        const auto = !!(opts && opts.auto);
+        if (!auto) {
+          root.classList.add("is-advanced");
+          if (nextBtn) nextBtn.classList.add("is-advanced");
+        }
 
         if (reduced) {
           order.push(order.shift());
@@ -297,7 +342,10 @@ const resolve = (p: string) =>
       window.addEventListener("pointercancel", onPointerUp);
 
       if (nextBtn) {
-        nextBtn.addEventListener("click", () => advance(0));
+        nextBtn.addEventListener("click", () => {
+          advance(0);
+          resetAuto();
+        });
       }
 
       // Keyboard a11y on the deck.
@@ -308,13 +356,53 @@ const resolve = (p: string) =>
         if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
           e.preventDefault();
           advance(1);
+          resetAuto();
         } else if (e.key === "ArrowLeft") {
           e.preventDefault();
           advance(-1);
+          resetAuto();
         }
       });
 
+      // Auto-shuffle: the deck advances itself every N ms so the hero is
+      // never static. Pauses while the user is dragging, while the tab
+      // is hidden, when reduced-motion is requested, and resets after
+      // any manual interaction so the user gets the full N ms breathing
+      // room before the next auto-cycle.
+      const autoOn = root.dataset.autoShuffle === "true";
+      const autoMs = parseInt(root.dataset.autoShuffleMs || "4000", 10);
+      let autoTimer = 0;
+      function startAuto() {
+        if (!autoOn || reduced) return;
+        stopAuto();
+        autoTimer = window.setInterval(() => {
+          if (advancing || dragging) return;
+          if (document.hidden) return;
+          advance(0, { auto: true });
+        }, autoMs);
+      }
+      function stopAuto() {
+        if (autoTimer) {
+          clearInterval(autoTimer);
+          autoTimer = 0;
+        }
+      }
+      function resetAuto() {
+        if (!autoOn || reduced) return;
+        stopAuto();
+        startAuto();
+      }
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopAuto();
+        else startAuto();
+      });
+
+      // Resetting the timer on manual drag / pointer-tap so the next
+      // auto-shuffle is at least autoMs after the user's last action.
+      deck.addEventListener("pointerup", resetAuto);
+
       applyResting();
+      startAuto();
     }
   })();
 </script>
@@ -493,17 +581,87 @@ const resolve = (p: string) =>
 
   /* Hide the affordance while the user is hovering the deck (the
      cursor-morphed "Swipe" pill replaces it). The selector targets
-     [data-deck]:hover and its following sibling, the [data-next] button. */
-  [data-deck]:hover ~ .card-stack__next {
+     [data-deck]:hover and its following sibling, the [data-next] button.
+     The .is-deck-hover class on the button mirrors the same state for
+     buttons that have been portaled out of the .card-stack tree. */
+  [data-deck]:hover ~ .card-stack__next,
+  .card-stack__next.is-deck-hover {
     opacity: 0;
     pointer-events: none;
   }
 
   /* Permanent hide once the user has actually shuffled — the .is-advanced
-     flag is set on the card-stack root in advance(). */
-  .card-stack.is-advanced .card-stack__next {
+     flag is set on the card-stack root in advance(), AND mirrored to the
+     button itself so portal'd buttons (outside the card-stack subtree)
+     hide on the same condition. */
+  .card-stack.is-advanced .card-stack__next,
+  .card-stack__next.is-advanced {
     opacity: 0;
     pointer-events: none;
+  }
+
+  /* Portal variant: the hint is moved out of the deck and into the
+     showcase text column above the title. Compact horizontal pill, with
+     the cursive label leading and a small rotated arrow trailing so
+     the unit reads as "swipe to shuffle" pointing back at the deck.
+     Selector is doubled (.card-stack__next.card-stack__next--portal) so
+     it wins against the narrow-desktop fallback further down in this
+     stylesheet. */
+  .card-stack__next.card-stack__next--portal {
+    position: relative;
+    right: auto;
+    left: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--s-2);
+    margin: 0 0 var(--s-4);
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--text-tertiary, #6b6b72);
+    width: max-content;
+    max-width: 100%;
+  }
+  .card-stack__next.card-stack__next--portal:hover,
+  .card-stack__next.card-stack__next--portal:focus-visible {
+    color: var(--text-secondary, #2a2a2f);
+  }
+  .card-stack__next.card-stack__next--portal .card-stack__next-arrow {
+    display: block;
+    width: 56px;
+    /* Anchor the arrow next to the label without the original 24px
+       offset that was tuned for the side-of-deck layout. Rotated so the
+       arrowhead reads as pointing left toward the deck (which sits in
+       the hero column to the left of the text column on this section). */
+    transform: rotate(180deg) scaleY(-1);
+    margin: 0;
+  }
+  .card-stack__next.card-stack__next--portal .card-stack__next-label {
+    margin-top: 0;
+    font-family: var(--font-hand);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.06em;
+    text-transform: none;
+  }
+  .card-stack__next.card-stack__next--portal .card-stack__next-label::before {
+    content: none;
+  }
+  .card-stack__next.card-stack__next--portal .card-stack__next-label br {
+    display: none;
+  }
+  @media (max-width: 900px) {
+    .card-stack__next.card-stack__next--portal {
+      display: none;
+    }
   }
 
   /* Narrow desktop / tablet (901–1339px): the right-of-deck arrow has

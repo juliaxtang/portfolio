@@ -29,29 +29,44 @@ const data = showcaseContent["festival-mode"];
   <PhonePair
     phones={[
       {
-        src: "/projects/festival-mode/phone-1.png",
-        alt: "Festival Mode opt-in screen with Join now and No thanks buttons",
-        left: -0.06,
-        top: 0.06,
-        width: 0.80,
-        aspect: "1408 / 2356",
+        src: "/projects/festival-mode/phone-1-front.png",
+        alt: "Add festivals screen with EDC Las Vegas, Stagecoach, and Festivalgoers options",
+        left: -0.04,
+        top: 0.04,
+        width: 0.62,
+        aspect: "1541 / 3081",
         drift: 64,
         hoverLift: 10,
         z: 2,
+        /* Rest pose approximates the original baked-in angle: top tilts
+           slightly away, left side leans forward (positive ry), small
+           counter-clockwise in-plane tilt. Click flips all three to 0
+           for a true head-on view. */
+        restPose: { rx: -4, ry: 18, rz: -6 },
+        /* Nudge right when promoted so the enlarged phone overlaps the
+           back phone slightly instead of floating with a gap. */
+        activeShiftX: 48,
       },
       {
-        src: "/projects/festival-mode/phone-2.png",
-        alt: "Add festivals screen with EDC Las Vegas, Stagecoach, and Festivalgoers options",
-        left: 0.38,
+        src: "/projects/festival-mode/phone-2-front.png",
+        alt: "Festival Mode profile for Liz, 25, at EDC Las Vegas",
+        left: 0.46,
         top: -0.02,
-        width: 0.68,
-        aspect: "1288 / 2344",
+        width: 0.52,
+        aspect: "1541 / 3081",
         drift: -28,
         hoverLift: 6,
         z: 1,
+        /* Mirror tilt of phone 1 so the two phones lean toward each
+           other in the rest composition. */
+        restPose: { rx: -4, ry: -18, rz: 6 },
+        /* Shift left enough to miss the copy column but not so far that
+           the back phone disappears entirely. */
+        activeShiftX: -56,
       },
     ]}
     maxWidth="660px"
     aspect="1 / 1.4"
+    perspective="1800px"
   />
 </Showcase>

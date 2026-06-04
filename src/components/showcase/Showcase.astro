@@ -314,7 +314,11 @@ const meta = [role].filter(Boolean) as string[];
   }
   /* Non-reverse: text on left, hero/media on right — both inside cols 3-11. */
   .showcase__text { grid-column: 3 / span 4; }
-  .showcase__hero { grid-column: 7 / span 5; }
+  .showcase__hero {
+    grid-column: 7 / span 5;
+    position: relative;
+    z-index: 2;
+  }
   /* Reverse: hero on left, text on right — still pinned to cols 3-11. */
   .showcase--reverse .showcase__hero { grid-column: 3 / span 4; }
   .showcase--reverse .showcase__text { grid-column: 7 / span 5; }

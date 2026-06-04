@@ -1092,22 +1092,24 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     opacity: 0;
     transition: opacity 320ms var(--ease-out);
   }
-  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap,
-  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap,
-  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder,
-  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder {
-    opacity: 1;
+  @media (min-width: 1000px) {
+    .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap,
+    .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap,
+    .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder,
+    .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder {
+      opacity: 1;
+    }
+    .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap .hero-reveal__item,
+    .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap .hero-reveal__item,
+    .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
+    .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder .hero-reveal__item {
+      transform: translateY(0);
+    }
   }
   .hero-reveal__item {
     position: absolute;
     transform: translateY(8px);
     transition: transform 360ms var(--ease-out);
-  }
-  .v2-hero:has(.v2-hero__meta-col--snap:hover) .hero-reveal--snap .hero-reveal__item,
-  .v2-hero:has(.v2-hero__meta-col--snap :focus-visible) .hero-reveal--snap .hero-reveal__item,
-  .v2-hero:has(.v2-hero__meta-col--tinder:hover) .hero-reveal--tinder .hero-reveal__item,
-  .v2-hero:has(.v2-hero__meta-col--tinder :focus-visible) .hero-reveal--tinder .hero-reveal__item {
-    transform: translateY(0);
   }
   .hero-reveal__item img {
     width: 100%;
@@ -1220,9 +1222,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     .hero-reveal__item--snap-valentine { top: 16%; }
     .hero-reveal__item--tinder-superlike { top: 6%; }
   }
-  /* Under the desktop breakpoint the hero is single column and short.
-     Hide the reveal imagery to avoid overlapping the stacked text. */
-  @media (max-width: 1023px) {
+  /* Below 1000px width the hero is tighter; keep the scroll cursor pill on
+     Snap/Tinder hover but hide the decorative project imagery so the
+     field does not get too busy. */
+  @media (max-width: 999px) {
     .hero-reveal { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {

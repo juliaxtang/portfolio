@@ -205,9 +205,16 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduced) return;
+      // Smaller-viewport scale: cells overlap the video corners on
+      // ≤1340px, and the counter-phase drift between media and cells at
+      // scroll extremes (up to ~80px combined) breaks visual contact
+      // and leaves the cell floating above/below the video with a gap.
+      // Scale all ranges to 0 below the breakpoint so media + cells
+      // move together as one composition.
+      const PARALLAX_OFF_MQ = window.matchMedia("(max-width: 1340px)");
       document.querySelectorAll(".media-parallax").forEach((root) => {
-        const phoneRange = parseFloat(root.dataset.phoneRange || "60");
-        const badgeRange = parseFloat(root.dataset.badgeRange || "30");
+        const phoneRangeBase = parseFloat(root.dataset.phoneRange || "60");
+        const badgeRangeBase = parseFloat(root.dataset.badgeRange || "30");
         let raf = 0;
         const update = () => {
           raf = 0;
@@ -218,10 +225,11 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
           const traveled = vh - rect.top;
           const progress = Math.min(Math.max(traveled / total, 0), 1);
           const centered = progress - 0.5;
-          root.style.setProperty("--phone-y", (-centered * phoneRange).toFixed(1) + "px");
-          root.style.setProperty("--badge-y", (-centered * badgeRange).toFixed(1) + "px");
-          root.style.setProperty("--cell-l-y", (centered * 40).toFixed(1) + "px");
-          root.style.setProperty("--cell-r-y", (-centered * 55).toFixed(1) + "px");
+          const off = PARALLAX_OFF_MQ.matches ? 0 : 1;
+          root.style.setProperty("--phone-y", (-centered * phoneRangeBase * off).toFixed(1) + "px");
+          root.style.setProperty("--badge-y", (-centered * badgeRangeBase * off).toFixed(1) + "px");
+          root.style.setProperty("--cell-l-y", (centered * 40 * off).toFixed(1) + "px");
+          root.style.setProperty("--cell-r-y", (-centered * 55 * off).toFixed(1) + "px");
         };
         const onScroll = () => {
           if (!raf) raf = requestAnimationFrame(update);
@@ -414,84 +422,84 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
                 filter 520ms var(--ease-out) !important;
   }
 
-  /* Narrow desktop / tablet (721–1280px): the gutter between the text
+  /* Narrow desktop / tablet (721–1340px): the gutter between the text
      column and the media column drops to 10–77px at these viewports, far
-     too tight for the full desktop side bleed. Anchor each cell to the
-     media's nearer corner (scoreboard in the upper-left, live-activity
-     widget in the lower-right) with a small horizontal peek so they read
-     as stickers attached to the video instead of detached blocks floating
-     above or below. Headroom / footroom padding still reserved so the
-     surrounding eyebrow + copy don't get crowded. */
+     too tight for the full desktop side bleed. Switch to the same corner-
+     overlap pattern as the App Redesign reference: the scoreboard anchors
+     to the media's upper-left corner (mostly above and to the left, with
+     its bottom-right corner crossing into the video), and the live-
+     activity widget anchors to the media's lower-right corner (mostly
+     below and to the right, with its top-left corner crossing into the
+     video). No detached floating above or below the phone. Headroom +
+     footroom padding still reserved so the surrounding eyebrow + copy
+     don't get crowded. */
   @media (min-width: 721px) and (max-width: 1340px) {
     .media-parallax[data-floating-cell-group] {
-      padding-top: clamp(36px, 5vw, 64px);
-      padding-bottom: clamp(28px, 4vw, 48px);
+      /* Zero vertical padding — the cell's negative top/bottom must
+         land inside the phone (overlap), so any padding pushes the
+         cell out by exactly that amount and reintroduces the gap. */
+      padding-top: 0;
+      padding-bottom: 0;
     }
     .media-parallax__cell--left {
-      top: clamp(8px, 3%, 32px);
-      left: -4%;
-      width: var(--mp-cell-l-w, clamp(180px, 56%, 230px));
+      top: clamp(-48px, -6vw, -24px);
+      left: clamp(-40px, -10%, -16px);
+      bottom: auto;
+      margin-bottom: 0;
+      width: var(--mp-cell-l-w, clamp(190px, 56%, 240px));
       --rot: -4deg;
     }
     .media-parallax__cell--right {
       top: auto;
-      bottom: clamp(8px, 3%, 32px);
-      right: -4%;
-      width: var(--mp-cell-r-w, clamp(170px, 52%, 220px));
+      bottom: clamp(-48px, -6vw, -24px);
+      right: clamp(-40px, -10%, -16px);
+      margin-top: 0;
+      width: var(--mp-cell-r-w, clamp(180px, 54%, 230px));
       --rot: 5deg;
     }
   }
 
   @media (max-width: 720px) {
-    /* Reserve room above + below for the cells that anchor outside the
-       phone, so neither end of the media block crowds the surrounding
-       text. */
+    /* Mobile: same corner-overlap pattern. Zero vertical padding so the
+       cells' negative top/bottom land inside the phone instead of being
+       pushed off it. The Showcase row's own gap handles separation
+       from the surrounding eyebrow + copy. */
     .media-parallax[data-floating-cell-group] {
-      padding-top: clamp(72px, 14vw, 120px);
-      padding-bottom: clamp(48px, 10vw, 88px);
+      padding-top: 0;
+      padding-bottom: 0;
     }
-    /* Mobile: pull the floating cells fully clear of the phone so they
-       stop covering the main video. Left cell anchors fully above the
-       phone (its bottom edge sits at the phone's top with a tiny -10px
-       overlap so it still reads as attached); right cell anchors fully
-       below the phone with the same small overlap. Without top:100% /
-       bottom:100% anchors the cells were sitting at top:-14% / bottom:-6%,
-       which still left ~80% of each cell crashing onto the video. Both
-       stay tappable and animate into a focused, centered view on tap. */
     .media-parallax__cell--left {
-      top: auto;
-      bottom: 100%;
-      margin-bottom: -10px;
-      left: -2%;
-      width: var(--mp-cell-l-w, clamp(170px, 64%, 240px));
+      top: clamp(-32px, -6vw, -12px);
+      left: clamp(-32px, -8%, -12px);
+      bottom: auto;
+      margin-bottom: 0;
+      width: var(--mp-cell-l-w, clamp(170px, 58%, 230px));
       --rot: -4deg;
     }
     .media-parallax__cell--right {
-      top: 100%;
-      bottom: auto;
-      margin-top: -10px;
-      right: -8%;
-      width: var(--mp-cell-r-w, clamp(160px, 58%, 220px));
+      top: auto;
+      bottom: clamp(-32px, -6vw, -12px);
+      right: clamp(-32px, -8%, -12px);
+      margin-top: 0;
+      width: var(--mp-cell-r-w, clamp(170px, 58%, 220px));
       --rot: 5deg;
     }
   }
 
-  /* Super-small viewports: the media otherwise fills the column, so the
-     floating cards (which bleed outward as a % of the media width) spill
-     off both edges and get clipped. Shrink the media — only the cell-
-     bearing instances (Topic Chats) — so the cards bleed into the side
-     gutters and stay on screen. */
+  /* Super-small viewports: shrink the media so the corner-overlapped
+     cells stay on-screen, and pull the bleed inward proportionally. The
+     corner-overlap pattern is preserved. */
   @media (max-width: 520px) {
     .media-parallax[data-floating-cell-group] {
       max-width: min(var(--mp-max-w, 396px), 82%);
     }
     .media-parallax__cell--left {
-      left: -2%;
-      width: var(--mp-cell-l-w, clamp(170px, 68%, 240px));
+      left: -6%;
+      width: var(--mp-cell-l-w, clamp(160px, 60%, 220px));
     }
     .media-parallax__cell--right {
-      right: -10%;
-      width: var(--mp-cell-r-w, clamp(160px, 62%, 220px));
+      right: -6%;
+      width: var(--mp-cell-r-w, clamp(160px, 60%, 210px));
     }
   }
   @media (max-width: 380px) {
@@ -499,10 +507,12 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
       max-width: min(var(--mp-max-w, 396px), 80%);
     }
     .media-parallax__cell--left {
-      width: var(--mp-cell-l-w, clamp(160px, 64%, 220px));
+      left: -4%;
+      width: var(--mp-cell-l-w, clamp(150px, 58%, 200px));
     }
     .media-parallax__cell--right {
-      width: var(--mp-cell-r-w, clamp(150px, 58%, 200px));
+      right: -4%;
+      width: var(--mp-cell-r-w, clamp(150px, 56%, 200px));
     }
   }
 
@@ -559,53 +569,17 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
     opacity: 0;
     pointer-events: none;
   }
-  /* Narrow desktop / tablet (721–1100px): the side-of-video desktop
-     position sits at left: calc(8% + 350px) which would clip against the
-     body's overflow-x: clip below ~1100px. Swap the handwritten label +
-     SVG arrow for a compact pill sitting just above the media. The
-     vertical SVG arrow is hidden in this band via the Arrow component's
-     hideBelowWidth={1100} so the pill stands alone, content-sized. */
-  @media (max-width: 1100px) and (min-width: 721px) {
-    .media-parallax__drag-hint {
-      position: absolute;
-      left: 50%;
-      top: -32px;
-      bottom: auto;
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: calc(100% - var(--s-4));
-      flex-direction: row;
-      align-items: center;
-      gap: 0;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(20, 22, 28, 0.08);
-      border-radius: 999px;
-      padding: 7px 14px;
-      color: var(--text-secondary, #2a2a2f);
-      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
-      opacity: 1;
-    }
-    .media-parallax__drag-hint-label {
-      font-family: var(--font-mono, inherit);
-      font-size: 0;
-      line-height: 1;
-      white-space: nowrap;
-      letter-spacing: 0.04em;
-      text-align: left;
-    }
-    .media-parallax__drag-hint-label br {
-      display: none;
-    }
-    .media-parallax__drag-hint-label::before {
-      content: "↕ drag cards to move, click to expand";
-      font-size: 11px;
-    }
-  }
-  /* Touch / mobile (≤ 720px): no drag affordance at all — cells are
-     tap-to-focus and the pill / arrow would only add clutter. */
-  @media (max-width: 720px) {
+  /* Smaller viewports (≤1340px): hide the drag-to-move affordance
+     entirely. The handwritten label + curved SVG arrow positioned to the
+     right of the video only fits when the media has ~350px of side
+     gutter (above 1340px). Below that the previous fallback was a
+     compact pill anchored above the video, but the cells in this band
+     now overlap the phone corners (no detached floating above/below the
+     phone), so the pill ends up overlapping the scoreboard cell and
+     adds clutter without earning its keep. Cells are still tap-to-focus
+     on touch and drag-to-move on mouse; the cursor pill on hover still
+     surfaces the affordance for users who explore the cells directly. */
+  @media (max-width: 1340px) {
     .media-parallax__drag-hint { display: none !important; }
   }
 </style>

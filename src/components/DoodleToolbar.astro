@@ -116,6 +116,24 @@
     touch-action: none;
   }
 
+  /* On mobile, lock the entire page scroll while draw mode is armed so
+     the canvas owns every touch gesture. The canvas itself uses
+     touch-action: none above, but on mobile the canvas's bounding box
+     can be shorter than the viewport (or the user can land their finger
+     just outside it), and any touch that escapes the canvas would
+     otherwise scroll the page and yank the doodle surface out from
+     under the gesture. Restricted to ≤720px because on desktop the
+     drawer arms the cursor only over interactive regions and scrolling
+     stays useful. */
+  @media (max-width: 720px) {
+    :global(html[data-doodle-active]),
+    :global(html[data-doodle-active] body) {
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+    }
+  }
+
   /* Trash + its leading divider stay hidden until the first stroke lands,
      then fade in. Avoids surfacing a clear-all affordance with nothing to
      clear. Selectors stack two classes (.doodle__btn.doodle__btn--clear)

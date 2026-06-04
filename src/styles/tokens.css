@@ -3,11 +3,21 @@
    Single source of truth. Mirrors style-guide.html.
    Light mode by default. Dark mode is wired but not exposed yet.
    ========================================================== */
+
+@font-face {
+  font-family: "Julias Scratch";
+  src: url("/fonts/JuliasScratch-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Type families */
   --font-display: "Instrument Serif", "Times New Roman", serif;
   --font-sans:    "Geist", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
   --font-mono:    "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-hand:    "Julias Scratch", "Caveat", "Homemade Apple", "Bradley Hand", cursive;
 
   /* Brand — fixed across modes */
   --brand-primary:    #C5DCEA;   /* powder blue */

@@ -483,21 +483,31 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
      `top: <neg>`, so we keep padding small enough that prompt.bottom
      crosses phone.top instead of falling above it. */
   @media (max-width: 720px) {
+    /* Reserve enough vertical breathing room above and below the phone
+       for each cell to dip its corner ~25-40px onto the phone screen
+       while the rest of the cell stays inside the parent's padding band.
+       The old padding (36-88px) was barely larger than the badge so the
+       cell-prompt was visually disconnected from the phone (most of it
+       hung above the phone's top edge with no visible corner overlap),
+       and any pull-down kept the cell crashing into the eyebrow above.
+       Larger padding solves both: the phone shifts down, the cell tucks
+       onto its top-left corner cleanly, and the showcase still finishes
+       before the next section starts. */
     .phone-video {
-      padding-top: clamp(36px, 10vw, 88px);
-      padding-bottom: clamp(32px, 8vw, 72px);
+      padding-top: clamp(96px, 26vw, 150px);
+      padding-bottom: clamp(80px, 22vw, 130px);
       padding-right: clamp(16px, 5%, 44px);
     }
     .phone-video__cell--prompt {
-      top: clamp(-20px, -2vw, -4px);
-      left: clamp(-40px, -10%, -12px);
-      width: clamp(165px, 56%, 215px);
+      top: clamp(10px, 3vw, 28px);
+      left: clamp(-32px, -8%, -10px);
+      width: clamp(155px, 52%, 200px);
       --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      bottom: clamp(-24px, -2.5vw, -8px);
-      right: clamp(-40px, -10%, -12px);
-      width: clamp(170px, 58%, 220px);
+      bottom: clamp(10px, 3vw, 28px);
+      right: clamp(-32px, -8%, -10px);
+      width: clamp(160px, 54%, 205px);
       --rot: 6deg;
     }
   }

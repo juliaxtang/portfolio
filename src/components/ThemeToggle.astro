@@ -189,9 +189,14 @@ const { variant = "inline" } = Astro.props;
       + var(--doodle-bar-lift, 0px)
       + 7px
     );
-    /* The doodle bar is ~52px wide (40px icon + 6px padding each side).
-       Offset the bubble to the left of it with a small gap. */
-    transform: translateX(calc(-50% - 90px));
+    /* The doodle bar starts ~108px wide (pen + divider + color blob +
+       6px padding each side) and grows by ~30px when the first stroke
+       lands and the trash icon fades in. Offset the bubble to the left
+       of the bar with a small gap; --bubble-offset bumps from 90px to
+       115px while [data-has-strokes] is set on the toolbar so the
+       bubble doesn't get crowded by the wider bar. */
+    --bubble-offset: 90px;
+    transform: translateX(calc(-50% - var(--bubble-offset)));
     width: 40px;
     height: 40px;
     display: inline-flex;
@@ -212,7 +217,21 @@ const { variant = "inline" } = Astro.props;
       transform var(--dur-fast) var(--ease);
   }
   .theme-toggle--bubble:active {
-    transform: translateX(calc(-50% - 90px)) scale(0.94);
+    transform: translateX(calc(-50% - var(--bubble-offset))) scale(0.94);
+  }
+  /* Shift the bubble left when the doodle bar widens to fit the trash
+     button (first stroke landed). Uses :has() on body so the rule
+     reaches across DOM trees without needing JS to mirror the state
+     onto <html>. The transform property is re-declared (not just the
+     --bubble-offset variable) because Chrome doesn't always recompute
+     a calc()-with-var() transform when only the variable changes;
+     restating transform forces the cascade to re-resolve. */
+  :global(body:has(.doodle[data-has-strokes])) .theme-toggle--bubble {
+    --bubble-offset: 115px;
+    transform: translateX(calc(-50% - 115px));
+  }
+  :global(body:has(.doodle[data-has-strokes])) .theme-toggle--bubble:active {
+    transform: translateX(calc(-50% - 115px)) scale(0.94);
   }
   .theme-toggle--bubble:focus-visible {
     outline: 2px solid var(--brand-primary-2);

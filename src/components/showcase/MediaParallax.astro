@@ -443,35 +443,40 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
   }
 
   @media (max-width: 720px) {
-    /* Reserve room above + below for the cells that anchor outside the
-       phone, so neither end of the media block crowds the surrounding
-       text. */
+    /* Reserve enough room above and below the phone for each cell to sit
+       almost entirely in the padding band with only a 30-40px corner
+       tucking onto the video. Earlier passes oscillated between two bad
+       extremes: bottom:-6% kept the scoreboard mostly INSIDE the video
+       (covering Join the Chat / bracketbusters), then top:100% pushed it
+       fully BELOW the parent and crashed into the project title that
+       follows in normal flow. The cells are ~160-180px tall on mobile,
+       so the padding needs to be at least cell-height - corner-overlap
+       (~130-150px) to absorb them; anything tighter forces a choice
+       between covering the video and overflowing into surrounding copy. */
     .media-parallax[data-floating-cell-group] {
-      padding-top: clamp(72px, 14vw, 120px);
-      padding-bottom: clamp(48px, 10vw, 88px);
+      padding-top: clamp(130px, 36vw, 190px);
+      padding-bottom: clamp(120px, 32vw, 180px);
     }
-    /* Mobile: pull the floating cells fully clear of the phone so they
-       stop covering the main video. Left cell anchors fully above the
-       phone (its bottom edge sits at the phone's top with a tiny -10px
-       overlap so it still reads as attached); right cell anchors fully
-       below the phone with the same small overlap. Without top:100% /
-       bottom:100% anchors the cells were sitting at top:-14% / bottom:-6%,
-       which still left ~80% of each cell crashing onto the video. Both
-       stay tappable and animate into a focused, centered view on tap. */
+    /* Anchor each cell to the corner of its containing block (the parent
+       padding box). Cell-left's top edge sits at the parent's top edge,
+       so the cell hangs into the padding-top band; its bottom edge dips
+       ~30-50px below the video's top edge for a sticker-attached look.
+       Cell-right mirrors that on the bottom-right corner. Both stay
+       tappable and animate into a focused, centered view on tap. */
     .media-parallax__cell--left {
-      top: auto;
-      bottom: 100%;
-      margin-bottom: -10px;
+      top: clamp(60px, 18vw, 110px);
+      bottom: auto;
+      margin: 0;
       left: -2%;
-      width: var(--mp-cell-l-w, clamp(170px, 64%, 240px));
+      width: var(--mp-cell-l-w, clamp(160px, 56%, 220px));
       --rot: -4deg;
     }
     .media-parallax__cell--right {
-      top: 100%;
-      bottom: auto;
-      margin-top: -10px;
-      right: -8%;
-      width: var(--mp-cell-r-w, clamp(160px, 58%, 220px));
+      top: auto;
+      bottom: clamp(60px, 18vw, 110px);
+      margin: 0;
+      right: -6%;
+      width: var(--mp-cell-r-w, clamp(150px, 52%, 210px));
       --rot: 5deg;
     }
   }

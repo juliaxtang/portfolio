@@ -9,6 +9,8 @@
  * (hero-2.webp + Webby Honoree badge) so the three Tinder/TV-Time hero blocks
  * share one visual language without per-case-study one-off implementations.
  */
+import Arrow from "../Arrow.astro";
+
 interface Props {
   /** Source path. .mp4/.webm/.mov render as <video>; everything else as <img>. */
   src: string;
@@ -72,14 +74,17 @@ const resolve = (p: string) =>
 const isVideo =
   as === "video" ||
   (as !== "image" && /\.(mp4|webm|mov)(\?|$)/i.test(src));
+
+const id = "mp-" + Math.random().toString(36).slice(2, 9);
 ---
 
 <div
   class="media-parallax"
+  id={id}
   data-phone-range={phoneRange}
   data-badge-range={badgeRange}
   data-floating-cell-group={cellLeftSrc || cellRightSrc ? "" : undefined}
-  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};--mp-arrow-src:url('${base}/projects/tinder-app-redesign/drag-to-move.png');${badgeWidth ? `--mp-badge-w:${badgeWidth};` : ""}${cellLeftWidth ? `--mp-cell-l-w:${cellLeftWidth};` : ""}${cellRightWidth ? `--mp-cell-r-w:${cellRightWidth};` : ""}`}
+  style={`--mp-max-w:${maxWidth};--mp-aspect:${aspect};--mp-radius:${radius};${badgeWidth ? `--mp-badge-w:${badgeWidth};` : ""}${cellLeftWidth ? `--mp-cell-l-w:${cellLeftWidth};` : ""}${cellRightWidth ? `--mp-cell-r-w:${cellRightWidth};` : ""}`}
 >
   <div class={"media-parallax__media" + (isVideo ? " media-parallax__media--clip" : " media-parallax__media--free")}>
     {isVideo ? (
@@ -140,10 +145,26 @@ const isVideo =
     />
   )}
   {(cellLeftSrc || cellRightSrc) && (
-    <span class="media-parallax__drag-hint" aria-hidden="true">
-      <span class="media-parallax__drag-hint-label">drag to move<br />or click to expand</span>
-      <span class="media-parallax__drag-hint-arrow"></span>
-    </span>
+    <>
+      <span class="media-parallax__drag-hint" aria-hidden="true">
+        <span class="media-parallax__drag-hint-label">drag to move<br />or click to expand</span>
+      </span>
+      <Arrow
+        id={`${id}-drag-arrow`}
+        from={`#${id} .media-parallax__drag-hint`}
+        to={`#${id} .media-parallax__cell--left`}
+        fromAnchor="bottom-center"
+        toAnchor="top-center"
+        path="vertical-down"
+        padding={10}
+        thickness={2.5}
+        color="var(--text-tertiary, #6b6b72)"
+        persistent
+        watchRoot={`#${id}`}
+        hideWhen="cell-hover,cell-active,root-class:is-interacted"
+        hideBelowWidth={0}
+      />
+    </>
   )}
 </div>
 
@@ -445,8 +466,8 @@ const isVideo =
      cells above. */
   .media-parallax__drag-hint {
     position: absolute;
-    left: calc(8% + 176px);
-    bottom: -64px;
+    left: calc(8% + 350px);
+    bottom: 320px;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -464,27 +485,8 @@ const isVideo =
     color: var(--text-secondary, #5A5D66);
     white-space: nowrap;
   }
-  .media-parallax__drag-hint-arrow {
-    display: block;
-    width: 90px;
-    height: 87px;
-    /* Same mask + 8-direction stacked drop-shadow dilation as the games
-       swipe arrow so the stroke weight matches. */
-    background-color: currentColor;
-    -webkit-mask: var(--mp-arrow-src) center / contain no-repeat;
-    mask: var(--mp-arrow-src) center / contain no-repeat;
-    filter:
-      drop-shadow(2.4px 0 0 currentColor)
-      drop-shadow(-2.4px 0 0 currentColor)
-      drop-shadow(0 2.4px 0 currentColor)
-      drop-shadow(0 -2.4px 0 currentColor)
-      drop-shadow(1.7px 1.7px 0 currentColor)
-      drop-shadow(-1.7px 1.7px 0 currentColor)
-      drop-shadow(1.7px -1.7px 0 currentColor)
-      drop-shadow(-1.7px -1.7px 0 currentColor);
-    /* Y- then X-flip (= 180°), then nudged 12px up. */
-    transform: translateY(-24px) rotate(180deg);
-    transform-origin: 50% 50%;
+  .media-parallax__drag-path-from {
+    display: none;
   }
   /* Hide while hovering any floating cell — cursor pill takes over. */
   .media-parallax:has(.media-parallax__cell:hover) .media-parallax__drag-hint,
@@ -497,47 +499,35 @@ const isVideo =
     opacity: 0;
     pointer-events: none;
   }
-  /* Narrow desktop / tablet / mobile (≤ 1339px): fold into a centered
-     horizontal pill below the video (same pattern as the App Redesign
-     hint). */
-  @media (max-width: 1339px) {
-    .media-parallax__drag-hint {
-      left: 50%;
-      bottom: -28px;
-      transform: translateX(-50%);
-      flex-direction: row;
-      align-items: center;
-      gap: 0;
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(20, 22, 28, 0.08);
-      border-radius: 999px;
-      padding: 7px 14px;
-      color: var(--text-secondary, #2a2a2f);
-      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
-    }
-    .media-parallax__drag-hint-arrow { display: none; }
-    .media-parallax__drag-hint-label {
-      font-family: var(--font-mono, inherit);
-      font-size: 0;
-      line-height: 1;
-      white-space: nowrap;
-      letter-spacing: 0.04em;
-    }
-    .media-parallax__drag-hint-label::before {
-      content: "↕ drag cards to move, click to expand";
-      font-size: 11px;
-    }
-  }
-
-  /* Stacked layout (≤900px): the text column sits directly under the media,
-     so the hint's usual spot just below the graphic collides with the
-     eyebrow/title. Float it above the cards instead. */
+  /* Stacked / narrow (≤ 900px): handwriting + vertical arrow (red markup);
+     hint centered above the media, arrow runs down to the scoreboard. */
   @media (max-width: 900px) {
     .media-parallax__drag-hint {
-      top: -34px;
+      left: 50%;
+      top: 14%;
       bottom: auto;
+      transform: translateX(-50%);
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      color: var(--text-secondary, #5A5D66);
+    }
+    .media-parallax__drag-hint-label {
+      font-family: var(--font-hand);
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+    .media-parallax__drag-hint-label::before {
+      content: none;
     }
   }
 </style>

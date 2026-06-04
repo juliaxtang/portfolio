@@ -16,6 +16,8 @@
  *  - Click anywhere on the deck advances by one (no-drag tap).
  *  - prefers-reduced-motion: replaces the throw with a fast cross-fade.
  */
+import Arrow from "../Arrow.astro";
+
 interface Item {
   src: string;
   alt?: string;
@@ -101,13 +103,24 @@ const resolve = (p: string) =>
     data-next
     aria-label="Show next game"
   >
-    <span
-      class="card-stack__next-arrow"
-      aria-hidden="true"
-      style={`--cs-arrow-src:url('${resolve("/projects/tinder-app-redesign/drag-to-move.png")}');`}
-    ></span>
     <span class="card-stack__next-label">Swipe<br />to shuffle</span>
   </button>
+  <Arrow
+    id="games-swipe-arrow"
+    from=".card-stack__next-label"
+    fromAnchor="left-center"
+    path="horizontal-left"
+    length={200}
+    boundTo="[data-deck]"
+    boundGap={32}
+    padding={12}
+    thickness={1.5}
+    color="var(--text-tertiary, #6b6b72)"
+    persistent
+    watchRoot="[data-card-stack]"
+    hideWhen="deck-hover,root-class:is-advanced"
+    hideBelowWidth={hintTarget ? 1000 : 1339}
+  />
 </div>
 
 <script is:inline>
@@ -160,6 +173,15 @@ const resolve = (p: string) =>
         });
         deck.addEventListener("pointerleave", () => {
           nextBtn.classList.remove("is-deck-hover");
+        });
+        /* Hint moved off the deck; re-measure the persistent swipe arrow. */
+        requestAnimationFrame(() => {
+          window.dispatchEvent(new Event("resize"));
+          const swipeArrow = document.getElementById("games-swipe-arrow");
+          if (swipeArrow) {
+            swipeArrow.removeAttribute("data-arrow-ready");
+            document.dispatchEvent(new Event("hand-arrow:refresh"));
+          }
         });
       }
 
@@ -546,45 +568,21 @@ const resolve = (p: string) =>
     outline-offset: 6px;
     border-radius: 6px;
   }
+  /* Legacy masked PNG arrow — replaced by <Arrow path="horizontal-left" />. */
   .card-stack__next-arrow {
-    width: 90px;
-    aspect-ratio: 648 / 446;
-    display: block;
-    /* Mask the PNG and fill with currentColor so the arrow matches the
-       label's text color exactly (no opacity tint, no contrast hack). */
-    background-color: currentColor;
-    -webkit-mask: var(--cs-arrow-src) center / contain no-repeat;
-    mask: var(--cs-arrow-src) center / contain no-repeat;
-    /* Thicken the strokes with stacked 0-blur drop-shadows of
-       currentColor — each shadow extends the silhouette 1.5px outward
-       in one direction; chaining four directions effectively dilates
-       the line into a much heavier weight. */
-    filter:
-      drop-shadow(2.4px 0 0 currentColor)
-      drop-shadow(-2.4px 0 0 currentColor)
-      drop-shadow(0 2.4px 0 currentColor)
-      drop-shadow(0 -2.4px 0 currentColor)
-      drop-shadow(1.7px 1.7px 0 currentColor)
-      drop-shadow(-1.7px 1.7px 0 currentColor)
-      drop-shadow(1.7px -1.7px 0 currentColor)
-      drop-shadow(-1.7px -1.7px 0 currentColor);
-    user-select: none;
-    /* Rotated 90° CW + flipped along X axis (net of prior Y-flip plus
-       new X-flip then Y-flip simplifies to a vertical mirror). */
-    transform: translate(24px, -24px) rotate(90deg) scaleY(-1);
-    transform-origin: 50% 50%;
+    display: none !important;
   }
+
   .card-stack__next-label {
     text-align: center;
     white-space: normal;
-    /* Pull the label up so the arrow's visual bottom end sits just above
-       the label's vertical center (overlap by ~half the line-height). */
     margin-top: -28px;
     font-family: var(--font-hand);
     font-weight: 400;
-    font-size: 26px;
-    line-height: 1;
-    letter-spacing: -0.09em;
+    font-size: 24px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--text-secondary, #5A5D66);
     text-transform: none;
   }
 
@@ -622,7 +620,7 @@ const resolve = (p: string) =>
     left: auto;
     top: auto;
     bottom: auto;
-    transform: none;
+    transform: translateY(-50px);
     flex-direction: row;
     align-items: center;
     gap: var(--s-2);
@@ -642,24 +640,9 @@ const resolve = (p: string) =>
   .card-stack__next.card-stack__next--portal:focus-visible {
     color: var(--text-secondary, #2a2a2f);
   }
-  .card-stack__next.card-stack__next--portal .card-stack__next-arrow {
-    display: block;
-    width: 56px;
-    /* Anchor the arrow next to the label without the original 24px
-       offset that was tuned for the side-of-deck layout. Rotated so the
-       arrowhead reads as pointing left toward the deck (which sits in
-       the hero column to the left of the text column on this section). */
-    transform: rotate(180deg) scaleY(-1);
-    margin: 0;
-  }
   .card-stack__next.card-stack__next--portal .card-stack__next-label {
     margin-top: 0;
-    font-family: var(--font-hand);
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 1;
-    letter-spacing: -0.06em;
-    text-transform: none;
+    text-align: left;
   }
   .card-stack__next.card-stack__next--portal .card-stack__next-label::before {
     content: none;
@@ -694,7 +677,6 @@ const resolve = (p: string) =>
       color: var(--text-secondary, #2a2a2f);
       box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
     }
-    .card-stack__next-arrow { display: none; }
     .card-stack__next-label {
       font-size: 0;
       line-height: 1;

@@ -551,6 +551,21 @@ const polaroidItems = [
   @media (max-width: 720px) {
     .about { padding-top: var(--s-10); }
   }
+  /* Narrow desktop (1024–1340px): the SideRail wordmark + Work/About/Resume
+     nav are still visible (the rail dissolves into the sticky header at
+     ≤1023px), and the default .about max-width: 940px combined with the
+     `margin: 0 auto` from .page-narrow leaves only ~10px between the rail
+     and the leftmost content (title, polaroid, body copy) at these
+     viewports. Cap the container to .page-narrow's natural 760px and push
+     it right with a viewport-scaled margin so the content visibly clears
+     the rail. */
+  @media (min-width: 1024px) and (max-width: 1340px) {
+    .about {
+      max-width: 760px;
+      margin-left: clamp(220px, 22vw, 300px);
+      margin-right: auto;
+    }
+  }
   .about-eyebrow { margin-bottom: var(--s-3); color: var(--text-tertiary); }
 
   /* Body stack — paragraphs flush-left at the same edge as the title.

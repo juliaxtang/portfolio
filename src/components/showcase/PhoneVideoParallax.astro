@@ -148,7 +148,7 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       persistent
       watchRoot={`#${id}`}
       hideWhen="cell-hover,cell-active,root-class:is-interacted"
-      hideBelowWidth={900}
+      hideBelowWidth={1440}
     />
   )}
 </div>
@@ -567,15 +567,22 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     opacity: 0;
     pointer-events: none;
   }
-  /* Stacked / narrow (≤ 900px): fold into a compact horizontal pill
-     below the phone — same pattern as the games swipe affordance. */
-  @media (max-width: 900px) {
+  /* Narrow desktop / tablet (721–1440px): the desktop side-text variant
+     sits at right: -232px outside the phone container and would clip
+     against the body's overflow-x: clip. Fall back to a compact pill
+     positioned just below the phone. Hide the invisible arrow sizing box
+     so the pill sizes to its label content instead of the 80px arrow
+     footprint, and hide the curved SVG arrow at the same breakpoint via
+     the Arrow component's hideBelowWidth={1440}. */
+  @media (max-width: 1440px) and (min-width: 721px) {
     .phone-video__drag-hint {
       left: 50%;
       top: auto;
-      bottom: -2px;
+      bottom: -36px;
       right: auto;
       transform: translateX(-50%);
+      width: max-content;
+      max-width: calc(100% - var(--s-4));
       flex-direction: row;
       align-items: center;
       gap: 0;
@@ -599,18 +606,26 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       content: "↕ drag cards to move, click to expand";
       font-size: 11px;
     }
+    /* Pill mode hides the invisible 80px sizing box that the arrow uses
+       in desktop mode — without this the pill stretches to label + 80px
+       rather than fitting its content. */
+    .phone-video__drag-hint-arrow {
+      display: none;
+    }
   }
 
-  /* Stacked layout (≤900px): the text column sits directly under the phone,
-     so the hint's usual spot just below the graphic collides with it. Float
-     it above the cards instead. */
-  @media (max-width: 900px) {
+  /* Stacked layout (≤900px, still above the mobile cutoff): the showcase
+     column collapses so the phone sits stacked above the text. Pill moves
+     above the phone so it doesn't collide with the copy that now flows
+     directly underneath. */
+  @media (max-width: 900px) and (min-width: 721px) {
     .phone-video__drag-hint {
-      top: -34px;
+      top: -36px;
       bottom: auto;
     }
   }
-  /* Touch / mobile: no drag, no hint. The cells are tap-to-focus. */
+  /* Touch / mobile (≤ 720px): no drag affordance at all — cells are tap
+     to focus and the pill / arrow would only add clutter. */
   @media (max-width: 720px) {
     .phone-video__drag-hint { display: none !important; }
   }

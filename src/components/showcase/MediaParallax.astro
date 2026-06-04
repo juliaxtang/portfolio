@@ -162,7 +162,7 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
         persistent
         watchRoot={`#${id}`}
         hideWhen="cell-hover,cell-active,root-class:is-interacted"
-        hideBelowWidth={720}
+        hideBelowWidth={1100}
       />
     </>
   )}
@@ -537,38 +537,52 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
     opacity: 0;
     pointer-events: none;
   }
-  /* Stacked / narrow (≤ 900px): handwriting + vertical arrow (red markup);
-     hint centered above the media, arrow runs down to the scoreboard. */
-  @media (max-width: 900px) {
+  /* Narrow desktop / tablet (721–1100px): the side-of-video desktop
+     position sits at left: calc(8% + 350px) which would clip against the
+     body's overflow-x: clip below ~1100px. Swap the handwritten label +
+     SVG arrow for a compact pill sitting just above the media. The
+     vertical SVG arrow is hidden in this band via the Arrow component's
+     hideBelowWidth={1100} so the pill stands alone, content-sized. */
+  @media (max-width: 1100px) and (min-width: 721px) {
     .media-parallax__drag-hint {
+      position: absolute;
       left: 50%;
-      top: 14%;
+      top: -32px;
       bottom: auto;
       transform: translateX(-50%);
-      flex-direction: column;
+      width: max-content;
+      max-width: calc(100% - var(--s-4));
+      flex-direction: row;
       align-items: center;
       gap: 0;
-      background: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      border: 0;
-      border-radius: 0;
-      padding: 0;
-      box-shadow: none;
-      color: var(--text-secondary, #5A5D66);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(20, 22, 28, 0.08);
+      border-radius: 999px;
+      padding: 7px 14px;
+      color: var(--text-secondary, #2a2a2f);
+      box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
+      opacity: 1;
     }
     .media-parallax__drag-hint-label {
-      font-family: var(--font-hand);
-      font-size: 24px;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      text-align: center;
+      font-family: var(--font-mono, inherit);
+      font-size: 0;
+      line-height: 1;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+      text-align: left;
+    }
+    .media-parallax__drag-hint-label br {
+      display: none;
     }
     .media-parallax__drag-hint-label::before {
-      content: none;
+      content: "↕ drag cards to move, click to expand";
+      font-size: 11px;
     }
   }
-  /* Touch / mobile: no drag, no hint. The cells are tap-to-focus. */
+  /* Touch / mobile (≤ 720px): no drag affordance at all — cells are
+     tap-to-focus and the pill / arrow would only add clutter. */
   @media (max-width: 720px) {
     .media-parallax__drag-hint { display: none !important; }
   }

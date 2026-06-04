@@ -31,15 +31,36 @@ const data = showcaseContent["tappy-cloud"];
   reverse={reverse}
   id={id}
 >
-  <ProfileColumns
-    left="/projects/tappy-cloud/profiles-left.png"
-    right="/projects/tappy-cloud/profiles-right.png"
-    altLeft="Tinder profiles styled by Tappy Cloud"
-    altRight="More Tinder profiles styled by Tappy Cloud"
-    maxWidth="480px"
-    minHeight="1100"
-    cards={4}
-    showCards={3}
-    offsetRight="80px"
-  />
+  <div class="tappy-cloud__profiles-wrap">
+    <ProfileColumns
+      left="/projects/tappy-cloud/profiles-left.png"
+      right="/projects/tappy-cloud/profiles-right.png"
+      altLeft="Tinder profiles styled by Tappy Cloud"
+      altRight="More Tinder profiles styled by Tappy Cloud"
+      maxWidth="480px"
+      minHeight="1100"
+      cards={4}
+      showCards={3}
+      offsetRight="80px"
+    />
+  </div>
 </Showcase>
+
+<style>
+  /* On reverse layout the ProfileColumns sit in cols 3-6 (left side of the
+     Showcase). At 1024-1340px viewports the SideRail wordmark + Work/About/
+     Resume nav are still visible (the rail dissolves into the sticky header
+     at ≤1023px), and the default ProfileColumns max-width (480px) fills the
+     ~440px-wide grid cell entirely, so the leftmost profile card ends up
+     sitting only ~10-15px from where the SideRail nav lives. Cap the
+     ProfileColumns to a smaller width and push it right within the cell so
+     it visibly clears the rail without spilling into the project text column
+     across the gutter on the right. */
+  @media (min-width: 1024px) and (max-width: 1340px) {
+    .tappy-cloud__profiles-wrap :global(.profile-cols) {
+      max-width: clamp(240px, 22vw, 300px);
+      margin-left: clamp(80px, 9vw, 130px);
+      margin-right: auto;
+    }
+  }
+</style>

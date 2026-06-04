@@ -8,10 +8,29 @@
  * On hover, each phone also drifts subtly in the same independent
  * fashion (small lift / tilt counter-shift on one vs the other).
  *
- * The phone PNGs are expected to come pre-rotated (rotation baked into
- * the image) — this component handles position and scroll-driven Y
- * drift only.
+ * Each phone PNG should be supplied flat / head-on (no perspective baked
+ * into the pixels). Apparent angle at rest comes from CSS 3D transforms
+ * via the per-phone `restPose: { rx, ry, rz }` prop, so the click-to-
+ * activate interaction can rotate the phone smoothly from its angled
+ * rest pose to head-on instead of just counter-rotating a tilt in 2D.
+ *
+ * Legacy `bakedRotation` (a single in-plane Z-axis tilt baked into the
+ * PNG) is still honored as a shorthand for `restPose.rz`, so the older
+ * angled assets continue to work — but new assets should go flat-on and
+ * use restPose for the full angle so the click reads as a real 3D flip
+ * rather than a flat 2D straighten.
  */
+interface RestPose {
+  /** Rotation around the X axis (pitch) in degrees. Negative = top tilts
+   *  away from the viewer. */
+  rx?: number;
+  /** Rotation around the Y axis (yaw) in degrees. Positive = right side
+   *  rotates away from the viewer (left side leans forward). */
+  ry?: number;
+  /** Rotation around the Z axis (in-plane tilt) in degrees. Positive =
+   *  clockwise. */
+  rz?: number;
+}
 interface Phone {
   src: string;
   alt?: string;
@@ -31,6 +50,16 @@ interface Phone {
   hoverLift?: number;
   /** Stacking order; higher = on top. */
   z?: number;
+  /** Resting 3D pose. Phone interpolates from this pose to {0,0,0}
+   *  (head-on) when clicked. Omit any axis to keep it at 0. */
+  restPose?: RestPose;
+  /** Legacy: in-plane rotation baked into the PNG, in degrees. Treated
+   *  as `restPose.rz` when set. New callers should use restPose. */
+  bakedRotation?: number;
+  /** Horizontal nudge in px when this phone is the active (clicked)
+   *  one. Negative moves left, positive right. Use to keep a scaled-up
+   *  phone from covering adjacent showcase copy. */
+  activeShiftX?: number;
 }
 interface Props {
   phones: Phone[];
@@ -38,13 +67,47 @@ interface Props {
   maxWidth?: string;
   /** Container aspect ratio (CSS aspect-ratio string). */
   aspect?: string;
+  /** CSS perspective for the 3D rotation. Larger = flatter / further
+   *  viewer; smaller = more dramatic foreshortening. */
+  perspective?: string;
+  /** How much the LARGEST phone grows when clicked into the active
+   *  state. Smaller phones grow by MORE than this so every phone ends
+   *  up at the same visible width when active, so the size promote
+   *  reads identically regardless of which phone you tap. Default 1.2. */
+  activeScale?: number;
+  /** Max degrees of cursor-driven 3D tilt while a phone is active
+   *  (same idea as floating-cell focus). Keep small so it reads as a
+   *  hint of depth, not a carnival ride. Default 4. */
+  activeTiltMax?: number;
 }
 
 const {
   phones,
   maxWidth = "440px",
   aspect = "1 / 1",
+  perspective = "1800px",
+  activeScale = 1.2,
+  activeTiltMax = 4,
 } = Astro.props;
+
+function poseFor(p: Phone): { rx: number; ry: number; rz: number } {
+  const rp = p.restPose ?? {};
+  return {
+    rx: rp.rx ?? 0,
+    ry: rp.ry ?? 0,
+    // Fall back to the legacy bakedRotation when restPose.rz is missing
+    // so older callers keep their tilt.
+    rz: rp.rz ?? p.bakedRotation ?? 0,
+  };
+}
+
+// Each phone's active scale targets the SAME visible width — namely
+// the largest base width times the global `activeScale`. Phones with
+// smaller base widths therefore grow by a larger factor so the active
+// state lands at a consistent size regardless of which phone was tapped.
+const maxBaseWidth = Math.max(...phones.map((p) => p.width));
+const activeScaleFor = (p: Phone) =>
+  (maxBaseWidth * activeScale) / p.width;
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const resolve = (p: string) =>
@@ -55,10 +118,14 @@ const resolve = (p: string) =>
 
 <div
   class="phone-pair"
-  style={`--pp-max-w:${maxWidth};--pp-aspect:${aspect};`}
+  style={`--pp-max-w:${maxWidth};--pp-aspect:${aspect};--pp-perspective:${perspective};--pp-tilt-max:${activeTiltMax};`}
 >
-  {phones.map((p, i) => (
-    <div
+  {phones.map((p, i) => {
+    const pose = poseFor(p);
+    const activeS = activeScaleFor(p);
+    return (
+    <button
+      type="button"
       class="phone-pair__phone"
       style={`
         --x:${(p.left * 100).toFixed(2)}%;
@@ -67,9 +134,17 @@ const resolve = (p: string) =>
         --aspect:${p.aspect};
         --drift:${p.drift ?? 30}px;
         --hover-lift:${p.hoverLift ?? 6}px;
-        z-index:${p.z ?? i + 1};
+        --rx-rest:${pose.rx}deg;
+        --ry-rest:${pose.ry}deg;
+        --rz-rest:${pose.rz}deg;
+        --active-scale:${activeS.toFixed(4)};
+        --active-shift-x:${p.activeShiftX ?? 0}px;
+        --z-rest:${p.z ?? i + 1};
       `}
       data-drift={p.drift ?? 30}
+      data-phone-index={i}
+      aria-label={p.alt ? `Bring ${p.alt} to the front` : "Bring this phone to the front"}
+      aria-pressed="false"
     >
       <img
         src={resolve(p.src)}
@@ -77,8 +152,9 @@ const resolve = (p: string) =>
         draggable="false"
         loading="lazy"
       />
-    </div>
-  ))}
+    </button>
+    );
+  })}
 </div>
 
 <script is:inline>
@@ -91,9 +167,131 @@ const resolve = (p: string) =>
     }
     function init() {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
       document.querySelectorAll(".phone-pair").forEach((root) => {
         const phones = Array.from(root.querySelectorAll(".phone-pair__phone"));
+        const tiltMax =
+          parseFloat(
+            getComputedStyle(root).getPropertyValue("--pp-tilt-max")
+          ) || 4;
+
+        let activePhone = null;
+        let tiltRaf = 0;
+        let tiltTargetX = 0;
+        let tiltTargetY = 0;
+        let tiltCurX = 0;
+        let tiltCurY = 0;
+        const TILT_EASE = 0.14;
+
+        function resetTiltFollow() {
+          document.removeEventListener("mousemove", onTiltMove);
+          phones.forEach((p) => {
+            p.classList.remove("is-tilting");
+            p.style.removeProperty("--tilt-x");
+            p.style.removeProperty("--tilt-y");
+          });
+          tiltTargetX = 0;
+          tiltTargetY = 0;
+          tiltCurX = 0;
+          tiltCurY = 0;
+          if (tiltRaf) {
+            cancelAnimationFrame(tiltRaf);
+            tiltRaf = 0;
+          }
+        }
+
+        function onTiltMove(e) {
+          if (!activePhone) return;
+          activePhone.classList.add("is-tilting");
+          const r = activePhone.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const cy = r.top + r.height / 2;
+          const halfW = Math.max(r.width / 2, window.innerWidth / 2);
+          const halfH = Math.max(r.height / 2, window.innerHeight / 2);
+          const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / halfW));
+          const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / halfH));
+          tiltTargetY = nx * tiltMax;
+          tiltTargetX = -ny * tiltMax;
+          if (!tiltRaf) tiltRaf = requestAnimationFrame(tiltStep);
+        }
+
+        function tiltStep() {
+          tiltRaf = 0;
+          if (!activePhone) return;
+          tiltCurX += (tiltTargetX - tiltCurX) * TILT_EASE;
+          tiltCurY += (tiltTargetY - tiltCurY) * TILT_EASE;
+          activePhone.style.setProperty("--tilt-x", tiltCurX.toFixed(2) + "deg");
+          activePhone.style.setProperty("--tilt-y", tiltCurY.toFixed(2) + "deg");
+          if (
+            Math.abs(tiltTargetX - tiltCurX) > 0.05 ||
+            Math.abs(tiltTargetY - tiltCurY) > 0.05
+          ) {
+            tiltRaf = requestAnimationFrame(tiltStep);
+          }
+        }
+
+        // Click to front + straighten: clicking a phone promotes it to
+        // the top of the stack and counter-rotates the baked-in tilt so
+        // it reads as head-on. The other phone gets `is-other` and
+        // recedes slightly. Clicking the active phone — or anywhere
+        // outside the phones — clears state and returns to rest.
+        function clearStates() {
+          resetTiltFollow();
+          activePhone = null;
+          phones.forEach((p) => {
+            p.classList.remove("is-active", "is-other", "is-tilting");
+            p.setAttribute("aria-pressed", "false");
+          });
+        }
+
+        function activatePhone(phone) {
+          resetTiltFollow();
+          phones.forEach((p) => {
+            if (p === phone) {
+              p.classList.add("is-active");
+              p.classList.remove("is-other");
+              p.setAttribute("aria-pressed", "true");
+            } else {
+              p.classList.remove("is-active");
+              p.classList.add("is-other");
+              p.setAttribute("aria-pressed", "false");
+            }
+          });
+          activePhone = phone;
+          document.addEventListener("mousemove", onTiltMove);
+        }
+
+        phones.forEach((phone) => {
+          phone.addEventListener("click", (e) => {
+            // Stop the document-level "click-anywhere-clears" handler
+            // (added below) from immediately undoing this click.
+            e.stopPropagation();
+            const isActive = phone.classList.contains("is-active");
+            if (isActive) {
+              clearStates();
+              return;
+            }
+            activatePhone(phone);
+          });
+          // Keyboard parity: Esc clears the active state.
+          phone.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+              clearStates();
+              phone.blur();
+            }
+          });
+        });
+
+        // Click anywhere outside any phone in this pair clears the
+        // active/other state, so the user can dismiss the lifted phone
+        // without having to click the phone again. Phone clicks
+        // stopPropagation above so this doesn't fire for them.
+        document.addEventListener("click", () => {
+          if (root.querySelector(".phone-pair__phone.is-active")) {
+            clearStates();
+          }
+        });
+
+        if (reduced) return;
         let raf = 0;
         const update = () => {
           raf = 0;
@@ -130,6 +328,12 @@ const resolve = (p: string) =>
     aspect-ratio: var(--pp-aspect, 1 / 1);
     margin: 0 auto;
     isolation: isolate;
+    /* Shared perspective so both phones project from the same vanishing
+       point — they read as objects in the same scene, not two posters
+       each pinned to their own viewer. */
+    perspective: var(--pp-perspective, 1800px);
+    perspective-origin: 50% 40%;
+    transform-style: preserve-3d;
   }
 
   .phone-pair__phone {
@@ -138,18 +342,54 @@ const resolve = (p: string) =>
     top: var(--y);
     width: var(--w);
     aspect-ratio: var(--aspect, 9 / 19.5);
+    /* Resting stacking order is driven by the inline --z-rest var so
+       the .is-active / .is-other class rules below can override it via
+       a plain `z-index:` declaration (an inline `z-index:N` style would
+       win over those classes thanks to specificity). */
+    z-index: var(--z-rest, 1);
     --scroll-y: 0px;
     --hover-y: 0px;
     --hover-scale: 1;
+    --active-x: 0px;
+    --tilt-x: 0deg;
+    --tilt-y: 0deg;
+    /* Live rotation values default to the configured rest pose. The
+       .is-active rule below overrides these to 0deg on all three axes
+       so the phone smoothly rotates from angled rest to head-on via
+       the parent's `transition: transform`. */
+    --rx: var(--rx-rest, 0deg);
+    --ry: var(--ry-rest, 0deg);
+    --rz: var(--rz-rest, 0deg);
+    /* Native button reset so the phones still read as a clean
+       transparent layer rather than a system <button>. */
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transform-style: preserve-3d;
     will-change: transform, filter;
-    transform: translate3d(0, calc(var(--scroll-y) + var(--hover-y)), 0)
-               scale(var(--hover-scale));
-    transition: transform 520ms var(--ease-out),
+    transform: translate3d(var(--active-x), calc(var(--scroll-y) + var(--hover-y)), 0)
+               scale(var(--hover-scale))
+               rotateX(calc(var(--rx) + var(--tilt-x)))
+               rotateY(calc(var(--ry) + var(--tilt-y)))
+               rotateZ(var(--rz));
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1),
                 filter 320ms var(--ease-out);
+  }
+  .phone-pair__phone:focus-visible {
+    outline: 2px solid var(--brand-primary-2, #A9C7DC);
+    outline-offset: 6px;
+    border-radius: 12px;
   }
   /* Each phone responds to its OWN hover independently — the other
      phone stays put. Slight lift + small scale; transform-origin: center
-     so the scale-up doesn't drift the phone off its position. */
+     so the scale-up doesn't drift the phone off its position. Hover
+     state is suppressed when the active phone is showing so the other
+     phone stays clearly receded. */
   .phone-pair__phone:hover {
     --hover-y: calc(-1 * var(--hover-lift));
     --hover-scale: 1.05;
@@ -158,6 +398,44 @@ const resolve = (p: string) =>
   .phone-pair__phone:hover img {
     filter: drop-shadow(0 30px 48px rgba(40, 30, 80, 0.30));
   }
+
+  /* Click-to-front: the clicked phone promotes to the top of the stack
+     and rotates to head-on (all three rotation axes go to 0). The OTHER
+     phone gets `is-other` and recedes slightly so the active phone
+     clearly leads the composition. Clicking the active phone or
+     pressing Escape clears both states and the phones return to their
+     configured rest pose. */
+  .phone-pair__phone.is-active {
+    z-index: 99;
+    --hover-y: calc(-1 * var(--hover-lift));
+    --active-x: var(--active-shift-x, 0px);
+    /* Per-phone active scale (computed in the component template) so
+       every phone lands at the SAME visible width when promoted —
+       smaller-base phones grow by a larger factor than the largest one
+       so the active size reads the same regardless of which was tapped.
+       Falls back to 1.2 when --active-scale isn't injected. */
+    --hover-scale: var(--active-scale, 1.2);
+    --rx: 0deg;
+    --ry: 0deg;
+    --rz: 0deg;
+  }
+  .phone-pair__phone.is-active.is-tilting {
+    transition: transform 80ms linear,
+                filter 320ms var(--ease-out);
+  }
+  .phone-pair__phone.is-active img {
+    filter: drop-shadow(0 36px 56px rgba(40, 30, 80, 0.32));
+  }
+  .phone-pair__phone.is-other {
+    z-index: 0;
+    --hover-scale: 0.88;
+  }
+  .phone-pair__phone.is-other:hover {
+    /* Don't let hover override the recede when another phone is active. */
+    --hover-y: 0px;
+    --hover-scale: 0.9;
+  }
+
   .phone-pair__phone img {
     width: 100%;
     height: 100%;
@@ -169,6 +447,12 @@ const resolve = (p: string) =>
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .phone-pair__phone { transition: none !important; transform: none !important; }
+    .phone-pair__phone {
+      transition: filter 320ms var(--ease-out);
+    }
+    .phone-pair__phone.is-active,
+    .phone-pair__phone.is-other {
+      transition: none;
+    }
   }
 </style>

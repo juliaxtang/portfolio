@@ -355,6 +355,22 @@
       return el && el.closest && el.closest("[data-cursor='scroll-pill']");
     }
 
+    // Per-column accent for the "See my work" scroll pill on the home
+    // hero. Hovering the Snap column dyes the pill Snap yellow; the
+    // Tinder column dyes it Tinder pink. Anywhere else (e.g. the AI
+    // column) returns null and the pill stays in its default dark style.
+    function getScrollPillAccent(el) {
+      if (!el || !el.closest) return null;
+      if (el.closest(".v2-hero__meta-col--snap")) return "snap";
+      if (el.closest(".v2-hero__meta-col--tinder")) return "tinder";
+      return null;
+    }
+    function applyScrollPillAccent(el) {
+      const accent = getScrollPillAccent(el);
+      cursor.classList.toggle("is-scroll-pill--snap", accent === "snap");
+      cursor.classList.toggle("is-scroll-pill--tinder", accent === "tinder");
+    }
+
     function isCopyEmail(el) {
       return el && el.closest && el.closest("[data-cursor='copy-email']");
     }
@@ -449,7 +465,10 @@
         showMedia(reveal);
       }
       if (isPressPill(e.target)) cursor.classList.add("is-press-pill");
-      if (isScrollPill(e.target)) cursor.classList.add("is-scroll-pill");
+      if (isScrollPill(e.target)) {
+        cursor.classList.add("is-scroll-pill");
+        applyScrollPillAccent(e.target);
+      }
       if (isCopyEmail(e.target)) cursor.classList.add("is-copy-pill");
       if (isExternal(e.target)) cursor.classList.add("is-external-arrow");
       if (isSwipePill(e.target)) cursor.classList.add("is-swipe-pill");
@@ -488,7 +507,16 @@
         showMedia(stillIn);
       }
       if (!isPressPill(e.relatedTarget)) cursor.classList.remove("is-press-pill");
-      if (!isScrollPill(e.relatedTarget)) cursor.classList.remove("is-scroll-pill");
+      if (!isScrollPill(e.relatedTarget)) {
+        cursor.classList.remove("is-scroll-pill");
+        cursor.classList.remove("is-scroll-pill--snap");
+        cursor.classList.remove("is-scroll-pill--tinder");
+      } else {
+        // Still inside the meta band but the column may have changed
+        // (e.g. moved Snap → Tinder). Reapply the per-column accent so
+        // the pill recolors on the fly.
+        applyScrollPillAccent(e.relatedTarget);
+      }
       if (!isCopyEmail(e.relatedTarget)) {
         cursor.classList.remove("is-copy-pill");
         cursor.classList.remove("is-copy-done");
@@ -907,6 +935,22 @@
   .cursor.on-dark.is-scroll-pill .cursor__scroll-pill {
     background: #FDFCFA;
     color: #15171C;
+  }
+
+  /* Per-column brand accents on the homepage hero. Hovering the Snap
+     column dyes the pill in Snapchat yellow with dark ink for legibility;
+     the Tinder column dyes it Tinder pink with cream ink. Both variants
+     override the default dark pill AND the on-dark contrast flip so the
+     brand color is preserved against any background. */
+  .cursor.is-scroll-pill--snap .cursor__scroll-pill,
+  .cursor.on-dark.is-scroll-pill--snap .cursor__scroll-pill {
+    background: #FFFC00;
+    color: #15171C;
+  }
+  .cursor.is-scroll-pill--tinder .cursor__scroll-pill,
+  .cursor.on-dark.is-scroll-pill--tinder .cursor__scroll-pill {
+    background: #FD297C;
+    color: #FDFCFA;
   }
 
   /* "Drag or click" pill for interactive floating cells. Same expand-from-

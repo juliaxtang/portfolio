@@ -123,7 +123,35 @@
       }
 
       // ---- Per-cell setup -------------------------------------------
-      document.querySelectorAll("[data-floating-cell]").forEach(setupCell);
+      // Track cells we've already wired up so re-renders / observer
+      // events don't double-bind handlers on the same node.
+      const wiredCells = new WeakSet();
+      function wireCell(cell) {
+        if (wiredCells.has(cell)) return;
+        wiredCells.add(cell);
+        captureRest(cell);
+        setupCell(cell);
+      }
+      document.querySelectorAll("[data-floating-cell]").forEach(wireCell);
+
+      // Watch for cells added later (e.g. ProfileColumns generates its
+      // card overlays in JS after the strip image loads). A subtree
+      // MutationObserver picks up additions anywhere in the page so
+      // this stays generic for any future component that does the same.
+      const cellObserver = new MutationObserver(function (mutations) {
+        for (const m of mutations) {
+          for (const node of m.addedNodes) {
+            if (node.nodeType !== 1) continue;
+            if (node.matches && node.matches("[data-floating-cell]")) {
+              wireCell(node);
+            }
+            if (node.querySelectorAll) {
+              node.querySelectorAll("[data-floating-cell]").forEach(wireCell);
+            }
+          }
+        }
+      });
+      cellObserver.observe(document.body, { childList: true, subtree: true });
 
       function setupCell(cell) {
         let pointerId = null;

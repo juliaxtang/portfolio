@@ -151,6 +151,12 @@ const showLede =
   @media (min-width: 1024px) {
     .social-icons--inline { display: none; }
   }
+  /* Below 440px the mobile Header row (wordmark + nav + icons) runs out of
+     room and the icons get pushed off the right edge. Drop them here — the
+     same copy-email + LinkedIn icons live in the footer on every page. */
+  @media (max-width: 440px) {
+    .social-icons--inline { display: none; }
+  }
 
   /* Footer variant: replaces the old Email / LinkedIn text links. Always
      visible regardless of viewport, sized down a touch to read at the

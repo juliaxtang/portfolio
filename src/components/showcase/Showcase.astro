@@ -516,16 +516,23 @@ const meta = [role].filter(Boolean) as string[];
     text-wrap: pretty;
   }
   @media (max-width: 520px) {
+    /* Keep the metrics as N columns side by side on small viewports
+       (don't collapse to a stack) — just tighten the gap, drop the desktop
+       width cap so the columns use the full text width, and scale the
+       values down so each fits its narrower column. */
     .showcase__stats-grid {
-      grid-template-columns: 1fr;
-      gap: var(--s-3);
+      gap: var(--s-2);
+      max-width: 100%;
       padding-bottom: var(--s-5);
       margin-bottom: var(--s-5);
     }
-    /* Stacked labels don't need to reserve two lines per cell — that was
-       to align varying-length labels in the same horizontal row. */
-    .showcase__stat-label { min-height: 0; }
     .showcase__stat-cell { gap: 4px; }
+    .showcase__stat-value { font-size: clamp(15px, 4.6vw, 22px); }
+  }
+  /* Smallest phones: tighten further so 3 columns + their labels still fit. */
+  @media (max-width: 360px) {
+    .showcase__stats-grid { gap: var(--s-1); }
+    .showcase__stat-value { font-size: clamp(14px, 4.4vw, 18px); }
   }
   .showcase__stats-sep {
     color: var(--text-tertiary);

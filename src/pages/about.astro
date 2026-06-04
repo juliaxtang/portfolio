@@ -567,9 +567,11 @@ const hobbies = [
     .portrait-wrap__inner { transform: none; }
   }
   /* Opening portrait: render the image at its natural aspect so the
-     full body is in frame, not just the face. */
+     full body is in frame, not just the face. Cap to the container so it
+     never bleeds past the viewport edges on narrow phones (the fixed
+     352px outran the mobile width rule and overflowed below ~375px). */
   .about-row:first-child .portrait-wrap {
-    width: 352px;
+    width: min(352px, 100%);
   }
   .about-row:first-child .portrait img {
     aspect-ratio: auto;
@@ -1558,11 +1560,44 @@ const hobbies = [
 
   @media (max-width: 760px) {
     .exp-row {
-      grid-template-columns: 1fr;
+      /* minmax(0, …) instead of 1fr so a wide inline reveal image can't
+         expand the track past the viewport and clip the role copy. */
+      grid-template-columns: minmax(0, 1fr);
       gap: var(--s-2);
       padding: var(--s-5) var(--s-2);
     }
     .exp-dates { justify-self: start; }
+  }
+
+  /* Touch/coarse pointers surface the desktop hover-reveal artwork inline
+     (via the shared .fx-photo promotion). Its intrinsic max-content width
+     would otherwise stretch the row and clip the adjacent copy — contain
+     it to the column and let the imagery scale to fit. Scoped to coarse
+     pointers so the desktop cursor-portal reveal is untouched. */
+  @media (hover: none), (pointer: coarse) {
+    .exp-reveal-art,
+    .cred-reveal-art {
+      max-width: min(420px, 100%);
+      margin-top: var(--s-3);
+    }
+    .exp-reveal-art > img,
+    .cred-reveal-art > img {
+      width: 100%;
+      height: auto;
+    }
+    .exp-pair {
+      width: 100%;
+      max-width: 100%;
+      gap: var(--s-2);
+    }
+    .exp-pair img,
+    .exp-pair--snap img {
+      height: auto;
+      width: auto;
+      max-width: 100%;
+      flex: 1 1 0;
+      min-width: 0;
+    }
   }
 
   /* Cursor-portal reveal art (cloned via .cursor__media). Force a uniform

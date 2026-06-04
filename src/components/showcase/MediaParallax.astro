@@ -383,6 +383,21 @@ const isVideo =
                 filter 520ms var(--ease-out) !important;
   }
 
+  /* Narrow-desktop + tablet band: the full desktop bleed (-47% / -42% of
+     the media) pushes the floating cards past the viewport edges here (the
+     two-column media sits close to the right edge, and the stacked tablet
+     layout centers a wider media), clipping the scoreboard / live-activity
+     cards. Pull them in to a moderate bleed so the cards stay fully on
+     screen; the dramatic wide-desktop bleed is preserved above 1180px. */
+  @media (min-width: 721px) and (max-width: 1180px) {
+    .media-parallax__cell--left {
+      left: clamp(-150px, -30%, -100px);
+    }
+    .media-parallax__cell--right {
+      right: clamp(-120px, -26%, -84px);
+    }
+  }
+
   @media (max-width: 720px) {
     .media-parallax__cell--left {
       left: clamp(-110px, -22%, -60px);
@@ -391,6 +406,22 @@ const isVideo =
     .media-parallax__cell--right {
       right: clamp(-90px, -18%, -50px);
       width: var(--mp-cell-r-w, clamp(150px, 46%, 200px));
+    }
+  }
+
+  /* Super-small viewports: the media otherwise fills the column, so the
+     floating cards (which bleed outward as a % of the media width) spill
+     off both edges and get clipped. Shrink the media — only the cell-
+     bearing instances (Topic Chats) — so the cards bleed into the side
+     gutters and stay on screen. */
+  @media (max-width: 520px) {
+    .media-parallax[data-floating-cell-group] {
+      max-width: min(var(--mp-max-w, 396px), 78%);
+    }
+  }
+  @media (max-width: 380px) {
+    .media-parallax[data-floating-cell-group] {
+      max-width: min(var(--mp-max-w, 396px), 74%);
     }
   }
 
@@ -495,8 +526,18 @@ const isVideo =
       letter-spacing: 0.04em;
     }
     .media-parallax__drag-hint-label::before {
-      content: "↕ drag the cards to move them";
+      content: "↕ drag cards to move, click to expand";
       font-size: 11px;
+    }
+  }
+
+  /* Stacked layout (≤900px): the text column sits directly under the media,
+     so the hint's usual spot just below the graphic collides with the
+     eyebrow/title. Float it above the cards instead. */
+  @media (max-width: 900px) {
+    .media-parallax__drag-hint {
+      top: -34px;
+      bottom: auto;
     }
   }
 </style>

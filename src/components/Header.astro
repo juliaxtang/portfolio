@@ -109,7 +109,10 @@ function isActive(href: string) {
      the toggle is still reachable from the desktop SideRail and from
      the mobile menu surfaces on larger phone widths. */
   @media (max-width: 540px) {
-    .brand-row .theme-toggle { display: none; }
+    /* :global — the toggle is a child component, so its `.theme-toggle`
+       class doesn't carry this file's scope hash. Without :global the
+       hide silently never matched and the toggle kept crowding the row. */
+    .brand-row :global(.theme-toggle) { display: none; }
   }
 
   /* Brand: subtle highlight fill on hover (matches the lede pop pattern). */
@@ -118,6 +121,7 @@ function isActive(href: string) {
     font-family: var(--font-display);
     font-size: 22px;
     letter-spacing: -0.01em;
+    white-space: nowrap;
     color: var(--text-primary);
     padding: 2px 6px;
     margin: -2px -6px;
@@ -206,5 +210,16 @@ function isActive(href: string) {
     .site-header { padding: var(--s-4) var(--s-5); }
     .nav-links { gap: var(--s-4); }
     .brand { font-size: 18px; }
+    /* Shrink the nav labels in step with the tightening row so Work /
+       About / Resume never get pushed off-canvas on the smallest phones.
+       clamp() max matches the desktop 14px, so larger widths are untouched. */
+    .nav-links a { font-size: clamp(11px, 3.2vw, 14px); }
+  }
+  /* Smallest phones: tighten the row so the wordmark + nav never collide
+     or push content off-canvas. (The contact icons drop out below 440px
+     via SocialIcons — they stay reachable in the footer.) */
+  @media (max-width: 400px) {
+    .site-header { padding: var(--s-4) var(--s-4); gap: var(--s-4); }
+    .nav-links { gap: var(--s-3); }
   }
 </style>

@@ -333,10 +333,19 @@ const resolve = (p: string) =>
     touch-action: pan-y; /* let vertical page scroll through; we own horizontal */
   }
   @media (max-width: 900px) {
+    /* Single-column: center the deck as its own block, and shrink it so the
+       tall phone deck doesn't fill the whole viewport — the Social Games
+       title + body need to be visible in the same screen as the visual. */
     .card-stack {
       margin-inline: auto;
-      max-width: min(var(--cs-max-w, 440px), 84%);
+      max-width: min(var(--cs-max-w, 440px), 72%);
     }
+  }
+  @media (max-width: 600px) {
+    .card-stack { max-width: min(264px, 70%); }
+  }
+  @media (max-width: 400px) {
+    .card-stack { max-width: min(234px, 68%); }
   }
   @media (max-width: 1100px) and (min-width: 901px) {
     .card-stack { max-width: min(var(--cs-max-w, 440px), 92%); margin-inline: auto; }

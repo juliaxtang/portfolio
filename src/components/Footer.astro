@@ -139,9 +139,53 @@ const EMAIL = "juliaxtang@gmail.com";
   }
   .footer-nav-pages a:hover,
   .footer-nav-contact a:hover { color: var(--text-primary); }
-  @media (max-width: 600px) {
-    .footer-inner { flex-wrap: wrap; gap: var(--s-3); }
-    .footer-nav-pages { flex: none; justify-content: flex-start; }
-    .footer-right { flex-wrap: wrap; }
+  @media (max-width: 768px) {
+    /* Two columns: brand stacked over the page nav on the left, the contact
+       block (Let's chat! + email) on the right. The grid row-gap matches the
+       contact column's internal gap (--s-1) so "Made with..." → nav sits the
+       same distance apart as "Let's chat!" → email. Pulling the nav into
+       normal flow also stops the absolute-centered nav overlapping. */
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      row-gap: var(--s-1);
+      column-gap: var(--s-4);
+      padding-bottom: var(--s-8);
+    }
+    .footer-brand__name { grid-column: 1; grid-row: 1; }
+    .footer-nav-pages {
+      position: static;
+      left: auto;
+      transform: none;
+      grid-column: 1;
+      grid-row: 2;
+      justify-content: flex-start;
+    }
+    .footer-right {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: start;
+      margin-left: 0;
+      align-items: flex-end;
+      text-align: right;
+    }
+    /* Shrink the footer type as the viewport narrows so the left (brand +
+       nav) and right (contact) columns stay side by side and top-aligned
+       instead of wrapping/stacking. clamp() max matches the desktop size,
+       so this only kicks in once the columns would otherwise collide. */
+    .footer-brand__name,
+    .footer-nav-pages a,
+    .footer-email {
+      font-size: clamp(10px, 2.5vw, 14px);
+    }
+    .footer-chat-lede {
+      font-size: clamp(12px, 3.2vw, 18px);
+    }
+  }
+  @media (max-width: 420px) {
+    /* Pull the columns a touch closer at the very bottom of the range. */
+    .footer-inner { column-gap: var(--s-2); }
+    .footer-nav-pages { gap: var(--s-3); }
   }
 </style>

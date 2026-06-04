@@ -344,19 +344,39 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
           { passive: true }
         );
 
-        // "doodle tool I vibecoded" → arm draw mode. We don't reach
-        // into the toolbar's IIFE-scoped state; instead we synthesise
-        // a click on the existing pencil button, which the toolbar's
-        // own click handler interprets exactly the same as a real tap
-        // on the bar. No-op if the tool is already armed so a stray
-        // tap doesn't toggle draw mode off mid-doodle.
+        // "doodle tool I vibecoded" → arm draw mode on desktop; on
+        // touch / no-hover devices we instead surface the arrow and
+        // toolbar halo (data-prompted), since the user can't see the
+        // hover affordance otherwise. They tap the toolbar itself to
+        // actually arm the pencil. The hover-capable check uses the
+        // (hover: hover) media query so phones / tablets get the
+        // prompt-only behavior even at desktop widths.
         const trigger = aiCol.querySelector("[data-doodle-trigger]");
         const pencilBtn = doodle.querySelector('[data-tool="draw"]');
         if (trigger && pencilBtn) {
+          let promptTimer = 0;
           trigger.addEventListener("click", (e) => {
             e.preventDefault();
-            if (pencilBtn.classList.contains("is-active")) return;
-            pencilBtn.click();
+            const canHover =
+              window.matchMedia("(hover: hover)").matches;
+            if (canHover) {
+              if (pencilBtn.classList.contains("is-active")) return;
+              pencilBtn.click();
+              return;
+            }
+            // Touch: show the arrow + halo, then auto-clear after a
+            // beat so the next tap on the bar isn't visually crowded.
+            // Dispatching mouseenter activates the Arrow component's
+            // trigger handler (it listens for mouseenter on aiCol),
+            // and data-prompted activates the toolbar halo.
+            doodle.setAttribute("data-prompted", "");
+            aiCol.dispatchEvent(new MouseEvent("mouseenter"));
+            if (promptTimer) window.clearTimeout(promptTimer);
+            promptTimer = window.setTimeout(() => {
+              doodle.removeAttribute("data-prompted");
+              aiCol.dispatchEvent(new MouseEvent("mouseleave"));
+              promptTimer = 0;
+            }, 4000);
           });
         }
       }

@@ -110,6 +110,10 @@
   }
   .doodle[data-active] .doodle__canvas {
     pointer-events: auto;
+    /* Prevent touch from scrolling the page while drawing. Without this,
+       drag-to-draw on mobile competes with vertical scroll and the stroke
+       breaks every time the browser claims the gesture. */
+    touch-action: none;
   }
 
   /* Trash + its leading divider stay hidden until the first stroke lands,

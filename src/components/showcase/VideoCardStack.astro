@@ -146,7 +146,16 @@ const resolve = (p: string) =>
         },
         { threshold: 0.1 }
       );
-      document.querySelectorAll(".card-stack video").forEach((v) => io.observe(v));
+      document.querySelectorAll(".card-stack video").forEach((v) => {
+        // Chrome mobile sometimes refuses to honor the autoplay attribute
+        // unless `muted` is also set as a property before play(). Set both
+        // and kick off playback eagerly — IO will keep them looping as
+        // they scroll in and out.
+        v.muted = true;
+        v.playsInline = true;
+        v.play().catch(() => {});
+        io.observe(v);
+      });
     }
 
     function setupDeck(root, reduced) {
@@ -295,7 +304,10 @@ const resolve = (p: string) =>
         setTimeout(() => { advancing = false; }, 220);
       }
 
-      // Pointer drag on the top card.
+      // Pointer drag on the top card. Touch input bypasses the drag
+      // path entirely — on phones the swipe gesture conflicts with
+      // vertical page scrolling, so we treat a touch tap on the deck as
+      // an advance instead and skip the pointer-capture / translation.
       let dragging = false;
       let startX = 0;
       let startY = 0;
@@ -303,6 +315,7 @@ const resolve = (p: string) =>
       let dy = 0;
       let pointerId = null;
       let didDrag = false;
+      let touchTapping = false;
 
       function topCard() { return order[0]; }
 
@@ -312,6 +325,12 @@ const resolve = (p: string) =>
         if (!card) return;
         // Only react to the top card's own pointer events.
         if (!card.contains(e.target)) return;
+        if (e.pointerType === "touch") {
+          // Skip drag for touch; let the click event (or the
+          // pointerup tap fallback) advance the deck.
+          touchTapping = true;
+          return;
+        }
         dragging = true;
         didDrag = false;
         startX = e.clientX;
@@ -338,6 +357,15 @@ const resolve = (p: string) =>
       }
 
       function onPointerUp(e) {
+        if (touchTapping && e.pointerType === "touch") {
+          touchTapping = false;
+          const card = topCard();
+          if (card && card.contains(e.target)) {
+            advance(0);
+            resetAuto();
+          }
+          return;
+        }
         if (!dragging) return;
         if (e.pointerId !== pointerId) return;
         dragging = false;

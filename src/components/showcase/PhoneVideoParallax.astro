@@ -170,7 +170,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
         },
         { threshold: 0.1 }
       );
-      document.querySelectorAll(".phone-video video").forEach((v) => observer.observe(v));
+      document.querySelectorAll(".phone-video video").forEach((v) => {
+        v.muted = true;
+        v.playsInline = true;
+        v.play().catch(() => {});
+        observer.observe(v);
+      });
 
       // First-interaction flag — once any floating cell receives a
       // pointerdown / click / touchstart, mark the .phone-video root
@@ -437,13 +442,20 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   }
 
   @media (max-width: 720px) {
+    /* Mobile: clear the phone so the device reads first, then the
+       floating cells. Prompt sits in the top-left gutter (mostly above
+       the phone); quiz sits in the bottom-right gutter (mostly below). */
     .phone-video__cell--prompt {
-      left: clamp(-100px, -22%, -60px);
-      width: clamp(170px, 56%, 230px);
+      top: -8%;
+      left: -4%;
+      width: clamp(170px, 60%, 230px);
+      --rot: -5deg;
     }
     .phone-video__cell--quiz {
-      right: clamp(-90px, -20%, -50px);
-      width: clamp(150px, 50%, 200px);
+      bottom: -8%;
+      right: -6%;
+      width: clamp(170px, 62%, 230px);
+      --rot: 6deg;
     }
   }
 
@@ -464,21 +476,25 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       width: clamp(82px, 38%, 150px);
     }
     .phone-video__cell--prompt {
-      left: clamp(-56px, -12%, -30px);
-      width: clamp(150px, 50%, 200px);
+      top: -8%;
+      left: -4%;
+      width: clamp(150px, 60%, 210px);
     }
     .phone-video__cell--quiz {
-      right: clamp(-52px, -12%, -28px);
-      width: clamp(140px, 46%, 185px);
+      bottom: -6%;
+      right: -6%;
+      width: clamp(160px, 62%, 220px);
     }
   }
   @media (max-width: 380px) {
-    .phone-video { max-width: min(348px, 74%); }
+    .phone-video { max-width: min(348px, 80%); }
     .phone-video__cell--prompt {
-      left: clamp(-40px, -13%, -22px);
+      left: -2%;
+      width: clamp(150px, 58%, 200px);
     }
     .phone-video__cell--quiz {
-      right: clamp(-40px, -13%, -20px);
+      right: -4%;
+      width: clamp(150px, 58%, 200px);
     }
   }
 
@@ -587,5 +603,9 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       top: -34px;
       bottom: auto;
     }
+  }
+  /* Touch / mobile: no drag, no hint. The cells are tap-to-focus. */
+  @media (max-width: 720px) {
+    .phone-video__drag-hint { display: none !important; }
   }
 </style>

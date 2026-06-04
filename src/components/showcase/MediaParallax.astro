@@ -571,10 +571,7 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
       left: 50%;
       top: -32px;
       bottom: auto;
-      /* Counter the -2deg rotation applied by the Topic Chats wrapper in
-         index.astro so the pill always reads upright regardless of how
-         the media block is tilted. */
-      transform: translateX(-50%) rotate(-2deg);
+      transform: translateX(-50%);
       width: max-content;
       max-width: calc(100% - var(--s-4));
       flex-direction: row;

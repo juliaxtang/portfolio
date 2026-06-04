@@ -10,6 +10,8 @@
  * the top. The video is inset slightly from the container edges so it
  * doesn't bleed into the transparent corners of the PNG.
  */
+import Arrow from "../Arrow.astro";
+
 interface Props {
   /** Looping video shown inside the phone screen. */
   videoSrc: string;
@@ -66,7 +68,6 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   data-phone-range={phoneRange}
   data-badge-range={badgeRange}
   data-floating-cell-group
-  style={`--pv-arrow-src:url('${base}/projects/tinder-app-redesign/drag-to-move.png');`}
 >
   <div class="phone-video__phone">
     <div class="phone-video__screen">
@@ -128,8 +129,27 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
   {(promptSrc || quizSrc) && (
     <span class="phone-video__drag-hint" aria-hidden="true">
       <span class="phone-video__drag-hint-label">drag to move<br />or click to expand</span>
-      <span class="phone-video__drag-hint-arrow"></span>
+      <span class="phone-video__drag-hint-arrow" aria-hidden="true"></span>
     </span>
+  )}
+  {quizSrc && (
+    <Arrow
+      id={`${id}-drag-arrow`}
+      from={`#${id} .phone-video__drag-hint-label`}
+      to={`#${id} .phone-video__cell--quiz`}
+      fromAnchor="right-center"
+      toAnchor="outside-right-center"
+      path="curve-drag-phone"
+      padding={12}
+      fromPadding={22}
+      toPadding={12}
+      thickness={2.5}
+      color="var(--text-tertiary, #6b6b72)"
+      persistent
+      watchRoot={`#${id}`}
+      hideWhen="cell-hover,cell-active,root-class:is-interacted"
+      hideBelowWidth={900}
+    />
   )}
 </div>
 
@@ -502,27 +522,15 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     color: var(--text-secondary, #5A5D66);
     white-space: nowrap;
   }
+  /* Invisible sizing box — same footprint as the old drag-to-move.png so
+     the SVG tail lands where the raster arrow used to start. */
   .phone-video__drag-hint-arrow {
     display: block;
     width: 80px;
     aspect-ratio: 1 / 1.1;
     flex-shrink: 0;
-    /* Mask the PNG and fill with currentColor so the arrow's stroke can
-       be dilated to match the games swipe arrow. Same 8-direction stack. */
-    background-color: currentColor;
-    color: var(--text-tertiary, #6b6b72);
-    -webkit-mask: var(--pv-arrow-src) center / contain no-repeat;
-    mask: var(--pv-arrow-src) center / contain no-repeat;
-    filter:
-      drop-shadow(2.4px 0 0 currentColor)
-      drop-shadow(-2.4px 0 0 currentColor)
-      drop-shadow(0 2.4px 0 currentColor)
-      drop-shadow(0 -2.4px 0 currentColor)
-      drop-shadow(1.7px 1.7px 0 currentColor)
-      drop-shadow(-1.7px 1.7px 0 currentColor)
-      drop-shadow(1.7px -1.7px 0 currentColor)
-      drop-shadow(-1.7px -1.7px 0 currentColor);
-    /* Horizontally mirrored, nudged 8px left + 40px down, rotated 25° CW. */
+    opacity: 0;
+    pointer-events: none;
     transform: translate(-20px, 52px) rotate(25deg) scaleX(-1);
     transform-origin: 50% 50%;
   }
@@ -537,11 +545,9 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     opacity: 0;
     pointer-events: none;
   }
-  /* Narrow desktop / tablet / mobile (≤ 1339px): the right-of-phone
-     hint has no room next to the text column, so fold it into a compact
-     horizontal pill below the deck — same pattern as the games
-     VideoCardStack swipe affordance. */
-  @media (max-width: 1339px) {
+  /* Stacked / narrow (≤ 900px): fold into a compact horizontal pill
+     below the phone — same pattern as the games swipe affordance. */
+  @media (max-width: 900px) {
     .phone-video__drag-hint {
       left: 50%;
       top: auto;
@@ -560,7 +566,6 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       color: var(--text-secondary, #2a2a2f);
       box-shadow: 0 8px 18px rgba(20, 22, 28, 0.08);
     }
-    .phone-video__drag-hint-arrow { display: none; }
     .phone-video__drag-hint-label {
       font-family: var(--font-mono, inherit);
       font-size: 0;

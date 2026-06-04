@@ -704,6 +704,10 @@ const meta = [role].filter(Boolean) as string[];
     transform: translate(2px, -2px);
   }
 
+  @media (min-width: 901px) {
+    /* Drag hints and curved arrows bleed past the phone frame. */
+    .showcase__hero { overflow: visible; }
+  }
   .showcase__hero {
     position: relative;
     min-height: 440px;

@@ -198,8 +198,17 @@ const password = "2026";
       e.preventDefault();
       if ((input?.value || "") === expected) {
         sessionStorage.setItem(key, "1");
+        // Blur the input before tearing down the gate so the mobile
+        // keyboard dismisses cleanly. Without this, mobile Chrome leaves
+        // the viewport scrolled down to where the keyboard had pushed the
+        // input, and the visitor lands below the homepage heading.
+        input?.blur();
         gate.remove();
         document.documentElement.style.overflow = "";
+        // Restore the top of the page. Mobile Chrome and Safari sometimes
+        // retain the scroll offset the keyboard introduced even after the
+        // fixed-position gate is removed.
+        window.scrollTo(0, 0);
       } else if (error) {
         error.hidden = false;
         input?.select();

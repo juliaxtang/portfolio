@@ -427,14 +427,21 @@
   }
 
   /* Mobile: no Esc / D keys, so neither hint nor the bar's lift should
-     appear. The bar still gets its halo so the active state still reads. */
+     appear. The bar still gets its halo so the active state still reads.
+     Prompted (tap on AI hero column) keeps the scale-up since on touch
+     that pulse is the only feedback that the tap registered and is
+     pointing at this toolbar. */
   @media (max-width: 720px) {
     .doodle[data-active] .doodle__bar,
     .doodle[data-prompted] .doodle__bar {
       --doodle-bar-lift: 0px;
     }
     .doodle[data-prompted] .doodle__bar {
-      --doodle-bar-scale: 1;
+      --doodle-bar-scale: 1.35;
+      border-color: var(--doodle-brush-color, var(--brand-primary-2));
+      box-shadow:
+        var(--shadow-md),
+        0 0 0 5px rgba(169, 199, 220, 0.45);
     }
     .doodle__hint--esc,
     .doodle__hint--prompt {
@@ -621,6 +628,11 @@
       } else if (btn.getAttribute("data-action") === "clear") {
         while (svg.firstChild) svg.removeChild(svg.firstChild);
         syncStrokeFlag();
+        // Tapping trash also exits the doodle tool entirely, so the visitor
+        // gets a single clean reset instead of a wiped canvas still armed
+        // for more strokes.
+        setPaletteOpen(false);
+        if (state.tool) setTool(null);
       }
     });
 

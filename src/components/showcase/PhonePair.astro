@@ -167,6 +167,10 @@ const resolve = (p: string) =>
     }
     function init() {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Desktop-class pointers (mouse / trackpad) get hover-to-activate so
+      // the affordance doesn't depend on visitors guessing the phones are
+      // clickable. Touch / coarse pointers fall back to tap-to-toggle.
+      const hoverActivate = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       document.querySelectorAll(".phone-pair").forEach((root) => {
         const phones = Array.from(root.querySelectorAll(".phone-pair__phone"));
         const tiltMax =
@@ -265,6 +269,13 @@ const resolve = (p: string) =>
             // Stop the document-level "click-anywhere-clears" handler
             // (added below) from immediately undoing this click.
             e.stopPropagation();
+            if (hoverActivate) {
+              // Desktop pointers drive activation via hover; a click just
+              // ensures the hovered phone is active (no tap-to-toggle-off,
+              // since the cursor leaving the pair already clears state).
+              if (!phone.classList.contains("is-active")) activatePhone(phone);
+              return;
+            }
             const isActive = phone.classList.contains("is-active");
             if (isActive) {
               clearStates();
@@ -272,6 +283,11 @@ const resolve = (p: string) =>
             }
             activatePhone(phone);
           });
+          if (hoverActivate) {
+            phone.addEventListener("mouseenter", () => {
+              if (!phone.classList.contains("is-active")) activatePhone(phone);
+            });
+          }
           // Keyboard parity: Esc clears the active state.
           phone.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
@@ -280,6 +296,18 @@ const resolve = (p: string) =>
             }
           });
         });
+
+        if (hoverActivate) {
+          // Cursor leaving the whole pair returns phones to rest. Moving
+          // between the two phones within the pair stays active because
+          // each phone's mouseenter re-activates it before root sees a
+          // leave.
+          root.addEventListener("mouseleave", () => {
+            if (root.querySelector(".phone-pair__phone.is-active")) {
+              clearStates();
+            }
+          });
+        }
 
         // Click anywhere outside any phone in this pair clears the
         // active/other state, so the user can dismiss the lifted phone

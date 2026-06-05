@@ -113,7 +113,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
               Previously led the swipe stack and introduced dynamic profiles at <a class="hero-co hero-co--tinder" href="#tappy-cloud"><img src={`${base}/logos/tinder.png`} alt="" aria-hidden="true" />Tinder</a>.
             </p>
             <p class="v2-hero__meta-col v2-hero__meta-col--ai">
-              Designing with AI as a daily tool. This portfolio is one output: my design, built with Claude. Poke at it.
+              Designing with AI as a daily tool. This portfolio is one output: my design, built with Claude. Poke&nbsp;at&nbsp;it.
             </p>
           </div>
         </FadeIn>
@@ -977,9 +977,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      the others stay absolutely positioned and invisible so they don't
      stack and don't break the load-time measure() pass — display:none
      would zero out their measured height and collapse the headline
-     on every rotation cycle. A small vertical jump on rotation is
-     acceptable; the alternative was a ~100px dead zone below shorter
-     statements. */
+     on every rotation cycle. Combined with the font-size override
+     below that keeps every statement at exactly 2 lines on small
+     viewports, the headline holds a stable height naturally without
+     reserving extra space. */
   @media (max-width: 1023px) {
     .v2-hero__headline,
     .v2-hero__headline.is-measured {
@@ -991,6 +992,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     }
     .v2-hero__headline.is-measured .v2-hero__rot:not(.is-active) {
       visibility: hidden;
+    }
+  }
+  /* Cap the headline at 36px below 720px so the longest statement
+     ("I turn ambiguous problems into shipped products.") wraps to the
+     same 2 lines as the other two rotations. Without this cap the
+     desktop clamp resolves to its 44px floor on phones, which pushes
+     the longest statement to 3 lines and shoves the meta and phone
+     graphic below it down on every rotation cycle. */
+  @media (max-width: 720px) {
+    .v2-hero__headline {
+      font-size: 36px;
     }
   }
 
@@ -1074,10 +1086,23 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
      runtime without losing scope. The component handles its own
      visibility, animation, and viewport-tracking path math. */
 
-  @media (max-width: 720px) {
+  /* Hold the three columns side-by-side as long as each column has at
+     least ~120px to breathe. Below that the lines start fragmenting onto
+     too many wraps and the band becomes harder to scan than a stack, so
+     we collapse into a single column with a tight gap. */
+  @media (max-width: 520px) {
     .v2-hero__meta {
       grid-template-columns: 1fr;
       column-gap: 0;
+      row-gap: var(--s-2);
+    }
+  }
+  /* Tighten the inter-column gap once the band is narrow enough that the
+     desktop clamp(--s-8, 6vw, --s-20) would chew up too much of each
+     column's width. Keeps three readable columns down to the stack point. */
+  @media (max-width: 720px) {
+    .v2-hero__meta {
+      column-gap: var(--s-4);
     }
   }
 

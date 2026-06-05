@@ -327,6 +327,7 @@
         // AND lets transitions animate the entry AND exit smoothly
         // when the class is added or removed.
         cell.classList.add("is-focused");
+        document.documentElement.classList.add("has-focused-cell");
         focused = cell;
         recordFocusChange(cell);
         document.addEventListener("mousemove", onTiltMove);
@@ -337,6 +338,7 @@
         document.removeEventListener("mousemove", onTiltMove);
         stopTilt(cell);
         cell.classList.remove("is-focused");
+        document.documentElement.classList.remove("has-focused-cell");
         recordFocusChange(cell);
         swapCursorPill(false, cell);
         // Hold the inline focus vars during the reverse transition.

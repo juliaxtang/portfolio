@@ -40,6 +40,15 @@ button { font: inherit; cursor: pointer; }
 ::selection      { background: var(--brand-selection); color: #15171C; }
 ::-moz-selection { background: var(--brand-selection); color: #15171C; }
 
+/* While a floating cell is in focus mode, suppress hit-testing on
+   everything behind it so hover states (header links, side rail icons,
+   neighboring cells, etc.) don't fire under the cursor. The focused
+   cell re-enables pointer-events on itself; outside clicks still
+   dismiss because the capture-phase document listener fires with
+   <html> as the target. */
+html.has-focused-cell body { pointer-events: none; }
+html.has-focused-cell .is-focused { pointer-events: auto; }
+
 /* ==========================================================
    TYPOGRAPHY SCALE (utility classes — also the canonical scale)
    ========================================================== */

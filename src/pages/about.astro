@@ -588,7 +588,7 @@ const polaroidItems = [
      below (Experience / Awards) keeps the same rhythm. */
   .about-stack-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--s-5);
     margin-top: var(--s-12);
     margin-bottom: clamp(var(--s-10), 5vw, var(--s-20));
@@ -1091,6 +1091,7 @@ const polaroidItems = [
      atom that pushes adjacent punctuation onto its own line. */
   .fx--neopets {
     display: inline;
+    white-space: nowrap;
     color: var(--text-primary);
     background-image: linear-gradient(var(--brand-primary), var(--brand-primary));
     background-repeat: no-repeat;

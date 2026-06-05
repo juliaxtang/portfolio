@@ -93,7 +93,22 @@
     const cursor = document.getElementById("cursor");
     if (!cursor) return;
 
-    document.documentElement.classList.add("has-custom-cursor");
+    // Defer hiding the native cursor until we've actually seen a real
+    // pointer event. On macOS Chrome/Safari the browser synthesizes an
+    // initial mousemove on load so the swap is invisible, but Windows
+    // Chrome doesn't fire any pointer event until the user moves — which
+    // means `cursor: none` would kick in while the custom cursor is still
+    // parked at the restored/center position, reading as "no cursor at
+    // all" until the first nudge. Holding the swap until first move
+    // means the native cursor stays visible during that gap.
+    let pointerSeen = false;
+    function activateCustomCursor() {
+      if (pointerSeen) return;
+      pointerSeen = true;
+      document.documentElement.classList.add("has-custom-cursor");
+      cursor.style.opacity = "";
+    }
+    cursor.style.opacity = "0";
 
     // Measure the natural widths of the two copy-pill labels so the pill
     // can shrink from "Copy email" to "Copied!" smoothly after a copy.
@@ -180,6 +195,16 @@
       if (typeof e.clientX !== "number" || typeof e.clientY !== "number") return;
       mx = e.clientX;
       my = e.clientY;
+      if (!pointerSeen) {
+        // First confirmed pointer position — snap the custom cursor
+        // there before unhiding so it doesn't streak from the seeded
+        // position to the real one.
+        cx = mx;
+        cy = my;
+        cursor.style.transform =
+          "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
+        activateCustomCursor();
+      }
       document.documentElement.style.setProperty("--cursor-x", mx + "px");
       document.documentElement.style.setProperty("--cursor-y", my + "px");
       if (!rafId) tick();

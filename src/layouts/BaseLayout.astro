@@ -22,8 +22,8 @@ const siteName = "Julia Tang | Product Designer";
 const fullTitle = title === siteName ? title : `${title} · ${siteName}`;
 const desc =
   description ??
-  "Julia Tang | Product Designer";
-const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
+  "Product designer at Snap, previously Tinder. I turn ambiguous problems into shipped products.";
+const ogImageUrl = new URL(ogImage ?? "/og.png", Astro.site).toString();
 ---
 
 <!doctype html>
@@ -41,7 +41,7 @@ const ogImageUrl = new URL(ogImage ?? "/favicon.png", Astro.site).toString();
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).toString()} />
     <meta property="og:site_name" content={siteName} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={desc} />
     <meta name="twitter:image" content={ogImageUrl} />

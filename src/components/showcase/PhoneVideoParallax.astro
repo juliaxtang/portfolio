@@ -474,6 +474,17 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       padding-bottom: 0;
       padding-right: clamp(28px, 6%, 60px);
     }
+    /* With padding-top:0 the phone now starts at the container's top
+       edge, so the badge's default `top: clamp(20px, 5%, 44px)` (which
+       was designed against the wide-desktop padding-top:48-88) drops the
+       badge ~30px BELOW the phone top instead of pinning it to the
+       upper-right corner. Restore the corner-sticker look by lifting the
+       badge so most of it sits above the phone top, with the lower
+       portion crossing the corner. */
+    .phone-video__badge-wrap,
+    .phone-video__badge {
+      top: clamp(-56px, -8%, -28px);
+    }
     .phone-video__cell--prompt {
       top: clamp(-50px, -7vw, -16px);
       left: clamp(-70px, -18%, -32px);
@@ -507,6 +518,13 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
       padding-bottom: 0;
       padding-right: clamp(16px, 5%, 44px);
     }
+    /* Same fix as the 721-1440 band — phone now starts at container top
+       so the badge needs a negative `top` to pin to the upper-right
+       corner as a sticker. */
+    .phone-video__badge-wrap,
+    .phone-video__badge {
+      top: clamp(-48px, -8%, -24px);
+    }
     .phone-video__cell--prompt {
       top: clamp(-40px, -8vw, -16px);
       left: clamp(-40px, -10%, -12px);
@@ -529,10 +547,13 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     .phone-video { max-width: min(348px, 80%); }
     .phone-video__badge-wrap,
     .phone-video__badge {
-      /* Pin to the phone's upper-right corner: bottom-half of the badge
-         crosses onto the phone, right edge bleeds outside the phone
-         slightly so it reads as a sticker on the corner. */
-      top: clamp(56px, 14%, 96px);
+      /* Pin to the phone's upper-right corner: top half of the badge
+         sits above the phone, bottom half crosses onto the corner.
+         Negative `top` is required because the phone-video padding-top
+         is 0 in this band, so the phone's top edge equals the container
+         top — anchoring positive `top` would drop the badge entirely
+         below the phone top instead of straddling the corner. */
+      top: clamp(-52px, -14%, -28px);
       right: clamp(-18px, -4%, -6px);
       width: clamp(96px, 32%, 140px);
     }

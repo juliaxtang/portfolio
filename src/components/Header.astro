@@ -88,15 +88,27 @@ function isActive(href: string) {
     .site-header { display: none; }
   }
   /* Tablet / large-phone band (720–1023px): the SideRail has dissolved
-     but the viewport is still wide, so the default space-between
-     distribution pushes the three sections (brand+toggle / nav / icons)
-     edge-to-edge with a ~700px dead zone between them. Cap the inner
-     content via large horizontal padding so the sections cluster toward
-     the center and the row reads as a tight nav, not a sparse banner. */
+     but the viewport is still wide. Snap the header onto the same 12-col
+     grid the hero and project showcases use below so the brand wordmark,
+     nav, and icons land on the same vertical lines as the rest of the
+     page (brand at col 3, icons at col 11 end). */
   @media (min-width: 720px) and (max-width: 1023px) {
     .site-header {
-      padding-inline: clamp(var(--s-8), 12vw, 160px);
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--s-6);
+      align-items: center;
+      max-width: 1640px;
+      margin-inline: auto;
+      padding: var(--s-5) clamp(var(--s-6), 3vw, var(--s-12));
     }
+    .site-header > .brand-row { grid-column: 3 / span 3; justify-self: start; }
+    .site-header > nav { grid-column: 6 / span 4; justify-self: center; }
+    /* Icons span cols 10-11 so their right edge lands on col 11's right
+       boundary, matching where the reverse-mode project text ends below
+       (text max-width 440 centered in the 5-col cell sits flush against
+       the cell's right edge once the cell narrows below 440 + margins). */
+    .site-header > :global(.social-icons) { grid-column: 10 / span 2; justify-self: end; }
   }
   .site-header.is-scrolled {
     background: rgba(253, 252, 250, 0.8);

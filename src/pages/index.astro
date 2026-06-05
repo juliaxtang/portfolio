@@ -606,9 +606,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   @media (max-width: 1023px) {
     .v2-hero__grid {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
+      /* Keep the 12-col grid + clamp padding from desktop so the hero text
+         sits on the same vertical lines as the sticky header above and
+         the project showcase grid below — single grid system for the whole
+         homepage. Only collapse the explicit row split since the side rail
+         is gone in this band. */
       grid-template-rows: auto;
-      padding: 0 var(--s-6);
+      padding-top: 0;
+      padding-bottom: 0;
       min-height: 0;
     }
   }
@@ -645,10 +650,19 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
   }
   @media (max-width: 1023px) {
     .v2-hero__text {
-      grid-column: 1 / -1;
+      /* Stay at col 3 (same as desktop) so the hero's left edge aligns
+         with the project body text below and the sticky header brand
+         above. Drop only the desktop row pinning and width cap so the
+         block flows naturally without the side rail. */
       grid-row: auto;
       align-self: auto;
       padding-top: var(--s-6);
+      max-width: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .v2-hero__text {
+      grid-column: 1 / -1;
     }
   }
 

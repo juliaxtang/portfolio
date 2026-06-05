@@ -529,7 +529,12 @@ const id = "pvp-" + Math.random().toString(36).slice(2, 9);
     .phone-video { max-width: min(348px, 80%); }
     .phone-video__badge-wrap,
     .phone-video__badge {
-      width: clamp(82px, 38%, 150px);
+      /* Pin to the phone's upper-right corner: bottom-half of the badge
+         crosses onto the phone, right edge bleeds outside the phone
+         slightly so it reads as a sticker on the corner. */
+      top: clamp(56px, 14%, 96px);
+      right: clamp(-18px, -4%, -6px);
+      width: clamp(96px, 32%, 140px);
     }
     .phone-video__cell--prompt {
       top: clamp(-32px, -7vw, -12px);

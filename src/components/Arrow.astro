@@ -59,6 +59,9 @@ interface Props {
   hideWhen?: string;
   /** Hide arrow below this viewport width (matches showcase pill breakpoints). */
   hideBelowWidth?: number;
+  /** Opt out of the default ≤720px arrow hide (e.g. for the doodle hint
+   *  which is the only entry point on touch). */
+  mobileVisible?: boolean;
   id?: string;
 }
 
@@ -83,6 +86,7 @@ const {
   watchRoot = "",
   hideWhen = "",
   hideBelowWidth = 0,
+  mobileVisible = false,
   id,
 } = Astro.props;
 
@@ -91,7 +95,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
 ---
 
 <svg
-  class:list={["hand-arrow", persistent && "hand-arrow--persistent"]}
+  class:list={["hand-arrow", persistent && "hand-arrow--persistent", mobileVisible && "hand-arrow--mobile-visible"]}
   style={inlineStyle}
   data-arrow-id={arrowId}
   data-from={from}
@@ -177,7 +181,7 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
   }
 
   @media (max-width: 720px) {
-    .hand-arrow:not(.hand-arrow--persistent) {
+    .hand-arrow:not(.hand-arrow--persistent):not(.hand-arrow--mobile-visible) {
       display: none;
     }
   }

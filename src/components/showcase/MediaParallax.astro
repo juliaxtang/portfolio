@@ -153,10 +153,11 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
         id={`${id}-drag-arrow`}
         from={`#${id} .media-parallax__drag-hint`}
         to={`#${id} .media-parallax__cell--left`}
-        fromAnchor="bottom-center"
+        fromAnchor="bottom-left"
         toAnchor="top-center"
         path="vertical-down"
         padding={10}
+        fromPadding={0}
         thickness={2.5}
         color="var(--text-tertiary, #6b6b72)"
         persistent
@@ -537,7 +538,15 @@ const id = "mp-" + Math.random().toString(36).slice(2, 9);
   .media-parallax__drag-hint {
     position: absolute;
     left: calc(8% + 350px);
-    bottom: 320px;
+    /* Container bottom is the arrow's tail anchor (the Arrow component
+       reads `bottom-left` of this element). The label sits inside via
+       align-items: flex-end of the content box, so a `padding-bottom`
+       lifts the label up by that amount without moving the container —
+       letting the text move 12px down and the arrow move 20px down
+       (12 + 8 extra) by shrinking `bottom` to 300 (20px less than the
+       previous 320) and adding 8px of padding-bottom. */
+    bottom: 300px;
+    padding-bottom: 8px;
     display: flex;
     flex-direction: row;
     align-items: flex-end;

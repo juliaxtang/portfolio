@@ -729,6 +729,37 @@ const meta = [role].filter(Boolean) as string[];
     margin-inline: auto;
     width: 100%;
   }
+  /* Pin every known hero component to the OUTER edge of its grid cell so
+     the graphic's outer edge falls on the same vertical line as the body
+     copy on the opposite side of the page. Each hero component sets its
+     own `margin: 0 auto` (centered in cell) internally; this override
+     replaces that centering based on which side of the page the hero
+     lives on, so the whole project list reads as one grid system with
+     two consistent vertical gutters instead of every cell having its own
+     centered island of content.
+
+     The list of inner classes below MUST stay in sync with the homepage
+     hero components — if a new hero type is added under .showcase__hero,
+     add its outermost class here. */
+  @media (min-width: 901px) {
+    /* Non-reverse projects: hero lives in the wide (5-col) cell on the
+       right. The reverse projects' text on the opposite side sits in a
+       5-col cell with max-width 440 centered, so its right edge falls
+       (cell_width - 440)/2 in from the cell's right boundary. Match that
+       offset here so this hero's right edge lands on the same vertical
+       line as those texts' right edges. */
+    :global(.showcase:not(.showcase--reverse) :is(.media-parallax, .phone-video, .profile-cols, .phone-pair, .phone-cluster, .phone-columns, .phone-stack, .video-card-stack, .compare-slider, [data-card-stack])) {
+      margin-inline: auto max(0px, calc((100% - 440px) / 2)) !important;
+    }
+    /* Reverse projects: hero lives in the narrow (4-col) cell on the
+       left. The non-reverse projects' text on the opposite side sits in
+       the same-width 4-col cell with max-width 440 (cap doesn't bind, so
+       text fills the cell starting at cell left). Pin this hero's left
+       edge to the same cell-left line. */
+    :global(.showcase--reverse :is(.media-parallax, .phone-video, .profile-cols, .phone-pair, .phone-cluster, .phone-columns, .phone-stack, .video-card-stack, .compare-slider, [data-card-stack])) {
+      margin-inline: 0 auto !important;
+    }
+  }
   @media (max-width: 900px) {
     /* Drop the desktop 440px hero floor on mobile so a shorter hero
        composition doesn't reserve 100+px of dead space above the text

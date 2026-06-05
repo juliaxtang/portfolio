@@ -279,8 +279,14 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
       const fromAnchor = arrow.dataset.fromAnchor || "bottom-center";
       const toAnchor = arrow.dataset.toAnchor || "top-center";
       const padding = parseFloat(arrow.dataset.padding) || 0;
-      const fromPadding = parseFloat(arrow.dataset.fromPadding) || padding;
-      const toPadding = parseFloat(arrow.dataset.toPadding) || padding;
+      /* `|| padding` would clobber an explicit 0 (falsy), so guard with
+         Number.isFinite — needed when a caller wants zero horizontal
+         offset on a bottom-left tail but still wants vertical padding via
+         the main `padding` prop. */
+      const fpRaw = parseFloat(arrow.dataset.fromPadding);
+      const fromPadding = Number.isFinite(fpRaw) ? fpRaw : padding;
+      const tpRaw = parseFloat(arrow.dataset.toPadding);
+      const toPadding = Number.isFinite(tpRaw) ? tpRaw : padding;
       const liftPx = parseFloat(arrow.dataset.liftPx) || 0;
       const liftActiveSel = arrow.dataset.liftSel;
       const persistent = arrow.dataset.persistent === "true";
@@ -357,7 +363,19 @@ const inlineStyle = `color: ${color}; --hand-arrow-stroke-width: ${thickness}px;
         const fr = fromEl.getBoundingClientRect();
         const fromGone =
           fr.width === 0 && fr.height === 0 && fr.left === 0 && fr.top === 0;
-        if (fromGone) return;
+        if (fromGone) {
+          /* Anchor is display:none (e.g. drag-hint hidden at narrow desktop).
+             Without this, a path drawn earlier — when the anchor was visible
+             at a wider viewport — stays at its last viewport coords, fixed
+             inset:0, and drifts into view as the user scrolls. Clear both
+             the shaft and the head paths and drop is-pointing so the SVG
+             goes back to opacity 0. */
+          shaft.removeAttribute("d");
+          heads[0].removeAttribute("d");
+          heads[1].removeAttribute("d");
+          arrow.classList.remove("is-pointing");
+          return;
+        }
 
         const start = anchorPoint(fr, fromAnchor, fromPadding, false);
         let sx = start.x;
